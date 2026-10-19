@@ -127,6 +127,14 @@ class ApprovalGateTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 flow.check_message(invalid, context)
 
+    def test_commit_on_protected_branch_rejected(self):
+        message = self.root / 'MSG'
+        message.write_text('direct commit\n')
+        for branch in ('main', 'develop'):
+            self.git.side_effect = lambda root, *args, branch=branch: branch
+            with self.assertRaisesRegex(ValueError, '직접 커밋 금지'):
+                flow.main(['commit-msg', str(message)], self.root)
+
     def test_protected_push_and_deletion_rejected(self):
         for ref, sha in [('refs/heads/main', '1' * 40), ('refs/heads/develop', '1' * 40),
                          ('refs/tags/v1', '1' * 40), ('refs/heads/feature/backend/a', '0' * 40)]:
