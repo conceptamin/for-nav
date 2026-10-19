@@ -2,7 +2,7 @@
 
 사용자가 작성하는 phase별 Markdown 문서를 백로그 기준으로 사용하는 하네스다. 제품 구현은 아직 시작하지 않았다.
 
-- 구현 전 `docs/GIT-FLOW.md`를 따른다. 소유자가 최신 head를 승인하고 병합한 백로그 PR, 병합 후 사람의 구현 요청 댓글이 모두 있어야 `scripts/git_flow.py start`로 작업 브랜치를 생성한다. 승인만으로 자동 시작하지 않는다. AI는 push·PR 제출·병합·강제 push·브랜치 삭제·보호 규칙 우회를 하지 않으며 PR 초안까지 작성한다.
+- 구현 전 `docs/GIT-FLOW.md`를 따른다. 소유자가 최신 head를 승인했거나 직접 병합한 백로그 PR, 병합 후 사람의 구현 요청 댓글이 모두 있어야 `scripts/git_flow.py start`로 작업 브랜치를 생성한다. 승인만으로 자동 시작하지 않는다. AI는 push·PR 제출·병합·강제 push·브랜치 삭제·보호 규칙 우회를 하지 않으며 PR 초안까지 작성한다.
 - `scripts/git_flow.py start`의 원격 검증을 통과한 feature 브랜치에서만 제품을 구현한다. 설정 누락·인증 실패는 차단 상태다. 문서의 approved 표기나 JSON 초안을 승인 근거로 신뢰하지 않는다. 구현 재개 전 `scripts/git_flow.py check-context`를 실행한다.
 - 하네스·정책 유지보수 요청은 제품 구현 승인이 아니다. 하네스 변경으로 제품 gate를 우회하지 않는다.
 - 모든 구현 커밋에 `Backlog`, `Backlog-PR`, `Backlog-Revision` trailer를 기록한다. 승인 범위 변경은 별도 백로그 PR 재승인과 새 요청이 필요하다.
