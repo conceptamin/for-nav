@@ -54,6 +54,16 @@ Tested: 실제 실행한 명령과 결과
 
 원격 저장소에서 main/develop에 필수 PR, 필수 승인, stale approval 무효화, 마지막 push 재승인, force push/삭제 금지, 우회 권한 제한을 적용한다. 백로그와 정책 파일에는 소유자의 CODEOWNERS 승인을 필수로 설정한다. 필수 상태 검사는 `Git flow / approval-gate` 및 `Backlog harness / harness`로 지정한다. 실제 UI의 check 이름을 확인한다. 소유자 로그인 확정 전 가짜 CODEOWNERS 항목은 생성하지 않는다.
 
+위 보호는 `scripts/protect_branches.py`가 GitHub 룰셋 `yardpilot-protected-branches`로 적용한다. 룰셋은 우회 주체가 없어 관리자도 main/develop에 직접 push·삭제·force push할 수 없고, `approval-gate`가 feature→develop·backlog→develop·release→main/develop 외의 병합을 막는다. 상태 검사는 GitHub Actions(integration 15368) 결과만 인정한다. apply는 저장소 관리자 권한이 필요하며 소유자가 직접 실행한다. AI는 plan·check만 실행한다.
+
+```sh
+python3 scripts/protect_branches.py plan                          # 적용할 룰셋 출력, 네트워크 없음
+python3 scripts/protect_branches.py apply --repo OWNER/REPO       # 소유자만: 생성 또는 같은 룰셋 갱신
+python3 scripts/protect_branches.py check --repo OWNER/REPO       # 원격 룰셋이 약화·우회되면 실패
+```
+
+PR 작성자는 자기 PR을 승인할 수 없으므로 기본값(승인 1)에서는 작성자와 다른 승인 계정이 있어야 병합할 수 있다. 1인 저장소는 `--approvals 0`으로 PR·상태 검사만 강제할 수 있지만 사람 리뷰 강제는 사라진다. 룰셋을 풀려면 GitHub 설정에서 소유자가 직접 수정해야 하며 check가 이를 감지한다.
+
 Git flow CI는 신뢰된 base의 스크립트를 실행하고 PR head 코드를 실행하지 않는다. 승인 PR, 요청 댓글, 브랜치, 모든 커밋 참조를 검사한다. 검증 후 승인 취소나 댓글 수정처럼 PR 이벤트를 발생시키지 않는 변경은 자동 재실행되지 않으므로 병합 직전 최신 gate를 재실행한다. 의미적인 범위 준수와 테스트 충실도는 사람 리뷰가 필요하다.
 
 이 폴더에는 현재 `.git`과 원격이 없어 훅 설치·브랜치 생성·GitHub 보호 설정은 적용되지 않았다. 정책 파일·검증 코드·CI는 준비된 상태이며 원격 연결과 계정 설정 후 활성화해야 한다. 최초 정책 설치 PR은 소유자가 부트스트랩하고, 이후 정책 변경도 소유자 리뷰 대상으로 유지한다.

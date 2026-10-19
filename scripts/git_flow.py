@@ -181,6 +181,8 @@ def main(argv=None, root=ROOT):
         print('PASS: 승인 PR·사람 요청·작업 브랜치 확인')
     else:
         branch = git(root, 'branch', '--show-current')
+        if branch in ('main', 'develop'):
+            raise ValueError(f'{branch} 직접 커밋 금지; 작업 브랜치에서 PR로 병합합니다')
         if branch.startswith('backlog/'):
             staged = git(root, 'diff', '--cached', '--name-only').splitlines()
             if not staged or any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', p) for p in staged):
