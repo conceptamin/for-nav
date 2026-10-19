@@ -9,6 +9,10 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+# 정책 PR이 바꿀 수 있는 하네스·운영 규칙 파일. 제품 코드·백로그·fixture·기획/계약서는 제외한다.
+POLICY_FILE = (r'(\.github/.+|\.githooks/[^/]+|\.gitignore|CLAUDE\.md|README\.md'
+               r'|(frontend|backend|modeling)/AGENTS\.md|docs/.+|scripts/.+|tests/harness/.+)')
+SLUG = r'[a-z0-9]+(?:-[a-z0-9]+)*'
 
 
 def run(root, *args):
@@ -36,6 +40,15 @@ def pages(root, repo, endpoint):
     raise ValueError('API pagination limit exceeded')
 
 
+def origin_matches(root, repo):
+    remote = git(root, 'remote', 'get-url', 'origin')
+    if remote in (f'https://github.com/{repo}.git', f'https://github.com/{repo}', f'git@github.com:{repo}.git'):
+        return True
+    # SSH 별칭(git@alias:owner/repo.git)은 ssh 설정상 실제 호스트가 github.com일 때만 허용한다.
+    alias = re.fullmatch(rf'git@(\w[\w.-]*):{re.escape(repo)}\.git', remote)
+    return bool(alias) and re.search(r'^hostname github\.com$', run(root, 'ssh', '-G', alias[1]), re.MULTILINE) is not None
+
+
 def validate(root, context, *, clean_document=False):
     config = json.loads((root / '.github/git-flow.json').read_text())
     repo, approver = config.get('repository'), config.get('approver')
@@ -48,12 +61,14 @@ def validate(root, context, *, clean_document=False):
     pr = api(root, repo, f"pulls/{int(context['approval_pr'])}")
     if not pr.get('merged_at') or pr['base']['ref'] != 'develop' or pr['base']['repo']['full_name'] != repo:
         raise ValueError('develop에 병합된 백로그 PR이 필요합니다')
-    reviews = pages(root, repo, f"pulls/{pr['number']}/reviews")
-    decisions = [r for r in reviews if r['user']['login'].lower() == approver.lower()
-                 and r['state'] in ('APPROVED', 'CHANGES_REQUESTED', 'DISMISSED')]
-    latest = max(decisions, key=lambda r: r['id']) if decisions else None
-    if not latest or latest['state'] != 'APPROVED' or latest['commit_id'] != pr['head']['sha']:
-        raise ValueError('지정 승인자의 최신 head 승인 필요')
+    # 1인 저장소는 자기 PR을 리뷰 승인할 수 없으므로 승인자의 직접 병합도 최종 head 승인으로 인정한다.
+    if ((pr.get('merged_by') or {}).get('login') or '').lower() != approver.lower():
+        reviews = pages(root, repo, f"pulls/{pr['number']}/reviews")
+        decisions = [r for r in reviews if r['user']['login'].lower() == approver.lower()
+                     and r['state'] in ('APPROVED', 'CHANGES_REQUESTED', 'DISMISSED')]
+        latest = max(decisions, key=lambda r: r['id']) if decisions else None
+        if not latest or latest['state'] != 'APPROVED' or latest['commit_id'] != pr['head']['sha']:
+            raise ValueError('지정 승인자의 최신 head 승인 또는 직접 병합 필요')
     files = pages(root, repo, f"pulls/{pr['number']}/files")
     if not any(f['filename'] == path and f['status'] != 'removed' for f in files):
         raise ValueError('승인 PR에 해당 백로그 문서가 없습니다')
@@ -69,8 +84,7 @@ def validate(root, context, *, clean_document=False):
             or comment['created_at'] <= pr['merged_at']
             or comment['body'].strip() != f'implement {path} {sha}'):
         raise ValueError('병합 후 저장소 참여자가 남긴 정확한 implement 요청 댓글 필요')
-    remote = git(root, 'remote', 'get-url', 'origin')
-    if remote not in (f'https://github.com/{repo}.git', f'https://github.com/{repo}', f'git@github.com:{repo}.git'):
+    if not origin_matches(root, repo):
         raise ValueError('origin과 설정 repository 불일치')
     git(root, 'fetch', 'origin', 'develop')
     git(root, 'fetch', 'origin', f'refs/pull/{pr["number"]}/head')
@@ -124,10 +138,22 @@ def check_pr(root):
         if not files or any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', f['filename']) for f in files):
             raise ValueError('백로그 PR에는 phase 문서만 허용합니다')
         return
+    if branch.startswith('policy/') and base == 'develop':
+        config = json.loads((root / '.github/git-flow.json').read_text())
+        approver = config.get('approver')
+        if not approver or pr['user']['login'].lower() != approver.lower():
+            raise ValueError('정책 PR은 지정 승인자가 직접 제출해야 합니다')
+        if not re.fullmatch(rf'policy/{SLUG}', branch):
+            raise ValueError('정책 브랜치는 policy/<slug> 형식이어야 합니다')
+        if not files or any(not re.fullmatch(POLICY_FILE, f['filename']) for f in files):
+            raise ValueError('정책 PR에는 하네스·운영 규칙 파일만 허용합니다')
+        if any(f.get('previous_filename') and not re.fullmatch(POLICY_FILE, f['previous_filename']) for f in files):
+            raise ValueError('정책 PR은 제품·백로그 파일을 이동할 수 없습니다')
+        return
     if branch.startswith('release/') and base in ('main', 'develop'):
         return  # Human release management; protected-branch review is required.
     if base != 'develop' or not branch.startswith('feature/'):
-        raise ValueError('구현 PR은 feature → develop만 허용합니다; hotfix는 별도 승인 절차 필요')
+        raise ValueError('구현 PR은 feature → develop만 허용합니다; 정책은 policy → develop, hotfix는 별도 승인 절차 필요')
     body = pr.get('body') or ''
     def field(name):
         values = re.findall(rf'^{name}: (.+)$', body, re.MULTILINE)
@@ -165,7 +191,7 @@ def main(argv=None, root=ROOT):
     elif args.action == 'pre-push':
         check_push(sys.stdin.read())
     elif args.action == 'start':
-        if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', args.slug):
+        if not re.fullmatch(SLUG, args.slug):
             raise ValueError('slug는 소문자·숫자·하이픈만 허용합니다')
         if git(root, 'status', '--porcelain'):
             raise ValueError('깨끗한 작업 트리 필요')
@@ -187,6 +213,10 @@ def main(argv=None, root=ROOT):
             staged = git(root, 'diff', '--cached', '--name-only').splitlines()
             if not staged or any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', p) for p in staged):
                 raise ValueError('backlog 브랜치는 phase 문서만 커밋 가능합니다')
+        elif branch.startswith('policy/'):
+            staged = git(root, 'diff', '--cached', '--name-only', '--no-renames').splitlines()
+            if not staged or any(not re.fullmatch(POLICY_FILE, p) for p in staged):
+                raise ValueError('policy 브랜치는 하네스·운영 규칙 파일만 커밋 가능합니다')
         else:
             check_message(Path(args.file).read_text(), check_context(root))
     return 0

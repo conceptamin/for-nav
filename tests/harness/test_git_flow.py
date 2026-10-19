@@ -62,6 +62,27 @@ class ApprovalGateTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.validate()
 
+    def test_merge_by_approver_counts_as_approval(self):
+        self.reviews.clear()
+        self.pr['merged_by'] = dict(login='Owner')
+        self.assertEqual(self.validate()['revision'], 'a' * 40)
+        for merged_by in (dict(login='someone-else'), None):
+            self.pr['merged_by'] = merged_by
+            with self.assertRaisesRegex(ValueError, '직접 병합 필요'):
+                self.validate()
+
+    def test_ssh_alias_origin_must_resolve_to_github(self):
+        self.git.side_effect = lambda root, *args: 'git@gh-alias:org/repo.git' if args[0] == 'remote' else 'blob'
+        with patch.object(flow, 'run', return_value='user git\nhostname github.com\nport 22') as ssh:
+            self.validate()
+        ssh.assert_called_once_with(self.root, 'ssh', '-G', 'gh-alias')
+        for remote, config in [('git@gh-alias:org/repo.git', 'hostname evil.example'),
+                               ('git@gh-alias:other/repo.git', 'hostname github.com'),
+                               ('git@-oProxyCommand=x:org/repo.git', 'hostname github.com')]:
+            self.git.side_effect = lambda root, *args, remote=remote: remote if args[0] == 'remote' else 'blob'
+            with patch.object(flow, 'run', return_value=config), self.assertRaisesRegex(ValueError, 'origin', msg=remote):
+                self.validate()
+
     def test_request_must_be_human_member_after_merge_and_exact(self):
         for key, value in [('user', dict(type='Bot')), ('author_association', 'NONE'),
                            ('created_at', '2026-10-18T00:00:00Z'), ('body', 'please implement'),
@@ -118,6 +139,52 @@ class ApprovalGateTest(unittest.TestCase):
             self.files.append(dict(filename='backend/app.py', status='added'))
             with self.assertRaises(ValueError):
                 flow.check_pr(self.root)
+
+    def check_policy_pr(self, branch='policy/solo-approval', author='Owner', base='develop'):
+        event = self.root / 'event.json'
+        event.write_text(json.dumps(dict(repository=dict(full_name='org/repo'),
+                                         pull_request=dict(number=42, head=dict(ref=branch), base=dict(ref=base),
+                                                           user=dict(login=author)))))
+        with patch.dict(flow.os.environ, GITHUB_EVENT_PATH=str(event)):
+            flow.check_pr(self.root)
+
+    def test_policy_pr_by_approver_with_policy_files_only(self):
+        self.files[:] = [dict(filename=name, status='modified') for name in
+                         ('scripts/git_flow.py', 'tests/harness/test_git_flow.py', 'docs/GIT-FLOW.md', 'CLAUDE.md',
+                          'frontend/AGENTS.md', '.github/workflows/git-flow.yml', '.githooks/commit-msg', '.gitignore')]
+        self.check_policy_pr()
+        for name in ('frontend/src/main.tsx', 'backlog/frontend/phase-01.md', 'fixtures/run.json',
+                     'shipyard-api-contract.md', 'frontend/AGENTS.md.bak'):
+            self.files.append(dict(filename=name, status='added'))
+            with self.assertRaisesRegex(ValueError, '하네스·운영 규칙 파일만', msg=name):
+                self.check_policy_pr()
+            self.files.pop()
+        self.files.append(dict(filename='docs/main.tsx', status='renamed', previous_filename='frontend/src/main.tsx'))
+        with self.assertRaisesRegex(ValueError, '이동할 수 없습니다'):
+            self.check_policy_pr()
+
+    def test_policy_pr_requires_approver_author_slug_and_develop(self):
+        self.files[:] = [dict(filename='docs/GIT-FLOW.md', status='modified')]
+        with self.assertRaisesRegex(ValueError, '지정 승인자가 직접 제출'):
+            self.check_policy_pr(author='someone-else')
+        with self.assertRaisesRegex(ValueError, 'policy/<slug>'):
+            self.check_policy_pr(branch='policy/Bad_Slug')
+        with self.assertRaisesRegex(ValueError, 'feature → develop만'):
+            self.check_policy_pr(base='main')
+        self.files.clear()
+        with self.assertRaisesRegex(ValueError, '하네스·운영 규칙 파일만'):
+            self.check_policy_pr()
+
+    def test_policy_branch_commit_allows_only_policy_files(self):
+        message = self.root / 'MSG'
+        message.write_text('정책 변경\n')
+        staged = 'docs/GIT-FLOW.md\nscripts/git_flow.py'
+        self.git.side_effect = lambda root, *args: 'policy/solo-approval' if args[0] == 'branch' else staged
+        self.assertEqual(flow.main(['commit-msg', str(message)], self.root), 0)
+        self.git.assert_any_call(self.root, 'diff', '--cached', '--name-only', '--no-renames')
+        for staged in ('docs/GIT-FLOW.md\nfrontend/src/main.tsx', ''):
+            with self.assertRaisesRegex(ValueError, 'policy 브랜치'):
+                flow.main(['commit-msg', str(message)], self.root)
 
     def test_trailers_match_approved_context(self):
         context = dict(self.context, repository='org/repo', revision='a' * 40)
