@@ -1,6 +1,6 @@
 # 프론트엔드 작업 규칙
 
-루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-api-contract.md`, `shipyard-frontend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/frontend/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/frontend.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 의존 작업이 완료된 항목부터 수행하고 검증 증거 없이 완료 처리하지 않는다. 현재는 하네스와 백로그만 있으며 앱 실행·빌드·테스트 명령은 아직 없다. 해당 영역의 환경 구성 phase에서 실제 명령을 등록하고 실행 결과를 기록한다.
+루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-api-contract.md`, `shipyard-frontend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/frontend/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/frontend.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 의존 작업이 완료된 항목부터 수행하고 검증 증거 없이 완료 처리하지 않는다. 실행·검증 명령은 아래 "검증 기준"에 등록돼 있다([frontend phase-01](../backlog/frontend/phase-01.md)).
 
 ## 범위와 스택
 
@@ -17,4 +17,24 @@
 
 ## 검증 기준
 
-Vitest/React Testing Library로 좌표·버전·복구·시계 규칙을 검증하고 Playwright 실제 브라우저로 Canvas hit 영역·터치·접근성·연결 단절·두 화면 결정 버전을 확인한다. 고정 프레임 스크린샷과 반복 진입 정리 검증을 포함한다. 타입 검사·lint·빌드를 실제 구성 후 실행한다. 5대·30FPS·반영 p95 200ms는 측정 목표이며 완료 실적으로 미리 적지 않는다.
+Vitest/React Testing Library로 좌표·버전·복구·시계 규칙을 검증하고 Playwright 실제 브라우저로 Canvas hit 영역·터치·접근성·연결 단절·두 화면 결정 버전을 확인한다. 고정 프레임 스크린샷과 반복 진입 정리 검증을 포함한다. 5대·30FPS·반영 p95 200ms는 측정 목표이며 완료 실적으로 미리 적지 않는다.
+
+### 등록 명령
+
+Node는 `frontend/.nvmrc`(24.21.0, `engines` `>=24.21.0 <25`)를 쓴다. `.npmrc`의 `engine-strict`로 맞지 않는 Node에서는 설치가 실패한다. 의존성은 `save-exact`로 정확한 버전을 고정한다. 모든 명령은 `frontend/`에서 실행한다.
+
+```sh
+nvm use                          # .nvmrc의 Node 24.21.0
+npm ci                           # package-lock.json만으로 설치
+npx playwright install chromium  # E2E 브라우저(최초 1회·Playwright 버전 변경 시)
+npm run typecheck                # tsc strict: tsconfig.app.json(src), tsconfig.node.json(vite 설정·scripts·tests), tsconfig.e2e.json(Playwright, DOM 포함)
+npm run lint                     # ESLint flat config
+npm run test                     # Vitest: src/**/*.test.tsx(jsdom), tests/**/*.test.ts(node, dev proxy 통합)
+npm run build                    # vite build → dist/
+npm run check:dist               # dist의 외부 origin(CDN·폰트·타일) 참조 검사, build 후 실행
+npm run test:e2e                 # Playwright: build 후 vite preview, Chromium 360px·1440px
+npm run dev                      # 개발 서버(기본 http://localhost:5173)
+npm run preview                  # 빌드 결과 미리보기
+```
+
+dev·preview 서버는 `/api/v1/ws`(WebSocket)와 `/api`(HTTP)를 `YARDPILOT_API_ORIGIN`으로 proxy한다. 기본값은 `http://127.0.0.1:8000`이며, http(s) origin만 허용한다. `VITE_` 접두사가 없어 클라이언트 번들에는 들어가지 않는다. 백엔드가 꺼져 있어도 서버는 기동되며 `/api` 요청은 SPA `index.html`이 아닌 502로 응답한다. 백엔드의 Origin 허용 목록에는 개발 서버 origin을 넣어야 한다. 의존성을 추가하거나 갱신할 때는 공식 문서·레지스트리에서 호환 범위를 확인하고 phase 문서에 출처와 날짜를 남긴다.
