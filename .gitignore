@@ -5,3 +5,10 @@ node_modules/
 .DS_Store
 .env
 .omx/
+
+# frontend 빌드·테스트 산출물
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
+frontend/playwright/.cache/
