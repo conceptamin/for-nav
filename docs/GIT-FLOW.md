@@ -1,6 +1,6 @@
 # 승인 기반 Git Flow
 
-모든 참여자가 따르는 흐름이다. 처음이라면 [README의 Git 치트시트](../README.md#git-cheat-sheet)부터 본다. approver 설정·정책 브랜치·원격 보호처럼 소유자만 다루는 내용은 [소유자 운영 문서](GIT-OWNER.md)에 있다.
+모든 참여자가 따르는 흐름이다. 처음이라면 [README의 Git 치트시트](../README.md#git-cheat-sheet)부터 본다. 사람의 역할은 둘이다. **작성자**(팀원)는 백로그를 쓰고 PR을 제출하며 구현을 요청한다. **승인자**(`.github/git-flow.json`의 approver)는 PR을 리뷰하고 병합한다. approver 설정·정책 브랜치·원격 보호처럼 소유자만 다루는 내용은 [소유자 운영 문서](GIT-OWNER.md)에 있다.
 
 ## 권한과 순서
 
@@ -9,15 +9,15 @@
 3. 병합 이후 사람이 `python3 scripts/request_impl.py <문서 경로>`로 그 PR에 `implement <문서 경로> <병합 SHA>` 댓글을 남기고 AI에게 "<문서 경로> 구현해줘"라고 요청한다. 댓글은 실행한 사람의 계정으로 남으며 그 계정은 저장소 참여자(OWNER/MEMBER/COLLABORATOR)여야 한다. 이 댓글은 실행 요청의 감사 기록이다. 승인만으로 자동 착수하지 않는다.
 4. AI는 아래 start 명령으로 승인 PR과 요청 댓글을 읽기 전용으로 찾아 승인과 요청을 검증한 후 origin/develop에서 작업 브랜치를 생성한다. 네트워크·인증 실패나 설정 누락도 차단한다.
 5. 승인 범위만 구현하고 테스트한다. 검증 결과는 phase 문서에 기록하되 목표·범위·수용 기준을 바꾸지 않는다. 범위 변경은 별도 백로그 PR에서 재승인받고 새 요청을 받아야 한다.
-6. AI는 자신이 작성한 변경을 해당 작업 브랜치에서 검증한 뒤 커밋까지 항상 진행하고(별도 확인 없이) PR 본문 초안을 작성한다. 사람만 push·PR 제출·리뷰·병합을 한다. AI는 자동 PR 생성, 병합, 보호 설정 변경, force push, 브랜치 삭제를 하지 않는다.
-7. 병합 후 사람이 작업 브랜치를 삭제한다. 구현 완료는 PR 대기 상태이며, 실제 병합 완료와 구분한다. main/develop은 삭제하지 않는다.
+6. AI는 자신이 작성한 변경을 해당 작업 브랜치에서 검증한 뒤 커밋까지 항상 진행하고(별도 확인 없이) PR 본문 초안을 작성한다. 사람만 push·PR 제출·리뷰·병합을 한다. PR 제출은 작성자가, 리뷰와 병합은 승인자가 한다. AI는 자동 PR 생성, 병합, 보호 설정 변경, force push, 브랜치 삭제를 하지 않는다.
+7. 병합되면 GitHub가 원격 작업 브랜치를 자동 삭제하고, 작성자가 `scripts/cleanup_branches.py`로 로컬 브랜치를 정리한다. 구현 완료는 PR 대기 상태이며, 실제 병합 완료와 구분한다. main/develop은 삭제하지 않는다.
 
 ## 브랜치
 
 | 브랜치 | 기준 | PR 대상 | 담당 |
 |---|---|---|---|
-| backlog/<영역>/phase-XX | develop | develop | 사람 |
-| feature/<영역>/phase-XX-<기능> | develop | develop | 승인 후 AI 구현, 사람 PR |
+| backlog/<영역>/phase-XX | develop | develop | 작성자 PR, 승인자 병합 |
+| feature/<영역>/phase-XX-<기능> | develop | develop | 승인 후 AI 구현, 작성자 PR, 승인자 병합 |
 | policy/<slug> | develop | develop | 하네스·운영 규칙만; AI 초안 가능, approver가 직접 PR |
 | release/<버전> | develop | main, 변경분을 develop에 역반영 | 사람 |
 | hotfix/<영역>/phase-XX-<수정> | main | main, develop 역반영 | 사람; 현재 자동 gate는 차단 |
