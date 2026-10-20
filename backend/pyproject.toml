@@ -1,0 +1,52 @@
+[project]
+name = "yardpilot-backend"
+version = "0.1.0"
+description = "YardPilot 관제 API 서버"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "fastapi==0.143.0",
+    "pydantic==2.14.1",
+    "uvicorn==0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx==0.28.1",
+    "mypy==2.4.0",
+    "pytest==9.1.1",
+    "ruff==0.17.0",
+]
+
+[tool.uv]
+package = false
+required-version = ">=0.13.1"
+# 공개 후 7일이 지난 배포본만 해석한다. 갱신할 때 날짜와 phase 문서의 출처 기록을 함께 바꾼다.
+exclude-newer = "2026-10-13T00:00:00Z"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["app", "../tests/backend"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["../tests/backend"]
+pythonpath = ["."]
+addopts = ["--strict-markers", "--strict-config", "-ra"]
+xfail_strict = true
+filterwarnings = [
+    "error",
+    # Starlette 1.7 TestClient는 httpx2를 권장한다. 승인 범위의 HTTPX를 유지하므로 이 경고만 허용한다.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+]

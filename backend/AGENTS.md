@@ -1,6 +1,6 @@
 # 백엔드 작업 규칙
 
-루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-api-contract.md`, `shipyard-backend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/backend/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/backend.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 의존 작업 완료 후 착수하고 검증 증거를 남긴다. 현재 앱 코드와 실행 명령은 없다. 해당 영역의 환경 구성 phase에서 실제 검증 명령을 구성한다.
+루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-api-contract.md`, `shipyard-backend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/backend/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/backend.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 의존 작업 완료 후 착수하고 검증 증거를 남긴다. 실행·검증 명령은 아래 "검증 기준"에 등록돼 있다([backend phase-01](../backlog/backend/phase-01.md)).
 
 ## 범위와 스택
 
@@ -18,4 +18,25 @@
 
 ## 검증 기준
 
-순수 도메인 테스트로 경로 제약·동시 예약·중복 ENTER·늦거나 위조된 EXIT·미이행·구간 내부 정지·대기 공간 불가를 검증한다. API 권한·잘못된 수치·멱등성, DB commit 실패, 스냅샷 구독 경쟁, 느린 클라이언트, 재시작을 통합 검증한다. 실제 명령 구성 후 Ruff·mypy·pytest 결과를 남긴다. 5대 수신→안내 p95 500ms는 측정 목표이며 현장 안전 성능 보장이 아니다.
+순수 도메인 테스트로 경로 제약·동시 예약·중복 ENTER·늦거나 위조된 EXIT·미이행·구간 내부 정지·대기 공간 불가를 검증한다. API 권한·잘못된 수치·멱등성, DB commit 실패, 스냅샷 구독 경쟁, 느린 클라이언트, 재시작을 통합 검증한다. 아래 등록 명령으로 Ruff·mypy·pytest 결과를 남긴다. 5대 수신→안내 p95 500ms는 측정 목표이며 현장 안전 성능 보장이 아니다.
+
+### 등록 명령
+
+Python은 `backend/.python-version`(3.11)과 `requires-python`(`>=3.11,<3.12`)으로 고정하며 uv가 필요하면 내려받는다. 직접 의존성은 `pyproject.toml`에 정확한 버전으로 고정하고 `[tool.uv] exclude-newer`보다 나중에 공개된 배포본은 해석하지 않는다. 앱은 `backend/app/`, 테스트는 루트 `tests/backend/`에 두며 pytest·mypy·Ruff 설정은 `backend/pyproject.toml`에 있다. 모든 명령은 `backend/`에서 실행한다.
+
+```sh
+uv sync --locked
+uv run ruff check . ../tests/backend
+uv run ruff format --check . ../tests/backend
+uv run mypy
+uv run pytest
+uv run python -m app
+```
+
+- `uv sync --locked`: 커밋된 `uv.lock`만으로 `.venv`를 만든다. lock과 `pyproject.toml`이 어긋나면 실패한다.
+- `uv run mypy`: strict, 대상은 `app`과 `../tests/backend`다.
+- `uv run pytest`: `testpaths`가 `../tests/backend`다. 파일을 지정할 때는 설정을 찾도록 `uv run pytest -c pyproject.toml ../tests/backend/test_app.py`처럼 `-c`를 붙인다. 경고는 오류로 처리한다.
+- `uv run python -m app`: Uvicorn 단일 worker(reload 없음)로 실행한다. 바인드는 `YARDPILOT_API_HOST`(기본 `127.0.0.1`)와 `YARDPILOT_API_PORT`(기본 `8000`)로 바꾼다. 기본값은 프론트 dev proxy의 `YARDPILOT_API_ORIGIN` 기본값 `http://127.0.0.1:8000`과 같다. 잘못된 값이면 기동하지 않고 종료 코드 1로 끝난다. worker 수를 늘리는 실행 방식은 쓰지 않는다.
+- Swagger UI(`/docs`)·ReDoc(`/redoc`)은 외부 CDN 자산을 쓰므로 제공하지 않는다.
+
+의존성을 추가하거나 갱신할 때는 PyPI·공식 문서에서 Python 3.11 지원과 호환 범위를 확인하고 phase 문서에 출처와 날짜를 남긴다.
