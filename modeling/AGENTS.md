@@ -1,10 +1,10 @@
 # 모델링 작업 규칙
 
-루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-technical-proposal.md`, `shipyard-api-contract.md`, `shipyard-backend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/modeling/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/modeling.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 현재는 모델·데이터·실행 명령이 없으며 해당 영역의 환경 구성 phase에서 실행 환경과 검증 명령을 준비한다.
+루트 `CLAUDE.md`, [기술·모델 기획서](docs/proposal.md), [공통 계약](../docs/api-contract.md), [백엔드 기획서](../backend/docs/proposal.md)를 먼저 읽는다. phase 문서는 `modeling/docs/phase-XX.md`에 쓴다. 지정된 phase의 범위만 구현하고 검증 결과를 같은 문서에 남긴다. 다른 영역에 의존하면 그 영역의 phase 문서 경로를 적는다. 아직 모델·데이터·실행 명령이 없으며 환경 구성 phase에서 준비한다.
 
 ## 범위와 스택
 
-이 디렉터리는 모델링 운영 규칙의 진입점이다. 향후 구현 경로는 루트 `agents/`와 `training/`이며 루트 `CLAUDE.md`가 이 문서를 import해 두 경로 작업에도 항상 적용한다. `modeling/AGENTS.md`가 형제 디렉터리에 자동 상속된다고 가정하지 않는다. 시뮬레이터·예약·경로 관제는 백엔드 책임이다.
+`modeling/`(향후 `modeling/agents/`, `modeling/training/`)를 담당한다. 시뮬레이터·예약·경로 관제는 백엔드 책임이다.
 
 Python, CatBoost 기본 회귀 후보, River 온라인 선형회귀, pandas·NumPy 및 비교용 scikit-learn을 제안 기준으로 삼는다. 환경·의존성은 uv(`pyproject.toml`, `uv.lock`)로 관리하고 호환 버전은 구현 시 확정한다. 실제 차량별 Python 프로세스로 단말기 구조를 모사하며 브라우저에서 학습하지 않는다.
 
