@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """사람이 실행하는 병합 후 정리 도우미. develop을 최신화하고 PR 병합이 끝난 로컬 작업 브랜치를 지운다.
 
-squash 병합은 develop에 새 커밋을 만들어 `git branch -d`가 브랜치를 미병합으로 본다. 이 스크립트는 develop에
-병합된 PR의 head와 로컬 브랜치 끝이 같을 때만(병합 후 새 커밋이 없을 때만) 지운다. 원격 브랜치는 GitHub의
+squash 병합은 develop에 새 커밋을 만들어 `git branch -d`가 브랜치를 미병합으로 본다. 이 스크립트는 로컬 브랜치
+커밋이 모두 develop에 병합된 PR의 head에 같은 패치로 들어 있을 때만(병합 후 새 커밋이 없을 때만) 지운다. 원격 브랜치는 GitHub의
 병합 후 자동 삭제 설정이 지우며 여기서는 push하지 않는다. AI는 --dry-run만 실행한다.
 """
 import argparse
@@ -18,18 +18,26 @@ from submit_pr import draft_path  # noqa: E402
 KEEP = ('main', 'develop')
 
 
+def contains_tip(root, tip, pr):
+    """로컬 커밋이 모두 병합된 PR head에 같은 패치로 들어 있는지. GitHub의 Update branch(merge·rebase)로
+    PR head만 앞서거나 다시 쓰인 경우다. git cherry의 '+'는 PR head에 없는 로컬 커밋이다."""
+    git(root, 'fetch', '--quiet', 'origin', f"refs/pull/{pr['number']}/head")
+    return not any(line.startswith('+') for line in git(root, 'cherry', pr['head']['sha'], tip).splitlines())
+
+
 def plan(root, merged):
-    """(지울 브랜치, [(남길 브랜치, 이유)]). 병합 PR head와 끝 커밋이 같은 브랜치만 지운다."""
-    heads = {}
+    """(지울 브랜치, [(남길 브랜치, 이유)]). 끝 커밋이 병합 PR head에 포함된 브랜치만 지운다."""
+    prs = {}
     for pr in merged:
-        heads.setdefault(pr['head']['ref'], set()).add(pr['head']['sha'])
+        prs.setdefault(pr['head']['ref'], []).append(pr)
     delete, keep = [], []
     for branch in git(root, 'for-each-ref', '--format=%(refname:short)', 'refs/heads').splitlines():
         if branch in KEEP:
             continue
-        if git(root, 'rev-parse', branch) in heads.get(branch, ()):
+        tip, candidates = git(root, 'rev-parse', branch), prs.get(branch, [])
+        if any(pr['head']['sha'] == tip for pr in candidates) or any(contains_tip(root, tip, pr) for pr in candidates):
             delete.append(branch)
-        elif branch in heads:
+        elif candidates:
             keep.append((branch, '병합된 PR 이후의 커밋이 있습니다'))
         else:
             keep.append((branch, '병합된 PR이 없습니다'))

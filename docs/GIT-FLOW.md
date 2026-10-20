@@ -99,7 +99,7 @@ python3 scripts/cleanup_branches.py --dry-run   # 지울 브랜치와 남길 이
 python3 scripts/cleanup_branches.py             # develop 전환·최신화 후 병합된 로컬 브랜치 삭제
 ```
 
-- origin을 prune fetch한 뒤 develop에 병합된 PR의 head와 끝 커밋이 같은 로컬 브랜치만 지운다. 병합 후 새 커밋이 있거나 병합된 PR이 없는 브랜치와 main·develop은 남긴다.
+- origin을 prune fetch한 뒤 로컬 커밋이 모두 develop에 병합된 PR의 head에 같은 패치로 들어 있는 브랜치만 지운다(GitHub의 Update branch로 PR head만 앞서거나 rebase로 해시가 바뀐 경우 포함). 병합 후 새 커밋이 있거나 병합된 PR이 없는 브랜치와 main·develop은 남긴다.
 - 현재 브랜치가 지울 대상이고 변경이 없으면 develop으로 전환해 `pull --ff-only`한 뒤 지운다. 지운 브랜치의 PR 초안과 승인 컨텍스트도 함께 지운다.
 
 ## 강제력과 원격 보호
