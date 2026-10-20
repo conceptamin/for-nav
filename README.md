@@ -17,7 +17,7 @@
 
 ## Git Cheat Sheet
 
-> 사람이 실행하는 명령 요약이다. 규칙의 원본은 [Git Flow](docs/GIT-FLOW.md), 승인자 전용 내용은 [소유자 운영 문서](docs/GIT-OWNER.md)다. `<...>`는 상황에 맞게 바꿔 입력한다(`<`, `>` 기호는 지운다). 모든 명령은 저장소 최상위 폴더에서 실행한다.
+> 사람이 실행하는 명령 요약이다. 규칙의 원본은 [Git Flow](docs/GIT-FLOW.md), 승인자 전용 내용은 [소유자 운영 문서](docs/GIT-OWNER.md)다. `<...>`는 상황에 맞게 바꿔 입력한다(`<`, `>` 기호는 지운다). 모든 명령은 저장소 최상위 폴더에서 실행한다. 코드 블록에는 명령만 있으니 그대로 복사해 붙여 넣는다. macOS 기본 셸(zsh)은 명령 뒤에 붙인 `# 설명`을 주석으로 보지 않고 인자로 넘기므로 설명을 덧붙여 실행하지 않는다.
 
 역할은 둘이다.
 
@@ -31,11 +31,13 @@
 ```sh
 git config --global user.name "<내 이름>"
 git config --global user.email "<GitHub 계정 이메일>"
-gh auth login                        # GitHub CLI 로그인. 스크립트가 PR·댓글을 조회·생성할 때 쓴다
+gh auth login
 git clone <원격 레포지토리 URL>
 cd <레포지토리 폴더 이름>
-git config core.hooksPath .githooks  # main·develop 직접 커밋·push를 막는 훅
+git config core.hooksPath .githooks
 ```
+
+`gh auth login`은 스크립트가 PR·댓글을 조회·생성할 때 쓰는 GitHub CLI 로그인이다. 마지막 줄은 main·develop 직접 커밋·push를 막는 훅을 켠다.
 
 ### 작성자
 
@@ -56,7 +58,9 @@ git config core.hooksPath .githooks  # main·develop 직접 커밋·push를 막�
     git switch develop
     git pull --ff-only origin develop
     git switch -c backlog/<영역>/phase-XX
-    # backlog/<영역>/phase-XX.md 작성
+    ```
+    `backlog/<영역>/phase-XX.md`를 작성한 뒤:
+    ```sh
     git add backlog/<영역>/phase-XX.md
     git commit -m "[<영역>/phase-XX] <이 phase가 필요한 이유>"
     python3 scripts/submit_pr.py
@@ -88,9 +92,9 @@ git config core.hooksPath .githooks  # main·develop 직접 커밋·push를 막�
 
 ### 상태 확인 (모두)
 
-```sh
-git status          # 현재 브랜치와 바뀐 파일
-git diff            # 아직 커밋하지 않은 변경 내용
-git log --oneline   # 커밋 기록
-git branch          # 로컬 브랜치 목록, * 가 현재 브랜치
-```
+| 명령 | 보여 주는 것 |
+|---|---|
+| `git status` | 현재 브랜치와 바뀐 파일 |
+| `git diff` | 아직 커밋하지 않은 변경 내용 |
+| `git log --oneline` | 커밋 기록 |
+| `git branch` | 로컬 브랜치 목록, `*`가 현재 브랜치 |

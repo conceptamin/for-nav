@@ -40,11 +40,11 @@ GitHub 저장소 Settings → General → Pull Requests에서 **Automatically de
 
 위 보호는 `scripts/protect_branches.py`가 브랜치별 GitHub 룰셋 `yardpilot-protected-develop`·`yardpilot-protected-main`으로 적용한다. 룰셋은 우회 주체가 없어 관리자도 main/develop에 직접 push·삭제·force push할 수 없고, `approval-gate`가 feature→develop·backlog→develop·policy→develop·release→main/develop 외의 병합을 막는다. 상태 검사는 GitHub Actions(integration 15368) 결과만 인정한다. develop은 squash 병합만, main은 merge commit만 허용한다. main까지 squash하면 release 병합 커밋이 develop 이력에 없어 다음 release에서 충돌한다. check는 병합 방식 목록이 정확히 일치하는지 비교하므로 서버 기본값(세 방식 모두 허용)으로 돌아가면 실패한다. apply는 저장소 관리자 권한이 필요하며 소유자가 직접 실행한다. AI는 plan·check만 실행한다.
 
-```sh
-python3 scripts/protect_branches.py plan --approvals 0     # 적용할 룰셋 출력, 네트워크 없음
-python3 scripts/protect_branches.py apply --approvals 0    # 소유자만: 브랜치별 룰셋 생성·갱신, 구 룰셋 삭제
-python3 scripts/protect_branches.py check --approvals 0    # 원격 룰셋이 약화·우회되면 실패
-```
+| 명령 | 하는 일 |
+|---|---|
+| `python3 scripts/protect_branches.py plan --approvals 0` | 적용할 룰셋 출력, 네트워크 없음 |
+| `python3 scripts/protect_branches.py apply --approvals 0` | 소유자만: 브랜치별 룰셋 생성·갱신, 구 룰셋 삭제 |
+| `python3 scripts/protect_branches.py check --approvals 0` | 원격 룰셋이 약화·우회되면 실패 |
 
 `--repo`를 생략하면 `.github/git-flow.json`의 repository를 쓴다. 이 저장소는 1인 저장소라 `--approvals 0`으로 적용돼 있으므로 check도 같은 값으로 실행한다. PR 작성자는 자기 PR을 승인할 수 없으므로 기본값(승인 1)에서는 작성자와 다른 승인 계정이 있어야 병합할 수 있다. `--approvals 0`이면 GitHub의 리뷰 강제는 사라지지만 구현 시작 gate는 approver의 직접 병합과 병합 후 `implement` 댓글을 계속 요구한다. 룰셋을 풀려면 GitHub 설정에서 소유자가 직접 수정해야 하며 check가 이를 감지한다.
 
