@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICY_FILE = (r'(\.github/.+|\.githooks/[^/]+|\.gitignore|CLAUDE\.md|README\.md'
                r'|(frontend|backend|modeling)/AGENTS\.md|docs/.+|scripts/.+|tests/harness/.+)')
 SLUG = r'[a-z0-9]+(?:-[a-z0-9]+)*'
+BACKLOG = r'backlog/(frontend|backend|modeling)/phase-\d+\.md'
 
 
 def run(root, *args):
@@ -32,8 +33,9 @@ def api(root, repo, endpoint):
 
 def pages(root, repo, endpoint):
     result = []
+    joiner = '&' if '?' in endpoint else '?'
     for page in range(1, 101):
-        batch = api(root, repo, f'{endpoint}?per_page=100&page={page}')
+        batch = api(root, repo, f'{endpoint}{joiner}per_page=100&page={page}')
         result.extend(batch)
         if len(batch) < 100:
             return result
@@ -49,16 +51,19 @@ def origin_matches(root, repo):
     return bool(alias) and re.search(r'^hostname github\.com$', run(root, 'ssh', '-G', alias[1]), re.MULTILINE) is not None
 
 
-def validate(root, context, *, clean_document=False):
+def load_config(root):
     config = json.loads((root / '.github/git-flow.json').read_text())
     repo, approver = config.get('repository'), config.get('approver')
     if not repo or not approver or not re.fullmatch(r'[\w.-]+/[\w.-]+', repo):
         raise ValueError('repository와 approver 설정 필요; 승인 없이 시작할 수 없습니다')
-    path = context['backlog']
-    match = re.fullmatch(r'backlog/(frontend|backend|modeling)/(phase-\d+)\.md', path)
-    if not match:
+    return repo, approver
+
+
+def approved_pr(root, repo, approver, path, number):
+    """develop에 병합됐고 approver가 최종 head를 승인한, phase 문서만 담은 백로그 PR."""
+    if not re.fullmatch(BACKLOG, path):
         raise ValueError('영역별 phase Markdown 경로가 필요합니다')
-    pr = api(root, repo, f"pulls/{int(context['approval_pr'])}")
+    pr = api(root, repo, f'pulls/{int(number)}')
     if not pr.get('merged_at') or pr['base']['ref'] != 'develop' or pr['base']['repo']['full_name'] != repo:
         raise ValueError('develop에 병합된 백로그 PR이 필요합니다')
     # 1인 저장소는 자기 PR을 리뷰 승인할 수 없으므로 승인자의 직접 병합도 최종 head 승인으로 인정한다.
@@ -72,30 +77,80 @@ def validate(root, context, *, clean_document=False):
     files = pages(root, repo, f"pulls/{pr['number']}/files")
     if not any(f['filename'] == path and f['status'] != 'removed' for f in files):
         raise ValueError('승인 PR에 해당 백로그 문서가 없습니다')
-    if any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', f['filename']) for f in files):
+    if any(not re.fullmatch(BACKLOG, f['filename']) for f in files):
         raise ValueError('백로그 승인 PR에는 phase 문서만 포함할 수 있습니다')
-    sha = pr['merge_commit_sha']
-    if context.get('revision', sha) != sha:
-        raise ValueError('승인 revision 불일치')
-    comment = api(root, repo, f"issues/comments/{int(context['request_comment'])}")
-    if (comment['issue_url'] != f'https://api.github.com/repos/{repo}/issues/{pr["number"]}'
-            or comment['user']['type'] != 'User'
-            or comment.get('author_association') not in ('OWNER', 'MEMBER', 'COLLABORATOR')
-            or comment['created_at'] <= pr['merged_at']
-            or comment['body'].strip() != f'implement {path} {sha}'):
-        raise ValueError('병합 후 저장소 참여자가 남긴 정확한 implement 요청 댓글 필요')
+    return pr
+
+
+def is_request(comment, repo, pr, path):
+    """병합 후 저장소 참여자가 남긴 정확한 implement 요청 댓글인지 확인한다."""
+    return (comment['issue_url'] == f'https://api.github.com/repos/{repo}/issues/{pr["number"]}'
+            and comment['user']['type'] == 'User'
+            and comment.get('author_association') in ('OWNER', 'MEMBER', 'COLLABORATOR')
+            and comment['created_at'] > pr['merged_at']
+            and comment['body'].strip() == f"implement {path} {pr['merge_commit_sha']}")
+
+
+def check_documents(root, repo, pr, path, *, clean_document=False):
+    """승인 당시 문서가 PR head·현재 develop(·로컬 파일)과 같은지 확인하고 승인 blob을 돌려준다."""
     if not origin_matches(root, repo):
         raise ValueError('origin과 설정 repository 불일치')
     git(root, 'fetch', 'origin', 'develop')
     git(root, 'fetch', 'origin', f'refs/pull/{pr["number"]}/head')
-    approved = git(root, 'rev-parse', f'{sha}:{path}')
+    approved = git(root, 'rev-parse', f"{pr['merge_commit_sha']}:{path}")
     current = git(root, 'rev-parse', f'origin/develop:{path}')
     head_blob = git(root, 'rev-parse', f"{pr['head']['sha']}:{path}")
     if approved != current or approved != head_blob:
         raise ValueError('승인 문서가 변경되었습니다; 백로그 재승인 필요')
     if clean_document and git(root, 'hash-object', path) != approved:
         raise ValueError('로컬 백로그가 승인 문서와 다릅니다')
+    return approved
+
+
+def validate(root, context, *, clean_document=False):
+    repo, approver = load_config(root)
+    path = context['backlog']
+    pr = approved_pr(root, repo, approver, path, context['approval_pr'])
+    sha = pr['merge_commit_sha']
+    if context.get('revision', sha) != sha:
+        raise ValueError('승인 revision 불일치')
+    comment = api(root, repo, f"issues/comments/{int(context['request_comment'])}")
+    if not is_request(comment, repo, pr, path):
+        raise ValueError('병합 후 저장소 참여자가 남긴 정확한 implement 요청 댓글 필요')
+    approved = check_documents(root, repo, pr, path, clean_document=clean_document)
     return dict(context, revision=sha, repository=repo, approved_blob=approved)
+
+
+def merged_prs(root, repo):
+    """develop에 병합된 PR 목록. 승인 판단은 하지 않는 읽기 전용 조회다."""
+    return [p for p in pages(root, repo, 'pulls?state=closed&base=develop') if p.get('merged_at')]
+
+
+def latest_backlog_pr(root, repo, path):
+    """path를 담아 develop에 가장 최근 병합된 백로그 PR 번호. 승인 여부는 validate가 검사한다."""
+    candidates = [p for p in merged_prs(root, repo) if p['head']['ref'].startswith('backlog/')]
+    for pr in sorted(candidates, key=lambda p: p['merged_at'], reverse=True):
+        if any(f['filename'] == path and f['status'] != 'removed' for f in pages(root, repo, f"pulls/{pr['number']}/files")):
+            return pr['number']
+    raise ValueError(f'{path}를 담아 develop에 병합된 백로그 PR이 없습니다')
+
+
+def find_request(root, repo, pr, path):
+    """PR에 남은 유효한 implement 요청 댓글 중 가장 최근 ID. 없으면 None."""
+    ids = [c['id'] for c in pages(root, repo, f"issues/{pr['number']}/comments") if is_request(c, repo, pr, path)]
+    return max(ids, default=None)
+
+
+def discover(root, path, number=None, comment=None):
+    """start에 넘길 승인 PR·요청 댓글 ID를 읽기 전용으로 찾는다. 검증은 validate가 다시 한다."""
+    repo, _ = load_config(root)
+    number = number or latest_backlog_pr(root, repo, path)
+    if comment is None:
+        comment = find_request(root, repo, api(root, repo, f'pulls/{int(number)}'), path)
+    if comment is None:
+        raise ValueError(f'PR #{number}에 구현 요청 댓글이 없습니다; '
+                         f'사람이 python3 scripts/request_impl.py {path}를 실행해야 합니다')
+    return number, comment
 
 
 def context_path(root):
@@ -135,7 +190,7 @@ def check_pr(root):
     branch, base = pr['head']['ref'], pr['base']['ref']
     files = pages(root, repo, f"pulls/{pr['number']}/files")
     if branch.startswith('backlog/') and base == 'develop':
-        if not files or any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', f['filename']) for f in files):
+        if not files or any(not re.fullmatch(BACKLOG, f['filename']) for f in files):
             raise ValueError('백로그 PR에는 phase 문서만 허용합니다')
         return
     if branch.startswith('policy/') and base == 'develop':
@@ -177,8 +232,9 @@ def main(argv=None, root=ROOT):
     sub = parser.add_subparsers(dest='action', required=True)
     start = sub.add_parser('start')
     start.add_argument('--backlog', required=True)
-    start.add_argument('--approval-pr', required=True, type=int)
-    start.add_argument('--request-comment', required=True, type=int)
+    # 생략하면 승인 PR·요청 댓글을 읽기 전용으로 찾는다. 찾은 값도 같은 검증을 거친다.
+    start.add_argument('--approval-pr', type=int)
+    start.add_argument('--request-comment', type=int)
     start.add_argument('--slug', required=True)
     sub.add_parser('check-context')
     msg = sub.add_parser('commit-msg')
@@ -195,8 +251,10 @@ def main(argv=None, root=ROOT):
             raise ValueError('slug는 소문자·숫자·하이픈만 허용합니다')
         if git(root, 'status', '--porcelain'):
             raise ValueError('깨끗한 작업 트리 필요')
-        context = validate(root, dict(backlog=args.backlog, approval_pr=args.approval_pr,
-                                     request_comment=args.request_comment), clean_document=True)
+        number, comment = discover(root, args.backlog, args.approval_pr, args.request_comment)
+        print(f'승인 PR #{number}, 요청 댓글 {comment}', file=sys.stderr)
+        context = validate(root, dict(backlog=args.backlog, approval_pr=number,
+                                     request_comment=comment), clean_document=True)
         _, lane, filename = args.backlog.split('/')
         context['branch'] = f'feature/{lane}/{Path(filename).stem}-{args.slug}'
         git(root, 'switch', '-c', context['branch'], 'origin/develop')
@@ -211,7 +269,7 @@ def main(argv=None, root=ROOT):
             raise ValueError(f'{branch} 직접 커밋 금지; 작업 브랜치에서 PR로 병합합니다')
         if branch.startswith('backlog/'):
             staged = git(root, 'diff', '--cached', '--name-only').splitlines()
-            if not staged or any(not re.fullmatch(r'backlog/(frontend|backend|modeling)/phase-\d+\.md', p) for p in staged):
+            if not staged or any(not re.fullmatch(BACKLOG, p) for p in staged):
                 raise ValueError('backlog 브랜치는 phase 문서만 커밋 가능합니다')
         elif branch.startswith('policy/'):
             staged = git(root, 'diff', '--cached', '--name-only', '--no-renames').splitlines()

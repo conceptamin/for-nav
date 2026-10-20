@@ -17,79 +17,62 @@
 
 ## Git Cheat Sheet
 
-> 사람이 실행하는 명령 요약이다. 규칙의 원본은 [Git Flow](docs/GIT-FLOW.md)다. `<...>`는 상황에 맞게 바꿔 입력한다(`<`, `>` 기호는 지운다).
+> 사람이 실행하는 명령 요약이다. 규칙의 원본은 [Git Flow](docs/GIT-FLOW.md), 소유자 전용 설정은 [소유자 운영 문서](docs/GIT-OWNER.md)다. `<...>`는 상황에 맞게 바꿔 입력한다(`<`, `>` 기호는 지운다). 모든 명령은 저장소 최상위 폴더에서 실행한다.
 
-0. 최초 1회 설정
-    - 커밋에 기록될 이름과 이메일을 등록한다. GitHub 계정 이메일을 사용한다.
-        ```sh
-        git config --global user.name "<내 이름>"
-        git config --global user.email "<GitHub 계정 이메일>"
-        ```
-    - GitHub Personal Access Token을 발급받아 로컬에 저장하거나 `gh auth login`으로 인증한다.
+### 처음 한 번
 
-1. 레포지토리 클론과 훅 설치
-    - 클론은 처음 한 번만 한다. 훅은 커밋 trailer와 main·develop 직접 push를 검사한다.
-        ```sh
-        git clone <원격 레포지토리 URL>
-        cd <레포지토리 폴더 이름>
-        git config core.hooksPath .githooks
-        ```
+```sh
+git config --global user.name "<내 이름>"
+git config --global user.email "<GitHub 계정 이메일>"
+gh auth login                        # GitHub CLI 로그인. 스크립트가 PR·댓글을 조회·생성할 때 쓴다
+git clone <원격 레포지토리 URL>
+cd <레포지토리 폴더 이름>
+git config core.hooksPath .githooks  # main·develop 직접 커밋·push를 막는 훅
+```
 
-2. 브랜치 생성 및 체크아웃
-    - main·develop에는 직접 push하지 않는다. 작업 전 develop을 최신화한 뒤 새 브랜치를 만든다.
-        ```sh
-        git switch develop
-        git pull origin develop
-        git switch -c <브랜치 이름>
-        ```
-    - 브랜치 이름은 영어로 쓰고 띄어쓰기는 `-`로 쓴다. 영역은 `frontend`·`backend`·`modeling`이다.
+### 외울 명령 3개
 
-        | 목적 | 이름 규칙 | 생성 |
-        |---|---|---|
-        | 백로그 작성 | `backlog/<영역>/phase-XX` | 사람 |
-        | 구현 | `feature/<영역>/phase-XX-<기능>` | 승인 후 `scripts/git_flow.py start`가 생성 |
-        | 릴리스 | `release/<버전>` | 사람 |
+| 명령 | 언제 |
+|---|---|
+| `python3 scripts/submit_pr.py` | 내 브랜치의 커밋을 push하고 develop 대상 PR을 만들 때. 열린 PR이 있으면 push만 한다 |
+| `python3 scripts/request_impl.py backlog/<영역>/phase-XX.md` | 백로그 PR이 병합된 뒤 AI에게 구현을 맡기기 전에 |
+| `python3 scripts/cleanup_branches.py` | PR이 병합된 뒤 develop을 최신화하고 다 쓴 브랜치를 지울 때 |
 
-    - 이미 있는 브랜치로 이동할 때는 `git switch <브랜치 이름>`, 현재 브랜치 확인은 `git branch`다.
+셋 다 `--dry-run`을 붙이면 무엇을 할지 먼저 보여 주고 아무것도 바꾸지 않는다.
 
-3. 스테이징 및 커밋
-    - 변경 사항을 확인하고 이번 커밋에 넣을 파일만 고른다.
-        ```sh
-        git status
-        git diff
-        git add <파일 경로>
-        git commit
-        ```
-    - 백로그 커밋은 phase 문서만 포함하며 승인 trailer가 면제된다. 구현 커밋은 변경 이유를 제목으로 쓰고 다음 trailer를 남긴다.
-        ```text
-        [<영역>/phase-XX] <변경 이유>
+### phase 하나의 흐름
 
-        Backlog: backlog/<영역>/phase-XX.md
-        Backlog-PR: https://github.com/<OWNER>/<REPO>/pull/<번호>
-        Backlog-Revision: <백로그 PR 병합 SHA>
-        Tested: <실제 실행한 명령과 결과>
-        ```
-    - 커밋 기록은 `git log --oneline`으로 확인한다.
+1. **백로그 작성** — develop에서 브랜치를 만들고 phase 문서만 커밋한다. 영역은 `frontend`·`backend`·`modeling`이다.
+    ```sh
+    git switch develop
+    git pull --ff-only origin develop
+    git switch -c backlog/<영역>/phase-XX
+    # backlog/<영역>/phase-XX.md 작성
+    git add backlog/<영역>/phase-XX.md
+    git commit -m "[<영역>/phase-XX] <이 phase가 필요한 이유>"
+    python3 scripts/submit_pr.py
+    ```
+2. **승인** — 소유자가 PR을 확인하고 **Squash and merge**로 병합한다. 병합되면 `python3 scripts/cleanup_branches.py`.
+3. **구현 요청** — 아래 명령 후 AI 채팅에 "backlog/<영역>/phase-XX.md 구현해줘"라고 쓴다. AI가 승인을 확인하고 `feature/` 브랜치를 만들어 구현·테스트·커밋·PR 초안까지 한다.
+    ```sh
+    python3 scripts/request_impl.py backlog/<영역>/phase-XX.md
+    ```
+4. **구현 PR 제출** — AI 작업이 끝나면 그 feature 브랜치에서 `python3 scripts/submit_pr.py`. 리뷰 반영은 AI에게 요청한 뒤 같은 명령을 다시 실행한다.
+5. **병합 후 정리** — Squash and merge로 병합되면 `python3 scripts/cleanup_branches.py`. 다음 phase는 1번부터.
 
-4. 푸쉬
-    - develop이 아닌 내 작업 브랜치로 push하는지 확인한다.
-        ```sh
-        git push -u origin <브랜치 이름>   # 처음 push할 때
-        git push                         # 이후
-        ```
+### 하지 말 것
 
-5. PR
-    - 대상은 `base: develop`이다. 템플릿은 [백로그](.github/PULL_REQUEST_TEMPLATE/backlog.md)·[구현](.github/PULL_REQUEST_TEMPLATE/implementation.md) 중 하나를 쓴다. PR 생성 URL에 `?template=backlog.md` 또는 `?template=implementation.md`를 붙이면 자동으로 채워진다.
-    - 백로그 PR은 `.github/git-flow.json`의 approver가 최신 head를 승인한 뒤 병합한다. 병합 후 그 PR에 `implement backlog/<영역>/phase-XX.md <병합 SHA>` 댓글을 남기고 AI에게 PR 번호와 댓글 ID를 지정해 구현을 요청한다.
-    - 리뷰 반영은 같은 브랜치에서 3~4번을 반복하면 PR에 반영된다.
+- main·develop에 직접 커밋·push하지 않는다. 훅이 막는다.
+- GitHub 웹에서 PR을 만들지 않는다. base를 main으로 잘못 고르기 쉽다. `submit_pr.py`는 항상 develop을 대상으로 한다.
+- 병합 버튼은 **Squash and merge**만 쓴다. 다른 방식은 막혀 있다.
+- 원격 브랜치를 직접 지우지 않는다(`git push --delete`는 훅이 막는다). 병합하면 GitHub가 지우고, 로컬은 `cleanup_branches.py`가 지운다.
+- 구현 커밋은 승인 trailer가 필요하므로 AI가 만든다. 사람이 쓰는 백로그 커밋은 phase 문서만 담으면 trailer가 필요 없다.
 
-6. PR 병합 후 정리
-    - develop을 최신화하고 다 쓴 브랜치를 삭제한다. 다음 작업은 다시 2번부터 시작한다.
-        ```sh
-        git switch develop
-        git pull origin develop
-        git branch -d <브랜치 이름>
-        ```
+### 상태 확인
 
-7. Tips
-    - 작업 전 develop에 새 변경이 있는지 확인해 origin과 로컬의 차이를 줄인다.
+```sh
+git status          # 현재 브랜치와 바뀐 파일
+git diff            # 아직 커밋하지 않은 변경 내용
+git log --oneline   # 커밋 기록
+git branch          # 로컬 브랜치 목록, * 가 현재 브랜치
+```

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""GitHub ruleset that blocks direct pushes and ungated merges to main/develop.
+"""GitHub rulesets that block direct pushes and ungated merges to main/develop and fix each branch's merge method.
 
-plan prints the ruleset, check reads the remote state, apply is run by the repository owner only.
+plan prints the rulesets, check reads the remote state, apply is run by the repository owner only.
 """
 import argparse
 import json
@@ -11,19 +11,25 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'yardpilot-protected-branches'
-BRANCHES = ('main', 'develop')
+# 브랜치별 허용 병합 방식. develop은 PR 하나가 커밋 하나가 되도록 squash만, main은 release 이력을 develop과
+# 잇도록 merge commit만 허용한다(main을 squash하면 다음 release에서 이력이 갈라져 충돌한다).
+MERGE_METHODS = {'develop': 'squash', 'main': 'merge'}
+LEGACY = 'yardpilot-protected-branches'  # 병합 방식을 고정하지 않던 main/develop 공용 룰셋. apply가 교체한다.
 CHECKS = ('approval-gate', 'harness')  # Job names in .github/workflows/git-flow.yml and harness.yml.
 GITHUB_ACTIONS = 15368  # Only GitHub Actions check runs satisfy the gate; commit statuses cannot spoof it.
 
 
-def ruleset(approvals):
+def name(branch):
+    return f'yardpilot-protected-{branch}'
+
+
+def ruleset(branch, approvals):
     return {
-        'name': NAME,
+        'name': name(branch),
         'target': 'branch',
         'enforcement': 'active',
         'bypass_actors': [],  # No admin, team, or app bypass.
-        'conditions': {'ref_name': {'include': [f'refs/heads/{b}' for b in BRANCHES], 'exclude': []}},
+        'conditions': {'ref_name': {'include': [f'refs/heads/{branch}'], 'exclude': []}},
         'rules': [
             {'type': 'deletion'},
             {'type': 'non_fast_forward'},
@@ -32,7 +38,8 @@ def ruleset(approvals):
                 'dismiss_stale_reviews_on_push': True,
                 'require_code_owner_review': True,
                 'require_last_push_approval': approvals > 0,
-                'required_review_thread_resolution': True}},
+                'required_review_thread_resolution': True,
+                'allowed_merge_methods': [MERGE_METHODS[branch]]}},
             {'type': 'required_status_checks', 'parameters': {
                 'strict_required_status_checks_policy': True,
                 'required_status_checks': [{'context': c, 'integration_id': GITHUB_ACTIONS} for c in CHECKS]}},
@@ -56,10 +63,15 @@ def repository(root, override):
 
 
 def existing(root, repo):
-    matches = [r for r in gh(root, f'repos/{repo}/rulesets?per_page=100&includes_parents=false') if r['name'] == NAME]
-    if len(matches) > 1:
-        raise ValueError(f'{NAME} 룰셋이 여러 개입니다; GitHub 설정에서 하나만 남기세요')
-    return gh(root, f"repos/{repo}/rulesets/{matches[0]['id']}") if matches else None
+    """관리 대상 이름의 룰셋 {이름: 상세}. 같은 이름이 여러 개면 실패한다."""
+    names = {LEGACY, *map(name, MERGE_METHODS)}
+    found = {}
+    for summary in gh(root, f'repos/{repo}/rulesets?per_page=100&includes_parents=false'):
+        if summary['name'] in names:
+            if summary['name'] in found:
+                raise ValueError(f"{summary['name']} 룰셋이 여러 개입니다; GitHub 설정에서 하나만 남기세요")
+            found[summary['name']] = gh(root, f"repos/{repo}/rulesets/{summary['id']}")
+    return found
 
 
 def contains(actual, desired):
@@ -72,7 +84,7 @@ def contains(actual, desired):
 
 def problems(actual, desired):
     if actual is None:
-        return [f'{NAME} 룰셋이 없습니다; 소유자가 apply를 실행해야 합니다']
+        return ['룰셋이 없습니다; 소유자가 apply를 실행해야 합니다']
     found = []
     if 'bypass_actors' not in actual:
         found.append('bypass_actors를 읽을 수 없습니다; 관리자 권한으로 확인하세요')
@@ -84,6 +96,12 @@ def problems(actual, desired):
     for rule in desired['rules']:
         if not contains(actual.get('rules', []), [rule]):
             found.append(f"{rule['type']} 규칙 누락 또는 불일치")
+    # 목록 포함 비교로는 서버 기본값(merge·squash·rebase 모두 허용)도 통과하므로 병합 방식은 정확히 비교한다.
+    pull = next((r for r in actual.get('rules', []) if r.get('type') == 'pull_request'), {})
+    methods = sorted((pull.get('parameters') or {}).get('allowed_merge_methods') or [])
+    want = next(r for r in desired['rules'] if r['type'] == 'pull_request')['parameters']['allowed_merge_methods']
+    if methods != want:
+        found.append(f'병합 방식 불일치: {methods} (기대 {want})')
     return found
 
 
@@ -96,26 +114,35 @@ def main(argv=None, root=ROOT):
     args = parser.parse_args(argv)
     if args.approvals < 0:
         raise ValueError('--approvals는 0 이상이어야 합니다')
-    desired = ruleset(args.approvals)
     if args.action == 'plan':
-        print(json.dumps(desired, indent=2, ensure_ascii=False))
+        print(json.dumps([ruleset(b, args.approvals) for b in MERGE_METHODS], indent=2, ensure_ascii=False))
         return 0
     repo = repository(root, args.repo)
     current = existing(root, repo)
     if args.action == 'apply':
-        if current:
-            gh(root, '-X', 'PUT', f"repos/{repo}/rulesets/{current['id']}", '--input', '-', payload=desired)
-        else:
-            gh(root, '-X', 'POST', f'repos/{repo}/rulesets', '--input', '-', payload=desired)
+        for branch in MERGE_METHODS:
+            desired = ruleset(branch, args.approvals)
+            if desired['name'] in current:
+                gh(root, '-X', 'PUT', f"repos/{repo}/rulesets/{current[desired['name']]['id']}", '--input', '-', payload=desired)
+            else:
+                gh(root, '-X', 'POST', f'repos/{repo}/rulesets', '--input', '-', payload=desired)
+        # 새 룰셋이 생긴 뒤에 구 룰셋을 지워 보호가 비는 순간이 없게 한다.
+        if LEGACY in current:
+            gh(root, '-X', 'DELETE', f"repos/{repo}/rulesets/{current[LEGACY]['id']}")
         current = existing(root, repo)
-    found = problems(current, desired)
+    found = []
+    for branch in MERGE_METHODS:
+        desired = ruleset(branch, args.approvals)
+        found += [f"{desired['name']}: {p}" for p in problems(current.get(desired['name']), desired)]
+    if LEGACY in current:
+        found.append(f'{LEGACY} 구 룰셋이 남아 있습니다; 소유자가 apply로 교체해야 합니다')
     for problem in found:
         print(f'FAIL: {problem}', file=sys.stderr)
     if found:
         return 1
-    print(f"PASS: {repo} {', '.join(BRANCHES)} 직접 push·삭제·force push 차단, PR·승인 {args.approvals}·{', '.join(CHECKS)} 필수")
+    methods = ', '.join(f'{b} {m}' for b, m in MERGE_METHODS.items())
+    print(f"PASS: {repo} main·develop 직접 push·삭제·force push 차단, PR·승인 {args.approvals}·{', '.join(CHECKS)} 필수, 병합 방식 {methods}")
     return 0
-
 
 if __name__ == '__main__':
     try:
