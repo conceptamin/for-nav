@@ -51,6 +51,19 @@ Tested: 실제 실행한 명령과 결과
 
 백로그 제안 커밋은 아직 승인 PR이 없으므로 승인 trailer 검사를 면제하며 phase 문서만 허용한다. 구현 PR은 `.github/PULL_REQUEST_TEMPLATE/implementation.md`를 사용한다. 모든 구현 커밋에 참조가 필요하며 merge commit도 예외가 아니다.
 
+### PR 제출
+
+사람은 작업 브랜치에서 아래 명령으로 push와 develop 대상 PR 생성을 한 번에 처리한다. AI는 이 명령을 실행하지 않는다.
+
+```sh
+python3 scripts/submit_pr.py --dry-run   # 검사와 제출 계획만 출력
+python3 scripts/submit_pr.py             # push 후 PR 생성(열린 PR이 있으면 push만)
+```
+
+- backlog/·feature/·policy/ 브랜치만 받는다. main/develop·release·hotfix는 거부한다. 작업 트리가 깨끗하고 origin/develop보다 앞선 커밋이 있어야 한다.
+- 사전 검사: backlog는 `harness.py check`, feature는 `git_flow.py check-context`, policy는 gh 계정이 `.github/git-flow.json`의 approver인지 확인한다. push는 pre-push 훅을 그대로 거친다.
+- 본문은 `--body-file`, AI 초안 `<git-dir>/yardpilot-pr/<브랜치의 /를 __로 바꾼 이름>.md`, 로컬 `.github/PULL_REQUEST_TEMPLATE/` 템플릿 순으로 고른다. 로컬 템플릿을 쓰므로 main에 아직 없는 템플릿도 사용할 수 있다. 초안 첫 줄이 `# 제목`이면 PR 제목으로 쓰고, 없으면 첫 커밋 제목을 쓴다. 초안은 worktree의 Git 디렉터리에 두며 버전 관리하지 않는다.
+
 ## 강제력과 원격 보호
 
 로컬 훅은 우회 가능하며 AI와 사람의 신원을 구별하는 보안 경계가 아니다. CLAUDE.md는 AI의 행동 계약이고, 실제 원격 권한은 별도로 제한해야 한다. 사람 계정의 토큰을 AI에게 주면 API의 User 표기만으로 사람이 직접 요청했음을 증명할 수 없다. AI 세션에는 읽기 전용 자격 증명을 사용한다.
