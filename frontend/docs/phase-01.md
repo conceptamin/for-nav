@@ -74,7 +74,7 @@
 
 ## 검증 결과
 
-상태: 구현 완료·PR 대기. `feature/frontend/phase-01-app-shell` 브랜치의 커밋 기준이며 develop 병합 전이다.
+상태: 구현 완료. 아래 기록은 `feature/frontend/phase-01-app-shell` 커밋 기준이다.
 
 ### 실행 환경
 

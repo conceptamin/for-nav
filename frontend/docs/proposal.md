@@ -9,9 +9,9 @@
 기존 AI 기술 기획서의 CatBoost 시간 예측, 차량별 온라인 보정, 다익스트라 경로 탐색을 화면과 연결한다. 모델 학습과 통행 순서 결정은 브라우저에서 수행하지 않는다.
 
 별도 문서:
-- [AI 기술 기획서](shipyard-technical-proposal.md)
-- [백엔드 기술 기획서](shipyard-backend-proposal.md)
-- [공통 API·이벤트 계약](shipyard-api-contract.md)
+- [AI 기술 기획서](../../modeling/docs/proposal.md)
+- [백엔드 기술 기획서](../../backend/docs/proposal.md)
+- [공통 API·이벤트 계약](../../docs/api-contract.md)
 
 ## 2. 기술 스택
 
@@ -44,7 +44,7 @@
 
 역할에 따라 서버가 접근을 제한한다. URL의 vehicleId를 바꿔도 다른 차량의 정보에 접근할 수 없어야 한다.
 
-로그인 화면은 없다. 앱을 설치·실행하면 서버가 차량을 배정한 세션을 발급하고 운전자 화면은 그 차량으로 이동한다. 실제 단말기 등록·인증은 시나리오 가정으로만 둔다([백엔드 기획서 9장](shipyard-backend-proposal.md)).
+로그인 화면은 없다. 앱을 설치·실행하면 서버가 차량을 배정한 세션을 발급하고 운전자 화면은 그 차량으로 이동한다. 실제 단말기 등록·인증은 시나리오 가정으로만 둔다([백엔드 기획서 9장](../../backend/docs/proposal.md)).
 
 ### 3.1. 운전자 화면
 

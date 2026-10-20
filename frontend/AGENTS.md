@@ -1,6 +1,6 @@
 # 프론트엔드 작업 규칙
 
-루트 `CLAUDE.md`, `docs/HARNESS.md`, `shipyard-api-contract.md`, `shipyard-frontend-proposal.md`를 먼저 읽는다. 작업 원장은 `backlog/frontend/` 아래 사용자가 작성·지정한 phase Markdown 문서다. 다른 영역의 작업은 해당 영역 백로그에서 관리하고 의존 문서 경로로 연결한다. `backlog/frontend.json`은 참고 초안이며 JSON 상태 갱신·CLI 실행은 필수가 아니다. 의존 작업이 완료된 항목부터 수행하고 검증 증거 없이 완료 처리하지 않는다. 실행·검증 명령은 아래 "검증 기준"에 등록돼 있다([frontend phase-01](../backlog/frontend/phase-01.md)).
+루트 `CLAUDE.md`, [공통 계약](../docs/api-contract.md), [프론트 기획서](docs/proposal.md)를 먼저 읽는다. phase 문서는 `frontend/docs/phase-XX.md`에 쓴다. 지정된 phase의 범위만 구현하고 검증 결과를 같은 문서에 남긴다. 다른 영역에 의존하면 그 영역의 phase 문서 경로를 적는다. 실행·검증 명령은 아래 "검증 기준"에 있다([phase-01](docs/phase-01.md)).
 
 ## 범위와 스택
 

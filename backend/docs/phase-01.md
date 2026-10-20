@@ -73,7 +73,9 @@
 
 ## 검증 결과
 
-상태: 구현 완료·PR 대기. `feature/backend/phase-01-api-shell` 브랜치의 커밋 기준이며 develop 병합 전이다.
+상태: 구현 완료. 아래 기록은 `feature/backend/phase-01-api-shell` 커밋 기준이다.
+
+> 2026-10-20 작업 방식 간소화로 테스트를 `tests/backend/`에서 `backend/tests/`로 옮겼다. 아래 기록의 `tests/backend/`·`../tests/backend`는 지금의 `backend/tests/`·`tests`에 해당한다.
 
 ### 실행 환경
 

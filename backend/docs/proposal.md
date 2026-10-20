@@ -6,9 +6,9 @@
 
 차량 상태와 예측 결과를 통합해 통행 가능한 경로, 협소 구간 예약, 운전자 안내를 제공한다. 서버는 통행 상태의 단일 원본이다. 모델 보정은 차량 에이전트에 두고 중앙 관제와 책임을 분리한다.
 
-- [AI 기술 기획서](shipyard-technical-proposal.md)
-- [프론트엔드 기술 기획서](shipyard-frontend-proposal.md)
-- [공통 API·이벤트 계약](shipyard-api-contract.md)
+- [AI 기술 기획서](../../modeling/docs/proposal.md)
+- [프론트엔드 기술 기획서](../../frontend/docs/proposal.md)
+- [공통 API·이벤트 계약](../../docs/api-contract.md)
 
 MVP: 차량 3~5대, 단일 지도, 협소 구간 1개, 대기 지점 2곳, 한 번에 한 시뮬레이션 실행. 여러 협소 구간을 연속 점유하는 교착 문제는 이번 검증 범위 밖이다.
 
@@ -200,11 +200,11 @@ backend/app/
   services/            # 경로·관제·실행·지표
   repositories/        # DB·트랜잭션
   realtime/            # 연결·스냅샷·방송
-agents/                # 차량별 예측·온라인 보정
-simulator/             # 지도·시나리오·시계
-training/              # 학습·평가·모델 내보내기
+backend/simulator/     # 지도·시나리오·시계
+backend/tests/
+modeling/agents/       # 차량별 예측·온라인 보정
+modeling/training/     # 학습·평가·모델 내보내기
 fixtures/              # 세 영역 공통 fixture (저장소 루트)
-tests/
 ```
 
 순서: 계약·fixture → 지도·수신 → 경로·예약 → 시뮬레이터 → 에이전트 모델 → 온라인 보정 → 통신 복구·평가 → 프론트 통합.

@@ -39,7 +39,7 @@
 | POST | `/runs/{id}/commands` | 관리자 | action: start/pause/resume/stop → run 상태 |
 | GET | `/runs/{id}/metrics` | 관리자 | 예측·통행 지표, 정의·단위·완료 여부 |
 
-세션은 로그인 없이 발급한다. 운전자 세션의 차량은 서버가 시나리오 순서로 배정하고, 관리자 세션은 서버 호스트(loopback) 접속에만 발급한다. 상세는 [백엔드 기획서 9장](shipyard-backend-proposal.md)을 따른다.
+세션은 로그인 없이 발급한다. 운전자 세션의 차량은 서버가 시나리오 순서로 배정하고, 관리자 세션은 서버 호스트(loopback) 접속에만 발급한다. 상세는 [백엔드 기획서 9장](../backend/docs/proposal.md)을 따른다.
 
 목적지 변경 응답: `route_version`, `map_version`, `edge_ids`, `estimated_total_s`, `route_status`.
 `route_status`는 FOUND / NO_PATH / UNAVAILABLE. 경로 없음은 정상 도메인 결과이며 빈 경로를 통과 가능 경로로 취급하지 않는다.

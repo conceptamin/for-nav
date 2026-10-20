@@ -36,12 +36,12 @@ known-first-party = ["app"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["app", "../tests/backend"]
+files = ["app", "tests"]
 plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 minversion = "9.0"
-testpaths = ["../tests/backend"]
+testpaths = ["tests"]
 pythonpath = ["."]
 addopts = ["--strict-markers", "--strict-config", "-ra"]
 xfail_strict = true
