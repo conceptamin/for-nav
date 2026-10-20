@@ -1,6 +1,6 @@
 # 승인 기반 Git Flow
 
-모든 참여자가 따르는 흐름이다. 처음이라면 [README의 Git 치트시트](../README.md#git-cheat-sheet)부터 본다. approver 설정·정책 브랜치·원격 보호처럼 소유자만 다루는 내용은 [소유자 운영 문서](GIT-OWNER.md)에 있다.
+모든 참여자가 따르는 흐름이다. 처음이라면 [README의 Git 치트시트](../README.md#git-cheat-sheet)부터 본다. 사람의 역할은 둘이다. **작성자**(팀원)는 백로그를 쓰고 PR을 제출하며 구현을 요청한다. **승인자**(`.github/git-flow.json`의 approver)는 PR을 리뷰하고 병합한다. approver 설정·정책 브랜치·원격 보호처럼 소유자만 다루는 내용은 [소유자 운영 문서](GIT-OWNER.md)에 있다.
 
 ## 권한과 순서
 
@@ -9,15 +9,15 @@
 3. 병합 이후 사람이 `python3 scripts/request_impl.py <문서 경로>`로 그 PR에 `implement <문서 경로> <병합 SHA>` 댓글을 남기고 AI에게 "<문서 경로> 구현해줘"라고 요청한다. 댓글은 실행한 사람의 계정으로 남으며 그 계정은 저장소 참여자(OWNER/MEMBER/COLLABORATOR)여야 한다. 이 댓글은 실행 요청의 감사 기록이다. 승인만으로 자동 착수하지 않는다.
 4. AI는 아래 start 명령으로 승인 PR과 요청 댓글을 읽기 전용으로 찾아 승인과 요청을 검증한 후 origin/develop에서 작업 브랜치를 생성한다. 네트워크·인증 실패나 설정 누락도 차단한다.
 5. 승인 범위만 구현하고 테스트한다. 검증 결과는 phase 문서에 기록하되 목표·범위·수용 기준을 바꾸지 않는다. 범위 변경은 별도 백로그 PR에서 재승인받고 새 요청을 받아야 한다.
-6. AI는 자신이 작성한 변경을 해당 작업 브랜치에서 검증한 뒤 커밋까지 항상 진행하고(별도 확인 없이) PR 본문 초안을 작성한다. 사람만 push·PR 제출·리뷰·병합을 한다. AI는 자동 PR 생성, 병합, 보호 설정 변경, force push, 브랜치 삭제를 하지 않는다.
-7. 병합 후 사람이 작업 브랜치를 삭제한다. 구현 완료는 PR 대기 상태이며, 실제 병합 완료와 구분한다. main/develop은 삭제하지 않는다.
+6. AI는 자신이 작성한 변경을 해당 작업 브랜치에서 검증한 뒤 커밋까지 항상 진행하고(별도 확인 없이) PR 본문 초안을 작성한다. 사람만 push·PR 제출·리뷰·병합을 한다. PR 제출은 작성자가, 리뷰와 병합은 승인자가 한다. AI는 자동 PR 생성, 병합, 보호 설정 변경, force push, 브랜치 삭제를 하지 않는다.
+7. 병합되면 GitHub가 원격 작업 브랜치를 자동 삭제하고, 작성자가 `scripts/cleanup_branches.py`로 로컬 브랜치를 정리한다. 구현 완료는 PR 대기 상태이며, 실제 병합 완료와 구분한다. main/develop은 삭제하지 않는다.
 
 ## 브랜치
 
 | 브랜치 | 기준 | PR 대상 | 담당 |
 |---|---|---|---|
-| backlog/<영역>/phase-XX | develop | develop | 사람 |
-| feature/<영역>/phase-XX-<기능> | develop | develop | 승인 후 AI 구현, 사람 PR |
+| backlog/<영역>/phase-XX | develop | develop | 작성자 PR, 승인자 병합 |
+| feature/<영역>/phase-XX-<기능> | develop | develop | 승인 후 AI 구현, 작성자 PR, 승인자 병합 |
 | policy/<slug> | develop | develop | 하네스·운영 규칙만; AI 초안 가능, approver가 직접 PR |
 | release/<버전> | develop | main, 변경분을 develop에 역반영 | 사람 |
 | hotfix/<영역>/phase-XX-<수정> | main | main, develop 역반영 | 사람; 현재 자동 gate는 차단 |
@@ -41,9 +41,11 @@ git config core.hooksPath .githooks
 사람은 백로그 PR이 병합된 뒤 아래 명령으로 구현 요청 댓글을 남긴다. AI는 이 스크립트를 실행하지 않는다(`--dry-run` 제외).
 
 ```sh
-python3 scripts/request_impl.py backlog/backend/phase-01.md --dry-run   # 찾은 PR과 남길 댓글만 출력
-python3 scripts/request_impl.py backlog/backend/phase-01.md             # 댓글을 남기고 start 기준으로 다시 검증
+python3 scripts/request_impl.py backlog/backend/phase-01.md --dry-run
+python3 scripts/request_impl.py backlog/backend/phase-01.md
 ```
+
+`--dry-run`은 찾은 PR과 남길 댓글만 출력한다. 붙이지 않으면 댓글을 남기고 start 기준으로 다시 검증한다.
 
 - 문서를 담아 develop에 가장 최근 병합된 `backlog/` PR과 그 병합 SHA를 찾는다. 다른 PR을 쓰려면 `--pr <번호>`를 붙인다.
 - 댓글을 달기 전에 approver 승인, phase 문서만 포함, 승인 문서가 PR head·현재 develop과 같은지를 start와 같은 코드로 확인한다. 문서가 바뀌었으면 댓글을 달지 않고 재승인을 요구한다.
@@ -80,9 +82,11 @@ Tested: 실제 실행한 명령과 결과
 사람은 작업 브랜치에서 아래 명령으로 push와 develop 대상 PR 생성을 한 번에 처리한다. AI는 이 명령을 실행하지 않는다.
 
 ```sh
-python3 scripts/submit_pr.py --dry-run   # 검사와 제출 계획만 출력
-python3 scripts/submit_pr.py             # push 후 PR 생성(열린 PR이 있으면 push만)
+python3 scripts/submit_pr.py --dry-run
+python3 scripts/submit_pr.py
 ```
+
+`--dry-run`은 검사와 제출 계획만 출력한다. 붙이지 않으면 push 후 PR을 만든다(열린 PR이 있으면 push만 한다).
 
 - backlog/·feature/·policy/ 브랜치만 받는다. main/develop·release·hotfix는 거부한다. 작업 트리가 깨끗하고 origin/develop보다 앞선 커밋이 있어야 한다.
 - 사전 검사: backlog는 `harness.py check`, feature는 `git_flow.py check-context`, policy는 gh 계정이 `.github/git-flow.json`의 approver인지 확인한다. push는 pre-push 훅을 그대로 거친다.
@@ -95,9 +99,11 @@ python3 scripts/submit_pr.py             # push 후 PR 생성(열린 PR이 있�
 - 병합 후 사람이 아래 명령으로 develop을 최신화하고 로컬 브랜치를 지운다. squash 병합된 브랜치는 `git branch -d`가 미병합으로 보므로 이 스크립트를 쓴다. AI는 `--dry-run`만 실행한다.
 
 ```sh
-python3 scripts/cleanup_branches.py --dry-run   # 지울 브랜치와 남길 이유만 출력
-python3 scripts/cleanup_branches.py             # develop 전환·최신화 후 병합된 로컬 브랜치 삭제
+python3 scripts/cleanup_branches.py --dry-run
+python3 scripts/cleanup_branches.py
 ```
+
+`--dry-run`은 지울 브랜치와 남길 이유만 출력한다. 붙이지 않으면 develop으로 전환·최신화한 뒤 병합된 로컬 브랜치를 지운다.
 
 - origin을 prune fetch한 뒤 로컬 커밋이 모두 develop에 병합된 PR의 head에 같은 패치로 들어 있는 브랜치만 지운다(GitHub의 Update branch로 PR head만 앞서거나 rebase로 해시가 바뀐 경우 포함). 병합 후 새 커밋이 있거나 병합된 PR이 없는 브랜치와 main·develop은 남긴다.
 - 현재 브랜치가 지울 대상이고 변경이 없으면 develop으로 전환해 `pull --ff-only`한 뒤 지운다. 지운 브랜치의 PR 초안과 승인 컨텍스트도 함께 지운다.

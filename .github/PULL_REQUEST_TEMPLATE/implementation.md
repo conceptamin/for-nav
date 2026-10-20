@@ -10,5 +10,5 @@ Backlog-Revision: <백로그 PR 병합 SHA>
 - 실행한 테스트와 결과:
 - 남은 위험 및 미검증 항목:
 
-사람이 PR을 제출합니다. feature 브랜치의 대상은 develop입니다.
+작성자가 PR을 제출하고 승인자가 리뷰한 뒤 Squash and merge로 병합합니다. feature 브랜치의 대상은 develop입니다.
 범위 변경은 구현에 포함하기 전에 별도 백로그 PR로 재승인받습니다.
