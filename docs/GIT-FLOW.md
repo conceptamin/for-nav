@@ -1,11 +1,13 @@
 # 승인 기반 Git Flow
 
+모든 참여자가 따르는 흐름이다. 처음이라면 [README의 Git 치트시트](../README.md#git-cheat-sheet)부터 본다. approver 설정·정책 브랜치·원격 보호처럼 소유자만 다루는 내용은 [소유자 운영 문서](GIT-OWNER.md)에 있다.
+
 ## 권한과 순서
 
 1. 사람이 `backlog/<영역>/phase-XX` 브랜치에서 phase Markdown만 작성하고 develop으로 PR을 제출한다.
 2. `.github/git-flow.json`의 approver로 지정된 프로젝트 소유자가 최신 PR head를 승인하고 사람이 병합하거나, approver가 직접 병합한다. 병합 시점의 head가 최종이므로 approver의 병합은 최신 head 승인으로 인정한다(1인 저장소는 자기 PR에 리뷰 승인을 남길 수 없다). 승인 댓글이나 문서의 approved 필드는 승인 증거가 아니다.
-3. 병합 이후 저장소 참여자(OWNER/MEMBER/COLLABORATOR)가 그 PR에 `implement <문서 경로> <병합 SHA>` 댓글을 남긴다. 사람이 AI에게 문서·승인 PR 번호·댓글 ID를 지정해 작업을 요청한다. 이 댓글은 실행 요청의 감사 기록이다. 승인만으로 자동 착수하지 않는다.
-4. AI는 아래 start 명령으로 승인과 요청을 검증한 후 origin/develop에서 작업 브랜치를 생성한다. 네트워크·인증 실패나 설정 누락도 차단한다.
+3. 병합 이후 사람이 `python3 scripts/request_impl.py <문서 경로>`로 그 PR에 `implement <문서 경로> <병합 SHA>` 댓글을 남기고 AI에게 "<문서 경로> 구현해줘"라고 요청한다. 댓글은 실행한 사람의 계정으로 남으며 그 계정은 저장소 참여자(OWNER/MEMBER/COLLABORATOR)여야 한다. 이 댓글은 실행 요청의 감사 기록이다. 승인만으로 자동 착수하지 않는다.
+4. AI는 아래 start 명령으로 승인 PR과 요청 댓글을 읽기 전용으로 찾아 승인과 요청을 검증한 후 origin/develop에서 작업 브랜치를 생성한다. 네트워크·인증 실패나 설정 누락도 차단한다.
 5. 승인 범위만 구현하고 테스트한다. 검증 결과는 phase 문서에 기록하되 목표·범위·수용 기준을 바꾸지 않는다. 범위 변경은 별도 백로그 PR에서 재승인받고 새 요청을 받아야 한다.
 6. AI는 자신이 작성한 변경을 해당 작업 브랜치에서 검증한 뒤 커밋까지 항상 진행하고(별도 확인 없이) PR 본문 초안을 작성한다. 사람만 push·PR 제출·리뷰·병합을 한다. AI는 자동 PR 생성, 병합, 보호 설정 변경, force push, 브랜치 삭제를 하지 않는다.
 7. 병합 후 사람이 작업 브랜치를 삭제한다. 구현 완료는 PR 대기 상태이며, 실제 병합 완료와 구분한다. main/develop은 삭제하지 않는다.
@@ -22,19 +24,41 @@
 
 영역 이름은 기존 디렉터리와 맞춰 frontend/backend/modeling을 쓴다. 별도 장기 영역 브랜치는 만들지 않는다. release의 승인·병합 권한은 원격 보호 규칙으로 제한한다. hotfix는 승인 검증을 우회하는 통로로 사용하지 않는다. 현재 구현 시작 CLI는 feature만 지원하며 hotfix 지원은 별도 정책 변경으로 다룬다.
 
-정책 브랜치는 하네스와 운영 규칙(`.github/`, `.githooks/`, `.gitignore`, `CLAUDE.md`, `README.md`, 영역별 `AGENTS.md`, `docs/`, `scripts/`, `tests/harness/`)만 바꾼다. 제품 코드·`backlog/`·`fixtures/`·`shipyard-*.md` 기획·계약서는 포함할 수 없고 파일 이동으로도 옮길 수 없다. 계약 변경은 phase 문서에서 fixture·소비자와 함께 다룬다. approval-gate는 PR 작성자가 approver인지 확인하며, 하네스 유지보수 요청은 제품 구현 승인이 아니다. 정책 PR의 gate도 base(develop)의 스크립트로 실행되므로 정책 PR이 자기 검사를 완화해 통과할 수 없다. policy 경로를 처음 도입하는 변경은 base에 아직 규칙이 없으므로 룰셋 적용 전에 소유자가 부트스트랩한다.
+정책 브랜치의 허용 파일과 제출 규칙은 [소유자 운영 문서](GIT-OWNER.md#정책-브랜치)를 따른다.
 
 ## 설정 및 실행
 
-Git 저장소·GitHub 원격·develop이 존재해야 한다. origin은 github.com HTTPS/SSH 주소이거나, `ssh -G` 기준 hostname이 github.com인 SSH 별칭이어야 한다. `.github/git-flow.json`에 실제 `repository` (`owner/repo`)와 승인자의 GitHub `approver` 로그인명을 입력한다. 값을 추정하거나 AI가 임의로 승인자로 등록하지 않는다. GitHub CLI는 인증된 읽기 권한으로 API를 조회한다. 현재 null 설정은 의도적으로 구현을 차단한다.
+Git 저장소·GitHub 원격·develop이 존재해야 한다. origin은 github.com HTTPS/SSH 주소이거나, `ssh -G` 기준 hostname이 github.com인 SSH 별칭이어야 한다. `.github/git-flow.json`의 `repository`·`approver`는 소유자가 채운다([소유자 운영 문서](GIT-OWNER.md#approver와-저장소-설정)). 설정이 비면 구현 시작이 차단된다. GitHub CLI(`gh auth login`)로 인증해야 스크립트가 API를 조회한다.
 
-저장소 연결 후 로컬 훅을 설치한다:
+클론 후 로컬 훅을 설치한다:
 
 ```sh
 git config core.hooksPath .githooks
-python3 scripts/git_flow.py start --backlog backlog/backend/phase-01.md --approval-pr 42 --request-comment 123456 --slug auth
+```
+
+### 구현 요청
+
+사람은 백로그 PR이 병합된 뒤 아래 명령으로 구현 요청 댓글을 남긴다. AI는 이 스크립트를 실행하지 않는다(`--dry-run` 제외).
+
+```sh
+python3 scripts/request_impl.py backlog/backend/phase-01.md --dry-run   # 찾은 PR과 남길 댓글만 출력
+python3 scripts/request_impl.py backlog/backend/phase-01.md             # 댓글을 남기고 start 기준으로 다시 검증
+```
+
+- 문서를 담아 develop에 가장 최근 병합된 `backlog/` PR과 그 병합 SHA를 찾는다. 다른 PR을 쓰려면 `--pr <번호>`를 붙인다.
+- 댓글을 달기 전에 approver 승인, phase 문서만 포함, 승인 문서가 PR head·현재 develop과 같은지를 start와 같은 코드로 확인한다. 문서가 바뀌었으면 댓글을 달지 않고 재승인을 요구한다.
+- 유효한 요청 댓글이 이미 있으면 새로 달지 않는다. 방금 단 댓글이 요청으로 인정되지 않으면(예: 저장소 참여자가 아닌 계정) 실패를 알린다.
+
+### 작업 브랜치 생성
+
+AI는 사람이 phase 구현을 요청하면 아래 명령으로 작업 브랜치를 만든다.
+
+```sh
+python3 scripts/git_flow.py start --backlog backlog/backend/phase-01.md --slug auth
 python3 scripts/git_flow.py check-context
 ```
+
+`--approval-pr`·`--request-comment`를 생략하면 start가 문서를 담은 최근 병합 백로그 PR과 그 PR의 유효한 요청 댓글 중 최신 것을 gh로 읽기 전용 조회한다. 찾은 값도 직접 지정한 값과 똑같이 전체 검증을 거친다. 요청 댓글이 없으면 브랜치를 만들지 않고 사람에게 `request_impl.py` 실행을 안내한다.
 
 start는 깨끗한 작업 트리와 승인된 문서 원문을 요구한다. 승인 문서가 develop에서 변경됐으면 재승인이 필요하다. 작업 컨텍스트는 해당 worktree의 Git 디렉터리에 보관하며 버전 관리하지 않는다. 구현을 재개하기 전에 check-context를 실행한다. 커밋 훅은 승인 기록을 다시 조회한다.
 
@@ -64,22 +88,22 @@ python3 scripts/submit_pr.py             # push 후 PR 생성(열린 PR이 있�
 - 사전 검사: backlog는 `harness.py check`, feature는 `git_flow.py check-context`, policy는 gh 계정이 `.github/git-flow.json`의 approver인지 확인한다. push는 pre-push 훅을 그대로 거친다.
 - 본문은 `--body-file`, AI 초안 `<git-dir>/yardpilot-pr/<브랜치의 /를 __로 바꾼 이름>.md`, 로컬 `.github/PULL_REQUEST_TEMPLATE/` 템플릿 순으로 고른다. 로컬 템플릿을 쓰므로 main에 아직 없는 템플릿도 사용할 수 있다. 초안 첫 줄이 `# 제목`이면 PR 제목으로 쓰고, 없으면 첫 커밋 제목을 쓴다. 초안은 worktree의 Git 디렉터리에 두며 버전 관리하지 않는다.
 
+### 병합과 정리
+
+- develop 대상 PR은 **Squash and merge**만 쓴다. 룰셋이 다른 병합 방식을 막는다. PR 하나가 develop 커밋 하나가 되며 백로그 PR의 병합 SHA는 그 squash 커밋이다. main은 release 이력을 develop과 잇도록 merge commit만 허용한다.
+- GitHub의 병합 후 head 브랜치 자동 삭제가 켜져 있어 원격 작업 브랜치는 병합과 함께 지워진다. pre-push 훅이 삭제 push를 막으므로 로컬에서 원격 브랜치를 지우지 않는다.
+- 병합 후 사람이 아래 명령으로 develop을 최신화하고 로컬 브랜치를 지운다. squash 병합된 브랜치는 `git branch -d`가 미병합으로 보므로 이 스크립트를 쓴다. AI는 `--dry-run`만 실행한다.
+
+```sh
+python3 scripts/cleanup_branches.py --dry-run   # 지울 브랜치와 남길 이유만 출력
+python3 scripts/cleanup_branches.py             # develop 전환·최신화 후 병합된 로컬 브랜치 삭제
+```
+
+- origin을 prune fetch한 뒤 로컬 커밋이 모두 develop에 병합된 PR의 head에 같은 패치로 들어 있는 브랜치만 지운다(GitHub의 Update branch로 PR head만 앞서거나 rebase로 해시가 바뀐 경우 포함). 병합 후 새 커밋이 있거나 병합된 PR이 없는 브랜치와 main·develop은 남긴다.
+- 현재 브랜치가 지울 대상이고 변경이 없으면 develop으로 전환해 `pull --ff-only`한 뒤 지운다. 지운 브랜치의 PR 초안과 승인 컨텍스트도 함께 지운다.
+
 ## 강제력과 원격 보호
 
 로컬 훅은 우회 가능하며 AI와 사람의 신원을 구별하는 보안 경계가 아니다. CLAUDE.md는 AI의 행동 계약이고, 실제 원격 권한은 별도로 제한해야 한다. 사람 계정의 토큰을 AI에게 주면 API의 User 표기만으로 사람이 직접 요청했음을 증명할 수 없다. AI 세션에는 읽기 전용 자격 증명을 사용한다.
 
-원격 저장소에서 main/develop에 필수 PR, 필수 승인, stale approval 무효화, 마지막 push 재승인, force push/삭제 금지, 우회 권한 제한을 적용한다. 백로그와 정책 파일에는 소유자의 CODEOWNERS 승인을 필수로 설정한다. 필수 상태 검사는 `Git flow / approval-gate` 및 `Backlog harness / harness`로 지정한다. 실제 UI의 check 이름을 확인한다. 소유자 로그인 확정 전 가짜 CODEOWNERS 항목은 생성하지 않는다.
-
-위 보호는 `scripts/protect_branches.py`가 GitHub 룰셋 `yardpilot-protected-branches`로 적용한다. 룰셋은 우회 주체가 없어 관리자도 main/develop에 직접 push·삭제·force push할 수 없고, `approval-gate`가 feature→develop·backlog→develop·policy→develop·release→main/develop 외의 병합을 막는다. 상태 검사는 GitHub Actions(integration 15368) 결과만 인정한다. apply는 저장소 관리자 권한이 필요하며 소유자가 직접 실행한다. AI는 plan·check만 실행한다.
-
-```sh
-python3 scripts/protect_branches.py plan                          # 적용할 룰셋 출력, 네트워크 없음
-python3 scripts/protect_branches.py apply --repo OWNER/REPO       # 소유자만: 생성 또는 같은 룰셋 갱신
-python3 scripts/protect_branches.py check --repo OWNER/REPO       # 원격 룰셋이 약화·우회되면 실패
-```
-
-PR 작성자는 자기 PR을 승인할 수 없으므로 기본값(승인 1)에서는 작성자와 다른 승인 계정이 있어야 병합할 수 있다. 1인 저장소는 `--approvals 0`으로 PR·상태 검사만 강제한다. 이때 GitHub의 리뷰 강제는 사라지지만 구현 시작 gate는 approver의 직접 병합과 병합 후 `implement` 댓글을 계속 요구한다. 룰셋을 풀려면 GitHub 설정에서 소유자가 직접 수정해야 하며 check가 이를 감지한다.
-
-Git flow CI는 신뢰된 base의 스크립트를 실행하고 PR head 코드를 실행하지 않는다. 승인 PR, 요청 댓글, 브랜치, 모든 커밋 참조를 검사한다. 검증 후 승인 취소나 댓글 수정처럼 PR 이벤트를 발생시키지 않는 변경은 자동 재실행되지 않으므로 병합 직전 최신 gate를 재실행한다. 의미적인 범위 준수와 테스트 충실도는 사람 리뷰가 필요하다.
-
-이 폴더에는 현재 `.git`과 원격이 없어 훅 설치·브랜치 생성·GitHub 보호 설정은 적용되지 않았다. 정책 파일·검증 코드·CI는 준비된 상태이며 원격 연결과 계정 설정 후 활성화해야 한다. 최초 정책 설치 PR은 소유자가 부트스트랩하고, 이후 정책 변경도 소유자 리뷰 대상으로 유지한다.
+원격 보호 규칙(룰셋·필수 검사·병합 방식)과 CI의 한계는 [소유자 운영 문서](GIT-OWNER.md#원격-보호)에 있다.

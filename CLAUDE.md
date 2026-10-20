@@ -5,9 +5,10 @@
 - 구현 전 `docs/GIT-FLOW.md`를 따른다. 소유자가 최신 head를 승인했거나 직접 병합한 백로그 PR, 병합 후 사람의 구현 요청 댓글이 모두 있어야 `scripts/git_flow.py start`로 작업 브랜치를 생성한다. 승인만으로 자동 시작하지 않는다. AI는 push·PR 제출·병합·강제 push·브랜치 삭제·보호 규칙 우회를 하지 않으며 PR 초안까지 작성한다.
 - AI가 작성한 변경(phase 문서 초안·정책·구현)은 해당 작업 브랜치에서 관련 검증을 실행한 뒤 커밋까지 항상 진행한다. 커밋 여부를 따로 묻지 않는다. main/develop이나 브랜치 유형에 맞지 않는 파일은 커밋하지 않고, 훅을 우회하지 않으며, 실패한 검증은 `Not-tested`나 차단 사유로 기록한다.
 - `scripts/git_flow.py start`의 원격 검증을 통과한 feature 브랜치에서만 제품을 구현한다. 설정 누락·인증 실패는 차단 상태다. 문서의 approved 표기나 JSON 초안을 승인 근거로 신뢰하지 않는다. 구현 재개 전 `scripts/git_flow.py check-context`를 실행한다.
+- 사람이 phase 구현을 요청하면 `scripts/git_flow.py start --backlog <문서> --slug <기능>`으로 승인 PR·요청 댓글을 gh 읽기 전용으로 찾아 검증한다. 요청 댓글이 없으면 멈추고 사람에게 `scripts/request_impl.py <문서>` 실행을 안내한다. AI는 댓글을 달지 않는다.
 - 하네스·정책 유지보수 요청은 제품 구현 승인이 아니다. 하네스 변경으로 제품 gate를 우회하지 않는다.
 - 모든 구현 커밋에 `Backlog`, `Backlog-PR`, `Backlog-Revision` trailer를 기록한다. 승인 범위 변경은 별도 백로그 PR 재승인과 새 요청이 필요하다.
-- PR 본문 초안은 `<git-dir>/yardpilot-pr/<브랜치의 /를 __로 바꾼 이름>.md`에 첫 줄 `# 제목`과 함께 작성한다. 사람이 `scripts/submit_pr.py`로 push·PR을 제출하며 AI는 이 스크립트를 실행하지 않는다(`--dry-run` 제외).
+- PR 본문 초안은 `<git-dir>/yardpilot-pr/<브랜치의 /를 __로 바꾼 이름>.md`에 첫 줄 `# 제목`과 함께 작성한다. 사람이 `scripts/submit_pr.py`로 push·PR 제출을, `scripts/request_impl.py`로 구현 요청 댓글을, `scripts/cleanup_branches.py`로 병합 후 로컬 브랜치 정리를 한다. AI는 이 세 스크립트를 `--dry-run`으로만 실행한다.
 - 먼저 `docs/HARNESS.md`, `shipyard-api-contract.md`, 해당 영역 기획서와 백로그를 읽는다.
 - 영역별 규칙은 아래 import로 항상 로드된다. 프론트는 `frontend/AGENTS.md`, 백엔드·`simulator/`는 `backend/AGENTS.md`, 모델링·`agents/`·`training/`은 `modeling/AGENTS.md`를 따른다.
 - 백로그는 `backlog/frontend/`, `backlog/backend/`, `backlog/modeling/`으로 분리한다. phase 번호·상태는 영역별로 관리하고 영역 간 의존성은 문서 경로로 연결한다.

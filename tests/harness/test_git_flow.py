@@ -26,13 +26,39 @@ class ApprovalGateTest(unittest.TestCase):
                             body=f"implement {self.context['backlog']} {'a' * 40}")
         self.files = [dict(filename=self.context['backlog'], status='added')]
         self.reviews = [self.review]
+        self.listing = [dict(number=42, merged_at=self.pr['merged_at'], head=dict(ref='backlog/backend/phase-01', sha='b' * 40))]
+        self.comments = [dict(self.comment, id=9)]
+        self.files_by = {}
         self.addCleanup(patch.stopall)
         patch.object(flow, 'api', side_effect=lambda root, repo, endpoint: self.pr if endpoint == 'pulls/42' else self.comment).start()
-        patch.object(flow, 'pages', side_effect=lambda root, repo, endpoint: self.reviews if endpoint.endswith('reviews') else self.files).start()
+        patch.object(flow, 'pages', side_effect=self.fake_pages).start()
         self.git = patch.object(flow, 'git', side_effect=lambda root, *args: 'https://github.com/org/repo.git' if args[0] == 'remote' else 'blob').start()
+
+    def fake_pages(self, root, repo, endpoint):
+        if endpoint.endswith('reviews'):
+            return self.reviews
+        if endpoint.startswith('pulls?'):
+            return self.listing
+        if endpoint.endswith('/comments'):
+            return self.comments
+        return self.files_by.get(int(endpoint.split('/')[1]), self.files)
 
     def validate(self):
         return flow.validate(self.root, self.context, clean_document=True)
+
+    def start_git(self):
+        state = self.root / 'git-state'
+        state.mkdir(exist_ok=True)
+        def git(root, *args):
+            if args[0] == 'status':
+                return ''
+            if args[:2] == ('rev-parse', '--absolute-git-dir'):
+                return str(state)
+            if args[0] == 'remote':
+                return 'https://github.com/org/repo.git'
+            return 'blob'
+        self.git.side_effect = git
+        return state
 
     def test_approved_and_requested(self):
         self.assertEqual(self.validate()['revision'], 'a' * 40)
@@ -129,6 +155,46 @@ class ApprovalGateTest(unittest.TestCase):
         self.assertEqual(context['branch'], 'feature/backend/phase-01-auth')
         self.git.assert_any_call(self.root, 'switch', '-c', context['branch'], 'origin/develop')
 
+    def test_start_discovers_pr_and_request_comment(self):
+        state = self.start_git()
+        flow.main(['start', '--backlog', self.context['backlog'], '--slug', 'auth'], self.root)
+        context = json.loads((state / 'yardpilot-approval.json').read_text())
+        self.assertEqual((context['approval_pr'], context['request_comment']), (42, 9))
+        self.git.assert_any_call(self.root, 'switch', '-c', 'feature/backend/phase-01-auth', 'origin/develop')
+
+    def test_discovery_picks_latest_merged_backlog_pr_with_document(self):
+        self.listing[:] = [dict(number=40, merged_at='2026-10-17T00:00:00Z', head=dict(ref='backlog/backend/phase-01')),
+                           dict(number=42, merged_at='2026-10-18T01:00:00Z', head=dict(ref='backlog/backend/phase-01')),
+                           dict(number=43, merged_at='2026-10-19T00:00:00Z', head=dict(ref='backlog/backend/phase-02')),
+                           dict(number=44, merged_at='2026-10-20T00:00:00Z', head=dict(ref='feature/backend/phase-01-a'))]
+        self.files_by[43] = [dict(filename='backlog/backend/phase-02.md', status='added')]
+        self.assertEqual(flow.latest_backlog_pr(self.root, 'org/repo', self.context['backlog']), 42)
+        self.listing.pop(1)
+        self.assertEqual(flow.latest_backlog_pr(self.root, 'org/repo', self.context['backlog']), 40)
+        self.listing.clear()
+        with self.assertRaisesRegex(ValueError, '병합된 백로그 PR이 없습니다'):
+            flow.latest_backlog_pr(self.root, 'org/repo', self.context['backlog'])
+
+    def test_discovery_ignores_invalid_comments_and_start_blocks_without_request(self):
+        self.comments[:] = [dict(self.comment, id=5, created_at='2026-10-18T00:00:00Z'),
+                            dict(self.comment, id=6, user=dict(type='Bot')),
+                            dict(self.comment, id=7, body='implement please'),
+                            dict(self.comment, id=8, author_association='NONE')]
+        self.start_git()
+        with self.assertRaisesRegex(ValueError, 'request_impl.py'):
+            flow.main(['start', '--backlog', self.context['backlog'], '--slug', 'auth'], self.root)
+        self.assertFalse(any(call.args[1] == 'switch' for call in self.git.call_args_list))
+        self.comments.extend([dict(self.comment, id=11), dict(self.comment, id=10)])
+        self.assertEqual(flow.discover(self.root, self.context['backlog']), (42, 11))
+
+    def test_discovered_ids_still_pass_full_gate(self):
+        # 탐색은 조회일 뿐이므로 승인 조건이 깨지면 start가 브랜치를 만들지 않는다.
+        self.start_git()
+        self.review['commit_id'] = 'old'
+        with self.assertRaisesRegex(ValueError, '최신 head 승인'):
+            flow.main(['start', '--backlog', self.context['backlog'], '--slug', 'auth'], self.root)
+        self.assertFalse(any(call.args[1] == 'switch' for call in self.git.call_args_list))
+
     def test_backlog_ci_rejects_product_code(self):
         event = self.root / 'event.json'
         event.write_text(json.dumps(dict(repository=dict(full_name='org/repo'),
@@ -208,6 +274,15 @@ class ApprovalGateTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 flow.check_push(f'HEAD {sha} {ref} {"0" * 40}\n')
         flow.check_push(f'HEAD {"1" * 40} refs/heads/feature/backend/a {"0" * 40}\n')
+
+
+class PagesTest(unittest.TestCase):
+    def test_query_endpoint_gets_paging_parameters(self):
+        with patch.object(flow, 'api', return_value=[]) as api:
+            flow.pages(None, 'org/repo', 'pulls?state=closed&base=develop')
+            flow.pages(None, 'org/repo', 'pulls/1/files')
+        self.assertEqual([c.args[2] for c in api.call_args_list],
+                         ['pulls?state=closed&base=develop&per_page=100&page=1', 'pulls/1/files?per_page=100&page=1'])
 
 
 if __name__ == '__main__':
