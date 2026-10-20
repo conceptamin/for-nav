@@ -6,6 +6,7 @@
 
 - main에 직접 커밋·push하지 않는다. 로컬 훅과 GitHub 룰셋이 둘 다 막는다.
 - 작업은 브랜치에서 하고 PR을 연다. **1명 이상 승인**과 CI 통과 후 병합한다.
+- 저장소 소유자(admin)는 승인 없이 PR을 병합할 수 있다. GitHub은 작성자가 자기 PR을 승인하지 못하게 하므로 룰셋 예외로 둔다. 이때 CI 통과는 직접 확인한다.
 - 브랜치 이름은 `<영역>/<내용>` 형식으로 쓴다. 예: `frontend/map-view`, `backend/reservation`, `modeling/baseline`, `docs/api-contract`.
 
 ## 2. 폴더를 지킨다
@@ -57,3 +58,5 @@ gh pr create --base main --fill
 ```
 
 리뷰를 받고 승인되면 GitHub에서 **Squash and merge**로 병합한다. 병합된 원격 브랜치는 자동으로 지워진다.
+
+Claude Code에 병합을 요청하면 확인 창 없이 `gh pr merge`와 브랜치 삭제까지 한다. 허용 목록은 `.claude/settings.json`에 있고 저장소를 받은 모두에게 적용된다.
