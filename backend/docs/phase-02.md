@@ -13,7 +13,7 @@
 - 이름 교체: `pyproject.toml`의 `name`·`description`, 환경 변수 `YARDPILOT_API_HOST`·`YARDPILOT_API_PORT` → `FORNAV_API_HOST`·`FORNAV_API_PORT`, 관련 테스트와 주석, `backend/AGENTS.md`의 등록 명령 설명. 프론트 proxy 변수 이름은 [프론트 phase-02](../../frontend/docs/phase-02.md)와 맞춘다.
 - 계약 1·3·4·5장의 요청·응답 Pydantic 모델과 공통 오류 형식(`request_id` 포함).
 - `fixtures/contract/`에 `/triage`·`/route`·`/summary` 요청·응답 예시 JSON. 테스트가 이 파일로 스키마 일치를 확인한다.
-- `POST /route`: 계약 4장 결정 표를 순수 함수로 구현. `en`·`vi` 안내 문구, 연결 기관(`verified` 포함), `disclaimer`, `info_as_of`.
+- `POST /route`: 계약 4장 결정 표를 순수 함수로 구현. `conditions`·`insurance_note` 코드, 연결 기관(`verified` 포함), `info_as_of`. 근로자용 문장은 만들지 않는다(계약 1장).
 - `POST /triage`: 응급 키워드 규칙(`en`·`vi`, 공통 응급 신호: 의식 저하, 호흡곤란, 대량 출혈, 추락, 끼임, 화학물질·밀폐공간 작업 중 어지럼 등) + LLM 맥락 추출 + 진료과 대응 표. `by_model`·`model_score`·`model_version`은 `null`.
 - `POST /summary`: 동의 검사, `include` 필터, LLM 요약.
 - LLM 인터페이스와 가짜 구현. 실제 구현은 하나의 공급자로 두고 API 키는 환경 변수로 받는다. 공급자와 무료 등급 약관 확인 결과를 검증 결과에 기록한다.
