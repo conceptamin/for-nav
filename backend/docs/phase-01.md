@@ -1,5 +1,7 @@
 # Backend Phase 01 — 실행·검증 기반과 API 셸
 
+> **이전 프로젝트 기록.** 이 문서는 YardPilot(조선소 차량 운행 지원) 때 만든 실행·검증 기반의 기록이다. 코드가 for-nav에 그대로 남아 있어 보존한다. 목표·범위에 나오는 제품 기능(차량·지도·예약 등)은 for-nav와 관계없다. 현재 기획은 [기획서](proposal.md)와 [phase-02](phase-02.md)를 본다.
+
 ## 목표
 
 `backend/`에 Python 3.11·uv 기반 FastAPI 프로젝트를 만든다. Ruff·mypy·pytest 검증 명령과 단일 worker Uvicorn 실행 명령을 실제로 실행할 수 있게 한다. 계약의 `GET /api/v1/health`에 응답하는 최소 앱 셸을 둔다. 이후 phase는 같은 실행·검증 기반 위에서, HTTP handler와 도메인 규칙을 분리한 구조로 기능을 추가한다.
@@ -54,7 +56,7 @@
 
 ## 의존성
 
-- [프론트 phase-01](../frontend/phase-01.md): dev server proxy(`/api` → `YARDPILOT_API_ORIGIN`, 기본값 `http://127.0.0.1:8000`). 이 산출물은 proxy를 거친 health 확인에만 쓴다. 백엔드 앱과 검증 명령은 프론트에 의존하지 않는다.
+- [프론트 phase-01](../../frontend/docs/phase-01.md): dev server proxy(`/api` → `YARDPILOT_API_ORIGIN`, 기본값 `http://127.0.0.1:8000`). 이 산출물은 proxy를 거친 health 확인에만 쓴다. 백엔드 앱과 검증 명령은 프론트에 의존하지 않는다.
 
 루트 `fixtures/`와 계약 스키마 산출물은 이 phase의 선행 조건이 아니다. 계약 스키마를 만드는 이후 백엔드 phase가 이 phase를 선행 조건으로 둔다. 그 연결은 이 문서가 아니라 이후 phase 문서에 기록한다.
 
