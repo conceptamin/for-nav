@@ -10,7 +10,7 @@
 - 언어 코드: `en`, `vi`. 근로자에게 보이는 문구는 요청의 `lang`으로, 의사용 요약은 항상 한국어(`ko`)로 낸다. 세 번째 언어는 원어민 검수자가 확보될 때만 추가한다.
 - 알 수 없는 값은 `null`이다. 빈 문자열·0·추측값으로 채우지 않는다.
 - 시각: 진료 시간 조회의 `at`은 울산 현지 시각 `HH:MM`(24시간), 요일은 `mon`~`sun`. 응답의 생성 시각은 UTC ISO 8601.
-- 정보 기준일 `info_as_of`(YYYY-MM-DD)와 안내 문구 `disclaimer`는 제도·기관 정보를 담은 모든 응답에 포함한다.
+- 정보 기준일 `info_as_of`(YYYY-MM-DD)와 안내 문구 `disclaimer`는 제도·기관 정보를 담은 모든 응답(`/route`, `/guide`, `/hospitals`)에 포함한다. `/triage`·`/summary`는 제도·기관 정보를 담지 않으므로 `info_as_of`가 없다.
 - 오류 형식: `{"error":{"code":"CONSENT_REQUIRED","message":"요약 카드를 만들려면 동의가 필요합니다.","request_id":"req-1"}}`.
 - 입력 검증 실패 422, 없는 경로 404, LLM 호출 실패 503(`LLM_UNAVAILABLE`). 503이어도 응급 판단은 내려야 하므로 `/triage`는 LLM 실패 시에도 200으로 응급 결과를 돌려준다(3장).
 
@@ -75,6 +75,7 @@
 - `ppe_worn`: `yes` / `no` / `partial` / `null`. `work_related`: `yes` / `no` / `unsure` / `null`. 이 값은 근로자 응답의 기록이며 산재 판정이 아니다.
 - `context_status`: `OK` / `LLM_UNAVAILABLE`. LLM이 실패하면 `context`는 `null`, `missing_fields`는 전체 항목, 응급 결과는 그대로 낸다.
 - 진료과 코드: `emergency`, `ophthalmology`(안과), `orthopedics`(정형외과), `dermatology`(피부과), `internal_medicine`(내과), `family_medicine`(가정의학과, 대응 표에 없을 때). 증상·부위에서 진료과로 가는 대응 표는 백엔드 규칙이다.
+- `department`: `is_emergency`가 `true`면 `{ "code": "emergency", "label_ko": "응급실" }`이다. 응급이 아니고 `context`가 `null`이면(LLM 실패) `department`도 `null`이다. 추측해서 `family_medicine`으로 채우지 않는다.
 
 ## 4. POST /route
 
@@ -96,7 +97,8 @@
 | `q1` = `no`, `q2` = `no`, `q3` = `yes` | `ULSAN_MEDICAL_AID` (울산 의료비 지원, 입원·수술 시) |
 | `q1` = `no`, `q2` = `no`, `q3` = `no` | `SUPPORT_CENTER` |
 
-- 경로에 필요 없는 질문의 답은 `null`로 보낸다. 필요한 답이 빠지면 422 `MISSING_ANSWER`.
+- 경로에 필요 없는 질문의 답은 `null`로 보낸다. 필요한 답이 빠지면 422 `MISSING_ANSWER`. 필요 없는 답이 `null`이 아니어도 422로 막지 않고 경로 결정에 쓰지 않는다.
+- 질문 순서: 화면은 Q1을 먼저 묻는다. `/triage`의 `context.work_related`가 `null`이 아니면 그 값을 Q1의 기본 선택으로 채우고 근로자가 확인하거나 바꾼다. `q1`이 `yes`·`unsure`면 Q2까지 묻고(아래 `insurance_note`용) Q3는 건너뛴다. `q1`이 `no`면 위 표에서 필요한 질문만 묻는다.
 - 예외: `q1`이 `yes`·`unsure`여도 `q2`를 보낼 수 있다. 이때 결과는 `WORK_INJURY` 그대로이고 `insurance_note`에 건강보험 여부를 적는다. 산재 승인 전 진료비 납부 방식이 확인되기 전까지 문구는 "상담으로 확인하세요"다.
 
 요청·응답:
