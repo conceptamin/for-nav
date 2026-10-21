@@ -15,3 +15,6 @@ frontend/playwright-report/
 frontend/test-results/
 frontend/blob-report/
 frontend/playwright/.cache/
+
+# 외부 공개 데이터 원본은 다시 배포하지 않는다(modeling/docs/phase-01.md). 내려받는 명령과 해시만 커밋한다.
+modeling/data/external/
