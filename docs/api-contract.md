@@ -1,138 +1,189 @@
-# 조선소 운행 지원 공통 API·이벤트 계약
+# for-nav 공통 API 계약
 
-작성일: 2026-10-17 · 스키마 버전: 1 · 구현 전 계약 초안
+작성일: 2026-10-21 · 스키마 버전: 1 · 초안 (2026-10-22 고정 목표)
 
-프론트엔드와 백엔드가 공유하는 단일 기준이다. 아래 JSON은 형식 예시이며 측정 결과가 아니다. Pydantic 모델로 REST OpenAPI와 이벤트 JSON Schema를 생성하고, TypeScript 타입·수신 검증(Zod)은 이 Pydantic 산출물에서 생성하며 손으로 따로 정의하지 않는다. 공통 fixture는 저장소 루트 `fixtures/`에 두고 세 영역이 같은 파일로 계약 일치를 검사한다.
+프론트엔드·백엔드·모델링이 공유하는 단일 기준이다. 아래 JSON은 형식 예시이며 측정 결과가 아니다. 백엔드 Pydantic 모델이 OpenAPI의 원본이고, 프론트 타입과 수신 검증은 이 산출물에서 만든다. 손으로 따로 정의하지 않는다. 예시 요청·응답은 루트 `fixtures/contract/`에 두고 프론트·백엔드 테스트가 같은 파일을 읽는다.
 
 ## 1. 공통 규칙
 
-- 기본 경로: `/api/v1`.
-- ID는 문자열, 거리 m, 속도 m/s, 기간 s, 로컬 좌표 m.
-- 로컬 좌표는 x가 오른쪽, y가 위쪽이다. Canvas 화면 좌표의 y축 반전은 프론트에서만 수행한다. 간선 geometry는 시작 노드에서 종료 노드로 향하는 polyline 좌표 배열이며, 차량 보간에 사용한다.
-- 네트워크 시각은 UTC ISO 8601, 시뮬레이션 시각은 `sim_time_s`.
-- 목표 도착 시각은 `target_arrival_sim_s`, 남은 시간은 `arrival_in_s`로 구분.
-- 알 수 없는 예측은 `null`이며 0으로 대체하지 않는다.
-- 차량 상태에는 `run_id`, `map_version`, `agent_epoch`, `sample_seq`를 포함.
-- 클라이언트 네트워크 TTL은 벽시계, 주행과 시간 예측은 시뮬레이션 시계 사용.
-- 변경 명령은 `Idempotency-Key`와 필요한 `expected_version`을 사용.
-- 동일 키·동일 본문은 기존 응답 반환, 동일 키·다른 본문은 409.
-- 버전 충돌은 409, 입력 검증 실패는 422, 인증 실패 401, 권한 없음 403.
-- 오류 형식: `{"error":{"code":"VERSION_CONFLICT","message":"상태가 변경되었습니다.","request_id":"req-1"}}`.
+- 기본 경로: `/api/v1`. 인증 없음(데모). 서버는 요청·응답을 저장하지 않고 요청 본문을 로그에 남기지 않는다.
+- 언어 코드: `en`, `vi`. 근로자에게 보이는 문구는 요청의 `lang`으로, 의사용 요약은 항상 한국어(`ko`)로 낸다. 세 번째 언어는 원어민 검수자가 확보될 때만 추가한다.
+- 알 수 없는 값은 `null`이다. 빈 문자열·0·추측값으로 채우지 않는다.
+- 시각: 진료 시간 조회의 `at`은 울산 현지 시각 `HH:MM`(24시간), 요일은 `mon`~`sun`. 응답의 생성 시각은 UTC ISO 8601.
+- 정보 기준일 `info_as_of`(YYYY-MM-DD)와 안내 문구 `disclaimer`는 제도·기관 정보를 담은 모든 응답에 포함한다.
+- 오류 형식: `{"error":{"code":"CONSENT_REQUIRED","message":"요약 카드를 만들려면 동의가 필요합니다.","request_id":"req-1"}}`.
+- 입력 검증 실패 422, 없는 경로 404, LLM 호출 실패 503(`LLM_UNAVAILABLE`). 503이어도 응급 판단은 내려야 하므로 `/triage`는 LLM 실패 시에도 200으로 응급 결과를 돌려준다(3장).
 
-## 2. REST API
+## 2. 엔드포인트
 
-| Method | 경로 | 권한 | 입력·출력 |
+| Method | 경로 | 방식 | 입력 → 출력 |
 |---|---|---|---|
-| GET | `/health` | 로컬 상태 확인 | 서비스 생존 상태 |
-| POST | `/sessions` | 없음(설치 기기) | 본문 없음 → 서버가 배정한 차량 범위 세션 쿠키, 배정 불가 409 |
-| DELETE | `/sessions/current` | 세션 | 세션 종료 |
-| GET | `/me` | 세션 | 역할, 허용 차량 ID |
-| GET | `/maps/current` | 세션 | 지도·노드·간선·map_version |
-| GET | `/vehicles` | 관리자/자기 차량 | 허용 범위 차량 목록 |
-| GET | `/state` | 세션 | 해당 역할의 전체 스냅샷 |
-| PUT | `/vehicles/{id}/destination` | 해당 운전자/관리자 | destination_node_id 또는 null, expected_version → 경로/버전 |
-| POST | `/guidance/{id}/ack` | 해당 운전자 | guidance_version → 수신 확인 결과 |
-| PUT | `/edges/{id}/closure` | 관리자 | closed, expected_version → map_version |
-| PUT | `/vehicles/{id}/priority` | 관리자 | priority, expected_version → vehicle_version |
-| POST | `/telemetry/batches` | 차량 에이전트 | 아래 배치 구조 → 수락·중복·거부 내역 |
-| POST | `/runs` | 관리자 | scenario_id, seed, prediction_mode, coordination_enabled → run_id |
-| POST | `/runs/{id}/commands` | 관리자 | action: start/pause/resume/stop → run 상태 |
-| GET | `/runs/{id}/metrics` | 관리자 | 예측·통행 지표, 정의·단위·완료 여부 |
+| GET | `/health` | 정적 | 생존 상태 (구현됨) |
+| POST | `/triage` | 규칙 + 응급 감지 모델 + LLM 추출 | 모국어 텍스트 → 응급 여부, 작업 맥락, 되물을 항목, 진료과 |
+| POST | `/route` | 규칙 | Q1~Q3 답 → 먼저 상담할 경로, 안내 문구, 연결 기관 |
+| POST | `/summary` | LLM | 근로자가 고른 항목 + 동의 → 의사용 한국어 요약 |
+| GET | `/guide` | 정적 콘텐츠 | `lang` → 산재 상담 절차, 연락처 |
+| GET | `/hospitals` | 공공 데이터 또는 mock | `at`, `day`, `district`, `department` → 열린 의원·약국·응급실 |
 
-세션은 로그인 없이 발급한다. 운전자 세션의 차량은 서버가 시나리오 순서로 배정하고, 관리자 세션은 서버 호스트(loopback) 접속에만 발급한다. 상세는 [백엔드 기획서 9장](../backend/docs/proposal.md)을 따른다.
+음성 입력은 해커톤 단계에서 붙인다. 엔드포인트(`POST /transcribe` 예정)는 그때 이 문서에 추가한다.
 
-목적지 변경 응답: `route_version`, `map_version`, `edge_ids`, `estimated_total_s`, `route_status`.
-`route_status`는 FOUND / NO_PATH / UNAVAILABLE. 경로 없음은 정상 도메인 결과이며 빈 경로를 통과 가능 경로로 취급하지 않는다.
+## 3. POST /triage
 
-실행 모드 `prediction_mode`: BASELINE / BASE_MODEL / ADAPTIVE. `coordination_enabled`는 별도 boolean. 실행 중 변경하지 않는다. 동시에 활성 실행은 한 개, 추가 생성은 409. 비교하려면 기존 실행을 종료하고 같은 시드의 새 실행을 만든다.
-
-## 3. 차량 입력 예시
+요청:
 
 ```json
 {
-  "run_id": "run-001",
-  "vehicle_id": "truck-A",
-  "agent_epoch": "agent-boot-001",
-  "samples": [
-    {
-      "sample_seq": 101,
-      "map_version": 3,
-      "sim_time_s": 20.0,
-      "observed_at": "2026-10-17T03:00:00Z",
-      "edge_id": "edge-01",
-      "x_m": 120.0,
-      "y_m": 35.0,
-      "speed_mps": 2.5,
-      "direction": "FORWARD"
-    }
-  ],
-  "events": [],
-  "predictions": []
+  "lang": "vi",
+  "text": "Chiều nay sau khi hàn, mắt tôi rất đau. Tôi đã tháo kính bảo hộ một lúc.",
+  "answers": {}
 }
 ```
 
-이벤트 필수 필드: `event_id`, `kind`(APPROACH/ENTER/EXIT/WAITING), `zone_id`, `sim_time_s`, `sample_seq`. 수신 시각은 서버가 부여한다. 임의 EXIT로 점유를 해제하지 않도록 실행·차량·구간·활성 점유 토큰과 일치하는지 검증한다. 정상 예약 없는 진입도 감지하면 UNKNOWN으로 전환해 상대편 예약을 차단한다.
+`answers`는 되묻기 버튼으로 받은 값이다. 키는 아래 `context` 필드 이름과 같다.
 
-예측 필드: `prediction_id`, `prediction_kind`(APPROACH/TRAVERSE), `target_id`, `made_at_sim_s`, `base_s`, `correction_s`, `predicted_s`, `margin_s`, `quality`(VALID/INSUFFICIENT/STALE), `model_version`, `feature_schema_version`, `source_sample_seq`. 수치는 유한·비음수(보정값 제외), 만료·다른 지도·알 수 없는 모델 버전이면 사용하지 않는다.
-
-## 4. WebSocket
-
-엔드포인트: `/api/v1/ws`. 인증된 역할의 채널만 서버가 선택해 전달한다. 운전자는 자기 안내와 접근 관련 최소 정보만 받는다.
+응답:
 
 ```json
 {
-  "schema_version": 1,
-  "connection_id": "conn-01",
-  "run_id": "run-001",
-  "seq": 42,
-  "type": "guidance.changed",
-  "server_time": "2026-10-17T03:00:00Z",
-  "sim_time_s": 20.0,
-  "payload": {
-    "guidance_id": "g-01",
-    "guidance_version": 2,
-    "vehicle_id": "truck-A",
-    "state": "WAIT",
-    "zone_id": "zone-01",
-    "waiting_node_id": "wait-east",
-    "reason_code": "OPPOSING_PRIORITY",
-    "arrival_in_s": 35.0,
-    "valid_until_sim_s": 25.0
+  "emergency": {
+    "is_emergency": false,
+    "by_rule": false,
+    "by_model": false,
+    "matched_rules": [],
+    "model_score": 0.07,
+    "model_version": "emergency-tfidf-lr-0.1.0"
+  },
+  "context": {
+    "symptom": "눈 통증",
+    "body_part": "눈",
+    "onset": "오늘 오후",
+    "task_type": "용접",
+    "ppe_worn": "partial",
+    "incident": "보안경을 잠깐 벗음",
+    "work_related": null
+  },
+  "missing_fields": ["work_related"],
+  "department": { "code": "ophthalmology", "label_ko": "안과" },
+  "notice": "증상이 심해지면 119에 전화하세요.",
+  "context_status": "OK"
+}
+```
+
+- 응급 판단은 `by_rule OR by_model`이다. LLM 결과를 쓰지 않는다. 모델을 쓸 수 없으면 `by_model`·`model_score`·`model_version`이 `null`이고 규칙만으로 판단한다.
+- `is_emergency`가 `true`면 프론트는 다른 화면보다 119 화면을 먼저 띄운다. 이때 `context`는 채워질 수도, `null`일 수도 있다.
+- `notice`는 응급 여부와 상관없이 항상 있다.
+- `ppe_worn`: `yes` / `no` / `partial` / `null`. `work_related`: `yes` / `no` / `unsure` / `null`. 이 값은 근로자 응답의 기록이며 산재 판정이 아니다.
+- `context_status`: `OK` / `LLM_UNAVAILABLE`. LLM이 실패하면 `context`는 `null`, `missing_fields`는 전체 항목, 응급 결과는 그대로 낸다.
+- 진료과 코드: `emergency`, `ophthalmology`(안과), `orthopedics`(정형외과), `dermatology`(피부과), `internal_medicine`(내과), `family_medicine`(가정의학과, 대응 표에 없을 때). 증상·부위에서 진료과로 가는 대응 표는 백엔드 규칙이다.
+
+## 4. POST /route
+
+질문(근로자 언어로 번역해 표시):
+
+| 질문 | 답 |
+|---|---|
+| `q1` 일하는 중에 다쳤거나, 일 때문에 생긴 증상인가요? | `yes` / `no` / `unsure` |
+| `q2` 건강보험증이 있나요? | `yes` / `no` / `unsure` |
+| `q3` 울산에서 90일 이상 살거나 일했나요? | `yes` / `no` |
+
+결정 규칙(위에서 처음 맞는 줄):
+
+| 조건 | `route` |
+|---|---|
+| `q1` = `yes` 또는 `unsure` | `WORK_INJURY` (산재 상담) |
+| `q1` = `no`, `q2` = `yes` | `HEALTH_INSURANCE` (건강보험 일반 진료) |
+| `q1` = `no`, `q2` = `unsure` | `SUPPORT_CENTER` (지원센터 상담, 건강보험 가입 확인 방법 함께) |
+| `q1` = `no`, `q2` = `no`, `q3` = `yes` | `ULSAN_MEDICAL_AID` (울산 의료비 지원, 입원·수술 시) |
+| `q1` = `no`, `q2` = `no`, `q3` = `no` | `SUPPORT_CENTER` |
+
+- 경로에 필요 없는 질문의 답은 `null`로 보낸다. 필요한 답이 빠지면 422 `MISSING_ANSWER`.
+- 예외: `q1`이 `yes`·`unsure`여도 `q2`를 보낼 수 있다. 이때 결과는 `WORK_INJURY` 그대로이고 `insurance_note`에 건강보험 여부를 적는다. 산재 승인 전 진료비 납부 방식이 확인되기 전까지 문구는 "상담으로 확인하세요"다.
+
+요청·응답:
+
+```json
+{ "lang": "vi", "q1": "no", "q2": "no", "q3": "yes" }
+```
+
+```json
+{
+  "route": "ULSAN_MEDICAL_AID",
+  "message": "Nếu bác sĩ nói cần nhập viện hoặc phẫu thuật, hãy hỏi về hỗ trợ chi phí y tế của Ulsan.",
+  "conditions": ["입원·수술이 필요할 때 지원", "본인 부담 약 10%", "외래 진료는 지원되지 않을 수 있음"],
+  "insurance_note": null,
+  "contacts": [
+    { "name_ko": "대한적십자사 울산지사", "phone": null, "verified": false }
+  ],
+  "disclaimer": "지원 여부는 각 기관이 최종 결정합니다.",
+  "info_as_of": "2026-10-21"
+}
+```
+
+- `verified: false`인 연락처는 화면에 "상담으로 확인하세요"로 표시하고 번호를 지어내지 않는다.
+- 참여 병원을 표기할 때 민간 "울산병원"과 "근로복지공단 울산병원"을 반드시 구분한다.
+- 정답 사례는 `fixtures/route-cases/`에 있다(콘텐츠 담당 작성).
+
+## 5. POST /summary
+
+요청:
+
+```json
+{
+  "lang": "vi",
+  "consent": true,
+  "include": ["symptom", "onset", "task_type", "incident"],
+  "context": {
+    "symptom": "눈 통증",
+    "body_part": "눈",
+    "onset": "오늘 오후",
+    "task_type": "용접",
+    "ppe_worn": "partial",
+    "incident": "보안경을 잠깐 벗음",
+    "work_related": null
   }
 }
 ```
 
-| 이벤트 | payload |
-|---|---|
-| `state.snapshot` | map_version, run 상태, vehicles, routes, guidance, reservations |
-| `vehicles.updated` | 변경된 차량의 전체 항목 배열; vehicle_version으로 비교 |
-| `route.changed` | 차량 ID, route_version, 경로 상태·간선 목록 |
-| `guidance.changed` | 위 예시 구조 |
-| `reservation.changed` | zone_id, reservation_version, state, owner_vehicle_id |
-| `map.changed` | map_version, 변경 간선 |
-| `run.changed` | 실행 상태, seed, 모드, sim_time_s |
-| `metrics.updated` | 누적 지표·표본 수 |
-| `heartbeat` | 서비스 상태, run 상태 |
+응답:
 
-`seq`는 필터링 후 각 연결에 전달하는 메시지 순서로 증가한다. 연결 최초와 재동기화 시 스냅샷의 상태·seq를 원자적으로 확보한 뒤 이후 변경을 전달한다. 새 연결은 새 connection_id와 seq를 사용한다. 누락 발견 시 클라이언트는 `{"type":"resync.request"}`를 보내고 새 스냅샷을 기다린다. 이 메시지에는 추가 필드가 필요 없다.
+```json
+{
+  "summary_ko": "오늘 오후 용접 작업 후 눈 통증이 시작되었습니다.",
+  "items": [
+    { "field": "symptom", "label_ko": "증상", "value_ko": "눈 통증" },
+    { "field": "onset", "label_ko": "시작 시점", "value_ko": "오늘 오후" },
+    { "field": "task_type", "label_ko": "작업 유형", "value_ko": "용접" },
+    { "field": "incident", "label_ko": "사고 상황", "value_ko": "보안경을 잠깐 벗음" }
+  ],
+  "generated_at": "2026-10-21T10:00:00Z",
+  "disclaimer": "이 카드는 근로자의 진술을 정리한 것이며 진단이 아닙니다."
+}
+```
 
-느린 클라이언트는 무제한 이벤트를 쌓지 않고 연결 종료 후 스냅샷으로 복구한다. 통행 안내는 실시간 이벤트 로그만 믿지 않고 재접속 스냅샷에도 포함한다.
+- `consent`가 `true`가 아니면 422 `CONSENT_REQUIRED`이고 LLM을 호출하지 않는다.
+- `include`에 없는 필드는 LLM 입력에서 빼고 응답 어디에도 나오지 않는다. 기본값은 프론트에서 "모두 포함"으로 보여 주고 근로자가 뺀다.
+- `context`의 `null` 항목은 카드에 넣지 않는다.
 
-## 5. 상태 정의
+## 6. GET /guide
 
-- 안내: IDLE / ROUTE / APPROACH / WAIT / RESERVED / UNKNOWN.
-- 구간: FREE / RESERVED / OCCUPIED / UNKNOWN.
-- 실행: CREATED / RUNNING / PAUSED / STOPPED / COMPLETED / FAILED.
-- 연결: CONNECTING / SYNCING / LIVE / STALE / DISCONNECTED.
+`GET /api/v1/guide?lang=vi` → 산재 상담 절차(단계 배열), 보관할 것(진료 기록·영수증·근무 기록), 연락처(`verified` 포함), `disclaimer`, `info_as_of`. 사업주가 돕지 않아도 근로자가 직접 신청할 수 있다는 안내를 포함한다. 체류 자격은 언급하지 않는다.
 
-안내 TTL 만료나 통신 끊김은 UNKNOWN을 의미한다. 구간 해제나 통과 허용을 의미하지 않는다. 예약 차량이 진입 전 이탈한 것이 확인되면 예약 취소 가능. 확인할 수 없으면 UNKNOWN. OCCUPIED는 검증된 실제 이탈로만 해제한다.
+## 7. GET /hospitals
 
-## 6. 데모 기본 주기
+`GET /api/v1/hospitals?at=19:00&day=mon&district=dong-gu&department=ophthalmology`
 
-- 시뮬레이터 tick: 100ms(10Hz).
-- 차량 상태 전송: 200ms(5Hz).
-- 예측 갱신: 1초 또는 중요 상태 변화.
-- heartbeat: 1초.
-- 네트워크 갱신이 3초 이상 없으면 STALE 표시.
+- `district`: `jung-gu`, `nam-gu`, `dong-gu`, `buk-gu`, `ulju-gun`. 구·군보다 자세한 위치는 받지 않는다.
+- 응답 항목: `name_ko`, `kind`(`clinic` / `pharmacy` / `er`), `department`, `open_until`(`HH:MM` 또는 `null`), `address_ko`, `phone`, `source`(`mock` / `public_api`), `info_as_of`.
+- 공공 API 확인 전까지는 동구·북구 기관 10~20곳의 mock 데이터를 쓴다. mock 항목은 `source: "mock"`으로 표시하고 화면에도 예시 데이터임을 밝힌다.
 
-이는 데모 초기 설정이며 현장 안전 임계값이 아니다. 재생 속도를 변경하면 시뮬레이션 시간만 배속하고 heartbeat 시간은 변경하지 않는다.
+## 8. 미결 사항
+
+| 항목 | 확인처 | 영향 |
+|---|---|---|
+| 울산 의료비 지원 2026년 운영 여부, 산재 해당자 제외, 외래 지원, 신청 창구 | 울산시 | `/route` `ULSAN_MEDICAL_AID` 조건 문구 |
+| 울산외국인근로자지원센터 연락처·방문 시간 | 지원센터 | `contacts` |
+| 근로복지공단 고객센터·다국어 상담 번호 (1350은 고용노동부) | 근로복지공단 | `contacts`, `/guide` |
+| 산재 승인 전 진료비 납부 방식과 환급 절차 | 근로복지공단 | `insurance_note` |
+| 요일별 진료 시간 공공 API | 공공데이터포털 | `/hospitals` `source` |
+
+확인되면 이 표에서 지우고 해당 장의 문구와 `info_as_of`를 갱신한다.

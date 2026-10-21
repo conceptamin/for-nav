@@ -7,20 +7,22 @@
 - main에 직접 커밋·push하지 않는다. 로컬 훅과 GitHub 룰셋이 둘 다 막는다.
 - 작업은 브랜치에서 하고 PR을 연다. **1명 이상 승인**과 CI 통과 후 병합한다.
 - 저장소 소유자(admin)는 승인 없이 PR을 병합할 수 있다. GitHub은 작성자가 자기 PR을 승인하지 못하게 하므로 룰셋 예외로 둔다. 이때 CI 통과는 직접 확인한다.
-- 브랜치 이름은 `<영역>/<내용>` 형식으로 쓴다. 예: `frontend/map-view`, `backend/reservation`, `modeling/baseline`, `docs/api-contract`.
+- 브랜치 이름은 `<영역>/<내용>` 형식으로 쓴다. 예: `frontend/summary-card`, `backend/route-rules`, `modeling/baseline`, `docs/api-contract`.
 
 ## 2. 폴더를 지킨다
 
-| 폴더 | 무엇 |
-|---|---|
-| `frontend/` | 프론트 코드. 문서는 `frontend/docs/` |
-| `backend/` | 백엔드·시뮬레이터 코드. 문서는 `backend/docs/` |
-| `modeling/` | 차량 에이전트·학습 코드. 문서는 `modeling/docs/` |
-| `docs/` | 세 영역이 같이 보는 문서(공통 API 계약) |
-| `fixtures/` | 세 영역이 같이 쓰는 테스트 데이터 |
+| 폴더 | 무엇 | 담당 |
+|---|---|---|
+| `frontend/` | 모바일 웹 화면. 문서는 `frontend/docs/` | 화면 |
+| `backend/` | API, 비용 경로·진료과 규칙, LLM 호출, 병원 데이터. 문서는 `backend/docs/` | 서버·LLM |
+| `modeling/` | 응급 감지 모델, 학습 데이터, 테스트셋, 평가. 문서는 `modeling/docs/` | 모델링 |
+| `docs/` | 세 영역이 같이 보는 문서(공통 API 계약) | 전원 |
+| `fixtures/` | 계약 예시 JSON, 비용 경로 정답 사례 | 콘텐츠·발표 (정답 사례) |
 
 - 내 영역 밖 폴더를 고쳐야 하면 PR에 적고 그 영역 담당에게 리뷰를 받는다.
 - 공통 계약(`docs/api-contract.md`)을 바꾸면 `fixtures/`와 쓰는 쪽 코드를 같은 PR에서 함께 고친다.
+- 비용 경로 정답(`fixtures/route-cases/`)은 규칙을 만들지 않은 사람이 쓴다. 규칙 담당은 정답을 고치지 않는다.
+- 최종 테스트셋(`modeling/data/test/`)은 10월 22일에 고정한 뒤 학습·조정에 쓰지 않는다.
 
 ## 3. phase 문서
 
@@ -28,21 +30,23 @@
 - 들어갈 내용: 목표, 범위(포함·제외), 할 일 체크리스트, 완료 기준, 검증 결과.
 - 다른 영역에 의존하면 그 문서 경로를 적는다. 예: `../../backend/docs/phase-02.md`
 - 구현이 끝나면 실행한 테스트와 결과를 같은 문서에 남긴다.
+- `phase-01.md`는 이전 프로젝트(YardPilot)에서 만든 실행·검증 기반의 기록이다. 코드가 그대로 남아 있어 지우지 않는다.
 
 ## 4. 테스트
 
 - PR을 올리기 전에 내 영역 테스트를 돌린다. 명령은 각 영역의 `AGENTS.md`에 있다.
-- CI가 PR마다 프론트·백엔드 테스트를 자동으로 돌린다. 실패하면 병합할 수 없다.
+- CI가 PR마다 프론트·백엔드 테스트를 자동으로 돌린다. 실패하면 병합할 수 없다. 모델링 CI는 모델링 phase-01에서 붙인다.
+- 테스트는 외부 LLM·외부 API를 호출하지 않는다. 가짜 구현으로 대신한다.
 
 ## 처음 한 번
 
 ```sh
 git clone <저장소 URL>
-cd yardpilot
+cd for-nav
 git config core.hooksPath .githooks
 ```
 
-마지막 줄이 main 직접 커밋·push를 막는 로컬 훅을 켠다.
+마지막 줄이 main 직접 커밋·push를 막는 로컬 훅을 켠다. 저장소 이름이 yardpilot일 때 받아 둔 사람은 `git remote set-url origin <새 URL>`로 주소를 바꾼다.
 
 ## 매번 하는 일
 
