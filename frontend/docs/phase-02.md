@@ -12,11 +12,12 @@
 
 - 이름 교체: `package.json`의 `name`, proxy 환경 변수 `YARDPILOT_API_ORIGIN` → `FORNAV_API_ORIGIN`, 관련 테스트·주석, `frontend/AGENTS.md`의 설명. 기본값 `http://127.0.0.1:8000`은 유지한다. 쓰지 않는 WebSocket proxy(`/api/v1/ws`)는 지운다.
 - YardPilot 화면 자리(`/driver/:vehicleId`, `/control`, `/demo`, `/runs/:runId`)와 해당 `features/` 폴더를 지우고, [기획서 2장](proposal.md)의 `/`, `/consent`, `/describe`, `/emergency`, `/route`, `/card`를 만든다. 404는 유지한다.
-- 언어 파일 `en`·`vi`와 누락 키 검사 테스트.
-- 계약 3·4·5장 응답의 Zod 스키마(이번 phase는 손으로 작성, 생성 연결은 phase-03). 스키마는 `fixtures/contract/` 예시로 테스트한다.
+- 언어 파일 `en`·`vi`와 누락 키 검사 테스트. 계약 3·4·5장 코드값(`route`, `conditions`, `insurance_note`, 진료과, 오류 코드)의 문구를 넣고, 코드값마다 두 언어 키가 있는지 검사한다.
+- 계약 3·4·5장 응답의 Zod 스키마(손으로 작성. openapi-typescript 생성 타입과의 일치 검사는 phase-03). 스키마는 `fixtures/contract/` 예시로 테스트한다.
 - `/triage`, `/route`, `/summary` 호출 클라이언트.
 - 화면 분기: 응급 → 119 우선, 네트워크 오류 → 119 안내 + 재시도, 빈 항목 되묻기, Q1~Q3 순서와 건너뛰기, 카드 항목 선택과 동의.
-- 모든 화면의 "증상이 심해지면 119" 고정 표시, 결과 화면의 기관 최종 결정 문구와 정보 기준일.
+- 모든 화면의 "증상이 심해지면 119" 고정 표시, `/route` 결과 화면의 기관 최종 결정 문구와 정보 기준일.
+- `/triage`에서 받은 `work_related`를 Q1 기본 선택으로 채우기(계약 4장).
 - Playwright E2E: 백엔드 응답을 가로채(mock) 데모 흐름을 360px·1440px에서 끝까지 통과.
 
 제외:

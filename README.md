@@ -30,4 +30,4 @@ modeling/              응급 감지 모델·테스트셋·평가       문서: 
 
 ## 작업 방식
 
-[작업 약속](CONTRIBUTING.md)을 따른다. 요약: main은 PR로만 바꾸고, 1명 승인과 CI 통과 후 병합한다.
+[작업 약속](CONTRIBUTING.md)을 따른다. 요약: main은 PR로만 바꾸고, 리뷰를 받은 뒤 CI가 통과하면 병합한다.

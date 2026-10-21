@@ -10,7 +10,7 @@
 - [프론트 기획서](../../frontend/docs/proposal.md)
 - [모델링 기획서](../../modeling/docs/proposal.md)
 
-하지 않는 일: 진단, 산재 판정, 작업 관련성 분류, 체류 자격 확인, 개인 식별 정보 수집, 증상 저장, 약 정보 설명(약봉투 OCR 제외).
+하지 않는 일: 진단, 산재 판정, 작업 관련성 분류, 체류 자격 확인, 개인 식별 정보 수집, 증상 저장, 약 정보 설명과 약봉투 OCR.
 
 ## 2. 처리 흐름
 
@@ -21,9 +21,9 @@ POST /triage
           └─> LLM 맥락 추출 ────┴──────> context, missing_fields
                                    └──> 진료과 대응 표 ─> department
 
-POST /route    Q1~Q3 ─> 결정 표 ─> route, message, contacts
+POST /route    Q1~Q3 ─> 결정 표 ─> route, conditions, contacts
 POST /summary  context + include + consent ─> (뺀 항목 제거) ─> LLM ─> summary_ko
-GET  /guide    정적 콘텐츠 (언어별)
+GET  /guide    정적 콘텐츠 (단계 코드, 연락처)
 GET  /hospitals at, day, district, department ─> mock 또는 공공 API
 ```
 
@@ -36,11 +36,11 @@ GET  /hospitals at, day, district, department ─> mock 또는 공공 API
 | `api/` | 라우터, 요청·응답 Pydantic 모델(계약의 원본) |
 | `emergency/` | 키워드 규칙(언어별 표현 목록), 모델 불러오기·추론, OR 결합 |
 | `extraction/` | LLM 프롬프트와 구조화 출력 검증, 빈 항목 계산 |
-| `routing/` | 비용 경로 결정 표, 언어별 안내 문구, 연결 기관 |
+| `routing/` | 비용 경로 결정 표, 조건 코드, 연결 기관 |
 | `departments/` | 증상·부위 → 진료과 대응 표 |
 | `summary/` | 항목 필터, LLM 요약 생성 |
 | `llm/` | LLM 클라이언트 인터페이스, 실제 구현, 테스트용 가짜 구현 |
-| `content/` | 산재 안내·연락처·병원 mock 데이터(정보 기준일 포함) |
+| `content/` | 산재 안내 단계 코드·연락처·병원 mock 데이터(정보 기준일 포함) |
 
 규칙 모듈(`routing/`, `departments/`, `emergency/`의 규칙 부분)은 FastAPI·LLM을 import하지 않는 순수 함수로 둔다.
 
@@ -55,6 +55,8 @@ GET  /hospitals at, day, district, department ─> mock 또는 공공 API
 ## 5. 비용 경로 규칙
 
 결정 표는 계약 4장이 기준이다. 일과 관련되면 항상 산재 상담이 먼저다(산재가 인정되면 산재보험이 치료비를 부담). Q2 "잘 모르겠어요"와 Q3 "아니요"는 지원센터 상담으로 보낸다. 입원·수술 필요 여부는 다친 직후에 알 수 없으므로 묻지 않고, 울산 의료비 지원 결과에서 조건으로 안내한다.
+
+서버는 아래 안내 요지를 문장으로 보내지 않고 `route`·`conditions` 코드로 보낸다. 표는 프론트 언어 파일 문구의 기준이다([계약 1장](../../docs/api-contract.md)).
 
 | 경로 | 안내 요지 | 연결 기관 |
 |---|---|---|
@@ -84,3 +86,6 @@ GET  /hospitals at, day, district, department ─> mock 또는 공공 API
 ## 8. 측정
 
 성능 목표와 측정 방법은 [모델링 기획서](../../modeling/docs/proposal.md)의 지표 표를 따른다. 백엔드가 직접 맡는 지표는 비용 경로 안내 정확도(가상 사례 30개, 목표 예시 90% 이상)와 작업 맥락 추출 정확도(항목별, 목표 예시 90% 이상)다. 목표치는 예시이며 측정 전 달성을 적지 않는다.
+
+- 비용 경로 정답 사례는 규칙 테스트로도 쓰므로 CI에서는 전부 통과해야 한다. 정확도는 정답 사례를 처음 연결했을 때(규칙 수정 전) 수치를 분자·분모와 함께 기록한다.
+- 작업 맥락 추출 정확도를 잴 정답 데이터(위치, 작성자, 형식)는 아직 정하지 않았다. phase-03에서 정하고, 정하기 전에는 이 지표를 보고하지 않는다.
