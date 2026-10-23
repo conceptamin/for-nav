@@ -8,6 +8,7 @@
 
 ```text
 docs/api-contract.md   공통 API 계약 (세 영역 공유)
+docs/git-convention.md 브랜치·커밋·PR 형식
 fixtures/              공통 테스트 데이터 (계약 예시, 비용 경로 정답 사례)
 frontend/              모바일 웹 (React·Vite)          문서: frontend/docs/
 backend/               API·규칙 엔진·LLM 호출 (FastAPI)  문서: backend/docs/
@@ -30,4 +31,4 @@ modeling/              응급 감지 모델·테스트셋·평가       문서: 
 
 ## 작업 방식
 
-[작업 약속](CONTRIBUTING.md)을 따른다. 요약: main은 PR로만 바꾸고, 리뷰를 받은 뒤 CI가 통과하면 병합한다.
+[작업 약속](CONTRIBUTING.md)과 [Git 컨벤션](docs/git-convention.md)을 따른다. 요약: main은 PR로만 바꾸고, 리뷰를 받은 뒤 CI가 통과하면 병합한다.
