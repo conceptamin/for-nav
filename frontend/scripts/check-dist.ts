@@ -3,8 +3,9 @@
 // 식별자·오류 메시지 문자열만 허용한다. 실행 중 외부 요청 여부는 E2E가 따로 확인한다.
 import { readdirSync, readFileSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const DIST = new URL('../dist/', import.meta.url).pathname;
+const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 
 const JS_ALLOWED: ReadonlyArray<[prefix: string, reason: string]> = [
   ['http://www.w3.org/', 'SVG·MathML·XLink XML 네임스페이스 식별자(React DOM createElementNS)'],
