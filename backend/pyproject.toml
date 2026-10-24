@@ -1,7 +1,7 @@
 [project]
-name = "yardpilot-backend"
+name = "fornav-backend"
 version = "0.1.0"
-description = "YardPilot 관제 API 서버"
+description = "for-nav 외국인 의료이용 상담 API 서버"
 requires-python = ">=3.11,<3.12"
 dependencies = [
     "fastapi==0.143.0",
