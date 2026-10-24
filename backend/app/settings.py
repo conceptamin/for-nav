@@ -4,9 +4,9 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-HOST_ENV = "YARDPILOT_API_HOST"
-PORT_ENV = "YARDPILOT_API_PORT"
-# 프론트 dev proxy 기본값 YARDPILOT_API_ORIGIN=http://127.0.0.1:8000과 맞춘다.
+HOST_ENV = "FORNAV_API_HOST"
+PORT_ENV = "FORNAV_API_PORT"
+# 프론트 dev proxy의 기본 API origin(http://127.0.0.1:8000)과 맞춘다.
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
 

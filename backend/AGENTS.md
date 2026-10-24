@@ -48,7 +48,7 @@ uv run python -m app
 - `uv sync --locked`: 커밋된 `uv.lock`만으로 `.venv`를 만든다. lock과 `pyproject.toml`이 어긋나면 실패한다.
 - `uv run mypy`: strict, 대상은 `app`과 `tests`다.
 - `uv run pytest`: `testpaths`가 `tests`다. 파일만 돌릴 때는 `uv run pytest tests/test_app.py`. 경고는 오류로 처리한다.
-- `uv run python -m app`: Uvicorn 단일 worker(reload 없음)로 실행한다. 바인드는 `YARDPILOT_API_HOST`(기본 `127.0.0.1`)와 `YARDPILOT_API_PORT`(기본 `8000`)로 바꾼다. phase-02에서 `FORNAV_API_HOST`·`FORNAV_API_PORT`로 바꾼다. 기본값은 프론트 dev proxy 기본값 `http://127.0.0.1:8000`과 같다. 잘못된 값이면 기동하지 않고 종료 코드 1로 끝난다.
+- `uv run python -m app`: Uvicorn 단일 worker(reload 없음)로 실행한다. 바인드는 `FORNAV_API_HOST`(기본 `127.0.0.1`)와 `FORNAV_API_PORT`(기본 `8000`)로 바꾼다. 기본값은 프론트 dev proxy 기본값 `http://127.0.0.1:8000`과 같다. 잘못된 값이면 기동하지 않고 종료 코드 1로 끝난다.
 - Swagger UI(`/docs`)·ReDoc(`/redoc`)은 외부 CDN 자산을 쓰므로 제공하지 않는다.
 
 의존성을 추가하거나 갱신할 때는 PyPI·공식 문서에서 Python 3.11 지원과 호환 범위를 확인하고 phase 문서에 출처와 날짜를 남긴다.

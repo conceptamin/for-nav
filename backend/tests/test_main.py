@@ -5,13 +5,13 @@ import uvicorn
 from fastapi import FastAPI
 
 import app.__main__ as entrypoint
-from app.settings import PORT_ENV
+from app.settings import HOST_ENV, PORT_ENV
 
 
 def test_run_command_uses_single_worker_without_reload(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[tuple[Any, dict[str, Any]]] = []
     monkeypatch.setattr(uvicorn, "run", lambda app, **kw: calls.append((app, kw)))
-    monkeypatch.delenv("YARDPILOT_API_HOST", raising=False)
+    monkeypatch.delenv(HOST_ENV, raising=False)
     monkeypatch.delenv(PORT_ENV, raising=False)
 
     entrypoint.main()

@@ -58,7 +58,7 @@ def test_health_request_does_not_touch_io_or_leak_env(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # 내부 정보가 응답에 섞이면 드러나도록 같은 값을 환경 변수에 둔다.
-    for name in ("YARDPILOT_API_HOST", "YARDPILOT_API_PORT", "YARDPILOT_TOKEN", "DATABASE_URL"):
+    for name in ("FORNAV_API_HOST", "FORNAV_API_PORT", "FORNAV_TOKEN", "DATABASE_URL"):
         monkeypatch.setenv(name, SECRET)
     # 첫 요청에서 Pydantic이 응답 직렬화기를 만들며 플러그인 설정을 1회 읽는다. 예열 후 막는다.
     assert client.get("/api/v1/health").status_code == 200
