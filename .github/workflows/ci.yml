@@ -1,0 +1,18 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  # 코드를 모두 비운 상태에서도 룰셋의 필수 검사(frontend·backend)가 보고되도록 이름만 남긴다.
+  # 새 기획의 코드가 들어오면 실제 검사 단계로 바꾼다.
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "frontend 코드 없음 - 검사할 대상이 없다"
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "backend 코드 없음 - 검사할 대상이 없다"
