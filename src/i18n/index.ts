@@ -3,13 +3,15 @@
 import { useApp } from '../state/AppState';
 import type { Lang, Term } from '../domain/vocab';
 import { en, type MessageKey } from './en';
+import { ko } from './ko';
 import { vi } from './vi';
 
-const MESSAGES: Record<Lang, Record<MessageKey, string>> = { en, vi };
+const MESSAGES: Record<Lang, Record<MessageKey, string>> = { en, vi, ko };
 
 export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string }[] = [
   { lang: 'en', native: 'English', english: 'English' },
   { lang: 'vi', native: 'Tiếng Việt', english: 'Vietnamese' },
+  { lang: 'ko', native: '한국어', english: 'Korean' },
 ];
 
 export type { MessageKey };

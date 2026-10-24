@@ -7,7 +7,7 @@ import type { CoverageResult } from './coverage';
 import { PATH_KO } from './coverage';
 import type { Intake } from './triage';
 import type { Department, Lang, Term } from './vocab';
-import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, josa, ONSETS, pron, SYMPTOMS, WORK_TYPES } from './vocab';
+import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, josa, LANGUAGE_NAMES_KO, ONSETS, pron, SYMPTOMS, WORK_TYPES } from './vocab';
 
 export interface Line {
   ko: string;
@@ -24,10 +24,10 @@ export interface Profile {
   smoking: 'no' | 'yes' | 'quit' | null;
 }
 
-type Tri = { ko: string; en: string; vi: string };
-const pick = (t: Tri | Term, lang: Lang) => (lang === 'vi' ? t.vi : t.en);
+type Tri = Record<Lang, string>;
+const pick = (t: Tri | Term, lang: Lang) => t[lang];
 
-const joinTerms = (terms: Term[], key: 'ko' | 'en' | 'vi') => terms.map((t) => t[key]).join(', ');
+const joinTerms = (terms: Term[], key: Lang) => terms.map((t) => t[key]).join(', ');
 const joinPron = (terms: Term[], lang: Lang) => terms.map((t) => pron(t, lang)).join(', ');
 
 // ---------------------------------------------------------------------------
@@ -53,30 +53,34 @@ function symptomLine(intake: Intake, lang: Lang): Line | null {
   const withJosa = josa(symKo, '이', '가');
   const josaPron = withJosa.endsWith('이') ? 'i' : 'ga';
   const ko = `${joinTerms(parts, 'ko')}에 ${withJosa} 있어서 진료받고 싶습니다.`;
-  const native =
-    lang === 'vi'
-      ? `Tôi bị ${joinTerms(syms, 'vi').toLowerCase()} ở ${joinTerms(parts, 'vi').toLowerCase()}, muốn được khám.`
-      : `I have ${joinTerms(syms, 'en').toLowerCase()} in my ${joinTerms(parts, 'en').toLowerCase()} and would like to see a doctor.`;
+  const native = {
+    ko,
+    vi: `Tôi bị ${joinTerms(syms, 'vi').toLowerCase()} ở ${joinTerms(parts, 'vi').toLowerCase()}, muốn được khám.`,
+    en: `I have ${joinTerms(syms, 'en').toLowerCase()} in my ${joinTerms(parts, 'en').toLowerCase()} and would like to see a doctor.`,
+  }[lang];
+  if (lang === 'ko') return { ko, native, pron: '' };
   const tail = lang === 'vi' ? 'ít-xơ-xơ chin-liô-bát-cô xíp-xưm-ni-đa' : 'it-seo-seo jil-lyo-bat-go sip-seum-ni-da';
   return { ko, native, pron: `${joinPron(parts, lang)}-e ${joinPron(syms, lang)}-${josaPron} ${tail}` };
 }
 
 function departmentLine(dept: Department, lang: Lang): Line {
   const d = DEPARTMENTS[dept];
+  const ko = `${d.ko} 진료를 원합니다.`;
   return {
-    ko: `${d.ko} 진료를 원합니다.`,
-    native: lang === 'vi' ? `Tôi muốn khám ${d.vi.toLowerCase()}.` : `I would like to see ${d.en}.`,
-    pron: `${pron(d, lang)} ${lang === 'vi' ? 'chin-liô-rưn uôn-ham-ni-đa' : 'jil-lyo-reul won-ham-ni-da'}`,
+    ko,
+    native: { ko, vi: `Tôi muốn khám ${d.vi.toLowerCase()}.`, en: `I would like to see ${d.en}.` }[lang],
+    pron: lang === 'ko' ? '' : `${pron(d, lang)} ${lang === 'vi' ? 'chin-liô-rưn uôn-ham-ni-đa' : 'jil-lyo-reul won-ham-ni-da'}`,
   };
 }
 
 function onsetLine(intake: Intake, lang: Lang): Line | null {
   if (!intake.onset) return null;
   const o = ONSETS[intake.onset];
+  const ko = `${o.ko} 시작됐습니다.`;
   return {
-    ko: `${o.ko} 시작됐습니다.`,
-    native: lang === 'vi' ? `Bắt đầu từ ${o.vi.toLowerCase()}.` : `It started ${o.en.toLowerCase()}.`,
-    pron: `${pron(o, lang)} ${lang === 'vi' ? 'xi-chác-toét-xưm-ni-đa' : 'si-jak-dwaet-seum-ni-da'}`,
+    ko,
+    native: { ko, vi: `Bắt đầu từ ${o.vi.toLowerCase()}.`, en: `It started ${o.en.toLowerCase()}.` }[lang],
+    pron: lang === 'ko' ? '' : `${pron(o, lang)} ${lang === 'vi' ? 'xi-chác-toét-xưm-ni-đa' : 'si-jak-dwaet-seum-ni-da'}`,
   };
 }
 
@@ -99,7 +103,8 @@ export function buildDeskSheet(intake: Intake, dept: Department, firstVisit: boo
   if (onset) lines.push(onset);
   if (intake.workRelated === 'yes') lines.push(phraseLine(PHRASES.workYes, lang));
   if (intake.workRelated === 'no') lines.push(phraseLine(PHRASES.workNo, lang));
-  lines.push(phraseLine(PHRASES.korean, lang));
+  // "한국어가 서툽니다"는 한국어 사용자에게는 넣지 않는다.
+  if (lang !== 'ko') lines.push(phraseLine(PHRASES.korean, lang));
   const workRelatedKo = { yes: '예(업무 중 발생)', no: '아니요', unknown: '모름' }[intake.workRelated ?? 'unknown'];
   const docs: Tri[] = [
     { ko: '외국인등록증', en: 'Alien registration card (ARC)', vi: 'Thẻ đăng ký người nước ngoài (ARC)' },
@@ -120,15 +125,16 @@ export interface Faq {
 
 const ans = (ko: string, en: string, vi: string, roman: string, viPron: string, lang: Lang): Line => ({
   ko,
-  native: lang === 'vi' ? vi : en,
-  pron: lang === 'vi' ? viPron : roman,
+  native: { ko, en, vi }[lang],
+  pron: { ko: '', en: roman, vi: viPron }[lang],
 });
 
 export function buildCallScript(intake: Intake, dept: Department, lang: Lang): { lines: Line[]; faq: Faq[] } {
   const lines: Line[] = [phraseLine(PHRASES.hello, lang), departmentLine(dept, lang)];
   const sym = symptomLine(intake, lang);
   if (sym) lines.push(sym);
-  lines.push(phraseLine(PHRASES.korean, lang), phraseLine(PHRASES.arc, lang));
+  if (lang !== 'ko') lines.push(phraseLine(PHRASES.korean, lang));
+  lines.push(phraseLine(PHRASES.arc, lang));
 
   const faq: Faq[] = [
     {
@@ -208,8 +214,8 @@ const FIELD_LABEL: Record<ReportField, Tri> = {
   meds: { ko: '복용 중인 약', en: 'Medicines I take', vi: 'Thuốc đang dùng' },
 };
 
-export function fieldLabel(field: ReportField, lang: Lang | 'ko'): string {
-  return lang === 'ko' ? FIELD_LABEL[field].ko : pick(FIELD_LABEL[field], lang);
+export function fieldLabel(field: ReportField, lang: Lang): string {
+  return pick(FIELD_LABEL[field], lang);
 }
 
 function age(birthDate: string): number | null {
@@ -221,7 +227,7 @@ function age(birthDate: string): number | null {
   return a;
 }
 
-function baselineText(p: Profile, key: 'ko' | 'en' | 'vi'): string {
+function baselineText(p: Profile, key: Lang): string {
   const parts: string[] = [];
   const a = age(p.birthDate);
   const sex = { male: { ko: '남', en: 'Male', vi: 'Nam' }, female: { ko: '여', en: 'Female', vi: 'Nữ' } }[p.sex];
@@ -272,9 +278,10 @@ export function buildClinicianReport(
     circKo.push(`업종: ${INDUSTRIES[intake.industry].ko}`);
     circNative.push(`${lang === 'vi' ? 'Ngành' : 'Industry'}: ${pick(INDUSTRIES[intake.industry], lang)}`);
   }
-  add('circumstance', circKo.join(' / '), circNative.join(' / '));
-  // 자유 입력은 번역 LLM이 연결되기 전까지 원문 그대로 둔다.
-  add('note', intake.freeText ? `${intake.freeText} (원문, 번역 미연결)` : '', intake.freeText);
+  add('circumstance', circKo.join(' / '), lang === 'ko' ? circKo.join(' / ') : circNative.join(' / '));
+  // 자유 입력은 번역 LLM이 연결되기 전까지 원문 그대로 둔다. 한국어 입력은 번역이 필요 없다.
+  const noteKo = lang === 'ko' ? intake.freeText : `${intake.freeText} (원문, 번역 미연결)`;
+  add('note', intake.freeText ? noteKo : '', intake.freeText);
   if (profile) add('baseline', baselineText(profile, 'ko'), baselineText(profile, lang));
   add('meds', meds, meds);
 
@@ -334,7 +341,7 @@ export function buildCenterSummary(i: CenterSummaryInput): { ko: string; native:
   const ko: string[] = [];
   const nv: string[] = [];
   const where = [intake.district ? DISTRICTS[intake.district].ko : null, intake.industry ? `${INDUSTRIES[intake.industry].ko} 업종` : null].filter(Boolean);
-  ko.push(`${lang === 'vi' ? '베트남어' : '영어'} 사용 근로자${where.length ? `(${where.join(', ')})` : ''}.`);
+  ko.push(`${LANGUAGE_NAMES_KO[lang]} 사용 근로자${where.length ? `(${where.join(', ')})` : ''}.`);
   if (parts.length || syms.length) ko.push(`${joinTerms(parts, 'ko') || '부위 미입력'} ${joinTerms(syms, 'ko') || ''}${intake.onset ? `, ${ONSETS[intake.onset].ko} 시작` : ''}.`);
   if (intake.workRelated) ko.push(`업무 중 발생: ${{ yes: '예', no: '아니요', unknown: '모름' }[intake.workRelated]}${intake.workType ? `(${WORK_TYPES[intake.workType].ko})` : ''}.`);
   ko.push(`응급 판정 이력: ${i.emergencyFlag ? '있음' : '없음'}.`);
@@ -343,13 +350,13 @@ export function buildCenterSummary(i: CenterSummaryInput): { ko: string; native:
   ko.push(`요청 유형: ${REQUEST_TYPE_KO[i.requestType]}.`);
   if (i.contactMethod) ko.push(`연락 희망: ${CONTACT_METHOD_KO[i.contactMethod]}.`);
 
-  const L = (en: string, vi: string) => (lang === 'vi' ? vi : en);
-  if (parts.length || syms.length) nv.push(`${L('Problem', 'Vấn đề')}: ${joinTerms(syms, lang)} — ${joinTerms(parts, lang)}${intake.onset ? ` (${pick(ONSETS[intake.onset], lang)})` : ''}.`);
-  if (intake.workRelated) nv.push(`${L('Happened at work', 'Xảy ra khi làm việc')}: ${pick({ ko: '', en: { yes: 'yes', no: 'no', unknown: 'not sure' }[intake.workRelated], vi: { yes: 'có', no: 'không', unknown: 'không rõ' }[intake.workRelated] }, lang)}.`);
-  if (intake.district) nv.push(`${L('Area', 'Khu vực')}: ${pick(DISTRICTS[intake.district], lang)}.`);
-  if (intake.industry) nv.push(`${L('Industry', 'Ngành')}: ${pick(INDUSTRIES[intake.industry], lang)}.`);
-  if (intake.freeText) nv.push(`${L('My note', 'Ghi chú')}: "${intake.freeText}"`);
-  nv.push(`${L('Request', 'Yêu cầu')}: ${pick(REQUEST_TYPE_NATIVE[i.requestType], lang)}.`);
+  const L = (en: string, vi: string, ko: string) => ({ en, vi, ko })[lang];
+  if (parts.length || syms.length) nv.push(`${L('Problem', 'Vấn đề', '불편한 점')}: ${joinTerms(syms, lang)} — ${joinTerms(parts, lang)}${intake.onset ? ` (${pick(ONSETS[intake.onset], lang)})` : ''}.`);
+  if (intake.workRelated) nv.push(`${L('Happened at work', 'Xảy ra khi làm việc', '업무 중 발생')}: ${pick({ ko: { yes: '예', no: '아니요', unknown: '모름' }[intake.workRelated], en: { yes: 'yes', no: 'no', unknown: 'not sure' }[intake.workRelated], vi: { yes: 'có', no: 'không', unknown: 'không rõ' }[intake.workRelated] }, lang)}.`);
+  if (intake.district) nv.push(`${L('Area', 'Khu vực', '지역')}: ${pick(DISTRICTS[intake.district], lang)}.`);
+  if (intake.industry) nv.push(`${L('Industry', 'Ngành', '업종')}: ${pick(INDUSTRIES[intake.industry], lang)}.`);
+  if (intake.freeText) nv.push(`${L('My note', 'Ghi chú', '내 메모')}: "${intake.freeText}"`);
+  nv.push(`${L('Request', 'Yêu cầu', '요청')}: ${pick(REQUEST_TYPE_NATIVE[i.requestType], lang)}.`);
   return { ko: ko.join(' '), native: nv.join('\n') };
 }
 

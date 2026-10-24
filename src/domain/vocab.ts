@@ -1,8 +1,9 @@
 // 고정 어휘: 신체 부위·증상·진료과·업종·구군 등.
 // 모든 항목은 한국어(의료진·센터 표시), 영어·베트남어(근로자 표시), 발음 표기(전화 스크립트용)를 함께 가진다.
+// 한국어를 고른 근로자는 한국어 표기를 그대로 보고, 발음 표기는 쓰지 않는다.
 
-export type Lang = 'en' | 'vi';
-export const LANGS: Lang[] = ['en', 'vi'];
+export type Lang = 'en' | 'vi' | 'ko';
+export const LANGS: Lang[] = ['en', 'vi', 'ko'];
 
 export interface Term {
   ko: string;
@@ -14,10 +15,14 @@ export interface Term {
   viPron: string;
 }
 
-/** 근로자 언어에 맞는 발음 표기 */
+/** 근로자 언어에 맞는 발음 표기. 한국어 사용자는 발음 표기가 필요 없어 빈 문자열을 돌려준다. */
 export function pron(term: Term, lang: Lang): string {
+  if (lang === 'ko') return '';
   return lang === 'vi' ? term.viPron : term.roman;
 }
+
+/** 날짜·시간 표시 로캘 */
+export const LOCALES: Record<Lang, string> = { en: 'en-GB', vi: 'vi-VN', ko: 'ko-KR' };
 
 export const BODY_PARTS = {
   head: { ko: '머리', en: 'Head', vi: 'Đầu', roman: 'meo-ri', viPron: 'mơ-ri' },
@@ -108,7 +113,7 @@ export type District = keyof typeof DISTRICTS;
 
 export type YesNoUnknown = 'yes' | 'no' | 'unknown';
 
-export const LANGUAGE_NAMES_KO: Record<Lang, string> = { en: '영어', vi: '베트남어' };
+export const LANGUAGE_NAMES_KO: Record<Lang, string> = { en: '영어', vi: '베트남어', ko: '한국어' };
 
 /** 한국어 단어 끝 받침 여부에 따라 조사를 고른다(이/가, 은/는 등). */
 export function josa(word: string, withBatchim: string, withoutBatchim: string): string {

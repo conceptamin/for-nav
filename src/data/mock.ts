@@ -32,7 +32,10 @@ function weighted<T>(r: () => number, items: [T, number][]): T {
   return items[items.length - 1]![0];
 }
 
-const SCENARIOS: { parts: BodyPart[]; syms: Symptom[]; work: YesNoUnknown; type: WorkType | null; text: Record<Lang, string> }[] = [
+// mock 사례는 실제 이용 비중이 큰 베트남어·영어로만 만든다(한국어 사례는 실제 전송으로만 들어온다).
+type MockLang = Exclude<Lang, 'ko'>;
+
+const SCENARIOS: { parts: BodyPart[]; syms: Symptom[]; work: YesNoUnknown; type: WorkType | null; text: Record<MockLang, string> }[] = [
   { parts: ['hand'], syms: ['pain', 'swelling'], work: 'yes', type: 'machine', text: { en: 'My finger got caught in the press machine, it is swollen.', vi: 'Ngón tay bị kẹp vào máy dập, bị sưng.' } },
   { parts: ['back'], syms: ['pain'], work: 'yes', type: 'lifting', text: { en: 'Back pain after lifting heavy parts.', vi: 'Đau lưng sau khi nâng hàng nặng.' } },
   { parts: ['eye'], syms: ['foreign', 'pain'], work: 'yes', type: 'grinding', text: { en: 'Something went into my eye while grinding.', vi: 'Bụi vào mắt khi đang mài.' } },
@@ -50,7 +53,7 @@ const SCENARIOS: { parts: BodyPart[]; syms: Symptom[]; work: YesNoUnknown; type:
 const ONSET_POOL: Onset[] = ['today', 'yesterday', 'days', 'week'];
 const DISTRICT_W: [District, number][] = [['buk', 30], ['dong', 22], ['ulju', 20], ['nam', 18], ['jung', 10]];
 const INDUSTRY_W: [Industry, number][] = [['autoparts', 32], ['shipbuilding', 30], ['chemical', 14], ['construction', 14], ['other', 10]];
-const LANG_W: [Lang, number][] = [['vi', 62], ['en', 38]];
+const LANG_W: [MockLang, number][] = [['vi', 62], ['en', 38]];
 const INS_W: [YesNoUnknown, number][] = [['yes', 55], ['no', 25], ['unknown', 20]];
 const REQ_W: [RequestType, number][] = [['booking', 34], ['interpret', 24], ['policy', 24], ['referral', 10], ['other', 8]];
 const CONTACT_W: [ContactMethod, number][] = [['phone', 35], ['zalo', 25], ['kakao', 20], ['sms', 15], ['visit', 5]];
