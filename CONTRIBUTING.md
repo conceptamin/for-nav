@@ -1,6 +1,6 @@
 # 작업 약속
 
-복잡한 절차 없이 아래만 지킨다.
+복잡한 절차 없이 아래만 지킨다. 브랜치·커밋·PR 형식은 [Git 컨벤션](docs/git-convention.md)에 있다.
 
 ## 1. main은 PR로만 바꾼다
 
@@ -16,7 +16,7 @@
 | `frontend/` | 모바일 웹 화면. 문서는 `frontend/docs/` | 화면 |
 | `backend/` | API, 비용 경로·진료과 규칙, LLM 호출, 병원 데이터. 문서는 `backend/docs/` | 서버·LLM |
 | `modeling/` | 응급 감지 모델, 학습 데이터, 테스트셋, 평가. 문서는 `modeling/docs/` | 모델링 |
-| `docs/` | 세 영역이 같이 보는 문서(공통 API 계약) | 전원 |
+| `docs/` | 세 영역이 같이 보는 문서(공통 API 계약, Git 컨벤션) | 전원 |
 | `fixtures/` | 계약 예시 JSON, 비용 경로 정답 사례 | 콘텐츠·발표 (정답 사례) |
 
 - 내 영역 밖 폴더를 고쳐야 하면 PR에 적고 그 영역 담당에게 리뷰를 받는다.
@@ -56,9 +56,9 @@ git pull
 git switch -c <영역>/<내용>
 # 작업하고 테스트
 git add <파일>
-git commit -m "<무엇을 왜 바꿨는지>"
+git commit                       # 제목: 변경 이유 한 줄, 본문: 바꾼 것과 테스트 결과
 git push -u origin <영역>/<내용>
-gh pr create --base main --fill
+gh pr create --base main         # --fill은 PR 템플릿을 건너뛰므로 쓰지 않는다
 ```
 
 리뷰를 받으면 GitHub에서 **Merge pull request**(merge commit)로 병합한다. 룰셋이 이 방식만 허용한다. 병합된 원격 브랜치는 자동으로 지워진다.

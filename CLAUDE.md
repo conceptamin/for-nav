@@ -1,6 +1,6 @@
 # for-nav 작업 규칙
 
-사람용 약속은 `CONTRIBUTING.md`에 있다. AI도 같은 약속을 따른다.
+사람용 약속은 `CONTRIBUTING.md`, 브랜치·커밋·PR 형식은 `docs/git-convention.md`에 있다. AI도 같은 약속을 따른다.
 
 - main에 직접 커밋·push하지 않는다. `<영역>/<내용>` 브랜치에서 작업한다.
 - AI는 작업 브랜치에서 관련 테스트를 돌린 뒤 커밋, push, PR 생성(`gh pr create --base main`)까지 한다. 커밋 여부를 따로 묻지 않는다. 병합(`gh pr merge`)과 병합된 브랜치 삭제는 사람이 요청할 때만 한다. 강제 push, main push, 훅·룰셋 우회는 하지 않는다.
