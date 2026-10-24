@@ -9,8 +9,9 @@ import type { Line } from '../../domain/templates';
 import { buildCallScript, buildDeskSheet } from '../../domain/templates';
 import type { Intake } from '../../domain/triage';
 import type { Department } from '../../domain/vocab';
-import { DEPARTMENTS } from '../../domain/vocab';
+import { DEPARTMENTS, LANGUAGE_NAMES_KO } from '../../domain/vocab';
 
+// 한국어 사용자는 발음 표기가 비어 있고 뜻이 한국어 문장과 같으므로, 그 줄은 숨긴다.
 function LineView({ line, big = false }: { line: Line; big?: boolean }) {
   const { t } = useT();
   return (
@@ -18,10 +19,12 @@ function LineView({ line, big = false }: { line: Line; big?: boolean }) {
       <div className={big ? 'ko-big' : 'ko'} lang="ko">
         {line.ko}
       </div>
-      <div className="pron">
-        🔊 <span className="small muted">{t('pronunciation')}:</span> {line.pron}
-      </div>
-      <div className="native">↳ {line.native}</div>
+      {line.pron && (
+        <div className="pron">
+          🔊 <span className="small muted">{t('pronunciation')}:</span> {line.pron}
+        </div>
+      )}
+      {line.native !== line.ko && <div className="native">↳ {line.native}</div>}
     </div>
   );
 }
@@ -78,7 +81,7 @@ export function DeskPage() {
           <dt>업무 중 발생</dt>
           <dd>{sheet.workRelatedKo}</dd>
           <dt>사용 언어</dt>
-          <dd>{lang === 'vi' ? '베트남어' : '영어'}</dd>
+          <dd>{LANGUAGE_NAMES_KO[lang]}</dd>
         </dl>
       </section>
       <section className="card">
@@ -88,7 +91,7 @@ export function DeskPage() {
         <ul style={{ margin: 0, paddingLeft: 20 }}>
           {sheet.docsKo.map((d) => (
             <li key={d.ko}>
-              <strong lang="ko">{d.ko}</strong> <span className="muted small">— {d.native}</span>
+              <strong lang="ko">{d.ko}</strong> {d.native !== d.ko && <span className="muted small">— {d.native}</span>}
             </li>
           ))}
         </ul>
@@ -131,7 +134,7 @@ export function CallPage() {
                 <div style={{ fontWeight: 800, fontSize: '1.1rem' }} lang="ko">
                   {f.q.ko}
                 </div>
-                <div className="small muted">{lang === 'vi' ? f.q.vi : f.q.en}</div>
+                {lang !== 'ko' && <div className="small muted">{f.q[lang]}</div>}
                 <div className="stack" style={{ marginTop: 8, gap: 6 }}>
                   {f.answers.map((a, i) => (
                     <Chip key={a.ko} pressed={chosen === i} onClick={() => setPicked({ ...picked, [f.id]: i })}>
@@ -145,7 +148,7 @@ export function CallPage() {
                     <div className="ko-big" lang="ko">
                       {answer.ko}
                     </div>
-                    <div className="small">🔊 {answer.pron}</div>
+                    {answer.pron && <div className="small">🔊 {answer.pron}</div>}
                   </div>
                 )}
               </div>

@@ -9,7 +9,7 @@ import { useApp } from '../../state/AppState';
 import type { Intake } from '../../domain/triage';
 import { extractFromText, mergeExtraction, newIntake, REASON_KO, triage } from '../../domain/triage';
 import type { BodyPart, Industry, Onset, Symptom, WorkType } from '../../domain/vocab';
-import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, ONSETS, pron, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
+import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, pron, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
 import type { District } from '../../domain/vocab';
 
 const STEP_COUNT = 4;
@@ -186,7 +186,9 @@ export function EmergencyPage() {
 
   const where = intake?.district ? `울산 ${DISTRICTS[intake.district].ko}` : '울산';
   const what = reasons.length ? reasons.map((r) => REASON_KO[r]).join(', ') : '응급 상황';
-  const koSentence = `응급 환자가 있습니다. 위치는 ${where}입니다. 증상은 ${what}입니다. 저는 한국어를 잘 못합니다. ${lang === 'vi' ? '베트남어' : '영어'} 통역을 부탁합니다.`;
+  // 한국어 사용자는 통역 요청 문장을 붙이지 않는다.
+  const interpret = lang === 'ko' ? '' : ` 저는 한국어를 잘 못합니다. ${LANGUAGE_NAMES_KO[lang]} 통역을 부탁합니다.`;
+  const koSentence = `응급 환자가 있습니다. 위치는 ${where}입니다. 증상은 ${what}입니다.${interpret}`;
 
   return (
     <div>
@@ -249,9 +251,11 @@ export function ResultPage() {
           <div className="ko" lang="ko">
             {primary.ko}
           </div>
-          <div>
-            <strong>{term(primary)}</strong> <span className="muted small">· {pron(primary, lang)}</span>
-          </div>
+          {lang !== 'ko' && (
+            <div>
+              <strong>{term(primary)}</strong> <span className="muted small">· {pron(primary, lang)}</span>
+            </div>
+          )}
           <a className="btn block" style={{ marginTop: 10 }} href={kakaoSearchUrl(primary.ko)} target="_blank" rel="noreferrer">
             🗺️ {t('mapDept')} — {primary.ko}
           </a>
@@ -259,7 +263,7 @@ export function ResultPage() {
         <div className="dept alt">
           <div className="small muted">{t('resultAlt')}</div>
           <div className="ko" lang="ko">
-            {alt.ko} <span className="small muted">· {term(alt)}</span>
+            {alt.ko} {lang !== 'ko' && <span className="small muted">· {term(alt)}</span>}
           </div>
           <a className="btn secondary block" style={{ marginTop: 8 }} href={kakaoSearchUrl(alt.ko)} target="_blank" rel="noreferrer">
             🗺️ {t('mapDept')} — {alt.ko}

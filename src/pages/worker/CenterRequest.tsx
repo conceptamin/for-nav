@@ -13,6 +13,7 @@ import { INFO_DATE, isAfterHours, nextOpenDay } from '../../domain/coverage';
 import type { ContactMethod, RequestType } from '../../domain/templates';
 import { buildCenterSummary } from '../../domain/templates';
 import { newIntake } from '../../domain/triage';
+import { LOCALES } from '../../domain/vocab';
 
 const REQUEST_TYPES: RequestType[] = ['booking', 'interpret', 'policy', 'referral', 'other'];
 const CONTACT_METHODS: ContactMethod[] = ['phone', 'sms', 'kakao', 'zalo', 'visit'];
@@ -62,7 +63,7 @@ export function CenterRequestPage() {
         {sent.afterHours ? (
           <div className="notice warn">
             🌙 {t('cenAfterHours')}{' '}
-            <strong>{next.toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
+            <strong>{next.toLocaleDateString(LOCALES[lang], { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
           </div>
         ) : (
           <div className="notice ok">{t('cenInHours')}</div>
@@ -197,7 +198,7 @@ export function MyPage() {
             {app.reports.map((r) => (
               <Link key={r.id} to={`/report/${r.id}`} className="row" style={{ justifyContent: 'space-between', textDecoration: 'none', color: 'inherit', minHeight: 44 }}>
                 <span>
-                  🩺 {new Date(r.createdAt).toLocaleString(r.language === 'vi' ? 'vi-VN' : 'en-GB')}
+                  🩺 {new Date(r.createdAt).toLocaleString(LOCALES[r.language])}
                   <span className="small muted"> · {r.rows.find((row) => row.field === 'symptoms')?.valueNative ?? ''}</span>
                 </span>
                 <span className="small">{t('myOpen')} →</span>

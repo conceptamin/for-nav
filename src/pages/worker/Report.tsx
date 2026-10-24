@@ -5,10 +5,11 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { toggleIn, Worse119 } from '../../components/common';
 import type { MessageKey } from '../../i18n';
-import { useT } from '../../i18n';
+import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import type { ReportField } from '../../domain/templates';
 import { buildClinicianReport, REPORT_FIELDS } from '../../domain/templates';
+import { LANGUAGE_NAMES_KO, LOCALES } from '../../domain/vocab';
 
 export function ReportBuilderPage() {
   const app = useApp();
@@ -89,17 +90,21 @@ export function ReportViewPage() {
     );
   }
 
-  const nativeLabel = report.language === 'vi' ? 'Tiếng Việt' : 'English';
+  const nativeLabel = LANGUAGE_OPTIONS.find((o) => o.lang === report.language)?.native ?? report.language;
+  // 한국어로 작성한 리포트는 두 벌이 같으므로 토글을 보이지 않는다.
+  const bilingual = report.language !== 'ko';
   return (
     <div>
-      <div className="toggle" role="group" style={{ marginBottom: 12 }}>
-        <button type="button" aria-pressed={showKo} onClick={() => setShowKo(true)}>
-          {t('repToggleKo')}
-        </button>
-        <button type="button" aria-pressed={!showKo} onClick={() => setShowKo(false)}>
-          {nativeLabel}
-        </button>
-      </div>
+      {bilingual && (
+        <div className="toggle" role="group" style={{ marginBottom: 12 }}>
+          <button type="button" aria-pressed={showKo} onClick={() => setShowKo(true)}>
+            {t('repToggleKo')}
+          </button>
+          <button type="button" aria-pressed={!showKo} onClick={() => setShowKo(false)}>
+            {nativeLabel}
+          </button>
+        </div>
+      )}
       <section className="card" style={{ borderTop: '6px solid var(--brand)' }} lang={showKo ? 'ko' : report.language}>
         <h1 style={{ fontSize: '1.3rem' }}>{showKo ? '외국인 근로자 증상 메모 (의료진용)' : t('repTitle')}</h1>
         <p className="small muted">
@@ -112,7 +117,7 @@ export function ReportViewPage() {
           </div>
         ))}
         <p className="footer-note">
-          {showKo ? `작성 ${new Date(report.createdAt).toLocaleString('ko-KR')} · 사용 언어: ${report.language === 'vi' ? '베트남어' : '영어'}` : new Date(report.createdAt).toLocaleString(report.language === 'vi' ? 'vi-VN' : 'en-GB')}
+          {showKo ? `작성 ${new Date(report.createdAt).toLocaleString('ko-KR')} · 사용 언어: ${LANGUAGE_NAMES_KO[report.language]}` : new Date(report.createdAt).toLocaleString(LOCALES[report.language])}
         </p>
       </section>
       <p className="small muted">👩‍⚕️ {t('repShowDoctor')}</p>
