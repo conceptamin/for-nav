@@ -1,8 +1,0 @@
-.page {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.description {
-  color: var(--color-text-muted);
-}
