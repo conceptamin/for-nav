@@ -1,0 +1,312 @@
+// S-05 증상 입력 → S-06 응급 안내 / S-07 진료 안내
+// 단계마다 응급 감지를 돌려, 응급이면 남은 질문 없이 바로 119 화면으로 보낸다.
+
+import { useState } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router';
+import { Chip, kakaoSearchUrl, SingleSelect, toggleIn, Worse119, YesNoSeg } from '../../components/common';
+import { useT } from '../../i18n';
+import { useApp } from '../../state/AppState';
+import type { Intake } from '../../domain/triage';
+import { extractFromText, mergeExtraction, newIntake, REASON_KO, triage } from '../../domain/triage';
+import type { BodyPart, Industry, Onset, Symptom, WorkType } from '../../domain/vocab';
+import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, ONSETS, pron, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
+import type { District } from '../../domain/vocab';
+
+const STEP_COUNT = 4;
+
+export function IntakePage() {
+  const app = useApp();
+  const { t, term, lang } = useT();
+  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
+  const [intake, setIntake] = useState<Intake>(() => newIntake(lang));
+  const [missingMsg, setMissingMsg] = useState(false);
+  const [extracted, setExtracted] = useState(false);
+
+  /** 응급이면 저장 후 119 화면으로 이동하고 true를 돌려준다. */
+  const checkEmergency = (draft: Intake): boolean => {
+    const r = triage(draft);
+    if (r.emergency) {
+      app.setIntake(draft);
+      app.setTriage(r);
+      navigate('/emergency', { replace: true });
+      return true;
+    }
+    return false;
+  };
+
+  const goNext = () => {
+    setMissingMsg(false);
+    if (step === 1 && checkEmergency(intake)) return;
+    if (step === 2) {
+      const ex = extractFromText(intake.freeText);
+      const merged = mergeExtraction({ ...intake, language: lang }, ex);
+      const filled =
+        (merged.bodyParts !== intake.bodyParts && merged.bodyParts.length > 0) ||
+        (merged.symptoms !== intake.symptoms && merged.symptoms.length > 0) ||
+        merged.onset !== intake.onset ||
+        merged.workRelated !== intake.workRelated ||
+        merged.workType !== intake.workType;
+      setExtracted(filled);
+      setIntake(merged);
+      if (checkEmergency(merged)) return;
+      // 필수 항목(부위·증상)이 비면 해당 버튼 질문으로 되돌아간다.
+      if (!merged.bodyParts.length || !merged.symptoms.length) {
+        setMissingMsg(true);
+        setStep(merged.bodyParts.length ? 1 : 0);
+        return;
+      }
+    }
+    if (step === 3) {
+      const final = { ...intake, language: lang };
+      const r = triage(final);
+      app.setIntake(final);
+      app.setTriage(r);
+      navigate(r.emergency ? '/emergency' : '/result');
+      return;
+    }
+    setStep(step + 1);
+  };
+
+  const set = (p: Partial<Intake>) => setIntake((i) => ({ ...i, ...p }));
+
+  return (
+    <div>
+      <h1>{t('intakeTitle')}</h1>
+      <div className="steps" aria-hidden>
+        {Array.from({ length: STEP_COUNT }, (_, i) => (
+          <span key={i} className={i <= step ? 'on' : undefined} />
+        ))}
+      </div>
+      {missingMsg && <div className="notice warn">{t('missingAsk')}</div>}
+
+      {step === 0 && (
+        <section className="card">
+          <h2>{t('stepBody')}</h2>
+          <p className="small muted">{t('stepBodyHint')}</p>
+          <div className="chips">
+            {(Object.keys(BODY_PARTS) as BodyPart[]).map((k) => (
+              <Chip key={k} pressed={intake.bodyParts.includes(k)} onClick={() => set({ bodyParts: toggleIn(intake.bodyParts, k) })}>
+                {term(BODY_PARTS[k])}
+              </Chip>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {step === 1 && (
+        <section className="card">
+          <h2>{t('stepSymptom')}</h2>
+          <p className="small muted">{t('stepBodyHint')}</p>
+          <div className="chips">
+            {(Object.keys(SYMPTOMS) as Symptom[]).map((k) => (
+              <Chip key={k} pressed={intake.symptoms.includes(k)} onClick={() => set({ symptoms: toggleIn(intake.symptoms, k) })}>
+                {term(SYMPTOMS[k])}
+              </Chip>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {step === 2 && (
+        <section className="card">
+          <h2>{t('stepText')}</h2>
+          <p className="small muted">{t('stepTextHint')}</p>
+          <textarea
+            aria-label={t('stepText')}
+            placeholder={t('stepTextPlaceholder')}
+            value={intake.freeText}
+            maxLength={500}
+            onChange={(e) => set({ freeText: e.target.value })}
+          />
+        </section>
+      )}
+
+      {step === 3 && (
+        <section className="card">
+          <h2>{t('stepMore')}</h2>
+          {extracted && <div className="notice info">✨ {t('extractedNote')}</div>}
+          <div className="field">
+            <span className="label">{t('onsetQ')}</span>
+            <SingleSelect options={Object.keys(ONSETS) as Onset[]} value={intake.onset} onChange={(v) => set({ onset: v })} label={(k) => term(ONSETS[k])} />
+          </div>
+          <div className="field">
+            <span className="label">{t('workQ')}</span>
+            <YesNoSeg value={intake.workRelated} onChange={(v) => set({ workRelated: v })} />
+          </div>
+          {intake.workRelated === 'yes' && (
+            <div className="field">
+              <span className="label">
+                {t('workTypeQ')} <span className="small muted">({t('optional')})</span>
+              </span>
+              <SingleSelect options={Object.keys(WORK_TYPES) as WorkType[]} value={intake.workType} onChange={(v) => set({ workType: v })} label={(k) => term(WORK_TYPES[k])} />
+            </div>
+          )}
+          <div className="field">
+            <span className="label">{t('industryQ')}</span>
+            <SingleSelect options={Object.keys(INDUSTRIES) as Industry[]} value={intake.industry} onChange={(v) => set({ industry: v })} label={(k) => term(INDUSTRIES[k])} />
+          </div>
+          <div className="field">
+            <span className="label">{t('districtQ')}</span>
+            <SingleSelect
+              options={Object.keys(DISTRICTS) as District[]}
+              value={intake.district}
+              onChange={(v) => set({ district: v })}
+              label={(k) => `${DISTRICTS[k].ko} · ${term(DISTRICTS[k])}`}
+            />
+          </div>
+        </section>
+      )}
+
+      <div className="row" style={{ flexWrap: 'nowrap' }}>
+        <button
+          type="button"
+          className="btn secondary"
+          onClick={() => (step === 0 ? navigate('/home') : setStep(step - 1))}
+        >
+          {t('back')}
+        </button>
+        <button type="button" className="btn block" onClick={goNext}>
+          {step === 3 ? t('seeResult') : step === 2 && !intake.freeText ? t('skip') : t('next')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// S-06 응급 안내: 지도 없이 119 전화와 한국어 위치·상황 문장만 보인다.
+// ---------------------------------------------------------------------------
+export function EmergencyPage() {
+  const app = useApp();
+  const { t, lang } = useT();
+  const navigate = useNavigate();
+  const intake = app.intake;
+  const reasons = app.triage?.reasons ?? [];
+
+  const where = intake?.district ? `울산 ${DISTRICTS[intake.district].ko}` : '울산';
+  const what = reasons.length ? reasons.map((r) => REASON_KO[r]).join(', ') : '응급 상황';
+  const koSentence = `응급 환자가 있습니다. 위치는 ${where}입니다. 증상은 ${what}입니다. 저는 한국어를 잘 못합니다. ${lang === 'vi' ? '베트남어' : '영어'} 통역을 부탁합니다.`;
+
+  return (
+    <div>
+      <section className="em-hero" role="alert">
+        <h1>🚨 {t('emTitle')}</h1>
+        <p>{t('emBody')}</p>
+        <a className="em-call" href="tel:119">
+          📞 {t('call119')}
+        </a>
+      </section>
+      <section className="card">
+        <h2>{t('emShowKo')}</h2>
+        <p className="ko-big" lang="ko">
+          {koSentence}
+        </p>
+        <p className="small muted">{t('emLocationHint')}</p>
+      </section>
+      <div className="notice info">🗣️ {t('emInterpret')}</div>
+      {reasons.length > 0 && (
+        <section className="card">
+          <h3>{t('emReasons')}</h3>
+          <ul style={{ margin: 0, paddingLeft: 20 }} lang="ko">
+            {reasons.map((r) => (
+              <li key={r}>{REASON_KO[r]}</li>
+            ))}
+          </ul>
+          <p className="footer-note">{t('emRuleNote')}</p>
+        </section>
+      )}
+      <button type="button" className="btn ghost block" onClick={() => navigate('/home')}>
+        {t('home')}
+      </button>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// S-07 진료 안내
+// ---------------------------------------------------------------------------
+export function ResultPage() {
+  const app = useApp();
+  const { t, term, lang } = useT();
+  const navigate = useNavigate();
+  const tri = app.triage;
+  if (!app.intake || !tri) return <Navigate to="/intake" replace />;
+  // 응급 판정이면 지도 화면을 띄우지 않는다.
+  if (tri.emergency) return <Navigate to="/emergency" replace />;
+  if (!tri.department) return <Navigate to="/intake" replace />;
+
+  const primary = DEPARTMENTS[tri.department.primary];
+  const alt = DEPARTMENTS[tri.department.alt];
+
+  return (
+    <div>
+      <Worse119 />
+      <h1>{t('resultTitle')}</h1>
+      <div className="stack" style={{ marginBottom: 12 }}>
+        <div className="dept">
+          <div className="small muted">{t('resultFirst')}</div>
+          <div className="ko" lang="ko">
+            {primary.ko}
+          </div>
+          <div>
+            <strong>{term(primary)}</strong> <span className="muted small">· {pron(primary, lang)}</span>
+          </div>
+          <a className="btn block" style={{ marginTop: 10 }} href={kakaoSearchUrl(primary.ko)} target="_blank" rel="noreferrer">
+            🗺️ {t('mapDept')} — {primary.ko}
+          </a>
+        </div>
+        <div className="dept alt">
+          <div className="small muted">{t('resultAlt')}</div>
+          <div className="ko" lang="ko">
+            {alt.ko} <span className="small muted">· {term(alt)}</span>
+          </div>
+          <a className="btn secondary block" style={{ marginTop: 8 }} href={kakaoSearchUrl(alt.ko)} target="_blank" rel="noreferrer">
+            🗺️ {t('mapDept')} — {alt.ko}
+          </a>
+        </div>
+      </div>
+      <div className="row" style={{ flexWrap: 'nowrap', marginBottom: 8 }}>
+        <a className="btn secondary block" href={kakaoSearchUrl('약국')} target="_blank" rel="noreferrer">
+          💊 {t('mapPharmacy')}
+        </a>
+        <a className="btn secondary block" href={kakaoSearchUrl('응급실')} target="_blank" rel="noreferrer">
+          🚑 {t('mapEr')}
+        </a>
+      </div>
+      <div className="notice warn">
+        ☎️ {t('mapNotice')}
+        <div className="small">{t('mapOpens')}</div>
+      </div>
+      <div className="stack">
+        <Link className="btn block" to="/visit/call">
+          📞 {t('toCall')}
+        </Link>
+        <Link className="btn block" to="/visit/desk">
+          🪪 {t('toDesk')}
+        </Link>
+        <Link className="btn block" to="/report/new">
+          🩺 {t('toReport')}
+        </Link>
+        <Link className="btn secondary block" to="/coverage">
+          💳 {t('toCoverage')}
+        </Link>
+        <Link className="btn secondary block" to="/center-request">
+          🤝 {t('toCenter')}
+        </Link>
+      </div>
+      <p className="footer-note">ⓘ {t('resultNoDiag')}</p>
+      <button
+        type="button"
+        className="btn ghost block"
+        onClick={() => {
+          app.setIntake(null);
+          app.setTriage(null);
+          navigate('/intake');
+        }}
+      >
+        ↺ {t('newIntake')}
+      </button>
+    </div>
+  );
+}
