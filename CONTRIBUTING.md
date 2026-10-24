@@ -14,9 +14,9 @@
 | 폴더 | 무엇 | 담당 |
 |---|---|---|
 | `frontend/` | 모바일 웹 화면. 문서는 `frontend/docs/` | 화면 |
-| `backend/` | API, 비용 경로·진료과 규칙, LLM 호출, 병원 데이터. 문서는 `backend/docs/` | 서버·LLM |
-| `modeling/` | 응급 감지 모델, 학습 데이터, 테스트셋, 평가. 문서는 `modeling/docs/` | 모델링 |
-| `docs/` | 세 영역이 같이 보는 문서(공통 API 계약, Git 컨벤션) | 전원 |
+| `backend/` | 상담 API, LLM 호출, 상담 저장·권한·보험 연동 설계. 문서는 `backend/docs/` | 서버·LLM |
+| `modeling/` | 다국어 상담 품질 평가, 평가 데이터, 기존 응급 모델 연구. 문서는 `modeling/docs/` | 모델링 |
+| `docs/` | 세 영역이 같이 보는 문서(공통 기획·API 계약, Git 컨벤션) | 전원 |
 | `fixtures/` | 계약 예시 JSON, 비용 경로 정답 사례 | 콘텐츠·발표 (정답 사례) |
 
 - 내 영역 밖 폴더를 고쳐야 하면 PR에 적고 그 영역 담당에게 리뷰를 받는다.
@@ -25,6 +25,8 @@
 - 최종 테스트셋(`modeling/data/test/`)은 10월 22일에 고정한 뒤 학습·조정에 쓰지 않는다.
 
 ## 3. phase 문서
+
+- 제품 기획의 기준은 `docs/proposal.md`(2026-10-24)다. 이전 frontend/backend phase-02와 modeling phase-01 계획은 보존 자료이며 새 구현에는 별도 phase를 작성한다. API v1 초안의 스키마는 새 계약·코드·fixtures 동시 변경 전까지 그대로 둔다.
 
 - 각 영역의 `docs/phase-XX.md`에 쓴다. 번호는 영역마다 따로 매긴다.
 - 들어갈 내용: 목표, 범위(포함·제외), 할 일 체크리스트, 완료 기준, 검증 결과.
