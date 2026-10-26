@@ -84,3 +84,40 @@
 - 로그가 쌓이면 진료과 모델을 실사용 데이터로 재학습
 - 응급도와 진료과를 하나의 모델로 동시에 예측하는 멀티태스크 모델로 전환
 - 의료진 검수를 통한 규칙·매핑 테이블 신뢰도 확보
+## 실행
+
+Python 3.12와 [uv](https://docs.astral.sh/uv/)가 필요하다. 의존성 버전은 `pyproject.toml`에 고정하고 `uv.lock`을 커밋한다.
+
+```sh
+cd modeling
+uv sync                                              # .venv 생성, 고정된 의존성 설치
+uv run ruff check . && uv run ruff format --check .  # 린트·포맷 검사
+uv run pytest                                        # 테스트
+```
+
+데이터 내려받기·학습·평가 명령은 `scripts/`에 하나씩 추가한다. 무엇을 언제 만드는지는 `backlog/` 문서를 따른다.
+
+## 폴더 구조
+
+```text
+modeling/
+  pyproject.toml  uv.lock  .gitignore
+  backlog/                 작업 항목. 문서 하나 = 항목 하나
+  src/fornav_modeling/     로직은 전부 여기(테스트 대상)
+    schema.py              입력 필드·열거값. backend/app/vocab.py와 같은 값
+    data/                  내려받기·원본 → 표준 테이블·train/valid/test 분리. I/O는 이 폴더만 한다
+    features/              버튼 입력 → 피처 벡터. 학습과 서빙이 같은 함수를 쓴다
+    labels/                KTAS → 3단계, 질환·버튼 조합 → 진료과
+    models/                응급도, 진료과 모델 A·B, 앙상블
+  scripts/                 명령 하나 = 일 하나. 패키지 함수를 부르기만 한다
+  data/
+    raw/  processed/  test/   git 제외(폴더만 .gitkeep)
+    splits/                train/valid/test id 목록 + 해시(git 포함)
+    tables/                사람이 검토하는 CSV, 행마다 출처 열(git 포함)
+  models/                  내보낸 아티팩트. 버전 폴더마다 metadata.json
+  notebooks/               탐색용. 커밋 시 출력 제거
+  reports/                 평가 결과, 발표용 그림
+  tests/                   test_schema.py: 열거값·Intake 필드가 백엔드와 같은지
+```
+
+파일 단위 계획과 작업 규칙은 `CLAUDE.md`에 있다.
