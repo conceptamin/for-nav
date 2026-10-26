@@ -11,7 +11,7 @@ import type { Intake } from '../domain/triage';
 import type { BodyPart, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown } from '../domain/vocab';
 
 /** 시드 고정 난수(mulberry32): 새로 고쳐도 같은 mock이 나온다. */
-function rng(seed: number) {
+export function rng(seed: number) {
   let a = seed;
   return () => {
     a |= 0;

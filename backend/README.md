@@ -27,7 +27,8 @@ LLM 호출과 학습 모델(`modeling/README.md`)은 이번 범위가 아니다.
 backend/
   pyproject.toml
   app/
-    main.py            FastAPI 앱, CORS, 라우터 등록 (기존 빈 backend/main.py는 지운다)
+    main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
+    clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (부위·증상·진료과·업종·구군 어휘, josa)
     rules/
@@ -35,6 +36,7 @@ backend/
       coverage.py      ← domain/coverage.ts (제도 경로, INFO_DATE, 센터 운영 시간)
       urgency.py       ← domain/centerCase.ts (rateUrgency)
     templates/
+      common.py        pick·joinTerms 등 공통 도우미
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
@@ -43,7 +45,7 @@ backend/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*
   tests/
-    fixtures/          프론트 규칙으로 만든 기대값 JSON
+    fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_api.py        경로별 응답 형태·상태 코드
 ```
@@ -72,7 +74,7 @@ backend/
 | `POST /api/report/clinician` | `buildClinicianReport` | S-11 | `{ intake, included, profile, meds }` | `ClinicianReport` |
 | `POST /api/report/center` | `buildCenterSummary` | S-12 미리보기 | `CenterSummaryInput` | `{ ko, native }` |
 | `POST /api/center/cases` | `addLiveCase` (+ `rateUrgency`, `isAfterHours`, `nextOpenDay`) | S-12 전송 | 아래 참고 | `{ case: CenterCase, nextOpenDate }` |
-| `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순) |
+| `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
 | `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
 | `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` |
@@ -155,7 +157,8 @@ backend/
   "noInsuranceRate": 0.44,            // 보험 "없음" + "모름"
   "byIndustry": [{ "key": "autoparts", "n": 68 }, { "key": "chemical", "n": null }],  // n < 5 → null
   "byLanguage": [ ... ],
-  "byInsurance": [ ... ]
+  "byInsurance": [ ... ],
+  "byAfterHours": [{ "key": "after", "n": 89 }, { "key": "within", "n": 138 }]  // 운영 시간 외 도넛용
 }
 ```
 
@@ -177,8 +180,10 @@ backend/
 2. 프론트에 이미 있는 rolldown으로 묶어 node로 실행한다(추가 의존성 없음).
    ```sh
    cd frontend
-   npx rolldown scripts/dump-fixtures.ts --file /tmp/dump.mjs --format esm && node /tmp/dump.mjs > ../backend/tests/fixtures/parity.json
+   npx rolldown scripts/dump-fixtures.ts --file /tmp/dump.mjs --format esm && TZ=Asia/Seoul node /tmp/dump.mjs > ../backend/tests/fixtures/parity.json
    ```
+   운영 시간·mock 시각은 로컬 시각으로 계산되므로 `TZ=Asia/Seoul`을 반드시 붙인다(빠지면 스크립트가 멈춘다).
+   프론트 규칙·템플릿·mock을 바꾸면 이 명령으로 `parity.json`을 다시 만들어 함께 커밋한다.
 3. `tests/test_parity.py`가 같은 입력을 서버 함수에 넣어 출력이 완전히 같은지 비교한다.
 4. 입력 목록에는 최소한 다음을 넣는다.
    - 응급 키워드 13종 각각(한국어·영어·베트남어 1개씩)
@@ -189,7 +194,7 @@ backend/
    - 제도 경로 4가지 + `alsoIndustrial`
    - 템플릿은 언어 3종 × 첫 방문 여부 × 업무 관련 여부
 
-`createdAt`, 리포트 `id`처럼 시각에 따라 바뀌는 값은 비교에서 뺀다.
+`createdAt`, 리포트 `id`처럼 시각에 따라 바뀌는 값은 비교에서 뺀다. 의료진 리포트의 나이는 픽스처를 만든 시각(`generatedAt`)으로 고정해 비교한다.
 
 ## 프론트 전환 방법
 
@@ -209,6 +214,7 @@ uv sync
 uv run fastapi dev app/main.py        # http://localhost:8000, 문서: /docs
 uv run pytest
 uv run ruff check .
+uv run ruff format --check .
 ```
 
 프론트와 함께 띄울 때:
@@ -220,7 +226,7 @@ VITE_API_BASE=/api npm --prefix frontend run dev
 
 ## CI
 
-`.github/workflows/ci.yml`의 `backend` 작업은 지금 이름만 남아 있다. 서버 코드가 들어오면 다음으로 바꾼다.
+`.github/workflows/ci.yml`의 `backend` 작업은 다음 단계를 실행한다.
 
 ```yaml
 backend:
@@ -233,21 +239,22 @@ backend:
     - uses: astral-sh/setup-uv@v6
     - run: uv sync
     - run: uv run ruff check .
+    - run: uv run ruff format --check .
     - run: uv run pytest
 ```
 
 ## 구현 순서
 
-| 단계 | 할 일 | 완료 기준 |
-|---|---|---|
-| 1 | `pyproject.toml`, `app/main.py`, `/api/health`, CORS | `curl /api/health` → `{"ok": true}` |
-| 2 | `schemas.py`, `vocab.py` | 프론트 타입의 모든 필드·열거값이 들어감 |
-| 3 | `rules/` 3개 + `/api/triage`, `/api/extract`, `/api/route` | 규칙 동기화 테스트 통과 |
-| 4 | `templates/` + `/api/visit-helper`, `/api/report/*` | 템플릿 동기화 테스트 통과(언어 3종) |
-| 5 | `data/mock.py`, `store.py`, `/api/center/*` | mock 24건 id·요약이 프론트와 같음, 상태 변경 반영 |
-| 6 | `/api/center/stats` | 5건 미만 칸이 `null` |
-| 7 | 프론트 `src/api/` 전환, Vite 프록시 | `VITE_API_BASE` 유무 두 모드 모두 시연 가능 |
-| 8 | CI `backend` 작업 교체 | PR에서 ruff·pytest 통과 |
+| 단계 | 할 일 | 완료 기준 | 상태 |
+|---|---|---|---|
+| 1 | `pyproject.toml`, `app/main.py`, `/api/health`, CORS | `curl /api/health` → `{"ok": true}` | 완료 |
+| 2 | `schemas.py`, `vocab.py` | 프론트 타입의 모든 필드·열거값이 들어감 | 완료 |
+| 3 | `rules/` 3개 + `/api/triage`, `/api/extract`, `/api/route` | 규칙 동기화 테스트 통과 | 완료 |
+| 4 | `templates/` + `/api/visit-helper`, `/api/report/*` | 템플릿 동기화 테스트 통과(언어 3종) | 완료 |
+| 5 | `data/mock.py`, `store.py`, `/api/center/*` | mock 24건 id·요약이 프론트와 같음, 상태 변경 반영 | 완료 |
+| 6 | `/api/center/stats` | 5건 미만 칸이 `null` | 완료 |
+| 7 | 프론트 `src/api/` 전환, Vite 프록시 | `VITE_API_BASE` 유무 두 모드 모두 시연 가능 | 남음(`frontend/` 브랜치로 따로) |
+| 8 | CI `backend` 작업 교체 | PR에서 ruff·pytest 통과 | 완료 |
 
 ## 나중에 붙일 자리
 
