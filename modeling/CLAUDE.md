@@ -53,21 +53,69 @@
 - Python 3.12 + uv(backend와 같음). LightGBM, scikit-learn, pandas, SHAP를 기준으로 하고, 버전은 `pyproject.toml`에 고정해 `uv.lock`을 커밋한다.
 - 검사 도구는 backend와 같은 ruff·pytest를 쓴다. ruff 설정은 `backend/pyproject.toml`을 따른다.
 - 노트북(`.ipynb`)은 탐색용이다. 재현해야 하는 것(전처리, 학습, 평가, 내보내기)은 모두 `.py` 모듈과 명령으로 옮긴다. 노트북을 커밋할 때는 출력을 지운다.
-- 지금 `main.py`는 빈 자리표시자다. 첫 구현 항목에서 폴더 구조를 정하면서 지우거나 채우고, 정한 구조를 `README.md`에 반영한다. 기본안은 아래와 같다.
+- `pyproject.toml`은 backend처럼 `[tool.uv] package = false`로 두고, pytest `pythonpath = ["src"]`로 패키지를 찾게 한다.
+- 지금 `main.py`는 빈 자리표시자다. 첫 구현 항목에서 지운다.
+- 폴더 구조는 아래를 따른다. 새 폴더가 필요하면 backlog 문서에 이유를 적고 여기와 `README.md`를 함께 고친다.
 
 ```text
 modeling/
   CLAUDE.md  README.md  backlog/
-  pyproject.toml  uv.lock
-  src/             피처 변환, 라벨 변환, 학습, 평가, 내보내기 모듈
-  scripts/         데이터 내려받기·가공·학습·평가 명령 (하나의 명령이 하나의 일)
-  data/raw/        원본 데이터 (git 제외)
-  data/processed/  가공 데이터 (git 제외, 만드는 스크립트는 커밋)
-  data/tables/     사람이 검토하는 작은 표 — 버튼 조합 → 진료과 분포, 질환 → 진료과 매핑 (CSV, git 포함, 출처 열 필수)
-  data/test/       최종 테스트셋 (고정 후 열람 금지)
-  models/          내보낸 모델 아티팩트와 메타데이터
+  pyproject.toml  uv.lock  .gitignore
+
+  src/fornav_modeling/          로직은 전부 여기. 테스트 대상
+    schema.py                   입력 필드·열거값 (backend vocab과 같은 값, 모델링 안의 단일 출처)
+    data/                       I/O는 이 폴더만 한다
+      download.py               출처별 내려받기 + sha256 검증
+      kaggle_triage.py          응급도 원본 → 표준 테이블
+      kaggle_symptom.py         질환·증상 원본 → 표준 테이블
+      hira.py                   질환 → 진료과 통계 적재
+      split.py                  train/valid/test 분리 (id 목록으로 고정)
+    features/
+      buttons.py                버튼 입력 → 피처 벡터. 학습과 서빙(predict.py)이 같은 함수를 쓴다
+      vitals.py                 발표용 비교 실험 전용. 서빙 모델에는 넣지 않는다
+    labels/
+      ktas.py                   KTAS 1~5 → 3단계
+      department.py             질환 → 진료과 매핑, 버튼 조합 → 분포 표 적재
+    models/
+      acuity.py                 LightGBM 응급도 (학습·예측·임계값)
+      dept_a.py                 LightGBM 질환 확률 → 진료과 확률 변환
+      dept_b.py                 소형 MLP, 소프트 라벨
+      ensemble.py               가중 평균 + 저확신 폴백
+    explain.py                  SHAP
+    evaluate.py                 지표 계산. 분자·분모, 출처별 분리
+    export.py                   아티팩트 + metadata.json 쓰기
+    predict.py                  입력 dict → TriageResult.model dict. 백엔드가 부를 순수 함수
+
+  scripts/                      명령 하나 = 일 하나. 인자를 받아 패키지 함수를 부르기만 하는 얇은 파일
+    download_data.py  build_tables.py  make_splits.py
+    train_acuity.py  train_dept_a.py  train_dept_b.py  tune_ensemble.py
+    evaluate.py  export_models.py  experiment_vitals.py
+
+  data/
+    README.md                   파일별 출처 URL·라이선스·확인 날짜·sha256
+    raw/                        git 제외. 원본 그대로
+    processed/                  git 제외. 만드는 스크립트만 커밋
+    splits/                     git 포함. train/valid/test id 목록 + 재생성한 파일의 해시
+    tables/                     git 포함. 사람이 검토하는 CSV, 행마다 출처 열
+      button_department.csv     버튼 조합 → 진료과 분포 (모델 B 라벨)
+      disease_department.csv    질환 → 진료과 비율 (HIRA)
+    test/                       git 제외. splits로 재생성. 평가 명령만 읽는다
+
+  models/                       내보낸 아티팩트. 버전 폴더마다 metadata.json
+    acuity/v1/   dept_a/v1/   dept_b/v1/   ensemble/v1/
+
+  notebooks/                    탐색용. 커밋 시 출력 제거
+  reports/                      평가 결과 JSON·표, 발표용 그림
   tests/
+    test_features.py            버튼 → 피처가 결정적인지
+    test_labels.py              KTAS·진료과 매핑
+    test_determinism.py         같은 seed 두 번 → 같은 해시
+    test_split_isolation.py     학습 명령이 data/test를 열지 않는지
+    test_predict_contract.py    출력이 TriageResult.model 형태이고 Department 10종만 나오는지
 ```
+
+- **피처 정의는 `features/buttons.py` 한 곳**이다. 학습과 `predict.py`가 같은 함수를 써서 학습 시점과 서빙 시점의 피처가 어긋나지 않게 한다.
+- **로직은 패키지, 명령은 `scripts/`.** 스크립트에 로직을 넣으면 테스트할 수 없다. 스크립트는 10~20줄로 유지한다.
 
 ## 설계에서 바꾸지 않는 것
 
@@ -84,7 +132,7 @@ modeling/
 - 라이선스가 학습·평가 사용을 허락하지 않거나 라이선스 표시가 없는 데이터는 쓰지 않는다. 비상업 조건이면 그 조건을 메타데이터에 적는다.
 - 이름·연락처·사업장명 같은 식별 정보가 있으면 지운 뒤 넣는다.
 - 우리 서비스 사용자의 입력은 어떤 경우에도 학습·평가에 넣지 않는다.
-- **테스트셋은 고정한다.** `data/test/`를 분리한 뒤에는 학습, 임계값 조정, 앙상블 가중치 조정, 오류 분석에 쓰지 않고 파일을 열어 보지도 않는다. 이 폴더를 읽는 코드는 평가 명령 하나뿐이다. 바꿔야 하면 사용자에게 묻고 이유를 backlog 문서에 남긴다.
+- **테스트셋은 id 목록으로 고정한다.** 원본은 git에 못 올리므로 `data/splits/`에 test id 목록과 재생성한 파일의 sha256을 커밋하고, `data/test/`는 로컬에서 재생성한다. 해시가 다르면 평가 명령이 멈춘다. 분리한 뒤에는 학습, 임계값 조정, 앙상블 가중치 조정, 오류 분석에 쓰지 않고 파일을 열어 보지도 않는다. 이 폴더를 읽는 코드는 평가 명령 하나뿐이다. 바꿔야 하면 사용자에게 묻고 이유를 backlog 문서에 남긴다.
 - 임계값과 앙상블 가중치는 검증셋으로만 정한다.
 - `data/tables/`의 표는 CSV로 두고 행마다 출처 열을 둔다. LLM으로 만든 행은 출처에 그렇게 적는다.
 
