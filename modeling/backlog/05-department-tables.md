@@ -37,3 +37,5 @@
 ## 메모
 - 표의 `source` 값 예: `hira:2024`, `snuh-guide`, `llm-draft`. `llm-draft` 행은 사람이 검토해 `reviewed=yes`가 되기 전에는 학습 라벨로만 쓰고 검증에는 쓰지 않는다
 - 질환명은 이 표와 모델 A 내부까지만 쓴다. 06 이후 산출물에 질환명이 나가지 않게 한다
+- (02에서) HIRA는 2025년 파일 두 건이다: 병원급 이상 진료과목별(`hospital_department_disease_2025.csv`, 진료과목 48종)과 의원급 표시과목별(`clinic_specialty_disease_2025.csv`, 표시과목 26종). 둘 다 cp949 CSV, KCD 3단 주상병코드. 두 파일을 어떻게 합칠지(의원급 가중 등)는 여기서 정한다. `source` 값은 `hira:2025`가 된다
+- (02에서) `Symptom-severity.csv`는 133행인데 중복 1행이 있어 고유 증상은 132개이고, 그중 `prognosis`는 증상이 아니다. `dataset.csv`의 고유 증상은 131개이며 `dischromic _patches`처럼 공백이 섞인 표기가 3개 있다. 완료 기준의 분모 132를 쓸지 정리 후 수로 바꿀지 결과에 적는다

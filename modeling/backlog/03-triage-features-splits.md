@@ -35,3 +35,5 @@ Kaggle 응급도 원본을 버튼 피처와 3단계 라벨로 바꾸고, train/v
 ## 메모
 - 데이터가 약 1,200건이라 test는 200여 건이다. 응급 클래스가 적으면 층화가 깨질 수 있으니 클래스별 최소 건수를 결과에 적는다
 - 주증상 매핑은 사람이 검토해야 한다. LLM으로 초안을 만들었다면 출처 열에 그렇게 적고 검토 전까지 `reviewed=no`로 둔다
+- (02에서) 원본은 Kaggle CSV가 아니라 PLOS ONE S1 Appendix `data/raw/kaggle_triage/pone.0216972.s001.xlsx`다. pandas로 xlsx를 읽으려면 `openpyxl`을 의존성에 추가해야 한다(02에서는 추가하지 않음)
+- (02에서) 라벨은 `KTAS_expert`, 비교용은 `KTAS_RN`. `Age`는 반올림되지 않은 값(예 67.5)이 있고, 활력징후 열에 `측불`(측정 불가) 문자열, `NRS_pain` 빈칸 556건이 있다. 열 설명은 `data/README.md`
