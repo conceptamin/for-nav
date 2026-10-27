@@ -1,0 +1,423 @@
+chief_complaint,body_parts,symptoms,note,source,reviewed
+abd pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abd. distension,abdomen,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abd. pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abdomen discomfort,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abdomen distension,abdomen,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abdomen pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abdominal pain (finding),abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"abdominal pain, luq",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"abdominal pain, periumbilical area",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"abdominal pain, rt",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+abnormal lab.,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"abnormality, visual acuity",eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+acute delirium,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+acute dyspnea,chest,breath,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+acute epigastric pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+alcohol smell,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"alcohol smelling state, drunken state",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+altered mental change,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+altered mentality,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+amnesia,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+anal bleeding,,bleeding,항문은 신체 부위 어휘에 없음,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+anemia w/u,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ankle injury,foot,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ankle pain,foot,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ant. chest pain,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+anterior chest discomfort,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+anxiety,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"aphasia, motor",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+arm injury,arm,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+arm pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"arm pain, lt",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"arm pain, rt",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+arrest,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ascites tapping,,,시술 목적 방문,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+avf malfunction,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+avf site bleeding,arm,bleeding,투석용 동정맥루는 팔에 있다고 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+backache,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+bee sting,skin,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+behavior change,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"bleeding, gingival",teeth,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"bleeding, knee",leg,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"blood pressure, low",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+blood tinged sputum,chest,bleeding|cough,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+blurred vision,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both eye pain,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both eyelid swelling,eye,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both hand numbness,hand,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both leg cellulitis,leg|skin,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both leg motor weakness,leg,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both leg pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both ocular pain,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both shoulder pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+both wrist pain,hand,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+bst high,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"burn, arm",arm,burn,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"burn, face",head,burn,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"burn, hand",hand,burn,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+buttock pain,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+c - coughing,chest,cough,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+catheter removal,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+cerebral concussion,head,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chemical burn,,burn|chemical,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest discomfort,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest discomfort left,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest pain nos (finding),chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest pain rt,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest palpitation,chest,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest wall pain left,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chest wall pain right,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chin pain,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+chin swelling,head,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+coccygeal pain,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+cold,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+confuse mentality,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+confused mental status,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+confusion mentality,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+confusion state,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+convulsion,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+copy,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+cough,chest,cough,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ct film copy,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+d - diarrhea,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+decerased visual acuity,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+decreased activity,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+delusional idea,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dental problem,teeth,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+depression,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+desaturation,chest,breath,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"di, drug intoxication",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+diarrhea,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+difficulty in voiding,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+diffuse abdominal discomfort,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+diffuse abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+diffuse chest discomfort,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"discomfort, chest",chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"discomfort, throat",ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dislocation of jaw,head,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+distended abdomen,abdomen,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"distension, abd",abdomen,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dizziness,head,dizzy,어지러움은 머리로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+drowsy mentality,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+drug allergy,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+drug intoxication,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dysarthria,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dyspnea,chest,breath,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dysuria,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+dz - dizziness,head,dizzy,어지러움은 머리로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ear pain lt,ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"eczema, eyelid",eye|skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"edema, cheek",head,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+elbow injury,arm,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+elbow painful swelling,arm,pain|swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+elbow painful swelling lt.,arm,pain|swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+epigastric discomfort(+),abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+epigastric pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+epistaxis,ent,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"erection, penile",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+erythematous papule,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eye discomfort,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eye foreign body,eye,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eye injury,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eye pain left eye,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eye trauma,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eyebrow laceration,head,cut,눈썹은 얼굴로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+eyelid laceration,eye,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"f/c, c/s",whole,fever|cough,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+f/c-fever/chills,whole,fever,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+face laceration,head,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+facial injury,head,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+facial lesion,head,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+facial painful swelling,head,pain|swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+facial palsy,head,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+facial palsy left,head,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+fb in esophagus,ent,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+fb in eye,eye,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+fb in pharynx,ent,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+femur lesion,leg,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+fever,whole,fever,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+fever & chill,whole,fever,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"fever, unspecified",whole,fever,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+finger injury,hand,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+finger lac.,hand,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+finger laceration,hand,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+finger laceration wound,hand,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+finger pain,hand,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"flank pain, rt.",back,pain,옆구리는 허리·등으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foot injury,foot,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foot swelling,foot,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for a/tapping,,,시술 목적 방문,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for ascites tapping,,,시술 목적 방문,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for examination,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for iv injection,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for l-tube insertion,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for medication,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+for peg tube change,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+forehead laceration,head,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foreign body in throat,ent,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foreign body ingestion,,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foreign body sensation in neck,ent,foreign,목(neck)은 귀·코·목(ent)으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foreign body sensation in throat,ent,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+foreign body sense,,foreign,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+free voiding,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+g/w-general weakness,,,전신 쇠약으로 보고 비움,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+general ache,whole,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+general weakness,,,전신 쇠약은 움직이기 어려움(cantmove)과 다르다고 보고 비움,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+generalized abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+generalized urticaria,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+gingival bleeding,teeth,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+gingival swelling,teeth,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+h-headache,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ha,head,pain,HA = headache,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ha - headache,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hallucination,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hand injury,hand,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hand laceration,hand,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hand tingling sense,hand,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+head injury,head,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+head pain,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+head trauma,head,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+headache,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hematemesis,abdomen,bleeding|nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hematochezia,abdomen,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hematuria,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hemoptysis,chest,bleeding|cough,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hiccup,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+high bsl,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hip joint pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hip pain lt.,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hyperkalemia (disorder),,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hypertension,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hyperventilation,chest,breath,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hypoglycemic,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+hypoglycemic symptom,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"injury, ankle",foot,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"injury, finger",hand,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"injury, leg",leg,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+involuntary movt.,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+itching,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+itching sensation,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+knee injury,leg,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+knee pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+l side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"laceration, chin",head,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"laceration, scalp",head,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lbp - low back pain,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left chest pain,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left diplopia,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left eye pain,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left eye swelling,eye,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left eyelid laceration,eye,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left facial numbness,head,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left forearm pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left knee swelling,leg,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left leg pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left side motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left thigh swelling,leg,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+left wrist swelling,hand,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+leg pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+leg pain left,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"leg pain, lt.",leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"leg pain, nos",leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"leg pain, rt.",leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"leg swelling, lt.",leg,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+light headness,head,dizzy,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+limb paresthesia,,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lip laceration,head,cut,입술은 얼굴로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+llq pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+loc,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+loc - loss of consciousness,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+loss of consciousness,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+low abd discomfort,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+low abd. pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+low abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"low back pain, undetermined",back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+low hb,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lower abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lower back pain,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lower chest wall pain,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lower extremity paraparesis,leg,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt flank pain,back,pain,옆구리는 허리·등으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt hemiparesis,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt. hemiparesis,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt. hip joint pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt. motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+lt. side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+mandibular pain,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+medication,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+melena,abdomen,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+mental change,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+mental confusion,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+midmenstrual pain,abdomen,pain,월경 중간 통증은 아랫배로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+mood depression,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+myalgia,whole,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+nasal bleeding,ent,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+nasal injury,ent,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+nasal swelling,ent,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+nausea,abdomen,nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+near syncope,head,dizzy,실신 전 단계는 어지러움으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+needle stick injury,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+numbness,,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"numbness, arm",arm,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+occipital area headache,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"ocular injury, lt.",eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ocular pain,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"ocular pain, both",eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"ocular pain, lt.",eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"ocular pain, rt.",eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+oliguria,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+open wound,,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+oral bleeding,teeth,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+orthopnea,chest,breath,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"otalgia, lt.",ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"otalgia, rt.",ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+pain on knee,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, abdomen",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, abdominal",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, ankle",foot,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, arm",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, back",back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, chest",chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, chest wall",chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, chest wall, rt",chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, eye",eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, facial",head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, flank",back,pain,옆구리는 허리·등으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, foot",foot,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, hand",hand,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, hip",leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, leg",leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, low back",back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, neck",ent,pain,목(neck)은 귀·코·목(ent)으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, periumbilical",abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, shoulder",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, tooth",teeth,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pain, αnus",,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+painful skin lesion,skin,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+palpitation,chest,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"pelvic pain, lt",abdomen,pain,골반 통증은 아랫배로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+perm cath. malfunction,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+po medication,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+post neck pain,ent,pain,목(neck)은 귀·코·목(ent)으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+post seizure,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+post-cpr state,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+pprom,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ptbd leaukage,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ptbd malfunction,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ptx - pneumothorax,chest,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"retention, bladder",,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right chest pain,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right elbow pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right forearm burn,arm,burn,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right forearm laceration,arm,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right hemiparesis,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right hip pain,leg,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right leg injury,leg,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right lower abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right lower quadrant abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right monoparesis,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right nasal bleeding,ent,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right ocular pain,eye,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right shoulder pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+right upper abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rigth side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rlq abd. pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rlq abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rlq pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rotatory vertigo,head,dizzy,어지러움은 머리로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt abd pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt flank pain,back,pain,옆구리는 허리·등으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt hemiparesis,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt side numbness,,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. chest pain,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. flank pain,back,pain,옆구리는 허리·등으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. shoulder pain,arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. side motor weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. side neck pain,ent,pain,목(neck)은 귀·코·목(ent)으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt. side weakness,,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+rt.arm weakness,arm,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+ruq pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+scalp lac.,head,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+scratch wound,,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+scrotal pain,,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+seizure,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+seizure like activity,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"sensory, decreased",,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sexual abuse of adult,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sexual violence,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sezure like motion,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"shoulder pain, both",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"shoulder pain, lt",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"shoulder pain, rt",arm,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+skin defect,skin,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+skin eruption,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+skin rash,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sleeping tendency,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sorethroat,ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+sudden hearing loss,ent,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+suicidal attempt,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+suicidal ideation,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+suicidal thoughts (finding),,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+swelling,,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"swelling, facial",head,swelling,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"swelling, neck",ent,swelling,목(neck)은 귀·코·목(ent)으로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+syncope,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+tachycardia,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+testis pain,,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+throat pain,ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+tmj pain,head,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+toe injury,foot,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+toe pain,foot,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+toe redness,foot,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+tooth pain,teeth,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"tooth pain, lt",teeth,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+toothache,teeth,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+upper abdominal pain,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+upper back pain,back,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+urinary frequency,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+urinary sx.-symptom,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+urticarial rash,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+v - vomiting,abdomen,nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+vaginal bleeding,,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+vaginal discharge,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+vaginal spotting,,bleeding,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+visual disturbance,eye,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+voice changes,ent,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+voiding difficulty,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+voiding failure,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+voiding pain,,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+vomiting,abdomen,nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+watery diarrhea,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+weakness,,,전신 쇠약으로 보고 비움,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+whirling type vertigo,head,dizzy,어지러움은 머리로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"whole body, skin rash",skin|whole,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+with chest discomfort,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+wrist injury,hand,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+wrist laceration,hand,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"wrist pain, lt",hand,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+"wrist pain, rt",hand,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+구토,abdomen,nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+다리 차가움,leg,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+명치 아픔,abdomen,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+목이 아픔,ent,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+변비가 있다,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+상복부,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+설사,abdomen,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+소변이 잘 안나옴,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+소변이 적다,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+속이 거북함,abdomen,nausea,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+손발이 저림,hand|foot,numb,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+심계항진,chest,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+어지러움,head,dizzy,어지러움은 머리로 봄,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+열상,,cut,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+우울증,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+이상한 행동을 한다,,,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+턱이 빠진것 같다,head,cantmove,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+피부병변,skin,rash,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
+흉통,chest,pain,,LLM 초안(Claude Opus 5.5): 키워드 규칙 후 행별 수정,no
