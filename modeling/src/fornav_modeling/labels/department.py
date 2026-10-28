@@ -12,6 +12,7 @@ import csv
 import re
 from collections import Counter
 from pathlib import Path
+from typing import NamedTuple
 
 from fornav_modeling.data.hira import SOURCE as HIRA_SOURCE
 from fornav_modeling.data.hira import department_ratio
@@ -248,9 +249,15 @@ def clear_case_conflicts(button_department: dict[str, Distribution]) -> list[str
 # ---------------------------------------------------------------------------
 # 진료과 검증셋
 # ---------------------------------------------------------------------------
-def read_guide(tables_dir: Path) -> dict[str, tuple[Department, Department | None]]:
-    """combo_id → (정답 1순위, 2순위 또는 None). 출처 URL이 없거나 진료과가 열거값 밖이면 TableError."""
-    guide: dict[str, tuple[Department, Department | None]] = {}
+class GuideAnswer(NamedTuple):
+    department: Department  # 정답 1순위
+    alt: Department | None  # 2순위(없으면 None)
+    reviewed: bool
+
+
+def read_guide(tables_dir: Path) -> dict[str, GuideAnswer]:
+    """combo_id → 정답. 출처 URL이 없거나 진료과가 열거값 밖이면 TableError."""
+    guide: dict[str, GuideAnswer] = {}
     for row in _read(tables_dir, GUIDE):
         _check_combo(GUIDE, row)
         cid = combo_id(row["body_part"], row["symptom"], row["injury"])
@@ -259,7 +266,7 @@ def read_guide(tables_dir: Path) -> dict[str, tuple[Department, Department | Non
             raise TableError(f"{GUIDE}: {cid}의 진료과가 열거값 밖이거나 1·2순위가 같다")
         if not row["url"].startswith("https://") or cid in guide:
             raise TableError(f"{GUIDE}: {cid}의 url이 https가 아니거나 조합이 중복")
-        guide[cid] = (row["department"], alt)
+        guide[cid] = GuideAnswer(row["department"], alt, row["reviewed"] == "yes")
     return guide
 
 
