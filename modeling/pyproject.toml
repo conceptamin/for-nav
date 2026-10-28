@@ -26,6 +26,8 @@ notebook = [
 
 [tool.uv]
 package = false
+# 노트북을 Jupyter 커널(.venv)로 바로 열 수 있게 notebook 그룹도 기본으로 설치한다
+default-groups = ["dev", "notebook"]
 
 [tool.ruff]
 line-length = 140
