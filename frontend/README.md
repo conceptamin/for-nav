@@ -179,6 +179,7 @@ backlog/            작업 항목(NN-short-name.md)
 | 자유 입력 번역 | "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 DB | 단독 모드 localStorage / API 모드 서버 메모리 | 서버 DB(backend 07) |
 | 테스트 | 타입 검사(`npm run build`)와 백엔드 동기화 테스트만. 프론트 단위 테스트는 없다 | — |
+| CI | PR마다 `.github/workflows/ci.yml`의 `frontend` 잡이 같은 `npm run build`를 돌려 타입 오류를 잡는다 | — |
 
 ## 확인이 필요한 값(PRD 16장 미결 사항)
 
