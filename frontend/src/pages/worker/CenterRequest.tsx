@@ -1,4 +1,6 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 리포트, 병원 이용 안내(정적)
+// 요약 미리보기는 api/worker.ts의 useCenterSummary가 만든다. 브라우저 요약을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
+// 전송은 아직 브라우저 저장소(centerStore)로 한다. 서버 전송은 backlog 03에서 바꾼다.
 
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
@@ -9,9 +11,9 @@ import { useApp } from '../../state/AppState';
 import { addLiveCase } from '../../state/centerStore';
 import type { CenterCase } from '../../domain/centerCase';
 import { rateUrgency } from '../../domain/centerCase';
-import { INFO_DATE, isAfterHours, nextOpenDay } from '../../domain/coverage';
-import type { ContactMethod, RequestType } from '../../domain/templates';
-import { buildCenterSummary } from '../../domain/templates';
+import { useCenterSummary } from '../../api/worker';
+import { isAfterHours, nextOpenDay } from '../../domain/coverage';
+import type { CenterSummaryInput, ContactMethod, RequestType } from '../../domain/templates';
 import { newIntake } from '../../domain/triage';
 import { LOCALES } from '../../domain/vocab';
 
@@ -28,6 +30,23 @@ export function CenterRequestPage() {
   const [contact, setContact] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [sent, setSent] = useState<CenterCase | null>(null);
+
+  const intake = app.intake ?? newIntake(lang);
+  const insurance = app.coverage?.input.insurance ?? null;
+  // 미리보기는 회원이 요청 종류를 고른 뒤에만 만든다. 비회원은 이 화면에서 아무것도 서버로 보내지 않는다.
+  // 연락처는 요약 입력에 없으므로 미리보기 요청에 들어가지 않는다.
+  const summaryInput: CenterSummaryInput | null =
+    app.mode === 'member' && !sent && type
+      ? {
+          intake: { ...intake, language: lang },
+          emergencyFlag: app.emergencySeen,
+          requestType: type,
+          coverage: app.coverage?.result ?? null,
+          insurance,
+          contactMethod: method,
+        }
+      : null;
+  const summary = useCenterSummary(summaryInput);
 
   // 센터 전송은 회원만 가능(FR-03)
   if (app.mode !== 'member') {
@@ -47,7 +66,7 @@ export function CenterRequestPage() {
   }
 
   if (sent) {
-    const next = nextOpenDay(new Date(sent.createdAt));
+    const next = nextOpenDay(new Date(sent.createdAt), app.meta.centerHours);
     return (
       <div>
         <section className="card" style={{ textAlign: 'center' }}>
@@ -76,19 +95,6 @@ export function CenterRequestPage() {
       </div>
     );
   }
-
-  const intake = app.intake ?? newIntake(lang);
-  const insurance = app.coverage?.input.insurance ?? null;
-  const summary = type
-    ? buildCenterSummary({
-        intake: { ...intake, language: lang },
-        emergencyFlag: app.emergencySeen,
-        requestType: type,
-        coverage: app.coverage?.result ?? null,
-        insurance,
-        contactMethod: method,
-      })
-    : null;
 
   const send = () => {
     if (!type || !summary) return;
@@ -121,7 +127,7 @@ export function CenterRequestPage() {
       coveragePath: app.coverage?.result.path ?? null,
       contactMethod: method,
       contact: contact.trim() || null,
-      afterHours: isAfterHours(now),
+      afterHours: isAfterHours(now, app.meta.centerHours),
       emergencyFlag: app.emergencySeen,
       workRelated: intake.workRelated,
       insurance,
@@ -162,7 +168,7 @@ export function CenterRequestPage() {
           <h2>{t('cenPreview')}</h2>
           <div className="native-box">{summary.native}</div>
           <p className="footer-note">{t('cenPreviewKo')}</p>
-          {app.coverage && <PolicyDisclaimer infoDate={INFO_DATE} />}
+          {app.coverage && <PolicyDisclaimer infoDate={app.meta.infoDate} />}
         </section>
       )}
 

@@ -92,6 +92,7 @@ export const vi: Record<MessageKey, string> = {
   injuryQ: 'Bạn có bị thương không? (va đập, ngã, bị cắt, bị kẹt máy)',
   ageGroupQ: 'Bạn bao nhiêu tuổi?',
   extractedNote: 'Chúng tôi đã điền một số câu trả lời từ nội dung bạn viết. Vui lòng kiểm tra.',
+  extractFallback: 'Các câu trả lời này được khớp theo danh sách từ khóa.',
   missingAsk: 'Vui lòng chọn ít nhất một vị trí và một triệu chứng.',
   checking: 'Đang kiểm tra…',
   seeResult: 'Xem nên đi đâu',

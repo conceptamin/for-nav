@@ -38,8 +38,9 @@ const NHIS: Institution = { id: 'nhis', phone: '1577-1000' };
 const CENTER: Institution = { id: 'center', phone: null };
 const ULSAN: Institution = { id: 'ulsan', phone: null };
 
-export function routeCoverage(input: CoverageInput): CoverageResult {
-  const base = { infoDate: INFO_DATE, alsoIndustrial: input.workRelated === 'unknown' };
+/** `infoDate`는 API 모드에서 `/api/meta`가 준 기준일을 넘길 때만 쓴다. 기본값이면 지금과 같다. */
+export function routeCoverage(input: CoverageInput, infoDate: string = INFO_DATE): CoverageResult {
+  const base = { infoDate, alsoIndustrial: input.workRelated === 'unknown' };
   if (input.workRelated === 'yes') {
     return { ...base, path: 'industrial', institutions: [KCOMWEL, CENTER], docs: ['arc', 'accidentNote', 'photos', 'receipts'] };
   }
@@ -62,19 +63,35 @@ export const PATH_KO: Record<CoveragePath, string> = {
 // ---------------------------------------------------------------------------
 // 센터 운영 시간(설정값). PRD Q1 미결: 확인 전까지 평일 09:00~18:00으로 가정한다.
 // ---------------------------------------------------------------------------
-export const CENTER_HOURS = { openHour: 9, closeHour: 18, workdays: [1, 2, 3, 4, 5] };
+export interface CenterHours {
+  openHour: number;
+  closeHour: number;
+  /** 0 = 일요일 */
+  workdays: number[];
+}
 
-export function isAfterHours(date: Date): boolean {
+export const CENTER_HOURS: CenterHours = { openHour: 9, closeHour: 18, workdays: [1, 2, 3, 4, 5] };
+
+/** 서버 설정값(GET /api/meta). 단독 모드와 서버 실패 시에는 브라우저 상수를 쓴다. */
+export interface Meta {
+  infoDate: string;
+  centerHours: CenterHours;
+}
+
+export const DEFAULT_META: Meta = { infoDate: INFO_DATE, centerHours: CENTER_HOURS };
+
+/** `hours`는 API 모드에서 `/api/meta`가 준 운영 시간을 넘길 때만 쓴다. 기본값이면 지금과 같다. */
+export function isAfterHours(date: Date, hours: CenterHours = CENTER_HOURS): boolean {
   const h = date.getHours();
-  return !CENTER_HOURS.workdays.includes(date.getDay()) || h < CENTER_HOURS.openHour || h >= CENTER_HOURS.closeHour;
+  return !hours.workdays.includes(date.getDay()) || h < hours.openHour || h >= hours.closeHour;
 }
 
 /** 다음 운영일(오늘 운영 시작 전이면 오늘) */
-export function nextOpenDay(date: Date): Date {
+export function nextOpenDay(date: Date, hours: CenterHours = CENTER_HOURS): Date {
   const d = new Date(date);
-  if (CENTER_HOURS.workdays.includes(d.getDay()) && d.getHours() < CENTER_HOURS.openHour) return d;
+  if (hours.workdays.includes(d.getDay()) && d.getHours() < hours.openHour) return d;
   do {
     d.setDate(d.getDate() + 1);
-  } while (!CENTER_HOURS.workdays.includes(d.getDay()));
+  } while (!hours.workdays.includes(d.getDay()));
   return d;
 }

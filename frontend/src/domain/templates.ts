@@ -123,13 +123,30 @@ export interface Faq {
   answers: Line[];
 }
 
+export interface CallScript {
+  lines: Line[];
+  faq: Faq[];
+}
+
+/** POST /api/visit-helper 응답. `llmSlots`는 서버가 LLM으로 채운 슬롯 이름 목록(backend 04)이고 브라우저 결과에는 없다. */
+export interface VisitHelper {
+  desk: DeskSheet;
+  call: CallScript;
+  llmSlots?: string[];
+}
+
+/** 자유 입력 번역 결과(backend 05). 서버 전용 선택 필드다. */
+export interface TranslationInfo {
+  status: 'ok' | 'rejected' | 'skipped';
+}
+
 const ans = (ko: string, en: string, vi: string, roman: string, viPron: string, lang: Lang): Line => ({
   ko,
   native: { ko, en, vi }[lang],
   pron: { ko: '', en: roman, vi: viPron }[lang],
 });
 
-export function buildCallScript(intake: Intake, dept: Department, lang: Lang): { lines: Line[]; faq: Faq[] } {
+export function buildCallScript(intake: Intake, dept: Department, lang: Lang): CallScript {
   const lines: Line[] = [phraseLine(PHRASES.hello, lang), departmentLine(dept, lang)];
   const sym = symptomLine(intake, lang);
   if (sym) lines.push(sym);
@@ -202,6 +219,9 @@ export interface ClinicianReport {
   included: ReportField[];
   rows: ReportRow[];
   createdAt: string;
+  /** 서버 전용 선택 필드(backend 04·05). 브라우저 결과에는 없다 */
+  llmSlots?: string[];
+  translation?: TranslationInfo;
 }
 
 const FIELD_LABEL: Record<ReportField, Tri> = {
@@ -332,8 +352,15 @@ export interface CenterSummaryInput {
   contactMethod: ContactMethod | null;
 }
 
+export interface CenterSummary {
+  ko: string;
+  native: string;
+  /** 서버 전용 선택 필드(backend 05). 브라우저 결과에는 없다 */
+  translation?: TranslationInfo;
+}
+
 /** 사실 요약만 한다. 판단·추측 문장을 넣지 않는다. */
-export function buildCenterSummary(i: CenterSummaryInput): { ko: string; native: string } {
+export function buildCenterSummary(i: CenterSummaryInput): CenterSummary {
   const { intake } = i;
   const lang = intake.language;
   const parts = intake.bodyParts.map((p) => BODY_PARTS[p]);

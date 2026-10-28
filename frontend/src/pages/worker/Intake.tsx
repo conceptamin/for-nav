@@ -8,7 +8,7 @@ import { Link, Navigate, useNavigate } from 'react-router';
 import { Chip, kakaoSearchUrl, SingleSelect, toggleIn, Worse119, YesNoSeg } from '../../components/common';
 import { useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
-import { checkTriage, extract, screenEmergency } from '../../api/worker';
+import { checkTriage, extract, screenEmergency, usedKeywordFallback } from '../../api/worker';
 import type { ExtractResult, Intake, TriageResult } from '../../domain/triage';
 import { newIntake, REASON_KO } from '../../domain/triage';
 import type { AgeGroup, BodyPart, Industry, Onset, Sex, Symptom, WorkType } from '../../domain/vocab';
@@ -26,6 +26,8 @@ export function IntakePage() {
   const [intake, setIntake] = useState<Intake>(() => newIntake(lang));
   const [missingMsg, setMissingMsg] = useState(false);
   const [extracted, setExtracted] = useState(false);
+  /** API 모드에서 LLM 대신 키워드 사전으로 채웠는지(README "경로별 대체 정책") */
+  const [keywordFallback, setKeywordFallback] = useState(false);
   /** 서버 응답을 기다리는 중. 다음·이전 버튼을 막아 두 번 눌리지 않게 한다 */
   const [busy, setBusy] = useState(false);
 
@@ -55,6 +57,7 @@ export function IntakePage() {
       }
       const merged = out.intake;
       setExtracted(out.filled);
+      setKeywordFallback(usedKeywordFallback(out, intake.freeText));
       setIntake(merged);
       if (checkEmergency(merged)) return;
       // 필수 항목(부위·증상)이 비면 해당 버튼 질문으로 되돌아간다.
@@ -138,7 +141,13 @@ export function IntakePage() {
       {step === 3 && (
         <section className="card">
           <h2>{t('stepMore')}</h2>
-          {extracted && <div className="notice info">✨ {t('extractedNote')}</div>}
+          {/* 대체 알림은 같은 안내 상자 안의 한 줄로 둔다(design.md: 안내 상자를 두 개 연달아 쌓지 않는다) */}
+          {extracted && (
+            <div className="notice info">
+              ✨ {t('extractedNote')}
+              {keywordFallback && <div className="small">{t('extractFallback')}</div>}
+            </div>
+          )}
           <div className="field">
             <span className="label">{t('onsetQ')}</span>
             <SingleSelect options={Object.keys(ONSETS) as Onset[]} value={intake.onset} onChange={(v) => set({ onset: v })} label={(k) => term(ONSETS[k])} />

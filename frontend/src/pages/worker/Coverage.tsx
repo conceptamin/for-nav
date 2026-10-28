@@ -1,12 +1,13 @@
 // S-08 기초 정보 확인·제도 경로. 판정이 아니라 "먼저 상담할 곳" 안내다.
+// 브라우저 결과를 먼저 그리고, API 모드면 서버 결과가 오는 대로 바꾼다(api/worker.ts useCoverage).
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { PolicyDisclaimer, Worse119, YesNoSeg } from '../../components/common';
 import { useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
+import { useCoverage } from '../../api/worker';
 import type { CoverageInput } from '../../domain/coverage';
-import { routeCoverage } from '../../domain/coverage';
 import type { YesNoUnknown } from '../../domain/vocab';
 
 export function CoveragePage() {
@@ -18,13 +19,14 @@ export function CoveragePage() {
 
   const ready = work !== null && ins !== null && (ins !== 'no' || ulsan !== null);
   const input: CoverageInput | null = ready ? { workRelated: work, insurance: ins, ulsan90: ins === 'no' ? ulsan : null } : null;
-  const result = input ? routeCoverage(input) : null;
+  const result = useCoverage(input, app.meta.infoDate);
 
   const { setCoverage } = app;
   useEffect(() => {
     if (input && result) setCoverage({ input, result });
-    // 입력값이 바뀔 때만 저장한다(input·result는 매 렌더 새로 계산되므로 의존성에서 뺀다).
-  }, [work, ins, ulsan]);
+    // 결과가 바뀔 때만 저장한다. useCoverage는 같은 입력에서 같은 객체를 돌려주고, 서버 결과가 오면 한 번 더 바뀐다.
+    // input은 매 렌더 새로 만들어지므로 의존성에서 뺀다(result가 input에서 나온다).
+  }, [result]);
 
   return (
     <div>
