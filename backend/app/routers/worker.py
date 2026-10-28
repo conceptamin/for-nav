@@ -1,9 +1,13 @@
 # 근로자 화면용 API. 규칙·템플릿을 그대로 부르며 상태를 저장하지 않는다.
 
-from fastapi import APIRouter
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, Request
+
+from app.llm import LLMClient
 from app.rules.coverage import route_coverage
-from app.rules.triage import extract_from_text, filled_by_extraction, merge_extraction, triage
+from app.rules.extract_llm import extract_with_llm
+from app.rules.triage import filled_by_extraction, merge_extraction, triage
 from app.schemas import (
     CenterSummary,
     CenterSummaryInput,
@@ -18,18 +22,24 @@ from app.schemas import (
     VisitHelperRequest,
     VisitHelperResponse,
 )
+from app.settings import settings
 from app.templates.reports import build_center_summary, build_clinician_report
 from app.templates.visit import build_call_script, build_desk_sheet
 
 router = APIRouter()
 
 
+def llm_client(request: Request) -> LLMClient | None:
+    """서버 시작 시 만든 LLM 클라이언트. 키가 없거나 lifespan 밖(테스트)이면 None이다."""
+    return getattr(request.app.state, "llm", None)
+
+
 @router.post("/extract")
-def extract(req: ExtractRequest) -> ExtractResponse:
-    """S-05 3단계: 자유 입력에서 부위·증상 등을 뽑아 빈 항목만 채운다(LLM 자리)."""
-    ex = extract_from_text(req.intake.free_text)
+async def extract(req: ExtractRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> ExtractResponse:
+    """S-05 3단계: 자유 입력에서 부위·증상 등을 뽑아 빈 항목만 채운다. LLM이 없거나 실패하면 키워드 사전."""
+    ex, source = await extract_with_llm(req.intake.free_text, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts)
     merged = merge_extraction(req.intake, ex)
-    return ExtractResponse(extraction=ex, intake=merged, filled=filled_by_extraction(req.intake, merged))
+    return ExtractResponse(extraction=ex, intake=merged, filled=filled_by_extraction(req.intake, merged), source=source)
 
 
 @router.post("/triage")
