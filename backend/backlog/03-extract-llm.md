@@ -102,7 +102,7 @@ uv run --env-file .env python scripts/extract_compare.py  # 실제 LLM(claude-ha
 - 빈 자유 입력은 LLM을 부르지 않는다
 
 남은 문제
-- LLM이 키워드보다 나쁜 사례(8·40·44 workRelated, 18·26·52 증상, 52 workType)가 있다. 키워드 결과와 합칠지(예: 목록 필드는 합집합, 단일 값은 LLM 우선) 사용자가 정한다(메모). 정해지면 별도 항목으로 한다
+- LLM이 키워드보다 나쁜 사례(8·40·44 workRelated, 18·26·52 증상, 52 workType)가 있다. 사용자가 합치기 규칙(부위·증상 합집합, 업무 관련은 키워드, 나머지 LLM)을 정해 `09-extract-merge.md`로 옮겼다
 
 ## 메모
 - LLM이 키워드보다 나쁘게 나온 사례가 있으면 숨기지 않고 적는다. 그 경우 키워드 결과와 합집합을 쓸지는 사용자가 정한다
