@@ -68,7 +68,7 @@ function DeskView({ intake, dept }: { intake: Intake; dept: Department }) {
           </Chip>
         </div>
       </div>
-      <section className="card" style={{ borderTop: '6px solid var(--brand)' }}>
+      <section className="card band">
         <p className="small muted" lang="ko">
           접수 담당자님께 · 외국인 환자 접수 안내
         </p>
@@ -140,7 +140,7 @@ function CallView({ intake, dept }: { intake: Intake; dept: Department }) {
             const chosen = picked[f.id];
             const answer = chosen !== undefined ? f.answers[chosen] : undefined;
             return (
-              <div key={f.id} style={{ padding: '12px 0', borderTop: '1px solid var(--line)' }}>
+              <div key={f.id} className="line top">
                 <div style={{ fontWeight: 800, fontSize: '1.1rem' }} lang="ko">
                   {f.q.ko}
                 </div>

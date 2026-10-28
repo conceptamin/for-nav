@@ -115,7 +115,7 @@ export function ReportViewPage() {
           </button>
         </div>
       )}
-      <section className="card" style={{ borderTop: '6px solid var(--brand)' }} lang={showKo ? 'ko' : report.language}>
+      <section className="card band" lang={showKo ? 'ko' : report.language}>
         <h1 style={{ fontSize: '1.3rem' }}>{showKo ? '외국인 근로자 증상 메모 (의료진용)' : t('repTitle')}</h1>
         <p className="small muted">
           {showKo ? '환자가 직접 입력한 내용입니다. 진단이 아닙니다.' : t('repNoDiag')}

@@ -144,7 +144,7 @@ export function InboxPage() {
           <div className="l">완료</div>
         </div>
         <div className="kpi">
-          <div className="n" style={{ color: 'var(--danger)' }}>
+          <div className="n danger">
             {counts.high}
           </div>
           <div className="l">긴급도 높음(미완료)</div>
@@ -395,7 +395,8 @@ function Bars({ data }: { data: { label: string; n: number | null }[] }) {
   );
 }
 
-const PIE_COLORS = ['#0f5b78', '#e08a00', '#9aa8b2'];
+/** 차트 계열 클래스. 색은 styles.css의 --chart-1~3이 정한다 */
+const series = (i: number) => `series-${(i % 3) + 1}`;
 
 /** total은 전체 건수(가린 칸 포함). 가린 칸은 조각 길이 0이고 그 자리만큼 비워 둔다 */
 function Donut({ parts, total, label }: { parts: { label: string; n: number | null }[]; total: number | null; label: string }) {
@@ -416,7 +417,7 @@ function Donut({ parts, total, label }: { parts: { label: string; n: number | nu
                 cy="70"
                 r={r}
                 fill="none"
-                stroke={PIE_COLORS[i % PIE_COLORS.length]}
+                className={series(i)}
                 strokeWidth="22"
                 strokeDasharray={`${len} ${circ}`}
                 strokeDashoffset={-offset}
@@ -430,7 +431,7 @@ function Donut({ parts, total, label }: { parts: { label: string; n: number | nu
       <div className="legend">
         {parts.map((p, i) => (
           <span key={p.label}>
-            <i style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+            <i className={series(i)} />
             {p.label} <strong>{p.n === null || total === null ? '<5' : `${p.n}건 (${Math.round((p.n / whole) * 100)}%)`}</strong>
           </span>
         ))}
