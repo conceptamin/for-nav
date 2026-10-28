@@ -70,7 +70,7 @@
 
 | 데이터 | 용도 | 접근성 | 비고 |
 |---|---|---|---|
-| Kaggle Emergency Service – Triage Application | 응급도 모델 학습 | 바로 다운로드 | 국내 응급실, KTAS 라벨, 약 1,200건 |
+| Kaggle Emergency Service – Triage Application | 응급도 모델 학습 | 바로 다운로드 | 국내 응급실, KTAS 라벨, 1,267건. Kaggle 판은 라이선스 표시가 없어 원 출처인 PLOS ONE 논문(Moon et al. 2019, CC BY 4.0) S1 Appendix를 받는다(`data/README.md`) |
 | Kaggle Disease Symptom Prediction | 진료과 모델 A 학습 | 바로 다운로드 | 영어권 데이터, 외상 증상 부족 |
 | HIRA 보건의료빅데이터개방시스템 질병별 진료과 통계 | 질환 → 진료과 매핑, 모델 B 라벨 | 공개 | 라벨 근거로 가장 탄탄함 |
 | 대학병원 증상별 진료과 안내, 국가건강정보포털 | 모델 B 테이블 구축·검증 | 공개 | 대량 수집 시 이용약관 확인 |
