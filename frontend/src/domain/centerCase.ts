@@ -1,7 +1,7 @@
 // 센터 사례(CenterCase)와 긴급도 규칙. 긴급도는 규칙 기반이며 LLM을 쓰지 않는다.
 
 import type { CoveragePath } from './coverage';
-import type { ContactMethod, RequestType } from './templates';
+import type { CenterSummaryInput, ContactMethod, RequestType } from './templates';
 import type { District, Industry, Lang, YesNoUnknown } from './vocab';
 
 export type CaseStatus = 'new' | 'progress' | 'done';
@@ -30,6 +30,41 @@ export interface CenterCase {
   insurance: YesNoUnknown | null;
   /** 데모에서 실제로 전송한 사례(mock과 구분) */
   live: boolean;
+}
+
+/** S-12 전송 요청(`POST /api/center/cases`). 요약·긴급도·운영 시간 외 여부·id·접수 시각은 받는 쪽이 계산한다 */
+export interface NewCaseRequest extends CenterSummaryInput {
+  contact: string | null;
+  /** 근로자가 전송에 동의한 항목(한국어 표시) */
+  consentedItems: string[];
+}
+
+export interface NewCaseResponse {
+  case: CenterCase;
+  /** 다음 운영일(YYYY-MM-DD, 센터 시각) */
+  nextOpenDate: string;
+}
+
+/** 통계 칸. 이보다 적은 칸은 숫자를 내보내지 않는다(개인 단위 기록 보호) */
+export const MIN_CELL = 5;
+
+export interface StatCell {
+  key: string;
+  /** `MIN_CELL`건 미만이면 null */
+  n: number | null;
+}
+
+/** C-03 익명 집계(`GET /api/center/stats`). 비율은 0~1이고 total이 null이면 null이다 */
+export interface CenterStats {
+  total: number | null;
+  afterHoursRate: number | null;
+  workRelatedRate: number | null;
+  noInsuranceRate: number | null;
+  byIndustry: StatCell[];
+  byLanguage: StatCell[];
+  byInsurance: StatCell[];
+  /** key: `after` | `within` */
+  byAfterHours: StatCell[];
 }
 
 export function rateUrgency(input: {

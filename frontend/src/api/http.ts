@@ -79,6 +79,8 @@ export async function requestJson<T>(path: string, options: RequestOptions): Pro
     const code = body?.error?.code ?? (res.status >= 500 ? 'INTERNAL' : 'BAD_REQUEST');
     throw new ApiError(code, res.status, body?.error?.requestId ?? requestId, body?.error?.message);
   }
+  // 204(데모 초기화 등)는 본문이 없다
+  if (res.status === 204) return undefined as T;
   try {
     return (await res.json()) as T;
   } catch {
@@ -95,4 +97,10 @@ export function toApiError(e: unknown): ApiError {
 export function logFallback(path: string, e: unknown): void {
   const err = toApiError(e);
   console.warn(`[api] ${path} ${err.code}${err.status ? ` ${err.status}` : ''}${err.requestId ? ` requestId=${err.requestId}` : ''} → 브라우저 함수로 대체`);
+}
+
+/** 대체하지 않는 경로(센터)가 실패했을 때 남기는 한 줄. 화면은 실패를 그대로 보인다 */
+export function logFailure(path: string, e: unknown): void {
+  const err = toApiError(e);
+  console.warn(`[api] ${path} ${err.code}${err.status ? ` ${err.status}` : ''}${err.requestId ? ` requestId=${err.requestId}` : ''} → 실패 표시(대체 없음)`);
 }

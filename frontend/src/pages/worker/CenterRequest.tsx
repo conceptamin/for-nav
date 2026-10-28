@@ -1,6 +1,6 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 리포트, 병원 이용 안내(정적)
 // 요약 미리보기는 api/worker.ts의 useCenterSummary가 만든다. 브라우저 요약을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
-// 전송은 아직 브라우저 저장소(centerStore)로 한다. 서버 전송은 backlog 03에서 바꾼다.
+// 전송은 api/center.ts의 sendCase가 한다. API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
 
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
@@ -8,11 +8,9 @@ import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/commo
 import type { MessageKey } from '../../i18n';
 import { useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
-import { addLiveCase } from '../../state/centerStore';
-import type { CenterCase } from '../../domain/centerCase';
-import { rateUrgency } from '../../domain/centerCase';
+import { sendCase } from '../../api/center';
+import type { NewCaseResponse } from '../../domain/centerCase';
 import { useCenterSummary } from '../../api/worker';
-import { isAfterHours, nextOpenDay } from '../../domain/coverage';
 import type { CenterSummaryInput, ContactMethod, RequestType } from '../../domain/templates';
 import { newIntake } from '../../domain/triage';
 import { LOCALES } from '../../domain/vocab';
@@ -29,7 +27,9 @@ export function CenterRequestPage() {
   const [method, setMethod] = useState<ContactMethod | null>(null);
   const [contact, setContact] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [sent, setSent] = useState<CenterCase | null>(null);
+  const [sent, setSent] = useState<NewCaseResponse | null>(null);
+  const [sending, setSending] = useState(false);
+  const [sendFailed, setSendFailed] = useState(false);
 
   const intake = app.intake ?? newIntake(lang);
   const insurance = app.coverage?.input.insurance ?? null;
@@ -66,7 +66,8 @@ export function CenterRequestPage() {
   }
 
   if (sent) {
-    const next = nextOpenDay(new Date(sent.createdAt), app.meta.centerHours);
+    // 다음 운영일은 센터 날짜(YYYY-MM-DD)다. 그날 정오(한국 시각)로 읽어 요일이 시간대에 따라 밀리지 않게 한다.
+    const next = new Date(`${sent.nextOpenDate}T12:00:00+09:00`);
     return (
       <div>
         <section className="card" style={{ textAlign: 'center' }}>
@@ -76,13 +77,13 @@ export function CenterRequestPage() {
           <h1>{t('cenSentTitle')}</h1>
           <p>{t('cenSentBody')}</p>
           <p className="small muted">
-            {t('cenCaseNo')}: <strong>{sent.id}</strong>
+            {t('cenCaseNo')}: <strong>{sent.case.id}</strong>
           </p>
         </section>
-        {sent.afterHours ? (
+        {sent.case.afterHours ? (
           <div className="notice warn">
             🌙 {t('cenAfterHours')}{' '}
-            <strong>{next.toLocaleDateString(LOCALES[lang], { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
+            <strong>{next.toLocaleDateString(LOCALES[lang], { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Seoul' })}</strong>
           </div>
         ) : (
           <div className="notice ok">{t('cenInHours')}</div>
@@ -96,10 +97,8 @@ export function CenterRequestPage() {
     );
   }
 
-  const send = () => {
-    if (!type || !summary) return;
-    const now = new Date();
-    const { urgency, reasons } = rateUrgency({ emergencyFlag: app.emergencySeen, workRelated: intake.workRelated, insurance });
+  const send = async () => {
+    if (!type) return;
     const consented = [
       intake.symptoms.length ? '증상' : null,
       intake.bodyParts.length ? '부위' : null,
@@ -111,31 +110,31 @@ export function CenterRequestPage() {
       app.coverage ? '제도 경로 결과' : null,
       contact.trim() ? '연락처' : null,
     ].filter((x): x is string => Boolean(x));
-    const c: CenterCase = {
-      id: `C-${now.getTime().toString().slice(-5)}`,
-      createdAt: now.toISOString(),
-      language: lang,
-      requestType: type,
-      urgency,
-      urgencyReasons: reasons,
-      district: intake.district,
-      industry: intake.industry,
-      status: 'new',
-      summaryKo: summary.ko,
-      originalNative: summary.native,
-      consentedItems: consented,
-      coveragePath: app.coverage?.result.path ?? null,
-      contactMethod: method,
-      contact: contact.trim() || null,
-      afterHours: isAfterHours(now, app.meta.centerHours),
-      emergencyFlag: app.emergencySeen,
-      workRelated: intake.workRelated,
-      insurance,
-      live: true,
-    };
-    addLiveCase(c);
-    app.addMyCase(c.id);
-    setSent(c);
+    setSending(true);
+    setSendFailed(false);
+    try {
+      // 요약·긴급도·운영 시간 외 여부·접수 번호는 받는 쪽이 같은 입력으로 계산한다(미리보기 값을 보내지 않는다).
+      const r = await sendCase(
+        {
+          intake: { ...intake, language: lang },
+          emergencyFlag: app.emergencySeen,
+          requestType: type,
+          coverage: app.coverage?.result ?? null,
+          insurance,
+          contactMethod: method,
+          contact: contact.trim() || null,
+          consentedItems: consented,
+        },
+        app.meta.centerHours,
+      );
+      app.addMyCase(r.case.id);
+      setSent(r);
+    } catch {
+      // 입력값은 그대로 둔다. 다시 시도는 같은 입력으로 보낸다.
+      setSendFailed(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -176,9 +175,18 @@ export function CenterRequestPage() {
         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
         <span>{t('cenConsent')}</span>
       </label>
-      <button type="button" className="btn block big" disabled={!type || !agreed} onClick={send}>
-        📨 {t('cenSend')}
-      </button>
+      {sendFailed ? (
+        <div className="notice danger with-retry" role="alert">
+          <span>{t('sendFailed')}</span>
+          <button type="button" className="btn secondary" disabled={sending || !type || !agreed} onClick={() => void send()}>
+            {t('retry')}
+          </button>
+        </div>
+      ) : (
+        <button type="button" className="btn block big" disabled={!type || !agreed || sending} onClick={() => void send()}>
+          📨 {t('cenSend')}
+        </button>
+      )}
       <p className="footer-note">{t('cenHoursNote')}</p>
       <Worse119 />
     </div>

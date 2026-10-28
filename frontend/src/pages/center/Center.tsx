@@ -1,18 +1,47 @@
 // 센터 영역(PC 우선, 한국어): C-01 사례 접수함, C-02 사례 상세, C-03 통계
 // 데모에서는 로그인을 생략한다(PRD 5-2).
+// 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router';
-import { buildStatRecords } from '../../data/mock';
-import type { CaseStatus, CenterCase, Urgency } from '../../domain/centerCase';
+import { getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
+import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
 import { STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
 import { PATH_KO } from '../../domain/coverage';
 import { CONTACT_METHOD_KO, REQUEST_TYPE_KO } from '../../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../../domain/vocab';
 import { DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO } from '../../domain/vocab';
-import { resetCenterDemo, setCaseStatus, useCenterCases } from '../../state/centerStore';
+
+// 센터 화면은 한국어 고정이다.
+const TEXT = {
+  offline: '서버 연결 안 됨',
+  lastUpdated: '마지막 갱신',
+  never: '없음',
+  retry: '다시 시도',
+  loading: '목록을 불러오는 중입니다.',
+  notLoaded: '목록을 아직 받지 못했습니다.',
+  statusFailed: '상태를 바꾸지 못했습니다. 서버 연결을 확인해 주세요.',
+  resetFailed: '데모를 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
+  statsFailed: '통계를 불러오지 못했습니다. 서버 연결을 확인해 주세요.',
+  statsLoading: '통계를 불러오는 중입니다.',
+} as const;
+
+const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+/** 실패 문구 + 바로 옆 다시 시도(design.md "로딩과 실패를 그리는 법") */
+function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; busy: boolean }) {
+  return (
+    <div className="notice danger with-retry" role="alert">
+      <span>{text}</span>
+      <button type="button" className="btn secondary" disabled={busy} onClick={onRetry}>
+        {TEXT.retry}
+      </button>
+    </div>
+  );
+}
 
 export function CenterLayout() {
+  const { connected, lastUpdated } = useCenterCases();
   return (
     <div className="c-shell">
       <header className="c-header">
@@ -28,6 +57,11 @@ export function CenterLayout() {
           근로자 화면 열기 ↗
         </a>
       </header>
+      {!connected && (
+        <div className="c-offline" role="status">
+          ⚠️ {TEXT.offline} · {TEXT.lastUpdated} {lastUpdated ? hhmm(lastUpdated) : TEXT.never}
+        </div>
+      )}
       <main className="c-main">
         <Outlet />
       </main>
@@ -57,10 +91,24 @@ function StatusPill({ s }: { s: CaseStatus }) {
 // C-01 사례 접수함
 // ---------------------------------------------------------------------------
 export function InboxPage() {
-  const cases = useCenterCases();
+  const { cases, connected, lastUpdated } = useCenterCases();
   const navigate = useNavigate();
   const [status, setStatus] = useState<CaseStatus | 'all'>('all');
   const [sort, setSort] = useState<'time' | 'urgency'>('time');
+  const [resetting, setResetting] = useState(false);
+  const [resetFailed, setResetFailed] = useState(false);
+
+  const reset = async () => {
+    setResetting(true);
+    setResetFailed(false);
+    try {
+      await resetDemo();
+    } catch {
+      setResetFailed(true);
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const counts = useMemo(() => {
     const c = { new: 0, progress: 0, done: 0, high: 0 };
@@ -119,60 +167,66 @@ export function InboxPage() {
         </label>
         <button
           type="button"
+          disabled={resetting}
           onClick={() => {
-            if (window.confirm('데모로 전송한 사례와 상태 변경을 모두 지울까요?')) resetCenterDemo();
+            if (window.confirm('데모로 전송한 사례와 상태 변경을 모두 지울까요?')) void reset();
           }}
         >
           데모 초기화
         </button>
       </div>
+      {resetFailed && <Failure text={TEXT.resetFailed} onRetry={() => void reset()} busy={resetting} />}
 
-      <div className="table-wrap">
-        <table className="cases">
-          <thead>
-            <tr>
-              <th>접수 번호</th>
-              <th>접수 시각</th>
-              <th>언어</th>
-              <th>요청 유형</th>
-              <th>긴급도</th>
-              <th>긴급도 근거</th>
-              <th>구·군</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((c) => (
-              <tr
-                key={c.id}
-                className={c.status === 'new' && c.live ? 'fresh' : undefined}
-                tabIndex={0}
-                onClick={() => navigate(`/center/cases/${c.id}`)}
-                onKeyDown={(e) => e.key === 'Enter' && navigate(`/center/cases/${c.id}`)}
-              >
-                <td>
-                  <strong>{c.id}</strong> {c.live && <span className="pill live">실제 전송</span>}
-                </td>
-                <td>
-                  {fmt(c.createdAt)} {c.afterHours && <span title="운영 시간 외 접수">🌙</span>}
-                </td>
-                <td>{LANGUAGE_NAMES_KO[c.language]}</td>
-                <td>{REQUEST_TYPE_KO[c.requestType]}</td>
-                <td>
-                  <UrgencyPill u={c.urgency} />
-                </td>
-                <td className="small muted">{c.urgencyReasons.join(', ') || '—'}</td>
-                <td>{c.district ? DISTRICTS[c.district].ko : '—'}</td>
-                <td>
-                  <StatusPill s={c.status} />
-                </td>
+      {lastUpdated === null && cases.length === 0 ? (
+        <p className="muted">{connected ? TEXT.loading : TEXT.notLoaded}</p>
+      ) : (
+        <div className="table-wrap">
+          <table className="cases">
+            <thead>
+              <tr>
+                <th>접수 번호</th>
+                <th>접수 시각</th>
+                <th>언어</th>
+                <th>요청 유형</th>
+                <th>긴급도</th>
+                <th>긴급도 근거</th>
+                <th>구·군</th>
+                <th>상태</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map((c) => (
+                <tr
+                  key={c.id}
+                  className={c.status === 'new' && c.live ? 'fresh' : undefined}
+                  tabIndex={0}
+                  onClick={() => navigate(`/center/cases/${c.id}`)}
+                  onKeyDown={(e) => e.key === 'Enter' && navigate(`/center/cases/${c.id}`)}
+                >
+                  <td>
+                    <strong>{c.id}</strong> {c.live && <span className="pill live">실제 전송</span>}
+                  </td>
+                  <td>
+                    {fmt(c.createdAt)} {c.afterHours && <span title="운영 시간 외 접수">🌙</span>}
+                  </td>
+                  <td>{LANGUAGE_NAMES_KO[c.language]}</td>
+                  <td>{REQUEST_TYPE_KO[c.requestType]}</td>
+                  <td>
+                    <UrgencyPill u={c.urgency} />
+                  </td>
+                  <td className="small muted">{c.urgencyReasons.join(', ') || '—'}</td>
+                  <td>{c.district ? DISTRICTS[c.district].ko : '—'}</td>
+                  <td>
+                    <StatusPill s={c.status} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <p className="footer-note">
-        mock 사례 24건 + 근로자 화면에서 실제 전송한 사례. 같은 브라우저의 다른 탭에서 전송하면 2초 안에 이 목록에 나타납니다. 🌙 = 운영 시간 외 접수
+        mock 사례 24건 + 근로자 화면에서 실제 전송한 사례. 근로자 화면에서 전송하면 2초 안에 이 목록에 나타납니다. 🌙 = 운영 시간 외 접수
       </p>
     </div>
   );
@@ -183,8 +237,16 @@ export function InboxPage() {
 // ---------------------------------------------------------------------------
 export function CaseDetailPage() {
   const { id } = useParams();
-  const cases = useCenterCases();
+  const { cases, connected, lastUpdated } = useCenterCases();
   const c = cases.find((x) => x.id === id);
+  if (!c && lastUpdated === null) {
+    return (
+      <div className="panel">
+        <p className="muted">{connected ? TEXT.loading : TEXT.notLoaded}</p>
+        <Link to="/center">← 접수함</Link>
+      </div>
+    );
+  }
   if (!c) {
     return (
       <div className="panel">
@@ -193,11 +255,25 @@ export function CaseDetailPage() {
       </div>
     );
   }
-  return <CaseDetail c={c} />;
+  // 다른 사례로 옮기면 실패 문구를 지운다
+  return <CaseDetail key={c.id} c={c} />;
 }
 
 function CaseDetail({ c }: { c: CenterCase }) {
   const flow: CaseStatus[] = ['new', 'progress', 'done'];
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState<CaseStatus | null>(null);
+  const change = async (s: CaseStatus) => {
+    setBusy(true);
+    setFailed(null);
+    try {
+      await setCaseStatus(c.id, s);
+    } catch {
+      setFailed(s);
+    } finally {
+      setBusy(false);
+    }
+  };
   const yn = (v: YesNoUnknown | null, map: Record<YesNoUnknown, string>) => (v ? map[v] : '—');
   return (
     <div>
@@ -243,12 +319,14 @@ function CaseDetail({ c }: { c: CenterCase }) {
                   className={`btn ${c.status === s ? '' : 'secondary'}`}
                   style={{ minHeight: 40, flex: 1 }}
                   aria-pressed={c.status === s}
-                  onClick={() => setCaseStatus(c.id, s)}
+                  disabled={busy}
+                  onClick={() => void change(s)}
                 >
                   {STATUS_KO[s]}
                 </button>
               ))}
             </div>
+            {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
           </section>
           <section className="panel">
             <h2>사례 정보</h2>
@@ -296,41 +374,41 @@ function CaseDetail({ c }: { c: CenterCase }) {
 // ---------------------------------------------------------------------------
 // C-03 통계: 익명 집계만 보이고 5건 미만 칸은 숨긴다.
 // ---------------------------------------------------------------------------
-const MIN_CELL = 5;
+// 칸 값은 src/api/center.ts가 준 그대로 그린다. null(5건 미만)은 "<5"이고 막대·조각을 그리지 않는다.
+const cellText = (n: number | null) => (n === null ? '<5' : String(n));
+const pct = (rate: number | null) => (rate === null ? '—' : `${Math.round(rate * 100)}%`);
 
-function Bars({ data }: { data: { label: string; n: number }[] }) {
-  const max = Math.max(...data.map((d) => d.n), 1);
+function Bars({ data }: { data: { label: string; n: number | null }[] }) {
+  const max = Math.max(...data.map((d) => d.n ?? 0), 1);
   return (
     <div className="bars">
-      {data.map((d) => {
-        const hidden = d.n < MIN_CELL;
-        return (
-          <div className="bar-row" key={d.label}>
-            <span>{d.label}</span>
-            <div className="bar-track" aria-hidden>
-              {!hidden && <div className="bar-fill" style={{ width: `${(d.n / max) * 100}%` }} />}
-            </div>
-            <span className="num">{hidden ? '<5' : d.n}</span>
+      {data.map((d) => (
+        <div className="bar-row" key={d.label}>
+          <span>{d.label}</span>
+          <div className="bar-track" aria-hidden>
+            {d.n !== null && <div className="bar-fill" style={{ width: `${(d.n / max) * 100}%` }} />}
           </div>
-        );
-      })}
+          <span className="num">{cellText(d.n)}</span>
+        </div>
+      ))}
     </div>
   );
 }
 
 const PIE_COLORS = ['#0f5b78', '#e08a00', '#9aa8b2'];
 
-function Donut({ parts }: { parts: { label: string; n: number }[] }) {
-  const total = parts.reduce((s, p) => s + p.n, 0) || 1;
+/** total은 전체 건수(가린 칸 포함). 가린 칸은 조각 길이 0이고 그 자리만큼 비워 둔다 */
+function Donut({ parts, total, label }: { parts: { label: string; n: number | null }[]; total: number | null; label: string }) {
+  const whole = total ?? 1;
   const r = 52;
   const circ = 2 * Math.PI * r;
   let offset = 0;
   return (
     <div className="donut-wrap">
-      <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="보험 상태 분포">
+      <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label={label}>
         <g transform="rotate(-90 70 70)">
           {parts.map((p, i) => {
-            const len = (p.n / total) * circ;
+            const len = p.n === null || total === null ? 0 : (p.n / whole) * circ;
             const el = (
               <circle
                 key={p.label}
@@ -340,7 +418,7 @@ function Donut({ parts }: { parts: { label: string; n: number }[] }) {
                 fill="none"
                 stroke={PIE_COLORS[i % PIE_COLORS.length]}
                 strokeWidth="22"
-                strokeDasharray={`${p.n < MIN_CELL ? 0 : len} ${circ}`}
+                strokeDasharray={`${len} ${circ}`}
                 strokeDashoffset={-offset}
               />
             );
@@ -353,7 +431,7 @@ function Donut({ parts }: { parts: { label: string; n: number }[] }) {
         {parts.map((p, i) => (
           <span key={p.label}>
             <i style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-            {p.label} <strong>{p.n < MIN_CELL ? '<5' : `${p.n}건 (${Math.round((p.n / total) * 100)}%)`}</strong>
+            {p.label} <strong>{p.n === null || total === null ? '<5' : `${p.n}건 (${Math.round((p.n / whole) * 100)}%)`}</strong>
           </span>
         ))}
       </div>
@@ -361,27 +439,27 @@ function Donut({ parts }: { parts: { label: string; n: number }[] }) {
   );
 }
 
+const cellsBy = <K extends string>(cells: StatCell[], label: (k: K) => string) => cells.map((c) => ({ label: label(c.key as K), n: c.n }));
+
+type StatsState = { kind: 'loading' } | { kind: 'ok'; stats: CenterStats } | { kind: 'error' };
+
 export function StatsPage() {
-  const all = useMemo(() => buildStatRecords(), []);
   const [days, setDays] = useState<30 | 90 | 180>(90);
   const [district, setDistrict] = useState<District | 'all'>('all');
+  const [state, setState] = useState<StatsState>({ kind: 'loading' });
+  const [attempt, setAttempt] = useState(0);
 
-  const recs = useMemo(() => {
-    const since = Date.now() - days * 86400000;
-    return all.filter((r) => r.date.getTime() >= since && (district === 'all' || r.district === district));
-  }, [all, days, district]);
-
-  const countBy = <K extends string>(keys: K[], get: (r: (typeof recs)[number]) => K) =>
-    keys.map((k) => ({ key: k, n: recs.filter((r) => get(r) === k).length }));
-
-  const byIndustry = countBy(Object.keys(INDUSTRIES) as Industry[], (r) => r.industry).map((x) => ({ label: INDUSTRIES[x.key].ko, n: x.n }));
-  const byLang = countBy(['vi', 'en'] as Lang[], (r) => r.language).map((x) => ({ label: LANGUAGE_NAMES_KO[x.key], n: x.n }));
-  const byIns = countBy(['yes', 'no', 'unknown'] as YesNoUnknown[], (r) => r.insurance).map((x) => ({
-    label: { yes: '있음', no: '없음', unknown: '모름' }[x.key],
-    n: x.n,
-  }));
-  const after = recs.filter((r) => r.afterHours).length;
-  const total = recs.length;
+  useEffect(() => {
+    let alive = true;
+    setState({ kind: 'loading' });
+    getStats(days, district === 'all' ? null : district).then(
+      (stats) => alive && setState({ kind: 'ok', stats }),
+      () => alive && setState({ kind: 'error' }),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [days, district, attempt]);
 
   return (
     <div>
@@ -403,21 +481,38 @@ export function StatsPage() {
         </select>
       </div>
 
+      {state.kind === 'loading' && <p className="muted">{TEXT.statsLoading}</p>}
+      {state.kind === 'error' && <Failure text={TEXT.statsFailed} onRetry={() => setAttempt((n) => n + 1)} busy={false} />}
+      {state.kind === 'ok' && <StatsView s={state.stats} />}
+      <p className="footer-note">
+        데모 mock 익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 울산시 담당자는 같은 화면을 읽기 전용으로 사용합니다(실서비스).
+      </p>
+    </div>
+  );
+}
+
+function StatsView({ s }: { s: CenterStats }) {
+  const byIndustry = cellsBy<Industry>(s.byIndustry, (k) => INDUSTRIES[k]?.ko ?? k);
+  const byLang = cellsBy<Lang>(s.byLanguage, (k) => LANGUAGE_NAMES_KO[k] ?? k);
+  const byIns = cellsBy<YesNoUnknown>(s.byInsurance, (k) => ({ yes: '있음', no: '없음', unknown: '모름' })[k] ?? k);
+  const byAfter = cellsBy<'after' | 'within'>(s.byAfterHours, (k) => ({ after: '운영 시간 외', within: '운영 시간 내' })[k] ?? k);
+  return (
+    <>
       <div className="c-grid">
         <div className="kpi">
-          <div className="n">{total < MIN_CELL ? '<5' : total}</div>
+          <div className="n">{cellText(s.total)}</div>
           <div className="l">요청 수</div>
         </div>
         <div className="kpi">
-          <div className="n">{total < MIN_CELL ? '—' : `${Math.round((after / total) * 100)}%`}</div>
+          <div className="n">{pct(s.afterHoursRate)}</div>
           <div className="l">운영 시간 외 요청 비율</div>
         </div>
         <div className="kpi">
-          <div className="n">{total < MIN_CELL ? '—' : `${Math.round((recs.filter((r) => r.workRelated === 'yes').length / total) * 100)}%`}</div>
+          <div className="n">{pct(s.workRelatedRate)}</div>
           <div className="l">업무 중 발생 비율</div>
         </div>
         <div className="kpi">
-          <div className="n">{total < MIN_CELL ? '—' : `${Math.round((recs.filter((r) => r.insurance !== 'yes').length / total) * 100)}%`}</div>
+          <div className="n">{pct(s.noInsuranceRate)}</div>
           <div className="l">보험 없음·모름 비율</div>
         </div>
       </div>
@@ -433,22 +528,14 @@ export function StatsPage() {
         </section>
         <section className="panel">
           <h2>건강보험증 보유 분포</h2>
-          <Donut parts={byIns} />
+          <Donut parts={byIns} total={s.total} label="보험 상태 분포" />
         </section>
         <section className="panel">
           <h2>운영 시간 외 요청 비율</h2>
-          <Donut
-            parts={[
-              { label: '운영 시간 외', n: after },
-              { label: '운영 시간 내', n: total - after },
-            ]}
-          />
+          <Donut parts={byAfter} total={s.total} label="운영 시간 외 요청 비율" />
           <p className="footer-note">운영 시간 가정: 평일 09:00~18:00 (센터 확인 후 설정값으로 변경)</p>
         </section>
       </div>
-      <p className="footer-note">
-        데모 mock 익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 울산시 담당자는 같은 화면을 읽기 전용으로 사용합니다(실서비스).
-      </p>
-    </div>
+    </>
   );
 }

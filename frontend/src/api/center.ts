@@ -1,0 +1,157 @@
+// 센터 경로(S-12 전송, C-01~C-03)가 부르는 함수. 단독/API 모드 분기는 여기에만 있다.
+// 센터 경로는 실패해도 대체하지 않는다(README "경로별 대체 정책"). localStorage로 대체하면
+// 다른 기기에서 보낸 사례가 도착한 것처럼 보이는 가짜 성공이 되므로, 실패는 ApiError를 그대로 던진다.
+
+import { useSyncExternalStore } from 'react';
+import type { CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse } from '../domain/centerCase';
+import type { CenterHours } from '../domain/coverage';
+import type { District } from '../domain/vocab';
+import { getStatsLocal, loadAllLocal, resetCenterDemoLocal, sendCaseLocal, setCaseStatusLocal, subscribeLocal } from '../state/centerStore';
+import { ApiError, isApiMode, logFailure, requestJson } from './http';
+
+/** 센터 경로 서버 호출 시간 제한. 넘기면 실패로 보인다 */
+export const CENTER_TIMEOUT_MS = 5000;
+/** 접수함 다시 읽기 주기. 한 번의 요청이 끝난 뒤부터 잰다(요청이 겹치지 않는다) */
+export const CENTER_POLL_MS = 2000;
+
+const bad = () => new ApiError('BAD_RESPONSE', null, null);
+const isCase = (c: Partial<CenterCase> | undefined): boolean => Boolean(c && typeof c.id === 'string' && typeof c.status === 'string');
+
+async function call<T>(path: string, options: { method?: 'GET' | 'POST' | 'PATCH'; body?: unknown } = {}): Promise<T> {
+  try {
+    return await requestJson<T>(path, { ...options, timeoutMs: CENTER_TIMEOUT_MS });
+  } catch (e) {
+    logFailure(path, e);
+    throw e;
+  }
+}
+
+/**
+ * S-12 전송(`POST /api/center/cases`). 요약·긴급도·운영 시간 외 여부는 서버가 계산한 값을 그대로 쓴다.
+ * `hours`는 단독 모드에서 운영 시간 외 판정에만 쓴다(API 모드는 서버 설정값).
+ */
+export async function sendCase(req: NewCaseRequest, hours: CenterHours): Promise<NewCaseResponse> {
+  if (!isApiMode()) return sendCaseLocal(req, hours);
+  const r = await call<Partial<NewCaseResponse>>('/center/cases', { body: req });
+  if (!isCase(r.case) || typeof r.nextOpenDate !== 'string') throw bad();
+  return r as NewCaseResponse;
+}
+
+/** C-01 목록(`GET /api/center/cases`). 최신순 */
+export async function listCases(): Promise<CenterCase[]> {
+  if (!isApiMode()) return loadAllLocal();
+  // 폴링 실패는 연결 띠로 보이므로 매번 기록하지 않는다(useCenterCases가 끊길 때 한 번 남긴다)
+  const r = await requestJson<unknown>('/center/cases', { timeoutMs: CENTER_TIMEOUT_MS });
+  if (!Array.isArray(r) || !r.every((c) => isCase(c as Partial<CenterCase>))) throw bad();
+  return r as CenterCase[];
+}
+
+/** C-02 상태 변경(`PATCH /api/center/cases/{id}`). 성공하면 접수함을 바로 다시 읽는다 */
+export async function setCaseStatus(id: string, status: CaseStatus): Promise<void> {
+  if (isApiMode()) {
+    const r = await call<Partial<CenterCase>>(`/center/cases/${encodeURIComponent(id)}`, { method: 'PATCH', body: { status } });
+    if (!isCase(r)) throw bad();
+  } else {
+    setCaseStatusLocal(id, status);
+  }
+  await refreshCases();
+}
+
+/** C-01 데모 초기화(`POST /api/center/reset`). 실제 전송 사례와 상태 변경을 지운다 */
+export async function resetDemo(): Promise<void> {
+  if (isApiMode()) await call<void>('/center/reset', { method: 'POST' });
+  else resetCenterDemoLocal();
+  await refreshCases();
+}
+
+/** C-03 익명 집계(`GET /api/center/stats`). 5건 미만 칸은 받는 쪽에서 이미 null이다. 원천 레코드는 받지 않는다 */
+export async function getStats(days: 30 | 90 | 180, district: District | null): Promise<CenterStats> {
+  if (!isApiMode()) return getStatsLocal(days, district);
+  const q = new URLSearchParams({ days: String(days) });
+  if (district) q.set('district', district);
+  const r = await call<Partial<CenterStats>>(`/center/stats?${q}`);
+  const cells = [r.byIndustry, r.byLanguage, r.byInsurance, r.byAfterHours];
+  if (!('total' in r) || !cells.every(Array.isArray)) throw bad();
+  return r as CenterStats;
+}
+
+// ---------------------------------------------------------------------------
+// 접수함 구독. 센터 화면 여러 곳(헤더의 연결 띠, 목록, 상세)이 요청 하나를 나눠 쓴다.
+// API 모드: 구독자가 있는 동안 CENTER_POLL_MS마다 listCases(). storage 이벤트는 듣지 않는다.
+// 단독 모드: localStorage 변경 이벤트와 2초 주기로 다시 읽는다. 항상 연결됨이다.
+// ---------------------------------------------------------------------------
+
+export interface CenterFeed {
+  cases: CenterCase[];
+  /** 마지막 요청이 성공했는가. 단독 모드는 항상 true */
+  connected: boolean;
+  /** 마지막으로 목록을 받은 시각(ISO). API 모드에서 아직 한 번도 받지 못했으면 null */
+  lastUpdated: string | null;
+}
+
+const localFeed = (): CenterFeed => ({ cases: loadAllLocal(), connected: true, lastUpdated: new Date().toISOString() });
+
+let feed: CenterFeed = isApiMode() ? { cases: [], connected: true, lastUpdated: null } : localFeed();
+const subscribers = new Set<() => void>();
+let stopLocal: (() => void) | null = null;
+let pollTimer: ReturnType<typeof setTimeout> | null = null;
+/** 구독을 멈췄다 다시 시작하면 늘어난다. 이전 주기의 예약을 무시하기 위해 쓴다 */
+let generation = 0;
+/** 늦게 도착한 이전 응답이 새 응답을 덮지 않게 한다 */
+let requested = 0;
+let applied = 0;
+
+function publish(next: CenterFeed): void {
+  feed = next;
+  subscribers.forEach((f) => f());
+}
+
+/** 접수함을 지금 다시 읽는다. 실패는 연결 상태로만 드러나고 던지지 않는다 */
+export async function refreshCases(): Promise<void> {
+  if (!isApiMode()) {
+    publish(localFeed());
+    return;
+  }
+  const seq = ++requested;
+  try {
+    const cases = await listCases();
+    if (seq < applied) return;
+    applied = seq;
+    publish({ cases, connected: true, lastUpdated: new Date().toISOString() });
+  } catch (e) {
+    if (seq < applied) return;
+    applied = seq;
+    if (feed.connected) {
+      logFailure('/center/cases', e);
+      publish({ ...feed, connected: false });
+    }
+  }
+}
+
+function poll(gen: number): void {
+  void refreshCases().finally(() => {
+    if (gen === generation && subscribers.size > 0) pollTimer = setTimeout(() => poll(gen), CENTER_POLL_MS);
+  });
+}
+
+function subscribe(onChange: () => void): () => void {
+  subscribers.add(onChange);
+  if (subscribers.size === 1) {
+    if (isApiMode()) poll(++generation);
+    else stopLocal = subscribeLocal(() => publish(localFeed()));
+  }
+  return () => {
+    subscribers.delete(onChange);
+    if (subscribers.size > 0) return;
+    generation += 1;
+    if (pollTimer) clearTimeout(pollTimer);
+    pollTimer = null;
+    stopLocal?.();
+    stopLocal = null;
+  };
+}
+
+/** C-01·C-02와 센터 헤더. 실패하면 `connected: false`가 되고 `cases`는 마지막으로 받은 목록을 유지한다 */
+export function useCenterCases(): CenterFeed {
+  return useSyncExternalStore(subscribe, () => feed);
+}

@@ -355,6 +355,19 @@ textarea {
   color: #134d31;
 }
 
+/* 실패 문구 + 바로 옆 다시 시도 버튼(센터 전송·상태 변경·초기화·통계). 좁으면 버튼이 아래로 내려간다 */
+.notice.with-retry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.panel .notice.with-retry {
+  margin: 12px 0 0;
+}
+
 .steps {
   display: flex;
   gap: 6px;
@@ -612,6 +625,15 @@ textarea {
   color: var(--brand);
 }
 
+/* 서버와 끊겼을 때 헤더 아래 가로 띠. 평평하고 흐름 안에 있어 표를 덮지 않는다 */
+.c-offline {
+  padding: 8px 24px;
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
 .c-main {
   max-width: 1280px;
   margin: 0 auto;
@@ -862,5 +884,9 @@ table.cases tr.fresh {
   .c-header {
     gap: 12px;
     padding: 0 16px;
+  }
+
+  .c-offline {
+    padding: 8px 16px;
   }
 }
