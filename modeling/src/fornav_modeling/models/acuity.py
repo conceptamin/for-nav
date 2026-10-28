@@ -2,7 +2,7 @@
 # - LightGBMAcuity: 서빙 후보. seed·deterministic·num_threads=1로 고정해 같은 데이터면 같은 모델 문자열이 나온다
 # - LogisticAcuity: 비교 모델. 같은 인터페이스(fit, predict_proba, to_text/from_text)
 # 결정 규칙(decide): emergency 확률이 임계값 이상이면 emergency, 아니면 나머지 두 클래스 중 확률이 큰 쪽.
-# 임계값은 검증셋으로만 정한다(select_threshold). 내보내기 형식은 pickle을 쓰지 않는다(LightGBM 텍스트, JSON).
+# 임계값은 검증셋으로만 정한다(select_threshold). 불러올 때 코드를 실행하는 직렬화 형식은 쓰지 않는다(LightGBM 텍스트, JSON).
 
 import hashlib
 import json
