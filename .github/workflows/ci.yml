@@ -6,11 +6,21 @@ on:
 permissions:
   contents: read
 jobs:
-  # frontend 작업은 룰셋의 필수 검사가 보고되도록 이름만 남겨 두었다. 실제 검사 단계로 바꾸는 것은 별도 작업이다.
+  # frontend/ 타입 검사와 빌드(npm run build = tsc --noEmit + vite build)를 돈다. 잡 이름은 룰셋 필수 검사라 바꾸지 않는다.
   frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
-      - run: echo "frontend 코드 없음 - 검사할 대상이 없다"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
   backend:
     runs-on: ubuntu-latest
     defaults:
