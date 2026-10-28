@@ -23,7 +23,7 @@
 - [x] `uv run pytest` 통과. `test_parity.py` 전부 그대로 통과(`parity.json`을 다시 만들지 않는다)
 - [x] 새 필드 없는 요청의 `/api/triage`·`/api/extract` 응답이 지금과 바이트까지 같다(테스트)
 - [x] `painScore: 11`, `ageGroup: "child"`, `mental: "asleep"`, `sex: "x"`가 422(테스트)
-- [ ] `modeling/tests/test_schema.py`가 같이 통과하도록 모델링 쪽 변경이 별도 PR로 있다
+- [x] `modeling/tests/test_schema.py`가 같이 통과하도록 모델링 쪽 변경이 별도 PR로 있다(conceptamin/for-nav#53, 이 PR 위에 쌓음. 모델링 `uv run pytest` → 151 passed)
 
 ## 결과
 - 실행(2026-10-28)
@@ -35,7 +35,7 @@
   - `injury`·`painScore`는 `strict`로 받는다. 느슨하면 `"yes"` → `true`, `"3"` → `3`으로 바뀌어 들어간다
   - 규칙(`rules/triage.py`)은 새 필드를 쓰지 않는다. 같은 부위·증상이면 새 필드가 있어도 `/api/triage` 응답이 같다(테스트)
 - 남은 문제
-  - `modeling/tests/test_schema.py`는 백엔드 `Intake` 필드 목록과 모델링 `schema.Intake`가 같은지 본다. 모델링 쪽에 같은 필드를 더하는 PR이 함께 병합돼야 모델링 테스트가 통과한다(아래 메모, 별도 `modeling/` 브랜치)
+  - `modeling/tests/test_schema.py`는 백엔드 `Intake` 필드 목록과 모델링 `schema.Intake`가 같은지 본다. 모델링 쪽에 같은 필드를 더하는 PR(#53)이 이 PR 다음에 병합돼야 모델링 테스트가 통과한다
   - 프론트 `Intake` 타입·버튼은 `frontend/` 작업이다
 
 ## 메모
