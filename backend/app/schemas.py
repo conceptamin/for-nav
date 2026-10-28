@@ -3,14 +3,19 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
-from app.vocab import BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
+from app.vocab import AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown
 
 
 class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+def absent_if_none(**constraints):
+    """선택 필드. 값이 없으면 응답 JSON에 키를 넣지 않는다 — 프론트 타입에 아직 없는 필드를 더할 때 쓴다."""
+    return Field(default=None, exclude_if=lambda v: v is None, **constraints)
 
 
 # ---------------------------------------------------------------------------
@@ -28,6 +33,12 @@ class Intake(CamelModel):
     industry: Industry | None = None
     district: District | None = None
     created_at: str
+    # 응급도 모델 입력(backlog 10). 프론트 Intake 타입에는 아직 없다. 없으면 응답에 키를 넣지 않는다
+    age_group: AgeGroup | None = absent_if_none()
+    sex: Sex | None = absent_if_none()
+    injury: bool | None = absent_if_none(strict=True)
+    pain_score: int | None = absent_if_none(ge=0, le=10, strict=True)
+    mental: Mental | None = absent_if_none()
 
 
 EmergencyReason = Literal[

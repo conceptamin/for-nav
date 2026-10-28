@@ -136,6 +136,13 @@ DISTRICTS: dict[District, Term] = {
 
 YesNoUnknown = Literal["yes", "no", "unknown"]
 
+# 응급도 모델 입력(backlog 10). 프론트 화면에는 아직 없어 다국어 표기(Term)는 두지 않는다.
+# 값과 순서는 modeling/src/fornav_modeling/features/buttons.py와 같다. 순서가 모델 피처 값(0, 1, 2, …)이다.
+AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
+Sex = Literal["female", "male"]
+# AVPU 의식 상태
+Mental = Literal["alert", "verbal", "pain", "unresponsive"]
+
 LANGUAGE_NAMES_KO: dict[Lang, str] = {"en": "영어", "vi": "베트남어", "ko": "한국어"}
 
 
