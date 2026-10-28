@@ -103,3 +103,47 @@ def test_test_evaluation_runs_once_per_round(tmp_path):
     (tmp_path / "acuity_v0_test.json").write_text("{}")
     with pytest.raises(FileExistsError):
         acuity.evaluate_test_round(None, tmp_path, tmp_path, "v0")
+
+
+# v2: 결측을 섞은 학습(backlog 10) ----------------------------------------------
+
+
+def test_augment_adds_blank_and_half_blank_copies():
+    X, y = synthetic(50)
+    X_aug, y_aug = acuity.augment(X, y)
+    n, cols = len(X), [FEATURE_NAMES.index(f) for f in acuity.UNKNOWN_FEATURES]
+    assert X_aug.shape == (3 * n, X.shape[1]) and np.array_equal(y_aug, np.tile(y, 3))
+    assert np.array_equal(X_aug[:n], X, equal_nan=True)
+    assert np.isnan(X_aug[n : 2 * n][:, cols]).all()
+    others = [i for i in range(X.shape[1]) if i not in cols]
+    assert np.array_equal(X_aug[n:, others], np.vstack([X, X])[:, others], equal_nan=True)  # 다른 피처는 그대로
+    half = np.isnan(X_aug[2 * n :][:, cols]).mean()
+    assert 0.3 < half < 0.7
+    assert np.array_equal(acuity.augment(X, y)[0], X_aug, equal_nan=True)  # seed 고정
+
+
+def test_grouped_folds_keep_copies_together():
+    _, y = synthetic(100)
+    folds = acuity.grouped_folds(np.tile(y, 3), copies=3)
+    for train_idx, held_idx in folds:
+        assert not set(train_idx % 100) & set(held_idx % 100)
+        assert len(held_idx) % 3 == 0
+    # copies=1이면 이전(StratifiedKFold) 그대로 — v0 라운드 수가 바뀌지 않는다
+    plain = list(acuity.StratifiedKFold(acuity.CV_FOLDS, shuffle=True, random_state=acuity.SEED).split(np.zeros(100), y))
+    assert all(np.array_equal(a[1], b[1]) for a, b in zip(acuity.grouped_folds(y), plain, strict=True))
+
+
+def test_backend_profile_blanks_unknown_and_sets_alert():
+    X, _ = synthetic(10)
+    B = acuity.backend_profile(X)
+    for name in acuity.UNKNOWN_FEATURES:
+        assert np.isnan(B[:, FEATURE_NAMES.index(name)]).all()
+    assert (B[:, FEATURE_NAMES.index("mental")] == 0).all()
+
+
+def test_select_threshold_profiles_meets_target_on_every_profile():
+    y = np.array([0, 0, 0, 0, 1, 1, 2, 2])
+    p = {"full": np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.2, 0.1, 0.05]), "backend": np.array([0.4, 0.3, 0.2, 0.1, 0.35, 0.25, 0.15, 0.05])}
+    r = acuity.select_threshold_profiles(y, p, target_recall=1.0)
+    assert r["threshold"] == min(acuity.select_threshold(y, v, 1.0)["threshold"] for v in p.values())
+    assert all(v["recall"] == [4, 4] for v in r["per_profile"].values())
