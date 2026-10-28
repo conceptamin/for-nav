@@ -1,22 +1,18 @@
 # 버튼 입력 → 피처 벡터. 학습(kaggle_triage 표준 테이블의 행)과 서빙(predict.py)이 이 함수 하나를 쓴다.
-# 입력은 백엔드 Intake 필드 이름(snake_case)의 dict다. 통증 점수·의식 상태·나이대·성별·손상 여부는 아직 백엔드 Intake에 없어
-# 같은 dict에 아래 키로 더 받는다(backlog 03 메모).
+# 입력은 백엔드 Intake 필드 이름(snake_case)의 dict다. 통증 점수·의식 상태·나이대·성별·손상 여부는 백엔드 Intake의 선택 필드다
+# (백엔드 backlog 10). 프론트는 아직 보내지 않아 대개 비어 있다.
 # 피처 순서는 FEATURE_NAMES로 고정한다. 순서나 인코딩을 바꾸면 학습한 모델과 맞지 않으므로 모델 버전을 올린다.
 # 값을 모르면(키가 없거나 None) NaN으로 둔다. 원본에 없는 발생 시점(onset)은 학습 데이터 전체가 NaN이다.
 
 import math
 from collections.abc import Iterable, Mapping
-from typing import Any, Literal, get_args
+from typing import Any, get_args
 
 import numpy as np
 
-from fornav_modeling.schema import BODY_PARTS, ONSETS, SYMPTOMS
+from fornav_modeling.schema import BODY_PARTS, ONSETS, SYMPTOMS, AgeGroup, Mental, Sex
 
-# 백엔드 Intake에 없는 버튼 입력. 순서 있는 값은 튜플 순서가 곧 피처 값(0, 1, 2, …)이다.
-Mental = Literal["alert", "verbal", "pain", "unresponsive"]  # AVPU
-AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
-Sex = Literal["female", "male"]
-
+# 순서 있는 값은 튜플 순서가 곧 피처 값(0, 1, 2, …)이다. 열거값은 schema.py(백엔드 vocab.py와 같은 값)에 있다.
 MENTALS: tuple[Mental, ...] = get_args(Mental)
 AGE_GROUPS: tuple[AgeGroup, ...] = get_args(AgeGroup)
 SEXES: tuple[Sex, ...] = get_args(Sex)

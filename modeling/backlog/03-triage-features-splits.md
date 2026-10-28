@@ -82,3 +82,4 @@ Kaggle 응급도 원본을 버튼 피처와 3단계 라벨로 바꾸고, train/v
 - (02에서) 원본은 Kaggle CSV가 아니라 PLOS ONE S1 Appendix `data/raw/kaggle_triage/pone.0216972.s001.xlsx`다. pandas로 xlsx를 읽으려면 `openpyxl`을 의존성에 추가해야 한다(02에서는 추가하지 않음)
 - (02에서) 라벨은 `KTAS_expert`, 비교용은 `KTAS_RN`. `Age`는 반올림되지 않은 값(예 67.5)이 있고, 활력징후 열에 `측불`(측정 불가) 문자열, `NRS_pain` 빈칸 556건이 있다. 열 설명은 `data/README.md`
 - (03에서) 백엔드 `Intake`에는 통증 점수·의식 상태·나이대·성별·손상 여부 필드가 없다. `featurize`는 같은 dict에 `pain_score`, `mental`, `age_group`, `sex`, `injury` 키로 더 받는다(값은 `features/buttons.py`의 `MENTALS`, `AGE_GROUPS`, `SEXES`). 서빙 연결(08, 백엔드 작업) 때 백엔드 `Intake`에 이 필드를 더할지 사용자와 정해야 한다. 이 작업에서는 `backend/`를 고치지 않았다
+  - (2026-10-28) 백엔드 backlog 10에서 `Intake`에 `age_group`·`sex`·`injury`·`pain_score`·`mental` 선택 필드를 더했다. 모델링 `schema.py`에 같은 필드와 열거값(`AgeGroup`, `Sex`, `Mental`)을 옮기고, `features/buttons.py`는 그 열거값을 가져다 쓴다(값·순서는 그대로라 피처와 모델은 바뀌지 않는다)
