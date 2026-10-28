@@ -35,6 +35,10 @@ Industry = Literal["shipbuilding", "autoparts", "chemical", "construction", "oth
 WorkType = Literal["welding", "lifting", "machine", "grinding", "painting", "assembly"]
 District = Literal["jung", "nam", "dong", "buk", "ulju"]
 YesNoUnknown = Literal["yes", "no", "unknown"]
+# 응급도 모델 입력(백엔드 backlog 10). 순서가 모델 피처 값(0, 1, 2, …)이다 — features/buttons.py가 이 순서로 인코딩한다
+AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
+Sex = Literal["female", "male"]
+Mental = Literal["alert", "verbal", "pain", "unresponsive"]  # AVPU
 
 LANGS: tuple[Lang, ...] = get_args(Lang)
 BODY_PARTS: tuple[BodyPart, ...] = get_args(BodyPart)
@@ -57,3 +61,8 @@ class Intake(TypedDict):
     industry: NotRequired[Industry | None]
     district: NotRequired[District | None]
     created_at: str
+    age_group: NotRequired[AgeGroup | None]
+    sex: NotRequired[Sex | None]
+    injury: NotRequired[bool | None]
+    pain_score: NotRequired[int | None]
+    mental: NotRequired[Mental | None]

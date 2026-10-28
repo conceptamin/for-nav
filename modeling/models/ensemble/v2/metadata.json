@@ -1,0 +1,208 @@
+{
+  "model_version": "ensemble/v2",
+  "source": "ensemble/v1",
+  "components": {
+    "dept_a": {
+      "version": "dept_a/v2",
+      "files": {
+        "model.txt": "8fa6048612abefddaf5ca2d0155b652c8d1ada8415be7d5d33862160995b5933",
+        "departments.json": "513a54fdcb8c48a1bf306ac63d6043e7e0b22e9ee3ee07d2818893caa9433b5f"
+      }
+    },
+    "dept_b": {
+      "version": "dept_b/v2",
+      "files": {
+        "weights.json": "fd6930ea78abd24c7a562a5ba102d7ee076e76700ad73f715c80e80632cfa0ab"
+      }
+    }
+  },
+  "tuned_with": {
+    "dept_a": "dept_a/v0",
+    "dept_b": "dept_b/v0"
+  },
+  "weight_a": 0.5,
+  "weight_b": 0.5,
+  "fallback_threshold": 0.25,
+  "fallback": [
+    "family",
+    "internal"
+  ],
+  "fallback_rule": "앙상블 분포의 최대 확률 < fallback_threshold이면 상위 2개를 fallback(가정의학과, 내과)으로 바꾼다",
+  "selection_rule": "조정 셋(안내 조합 29 + Kaggle valid 44) Top-2 적중 수 최대. 같으면 A 가중치가 0.5에 가까운 쪽, 그다음 폴백 기준값이 높은 쪽(적중을 잃지 않는 한 폴백)",
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "metrics": {
+    "tuning": {
+      "all": {
+        "top1": {
+          "n": 54,
+          "of": 73,
+          "value": 0.7397
+        },
+        "top2": {
+          "n": 65,
+          "of": 73,
+          "value": 0.8904
+        },
+        "fallback": {
+          "n": 1,
+          "of": 73,
+          "value": 0.0137
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 17,
+          "of": 29,
+          "value": 0.5862
+        },
+        "top2": {
+          "n": 22,
+          "of": 29,
+          "value": 0.7586
+        },
+        "fallback": {
+          "n": 1,
+          "of": 29,
+          "value": 0.0345
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 37,
+          "of": 44,
+          "value": 0.8409
+        },
+        "top2": {
+          "n": 43,
+          "of": 44,
+          "value": 0.9773
+        },
+        "fallback": {
+          "n": 0,
+          "of": 44,
+          "value": 0.0
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 5,
+          "of": 10,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 6,
+          "of": 10,
+          "value": 0.6
+        },
+        "fallback": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        }
+      }
+    },
+    "tuning_leave_one_out": {
+      "all": {
+        "top1": {
+          "n": 53,
+          "of": 73,
+          "value": 0.726
+        },
+        "top2": {
+          "n": 63,
+          "of": 73,
+          "value": 0.863
+        },
+        "fallback": {
+          "n": 2,
+          "of": 73,
+          "value": 0.0274
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 16,
+          "of": 29,
+          "value": 0.5517
+        },
+        "top2": {
+          "n": 20,
+          "of": 29,
+          "value": 0.6897
+        },
+        "fallback": {
+          "n": 2,
+          "of": 29,
+          "value": 0.069
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 37,
+          "of": 44,
+          "value": 0.8409
+        },
+        "top2": {
+          "n": 43,
+          "of": 44,
+          "value": 0.9773
+        },
+        "fallback": {
+          "n": 0,
+          "of": 44,
+          "value": 0.0
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 4,
+          "of": 10,
+          "value": 0.4
+        },
+        "top2": {
+          "n": 5,
+          "of": 10,
+          "value": 0.5
+        },
+        "fallback": {
+          "n": 1,
+          "of": 10,
+          "value": 0.1
+        }
+      }
+    },
+    "final_test_kaggle": {
+      "top1": {
+        "n": 52,
+        "of": 59,
+        "value": 0.8814
+      },
+      "top2": {
+        "n": 58,
+        "of": 59,
+        "value": 0.9831
+      },
+      "fallback": {
+        "n": 0,
+        "of": 59,
+        "value": 0.0
+      },
+      "final": true
+    }
+  },
+  "created_at": "2026-10-28T09:25:31+00:00",
+  "files": {
+    "ensemble.json": "fd3e68111f213f822520f293f86729d42fc8114525506f56e57b8395be2766fe"
+  }
+}

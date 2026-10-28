@@ -35,7 +35,10 @@ def backend_intake_fields(vocab) -> dict[str, tuple[object, bool]]:
 vocab = load_backend_vocab()
 
 
-@pytest.mark.parametrize("name", ["Lang", "BodyPart", "Symptom", "Department", "Onset", "Industry", "WorkType", "District", "YesNoUnknown"])
+@pytest.mark.parametrize(
+    "name",
+    ["Lang", "BodyPart", "Symptom", "Department", "Onset", "Industry", "WorkType", "District", "YesNoUnknown", "AgeGroup", "Sex", "Mental"],
+)
 def test_enum_values_and_order_match_backend(name):
     # Literal끼리 ==는 순서를 무시하므로 값 튜플로 비교한다. 순서가 라벨 순서다.
     assert get_args(getattr(schema, name)) == get_args(getattr(vocab, name))
