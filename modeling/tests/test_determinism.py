@@ -1,10 +1,11 @@
-# 같은 seed로 두 번 학습하면 같은 모델 문자열(해시)이 나오는지, 저장한 텍스트로 다시 불러도 예측이 같은지(응급도, 진료과 모델 A).
+# 같은 seed로 두 번 학습하면 같은 모델 문자열(해시)이 나오는지, 저장한 텍스트로 다시 불러도 예측이 같은지(응급도, 진료과 모델 A·B).
 
 import hashlib
 
 import numpy as np
 
 from fornav_modeling.features.buttons import FEATURE_NAMES
+from fornav_modeling.models import dept_b
 from fornav_modeling.models.acuity import LightGBMAcuity, LogisticAcuity
 from fornav_modeling.models.dept_a import DeptA
 
@@ -68,3 +69,17 @@ def test_dept_a_saved_files_predict_the_same():
     X, y, matrix = synthetic_dept()
     model = DeptA().fit(X, y, matrix)
     assert np.allclose(DeptA.from_files(model.to_files()).predict_proba(X), model.predict_proba(X))
+
+
+DEPT_B_TABLE = {
+    "hand-cut-yes": {"ortho": 0.6, "surgery": 0.4},
+    "eye-pain-no": {"ophth": 1.0},
+    "skin-rash-any": {"derm": 0.5, "family": 0.5},
+    "abdomen-pain-no": {"internal": 0.7, "family": 0.3},
+}
+
+
+def test_dept_b_same_seed_same_weights():
+    _, X, T, w = dept_b.training_rows(DEPT_B_TABLE)
+    first, second = dept_b.DeptB().fit(X, T, w, 1e-3, 200), dept_b.DeptB().fit(X, T, w, 1e-3, 200)
+    assert digest(first.to_text()) == digest(second.to_text())

@@ -1,5 +1,6 @@
 # 자유 입력 추출의 LLM 자리. LLM이 없거나 실패하면 키워드 사전(extract_from_text)으로 그대로 동작한다.
 # 출력은 vocab.py 열거값으로 고정한다. 필드 하나가 열거값을 벗어나면 그 필드만 비우고 나머지는 쓴다.
+# LLM이 성공하면 키워드 결과와 필드별로 합친다(combine, backlog 09).
 # 자유 입력은 user 부분에만 넣고, system은 아래 상수로 고정한다.
 
 from typing import Any, Literal
@@ -81,6 +82,22 @@ class LLMExtraction(Extraction):
             return None
 
 
+def combine(llm: Extraction, keywords: Extraction) -> Extraction:
+    """필드마다 더 믿을 만한 쪽을 쓴다(backlog 03 비교 결과).
+
+    부위·증상은 합집합이다. LLM은 키워드가 놓친 부위를 찾지만 증상을 빠뜨리기도 한다.
+    업무 관련은 키워드만 쓴다. LLM은 작업 이름만 보고 yes로 추측하는데, 이 값은 산재 경로 안내에 쓰여 비워 두고 되묻는 편이 안전하다.
+    발생 시점·작업 유형은 LLM이다. 키워드는 "nhà máy"(공장)의 "máy"를 기계 작업으로 잘못 잡는다.
+    """
+    return Extraction(
+        body_parts=sorted({*llm.body_parts, *keywords.body_parts}, key=list(BODY_PARTS).index),
+        symptoms=sorted({*llm.symptoms, *keywords.symptoms}, key=list(SYMPTOMS).index),
+        onset=llm.onset,
+        work_related=keywords.work_related,
+        work_type=llm.work_type,
+    )
+
+
 def prompt_for(free_text: str) -> LLMPrompt:
     return LLMPrompt(system=SYSTEM, user=free_text)
 
@@ -92,11 +109,12 @@ async def extract_with_llm(
     timeout_s: float = DEFAULT_TIMEOUT_S,
     attempts: int = DEFAULT_ATTEMPTS,
 ) -> tuple[Extraction, ExtractSource]:
-    """LLM으로 뽑고, LLM이 없거나(None) 끝내 실패하면 키워드 사전 결과를 돌려준다."""
+    """LLM으로 뽑아 키워드 결과와 합치고, LLM이 없거나(None) 끝내 실패하면 키워드 사전 결과만 돌려준다."""
+    keywords = extract_from_text(free_text)
     if client is None or not free_text.strip():
-        return extract_from_text(free_text), "keywords"
+        return keywords, "keywords"
     try:
         out = await generate(client, prompt_for(free_text), LLMExtraction, timeout_s=timeout_s, attempts=attempts)
     except LLMUnavailableError:
-        return extract_from_text(free_text), "keywords"
-    return Extraction.model_validate(out.model_dump()), "llm"
+        return keywords, "keywords"
+    return combine(out, keywords), "llm"
