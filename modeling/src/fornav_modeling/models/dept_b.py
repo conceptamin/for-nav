@@ -19,12 +19,13 @@ from sklearn.model_selection import KFold
 from fornav_modeling.evaluate import ratio, topk_metrics, topk_table
 from fornav_modeling.features.buttons import FEATURE_NAMES, featurize, featurize_many
 from fornav_modeling.labels import department as dept
+from fornav_modeling.predict import forward, predict_from_weights
+from fornav_modeling.predict import softmax as _softmax
 from fornav_modeling.schema import DEPARTMENTS, Department
 
 SEED = 20261028
 INPUT_FEATURES: tuple[str, ...] = tuple(n for n in FEATURE_NAMES if n.startswith(("body_", "symptom_")) or n == "injury")
 _INPUT_INDEX = [FEATURE_NAMES.index(n) for n in INPUT_FEATURES]
-_INJURY = INPUT_FEATURES.index("injury")
 HIDDEN = 32
 LEARNING_RATE = 0.01
 L2_GRID = (1e-4, 1e-3, 1e-2)
@@ -37,41 +38,12 @@ METADATA_FILE = "metadata.json"  # 임시 형식. 확정은 backlog 08
 
 
 # ---------------------------------------------------------------------------
-# 추론(JSON 가중치만으로 동작)
+# 추론. forward·predict_from_weights는 서빙(predict.py)과 같은 함수를 쓴다
 # ---------------------------------------------------------------------------
-def forward(weights: Mapping[str, Any], X_in: np.ndarray) -> np.ndarray:
-    """(행 수, 29) 입력 → (행 수, 10) 확률. 손상 여부 결측 처리는 하지 않는다(predict_from_weights가 한다)."""
-    W1, b1, W2, b2 = (np.asarray(weights[k], dtype=np.float64) for k in ("W1", "b1", "W2", "b2"))
-    h = np.maximum(X_in @ W1 + b1, 0.0)
-    return _softmax(h @ W2 + b2)
-
-
-def predict_from_weights(weights: Mapping[str, Any], X: np.ndarray) -> np.ndarray:
-    """FEATURE_NAMES 순서의 피처 → 진료과 확률. weights.json을 json.loads한 dict만 있으면 된다.
-    부위·증상 결측은 0(선택 안 함), 손상 여부 결측은 손상 있음·없음 예측의 평균."""
-    if list(weights["feature_names"]) != list(FEATURE_NAMES) or list(weights["labels"]) != list(DEPARTMENTS):
-        raise ValueError(f"{WEIGHTS_FILE}의 피처·라벨 순서가 지금 코드와 다르다")
-    X_in = np.nan_to_num(np.asarray(X, dtype=np.float64)[:, [FEATURE_NAMES.index(n) for n in weights["input_features"]]], nan=0.0)
-    injury = weights["input_features"].index("injury")
-    unknown = np.isnan(np.asarray(X, dtype=np.float64)[:, FEATURE_NAMES.index("injury")])
-    proba = forward(weights, X_in)
-    if unknown.any():
-        yes, no = X_in[unknown].copy(), X_in[unknown].copy()
-        yes[:, injury], no[:, injury] = 1.0, 0.0
-        proba[unknown] = (forward(weights, yes) + forward(weights, no)) / 2
-    return proba
-
-
 def department_proba(weights: Mapping[str, Any], intake: Mapping[str, Any]) -> dict[Department, float]:
     """입력 dict 하나 → {진료과: 확률}. 키는 DEPARTMENTS 10종 그대로(순서 포함)."""
     proba = predict_from_weights(weights, np.array([featurize(intake)], dtype=np.float64))[0]
     return {d: float(p) for d, p in zip(DEPARTMENTS, proba, strict=True)}
-
-
-def _softmax(z: np.ndarray) -> np.ndarray:
-    z = z - z.max(axis=1, keepdims=True)
-    e = np.exp(z)
-    return e / e.sum(axis=1, keepdims=True)
 
 
 # ---------------------------------------------------------------------------
