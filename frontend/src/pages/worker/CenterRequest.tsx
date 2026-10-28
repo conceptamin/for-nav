@@ -163,7 +163,7 @@ export function CenterRequestPage() {
       </section>
 
       {summary && (
-        <section className="card" style={{ borderTop: '6px solid var(--brand)' }}>
+        <section className="card band">
           <h2>{t('cenPreview')}</h2>
           <div className="native-box">{summary.native}</div>
           <p className="footer-note">{t('cenPreviewKo')}</p>
@@ -210,7 +210,7 @@ export function MyPage() {
         ) : (
           <div className="stack" style={{ gap: 8 }}>
             {app.reports.map((r) => (
-              <Link key={r.id} to={`/report/${r.id}`} className="row" style={{ justifyContent: 'space-between', textDecoration: 'none', color: 'inherit', minHeight: 44 }}>
+              <Link key={r.id} to={`/report/${r.id}`} className="row link">
                 <span>
                   🩺 {new Date(r.createdAt).toLocaleString(LOCALES[r.language])}
                   <span className="small muted"> · {r.rows.find((row) => row.field === 'symptoms')?.valueNative ?? ''}</span>

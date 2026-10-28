@@ -49,7 +49,7 @@ export function CoveragePage() {
       </section>
 
       {result && (
-        <section className="card" style={{ borderTop: '6px solid var(--ok)' }} aria-live="polite">
+        <section className="card band ok" aria-live="polite">
           <div className="small muted">{t('covResult')}</div>
           <h2 style={{ fontSize: '1.3rem' }}>{t(`path.${result.path}`)}</h2>
           <p>{t(`path.${result.path}.desc`)}</p>

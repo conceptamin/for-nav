@@ -26,6 +26,10 @@
   --bg-2: #eef3f6; /* 들어간 홈의 바탕(원문 상자, 막대 트랙), 낮음 칩. --bg와 --card 사이 */
   --bg-3: #f2f6f9; /* 표 머리, 행 강조. --card보다 한 단계 어둡다 */
   --live-bg: #fff8e1; /* 실제 전송 행 */
+  --on-brand-soft: rgb(255 255 255 / 20%); /* 진한 바탕 위의 옅은 흰 칸(데모 배지, 첫 메뉴 아이콘) */
+  --chart-1: var(--brand); /* 차트 계열색. 범례 글자와 함께 쓴다 */
+  --chart-2: #e08a00;
+  --chart-3: #9aa8b2;
   --radius: 20px;
   --radius-sm: 16px;
   --radius-lg: 28px;
@@ -140,7 +144,7 @@ p {
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 20%);
+  background: var(--on-brand-soft);
   color: inherit;
 }
 
@@ -189,6 +193,18 @@ p {
   margin-bottom: 16px;
 }
 
+/* 결과 카드 위쪽 표시 띠. 실제 전송 행의 왼쪽 띠처럼 안쪽 그림자로 그린다(면에 테두리를 두지 않는다).
+   테두리와 달리 내용을 밀지 않으므로 위쪽 여백을 띠 두께(6px)만큼 늘린다. 색은 --band로 받는다 */
+.card.band {
+  --band: var(--brand);
+  box-shadow: inset 0 6px 0 var(--band), var(--clay);
+  padding-top: 22px;
+}
+
+.card.band.ok {
+  --band: var(--ok);
+}
+
 .muted {
   color: var(--ink-2);
 }
@@ -208,6 +224,14 @@ p {
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+}
+
+/* 줄 전체가 링크인 목록 한 줄(내 리포트). 글자는 본문색, 오른쪽 끝에 "열기" */
+.row.link {
+  justify-content: space-between;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
 }
 
 .btn {
@@ -491,7 +515,7 @@ textarea {
 }
 
 .menu a.primary .ico {
-  background: rgb(255 255 255 / 18%);
+  background: var(--on-brand-soft);
   box-shadow: var(--clay-color-in);
 }
 
@@ -539,6 +563,12 @@ textarea {
 }
 
 .line:last-child {
+  border-bottom: 0;
+}
+
+/* 위에 선을 긋는 줄(자주 묻는 질문 목록) */
+.line.top {
+  border-top: 1px solid var(--line);
   border-bottom: 0;
 }
 
@@ -744,6 +774,11 @@ textarea {
 .kpi .n {
   font-size: 1.8rem;
   font-weight: 800;
+}
+
+/* 주의가 필요한 숫자(긴급도 높음 미완료) */
+.kpi .n.danger {
+  color: var(--danger);
 }
 
 .kpi .l {
@@ -965,6 +1000,25 @@ table.cases tr.fresh {
   border-radius: 999px;
   margin-right: 6px;
   vertical-align: -1px;
+  background: var(--series);
+}
+
+/* 차트 계열. 도넛 조각(stroke)과 범례 점(background)이 같은 변수를 받는다.
+   SVG의 stroke 속성에는 var()가 먹지 않으므로 클래스로 준다 */
+.donut-wrap circle {
+  stroke: var(--series);
+}
+
+.series-1 {
+  --series: var(--chart-1);
+}
+
+.series-2 {
+  --series: var(--chart-2);
+}
+
+.series-3 {
+  --series: var(--chart-3);
 }
 
 @media (max-width: 900px) {
