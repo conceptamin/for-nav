@@ -96,6 +96,7 @@ export const en = {
   injuryQ: 'Were you hurt? (hit, fall, cut, caught in a machine)',
   ageGroupQ: 'How old are you?',
   extractedNote: 'We filled in some answers from your text. Please check them.',
+  extractFallback: 'These were matched from a keyword list.',
   missingAsk: 'Please choose at least one body part and one symptom.',
   checking: 'Checking…',
   seeResult: 'See where to go',

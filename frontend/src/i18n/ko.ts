@@ -92,6 +92,7 @@ export const ko: Record<MessageKey, string> = {
   injuryQ: '다쳐서 생겼나요? (부딪힘·넘어짐·베임·끼임)',
   ageGroupQ: '나이가 어떻게 되나요?',
   extractedNote: '쓰신 내용으로 일부 답을 채웠습니다. 맞는지 확인해 주세요.',
+  extractFallback: '키워드 사전으로 찾은 답입니다.',
   missingAsk: '부위와 증상을 하나 이상씩 골라 주세요.',
   checking: '확인 중…',
   seeResult: '어디로 갈지 보기',

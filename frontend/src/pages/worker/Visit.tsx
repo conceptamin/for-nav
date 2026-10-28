@@ -1,12 +1,13 @@
 // S-09 접수 창구용 화면, S-10 전화 스크립트 (예약·접수 도우미)
+// 문장은 api/worker.ts의 useVisitHelper가 만든다. 브라우저 템플릿을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
 
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Chip, Worse119 } from '../../components/common';
 import { useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
+import { useVisitHelper } from '../../api/worker';
 import type { Line } from '../../domain/templates';
-import { buildCallScript, buildDeskSheet } from '../../domain/templates';
 import type { Intake } from '../../domain/triage';
 import type { Department } from '../../domain/vocab';
 import { DEPARTMENTS, LANGUAGE_NAMES_KO } from '../../domain/vocab';
@@ -43,10 +44,14 @@ function useVisitContext(): VisitContext {
 
 export function DeskPage() {
   const ctx = useVisitContext();
+  if ('redirect' in ctx) return <Navigate to={ctx.redirect} replace />;
+  return <DeskView intake={ctx.intake} dept={ctx.dept} />;
+}
+
+function DeskView({ intake, dept }: { intake: Intake; dept: Department }) {
   const { t, lang } = useT();
   const [firstVisit, setFirstVisit] = useState(true);
-  if ('redirect' in ctx) return <Navigate to={ctx.redirect} replace />;
-  const sheet = buildDeskSheet(ctx.intake, ctx.dept, firstVisit, lang);
+  const sheet = useVisitHelper(intake, dept, firstVisit, lang).desk;
 
   return (
     <div>
@@ -77,7 +82,7 @@ export function DeskPage() {
           <dt>초진 여부</dt>
           <dd>{sheet.firstVisit ? '초진' : '재진'}</dd>
           <dt>희망 진료과</dt>
-          <dd>{DEPARTMENTS[ctx.dept].ko}</dd>
+          <dd>{DEPARTMENTS[dept].ko}</dd>
           <dt>업무 중 발생</dt>
           <dd>{sheet.workRelatedKo}</dd>
           <dt>사용 언어</dt>
@@ -106,10 +111,15 @@ export function DeskPage() {
 
 export function CallPage() {
   const ctx = useVisitContext();
+  if ('redirect' in ctx) return <Navigate to={ctx.redirect} replace />;
+  return <CallView intake={ctx.intake} dept={ctx.dept} />;
+}
+
+function CallView({ intake, dept }: { intake: Intake; dept: Department }) {
   const { t, lang } = useT();
   const [picked, setPicked] = useState<Record<string, number>>({});
-  if ('redirect' in ctx) return <Navigate to={ctx.redirect} replace />;
-  const script = buildCallScript(ctx.intake, ctx.dept, lang);
+  // 전화 스크립트는 초진 여부와 관계없다. 접수 창구 화면의 기본값(초진)과 같은 요청을 보내 응답을 함께 쓴다.
+  const script = useVisitHelper(intake, dept, true, lang).call;
 
   return (
     <div>

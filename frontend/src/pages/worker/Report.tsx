@@ -1,5 +1,6 @@
 // S-11 의료진용 리포트: 항목 선택(기본값 모두 포함) → 동의 → 리포트(/report/:id)
 // 한국어·모국어 두 벌을 미리 만들어 두어 토글 전환이 즉시 된다.
+// 리포트는 버튼을 누를 때 api/worker.ts가 만든다. 기다리는 동안 버튼만 막는다(design.md "로딩과 실패를 그리는 법").
 
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
@@ -7,8 +8,9 @@ import { toggleIn, Worse119 } from '../../components/common';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
+import { buildClinicianReport } from '../../api/worker';
 import type { ReportField } from '../../domain/templates';
-import { buildClinicianReport, REPORT_FIELDS } from '../../domain/templates';
+import { REPORT_FIELDS } from '../../domain/templates';
 import { LANGUAGE_NAMES_KO, LOCALES } from '../../domain/vocab';
 
 export function ReportBuilderPage() {
@@ -18,6 +20,8 @@ export function ReportBuilderPage() {
   const [included, setIncluded] = useState<ReportField[]>([...REPORT_FIELDS]);
   const [meds, setMeds] = useState('');
   const [agreed, setAgreed] = useState(false);
+  /** 서버 응답을 기다리는 중. 만들기 버튼을 막아 리포트가 두 번 만들어지지 않게 한다 */
+  const [busy, setBusy] = useState(false);
 
   if (!app.intake || !app.triage) return <Navigate to="/intake" replace />;
   const intake = app.intake;
@@ -31,10 +35,16 @@ export function ReportBuilderPage() {
     return true;
   });
 
-  const make = () => {
-    const report = buildClinicianReport(intake, included.filter((f) => available.includes(f)), app.profile, meds.trim());
-    app.saveReport(report);
-    navigate(`/report/${report.id}`);
+  const make = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const report = await buildClinicianReport(intake, included.filter((f) => available.includes(f)), app.profile, meds.trim());
+      app.saveReport(report);
+      navigate(`/report/${report.id}`);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -65,7 +75,7 @@ export function ReportBuilderPage() {
         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
         <span>{t('repConsent')}</span>
       </label>
-      <button type="button" className="btn block big" disabled={!agreed || included.length === 0} onClick={make}>
+      <button type="button" className="btn block big" disabled={busy || !agreed || included.length === 0} onClick={make}>
         {t('repMakeBtn')}
       </button>
     </div>
