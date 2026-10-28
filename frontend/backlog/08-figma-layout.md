@@ -1,22 +1,22 @@
 # 08. Figma 화면 골격 적용
 
-상태: 대기
-의존: 07 (클레이모피즘과 색 정리가 끝난 `styles.css` 위에서 배치만 바꾼다). `design.md` "화면 골격(Figma 기준)" 절은 PR conceptamin/for-nav#66(`docs/figma-page-layouts`)이 더한다. 66이 병합되기 전에는 코드를 시작하지 않는다
+상태: 완료
+의존: 07 (클레이모피즘과 색 정리가 끝난 `styles.css` 위에서 배치만 바꾼다). `design.md` "화면 골격(Figma 기준)" 절은 PR conceptamin/for-nav#66(`docs/figma-page-layouts`)이 더한다. 66을 이 브랜치에 병합해 그 문서 위에서 작업했고, 66이 먼저 병합된 뒤에 이 PR을 병합한다
 
 ## 목표
-`design.md` "화면 골격(Figma 기준)" 절이 정한 **배치**(앱 바 ← + 화면 이름, 질문 h1, 바닥에 붙는 다음 버튼, 줄바꿈 칩 묶음, 숫자 원 단계, 가로 꽉 찬 선택지 목록, 전체 동의 줄)를 온보딩(S-02·S-03)과 증상 입력(S-05)에 옮긴다. 그 절 끝 "지금 코드와 다른 점" 여덟 가지 중 6번(S-05를 질문 하나씩 화면으로 나누기)을 뺀 일곱 가지가 이 항목이고, 6번은 09가 한다. 모양(색·둥글기·그림자)은 바꾸지 않는다. 끝난 줄은 "지금 코드와 다른 점"에서 지운다.
+`design.md` "화면 골격(Figma 기준)" 절이 정한 **배치**(앱 바 ← + 화면 이름, 질문 h1, 바닥에 붙는 다음 버튼, 줄바꿈 칩 묶음, 숫자 원 단계, 가로 꽉 찬 선택지 목록, 전체 동의 줄)를 온보딩(S-02·S-03)과 증상 입력(S-05)에 옮긴다. 그 절 끝 "지금 코드와 다른 점" 열한 가지 중 1~5·7·8번이 이 항목이고, 6번은 09, 9~11번(로그인·사진·분석 중)은 10이 한다. 셋을 한 브랜치(`frontend/figma-layout`)에서 함께 구현했다. 모양(색·둥글기·그림자)은 바꾸지 않는다. 끝난 줄은 "지금 코드와 다른 점"에서 지운다.
 
 ## 범위
 - 하는 것
   - **1. 앱 바에 ←와 화면 이름**(`WorkerLayout.tsx`, `.w-header`)
     - `/`와 `/home`은 지금처럼 앱 이름(홈 링크). 그 밖의 모든 근로자 경로는 왼쪽에 ← 버튼(`.w-header .back`, 아이콘 24px, 누르는 영역 48×48, 평평) + 화면 이름(`.w-header .title`, 한 줄 말줄임). 오른쪽 언어 선택과 Demo 배지는 그대로
     - 화면 이름과 ← 동작은 화면이 정한다. `WorkerLayout.tsx`가 `useScreenBar({ title, onBack })` 훅을 내보내고, 화면은 마운트 때 등록하고 언마운트 때 비운다. 등록하지 않은 화면은 이름 자리에 앱 이름, ←는 `/home`으로 간다(기본값)
-    - 등록하는 화면: S-02(`consentTitle`, ← `/`), S-03 선택(`signupTitle`, ← `/consent`), S-03 프로필(`memberBtn`, ← 선택 화면으로), S-05(`intakeTitle`, ← 이전 단계, 첫 단계에서는 `/home`)
+    - 등록하는 화면: S-02(`consentTitle`, ← `/`), S-03 로그인(`loginTitle`, ← `/consent`), S-03 프로필(`profileTitle`, ← 로그인 화면으로), S-05(`intakeTitle`, ← 이전 질문·묶음, 첫 묶음에서는 `/home`)
     - 바닥의 되돌아가기를 지운다: S-05 `btn secondary` 되돌아가기, S-03 프로필의 `btn ghost` 되돌아가기, S-06의 `btn ghost` 홈, S-07의 `btn ghost` 새로 입력(← `/home` → 홈 메뉴 "아파요"로 다시 들어가면 새 입력이 시작된다)
   - **2. 입력 화면의 카드를 벗기고 질문을 h1으로**(`Intake.tsx`, `Onboarding.tsx`)
     - S-05: 화면 위 h1 `증상 입력`을 지우고(앱 바 이름이 된다) 단계마다 `.card` 안 h2였던 질문(`stepBody`·`stepSymptom`·`stepText`·`stepMore`)을 카드 밖 h1으로. 안내 문단·`notice`는 h1 아래 평평하게
     - S-02: 항목별 `.card` 세 개를 없앤다(아래 7번의 줄 목록으로)
-    - S-03 선택: `.card` 두 개를 벗기고 h1 → 비회원 버튼 + 안내 → 회원 버튼 + 안내 순서로 바닥 위에 평평하게. 바닥 버튼은 두지 않는다(버튼 둘이 곧 선택지다)
+    - S-03 로그인: 10이 로그인 화면으로 바꾼다(`.w-logo` + 바닥 버튼 둘)
     - S-03 프로필: `.card`를 벗기고 h1 → `.field`들. 입력란은 들어감이므로 바닥 위에서 바로 보인다
   - **3. 바닥에 붙는 주 동작 버튼**(`.w-footer`, `styles.css`·`WorkerLayout.tsx`)
     - `:root`에 크기 토큰 `--bar-119: 72px`(119 띠 높이 = 위아래 10px + 버튼 52px)를 더한다. `.w-main`의 아래 여백은 `calc(var(--bar-119) + 16px + env(safe-area-inset-bottom))`
@@ -32,7 +32,7 @@
   - **5. 단계 숫자 원**(`.steps`, `common.tsx`의 `Steps`)
     - `.steps`를 6px 트랙에서 숫자 원으로: `ol.steps > li` 32×32, 999px, 왼쪽부터 가로로 8px 간격, 아래 여백 16px. 현재 단계(`.on`)는 `--brand` 채움 + `--on-brand` 숫자 + `--clay-color-sm`, 지난·남은 단계는 `--card` 바탕 + `--clay-in` + `--ink-3` 숫자. 트랙 선은 없다
     - `Steps({ count, current })` 조각을 `common.tsx`에 더한다. `aria-hidden`이고 단계 수는 화면 이름 옆 글로도 알려 주지 않는다(지금과 같다. 장식이다)
-    - S-05: 4단계(부위·증상·자유 입력·추가 질문) 그대로. 온보딩: 1 언어 · 2 동의 · 3 이용 방식 · 4 프로필로 세어 S-02에 2, S-03 선택에 3, S-03 프로필에 4를 켠다. S-01은 로고 + 언어 버튼 화면이라 단계를 붙이지 않는다
+    - S-05: 묶음 4개(부위·증상·자유 입력·추가 질문) 그대로. 온보딩: 1 언어 · 2 동의 · 3 로그인 · 4 프로필로 세어 S-02에 2, S-03 프로필에 4를 켠다. S-01과 S-03 로그인은 로고 화면이라 단계를 붙이지 않는다
   - **7. S-02 전체 동의 줄과 항목별 전문 펼치기**(`Onboarding.tsx`, `.check-row`)
     - h1 → 전체 동의 줄(`.check` 하나: 체크 + 굵은 `consentAll` + 아래 `consentIntro` 문단. 체크하면 셋 다 켜고, 끄면 셋 다 끈다. 셋이 다 켜지면 저절로 체크) → 구분선(`.line` 빈 줄 대신 `hr.divider`, `--line` 1px) → 항목 줄 셋
     - 항목 줄: `.check-row`(flex, 8px) 안에 `.check`(체크 + `[필수]` + 제목, 높이 48px) + 오른쪽 `btn ghost` › (48×48, `aria-expanded`, `aria-label`은 새 키 `consentReadFull`). 누르면 같은 화면 안에서 그 줄 아래에 전문(`consentXxxBody`)이 `p.small.muted`로 펼쳐진다. 모달·시트가 아니다
@@ -62,23 +62,62 @@
 - 새 문구 키: `consentReadFull`, `groupHead`, `groupTrunk`, `groupLimbs`, `groupOther`, `groupInjury`, `groupIllness`, `groupExposure`
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] 06의 정적 검사가 그대로 비어 있다: `:root` 밖 16진수 색, `var(--clay*)` 아닌 `box-shadow`(띠 두 줄 제외), 토큰·999px·12px 아닌 `border-radius`, `border: 0` 아닌 `border`, `transition`·`transform: scale`·`text-shadow`·`backdrop-filter`
-- [ ] `grep -n 'style={{' src/pages/worker/Intake.tsx src/pages/worker/Onboarding.tsx`의 줄 수가 지금(`origin/main`)보다 늘지 않았다
-- [ ] 360px에서 `/consent`, `/signup`(선택·프로필), `/intake`(4단계)를 en·vi·ko로 스크린샷. 파일 이름을 `## 결과`에 적는다. 가로 스크롤이 없고, 어느 단계에서도 바닥 버튼과 119 띠가 같이 보인다
-- [ ] 360×640에서 `/intake` 1단계(부위 칩 13개)를 끝까지 내려도 바닥 `다음`이 119 띠 위에 그대로 있고, 2단계(증상 칩 15개)도 같다. 본문이 짧은 `/consent`에서도 `다음`이 본문 끝이 아니라 바닥에 있다
-- [ ] 앱 바: `/`·`/home`은 앱 이름, `/consent`·`/signup`·`/intake`는 ← + 화면 이름. `/intake` 2단계에서 ←를 누르면 1단계로, 1단계에서 누르면 `/home`으로. `/signup` 프로필에서 ←는 선택 화면으로. 베트남어 `Cho chúng tôi biết triệu chứng`이 ←·언어 선택과 한 줄에서 말줄임된다
-- [ ] `/consent`: 전체 동의를 체크하면 셋이 켜지고 `다음`이 활성, 하나를 끄면 전체 동의가 꺼지고 `다음`이 `disabled`. ›를 누르면 그 줄 아래에 전문이 펼쳐지고 다시 누르면 접힌다. 전문이 펼쳐진 채로도 가로 스크롤이 없다
-- [ ] `/intake` 1·2단계: 칩이 2열 격자가 아니라 내용 너비로 줄바꿈되고 묶음 제목 h2가 보인다. 베트남어 `Tiếp xúc hóa chất`처럼 긴 칩은 한 칩 안에서 줄바꿈되고 모서리 음영에 글자가 걸리지 않는다
-- [ ] 단계 숫자 원: `/consent` 2, `/signup` 3·4, `/intake` 1~4가 각각 브랜드색으로 켜지고 나머지는 들어간 홈 + 흐린 숫자
-- [ ] `/intake` 4단계와 `/signup` 프로필의 선택지(`SingleSelect`·`YesNoSeg`)가 가로 꽉 찬 세로 목록이고 고른 행에 ✓ + 들어감 + 굵게
-- [ ] `/emergency`·`/result`·`/intake`·`/signup` 프로필 바닥에 되돌아가기·홈·새로 입력 버튼이 없다
-- [ ] 1~4단계 입력 → `/result` 또는 `/emergency` 흐름이 `origin/main`과 같이 동작한다(단독 모드). 응급 칩(호흡 곤란)을 고르고 `다음`을 누르면 바로 `/emergency`
-- [ ] `Tab`으로 ← 버튼·칩·선택지·전문 보기 ›·바닥 버튼에 포커스 윤곽이 보인다
-- [ ] `design.md` 컴포넌트 표에 위 새 줄이 있고 "지금 코드와 다른 점"에 6번만 남아 있다
+- [x] `npm run build` 통과
+- [x] 06의 정적 검사가 그대로 비어 있다: `:root` 밖 16진수 색, `var(--clay*)` 아닌 `box-shadow`(띠 두 줄 제외), 토큰·999px·12px 아닌 `border-radius`, `border: 0` 아닌 `border`, `transition`·`transform: scale`·`text-shadow`·`backdrop-filter`
+- [x] `grep -n 'style={{' src/pages/worker/Intake.tsx src/pages/worker/Onboarding.tsx`의 줄 수가 지금(`origin/main`)보다 늘지 않았다
+- [x] 360px에서 `/consent`, `/signup`(로그인·프로필), `/intake`(묶음 4개)를 en·vi·ko로 스크린샷. 파일 이름을 `## 결과`에 적는다. 가로 스크롤이 없고, 어느 단계에서도 바닥 버튼과 119 띠가 같이 보인다
+- [x] 360×640에서 `/intake` 1단계(부위 칩 13개)를 끝까지 내려도 바닥 `다음`이 119 띠 위에 그대로 있고, 2단계(증상 칩 15개)도 같다. 본문이 짧은 `/consent`에서도 `다음`이 본문 끝이 아니라 바닥에 있다
+- [x] 앱 바: `/`·`/home`은 앱 이름, `/consent`·`/signup`·`/intake`는 ← + 화면 이름. `/intake` 2단계에서 ←를 누르면 1단계로, 1단계에서 누르면 `/home`으로. `/signup` 프로필에서 ←는 선택 화면으로. 베트남어 `Cho chúng tôi biết triệu chứng`이 ←·언어 선택과 한 줄에서 말줄임된다
+- [x] `/consent`: 전체 동의를 체크하면 셋이 켜지고 `다음`이 활성, 하나를 끄면 전체 동의가 꺼지고 `다음`이 `disabled`. ›를 누르면 그 줄 아래에 전문이 펼쳐지고 다시 누르면 접힌다. 전문이 펼쳐진 채로도 가로 스크롤이 없다
+- [x] `/intake` 1·2단계: 칩이 2열 격자가 아니라 내용 너비로 줄바꿈되고 묶음 제목 h2가 보인다. 베트남어 `Tiếp xúc hóa chất`처럼 긴 칩은 한 칩 안에서 줄바꿈되고 모서리 음영에 글자가 걸리지 않는다
+- [x] 단계 숫자 원: `/consent` 2, `/signup` 프로필 4, `/intake` 1~4가 각각 브랜드색으로 켜지고 나머지는 들어간 홈 + 흐린 숫자
+- [x] `/intake` 4단계와 `/signup` 프로필의 선택지(`SingleSelect`·`YesNoSeg`)가 가로 꽉 찬 세로 목록이고 고른 행에 ✓ + 들어감 + 굵게
+- [x] `/emergency`·`/result`·`/intake`·`/signup` 프로필 바닥에 되돌아가기·홈·새로 입력 버튼이 없다
+- [x] 1~4단계 입력 → `/result` 또는 `/emergency` 흐름이 `origin/main`과 같이 동작한다(단독 모드). 응급 칩(호흡 곤란)을 고르고 `다음`을 누르면 바로 `/emergency`
+- [x] `Tab`으로 ← 버튼·칩·선택지·전문 보기 ›·바닥 버튼에 포커스 윤곽이 보인다
+- [x] `design.md` 컴포넌트 표에 위 새 줄이 있고 "지금 코드와 다른 점" 절이 없다(09·10까지 끝나 절을 지웠다)
 
 ## 결과
-(구현 후 작성)
+
+2026-10-29. `frontend/figma-layout` 브랜치. 09·10과 같은 PR이다. 기준 문서는 PR 66의 최신 커밋(94bc8ec)을 이 브랜치에 병합한 `design.md`다.
+
+정적 검사
+
+| 검사 | 결과 |
+|---|---|
+| `npm run build` | 통과 |
+| `:root` 밖 16진수 색 | 없음 |
+| `var(--clay*)` 아닌 `box-shadow` | 실제 전송 행 띠 한 줄뿐 |
+| 토큰·999px·12px 아닌 `border-radius` | 없음 |
+| `border: 0` 아닌 `border` | 없음(`hr.divider`의 `border-top`은 구분선) |
+| `transition`·`transform: scale`·`text-shadow`·`backdrop-filter` | 0 |
+| 인라인 `style` 줄 수 | `Intake.tsx` 6 → 5, `Onboarding.tsx` 14 → 7 |
+
+화면 확인: Playwright(Chromium, 360×640)로 en·vi·ko 세 언어를 돌리는 스크립트(스크래치 `pw/check.mjs`)가 220개 검사를 통과했다. 스크린샷은 스크래치 `shots/<언어>-<화면>.png`: `consent`, `consent-expanded`, `consent-all`, `login`, `profile`, `profile-bottom`, `intake-body`, `intake-body-bottom`, `intake-symptom`, `intake-text`, `intake-photos`, `intake-onset`, `intake-pain`, `intake-injury`, `intake-work`, `intake-worktype`, `intake-district`, `result`, `emergency`, 그리고 `vi-analyzing`.
+
+| 점검 | 결과 |
+|---|---|
+| 가로 스크롤 | 세 언어 모든 화면·질문에서 `scrollWidth == clientWidth`(360) |
+| 바닥 버튼과 119 띠 | 모든 입력 화면에서 버튼 아래 끝 552px, 띠 위 568px, 띠 아래 640px. 끝까지 내린 뒤에도 같은 자리(`intake-body-bottom`, `profile-bottom`) |
+| 앱 바 | `/`·`/home`은 앱 이름만. `/consent`·`/signup`·`/intake`·`/result`·`/emergency`는 ← + 이름. 베트남어 `Cho chúng tôi biết triệu chứng`은 `Cho chúng t…`로 말줄임 |
+| ← | `/intake` 2묶음 → 1묶음(고른 칩 유지), 1묶음 → `/home`. 프로필 → 로그인 화면, 로그인 → `/consent` |
+| S-02 | 전체 동의 체크 → 셋 켜짐 + 다음 활성. 하나 끄면 전체 동의 꺼짐 + 다음 `disabled`. › → 줄 아래 전문 펼침·접힘, 펼친 채 가로 스크롤 없음 |
+| 칩 | 부위 4묶음·증상 3묶음, 칩 너비가 내용마다 다르다(2열 격자 아님). 베트남어 `Tiếp xúc hóa chất`은 한 칩 안에서 줄바꿈 |
+| 단계 숫자 원 | `/consent` 2, 프로필 4, `/intake` 묶음 1~4 |
+| 선택지 목록 | 발생 시점 4행, 업무 관련 3행, 업무 종류 6행, 나이대 4행, 업종 5행, 구군 5행. 고른 행 ✓ + 들어감 + 굵게 |
+| 바닥 되돌아가기 | `/intake`·`/signup`·`/emergency`·`/result`에 `btn ghost`·보조 되돌아가기 없음 |
+| 흐름 | 손·부기 → 자유 입력 → 추가 질문 9개 → `/result`. 가슴·호흡 곤란 → 증상 묶음에서 바로 `/emergency` |
+| 포커스 | `/intake`에서 첫 `Tab`이 ←에 닿고 `outline` 윤곽이 보인다 |
+
+backlog에서 더 정한 것
+- `.w-footer`는 `margin: 16px 0 -16px`로 `.w-main`의 아래 여백(`--bar-119` + 16px)과 맞춘다. 흐를 때나 붙어 있을 때나 버튼과 119 띠 사이가 16px이다
+- `useScreenBar`는 `onBack`을 ref로 받아 매 렌더 바뀌어도 효과가 다시 돌지 않는다. `hidden`은 10의 분석 중 화면이 쓴다
+- 앱 바 제목이 등록되지 않은 화면(S-06~S-13, 안내)은 앱 이름 + ← `/home`이다. 스크린샷 `result`·`emergency`가 그 모양이다
+- S-07의 `↺ 새로 입력`을 지웠다. 홈 메뉴 "아파요"로 다시 들어가면 새 입력이다
+
+남은 것
+- 발표 기기 브라우저는 확인하지 않았다(Chromium만). `position: sticky`와 `env(safe-area-inset-bottom)`은 iOS Safari 11.2 이상
+- 실제 손가락 눌림·키패드가 뜬 상태의 바닥 버튼 위치는 확인하지 않았다
 
 ## 메모
 - 기준 문서: `design.md` "화면 골격(Figma 기준)"은 PR conceptamin/for-nav#66이 더했다. 이 문서는 그 절 끝 "지금 코드와 다른 점" 1~5·7·8번을 backlog 형식으로 옮긴 것이다. 6번은 `09-intake-one-question.md`

@@ -33,17 +33,11 @@ export const en = {
   consentSensitiveBody: 'We use your symptoms only to guide you. We do not ask your visa status, name, or company name. If you use the service as a guest, your input is deleted when you close the browser.',
   consentAiTitle: 'Notice: AI processing',
   consentAiBody: 'Some sentences (summaries, translations) may be created by an external AI service. Emergency checks are done by rules and our own model, not by the AI.',
-  consentAgree: 'I agree',
   consentAll: 'Agree to all',
   consentNeedAll: 'Please agree to all required items to continue.',
   consentCenterLater: 'Sending your case to the centre needs a separate agreement at that time.',
 
   // S-03
-  signupTitle: 'How would you like to use it?',
-  guestBtn: 'Use as a guest',
-  guestHint: 'You can get guidance and make a report for the doctor. Nothing is kept after you close the browser.',
-  memberBtn: 'Create a simple profile',
-  memberHint: 'Needed to send a request to the support centre and to keep your reports on this phone.',
   birthDate: 'Date of birth',
   sex: 'Sex',
   male: 'Male',
@@ -101,6 +95,30 @@ export const en = {
   checking: 'Checking…',
   seeResult: 'See where to go',
 
+  // 08 Figma 화면 골격: 앱 바·동의·로그인·칩 묶음·사진·슬라이더·분석 중
+  consentReadFull: 'Read the full text',
+  loginTitle: 'Sign in',
+  profileTitle: 'Simple profile',
+  loginGoogle: 'Sign in with Google',
+  loginGuest: 'Continue as a guest',
+  loginDemoNote: 'Demo: this button does not contact Google. It only starts a member profile on this phone.',
+  groupHead: 'Head and face',
+  groupTrunk: 'Body',
+  groupLimbs: 'Arms and legs',
+  groupOther: 'Other',
+  groupInjury: 'Injury and pain',
+  groupIllness: 'Feeling unwell',
+  groupExposure: 'Exposure',
+  photosTitle: 'Photos',
+  photoAdd: 'Add photo',
+  photoRemove: 'Remove photo',
+  photosNote: 'Photos stay on this screen only. They are not sent or saved.',
+  painMild: 'mild',
+  painModerate: 'moderate',
+  painSevere: 'severe',
+  analyzingTitle: 'Checking your answers',
+  analyzingSub: 'Please wait a moment.',
+
   // S-06
   emTitle: 'This may be an emergency',
   emBody: 'Call 119 now. Calls are free. Say "119" and show the Korean sentence below.',
@@ -125,7 +143,6 @@ export const en = {
   toCoverage: 'Insurance & support',
   toCenter: 'Ask the centre for help',
   resultNoDiag: 'This is guidance on which clinic to visit, not a diagnosis.',
-  newIntake: 'Start a new check',
 
   // S-08
   covTitle: 'Where to ask about costs first',
