@@ -1,4 +1,4 @@
-# /api/extract의 LLM 자리: 정상 추출, 열거값 밖 값 버리기, 실패 시 키워드 대체, 버튼 입력 우선.
+# /api/extract의 LLM 자리: 정상 추출, 열거값 밖 값 버리기, 키워드 결과와 합치기, 실패 시 키워드 대체, 버튼 입력 우선.
 # LLM은 FakeLLMClient로 바꾸고 외부 네트워크를 쓰지 않는다.
 
 import asyncio
@@ -11,11 +11,13 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.routers.worker import llm_client
-from app.rules.extract_llm import SYSTEM, LLMExtraction, extract_with_llm
+from app.rules.extract_llm import SYSTEM, LLMExtraction, combine, extract_with_llm
 from app.rules.triage import extract_from_text
 from app.schemas import Extraction
 
 FREE_TEXT = "Ngón tay bị kẹp vào máy dập, bị sưng."
+# 키워드 사전이 아무것도 찾지 못하는 합성 문장. LLM 출력만 보이게 할 때 쓴다.
+NO_KEYWORDS = "qwerty zxcv"
 INTAKE = {
     "id": "in-test",
     "language": "vi",
@@ -41,12 +43,16 @@ def post(fake: FakeLLMClient | None, intake: dict = INTAKE) -> dict:
         app.dependency_overrides.clear()
 
 
+def test_no_keywords_text_really_has_none():
+    assert extract_from_text(NO_KEYWORDS) == Extraction(body_parts=[], symptoms=[], onset=None, work_related=None, work_type=None)
+
+
 def test_llm_extraction_fills_empty_fields():
     fake = FakeLLMClient([json.dumps(LLM_OUT)])
     out = post(fake)
 
     assert out["source"] == "llm"
-    # 순서는 vocab 순서로 맞춘다.
+    # 키워드(hand, swelling, workRelated yes, machine)와 합친 값. 순서는 vocab 순서로 맞춘다.
     assert out["extraction"] == {**LLM_OUT, "symptoms": ["pain", "swelling"]}
     assert out["intake"]["bodyParts"] == ["hand"]
     assert out["intake"]["onset"] == "today"
@@ -72,7 +78,7 @@ def test_system_lists_vocab_and_forbids_guessing():
 
 def test_out_of_vocab_field_is_dropped_others_kept():
     fake = FakeLLMClient([json.dumps({**LLM_OUT, "bodyParts": ["finger"]})])
-    out = post(fake)
+    out = post(fake, {**INTAKE, "freeText": NO_KEYWORDS})
 
     assert out["source"] == "llm"
     assert out["extraction"]["bodyParts"] == []
@@ -80,6 +86,47 @@ def test_out_of_vocab_field_is_dropped_others_kept():
     assert out["extraction"]["workType"] == "machine"
     # 부위가 비었으므로 프론트는 부위 버튼 질문으로 돌아간다.
     assert out["intake"]["bodyParts"] == []
+
+
+def test_out_of_vocab_field_keeps_keyword_values():
+    # 버린 LLM 필드 자리에는 키워드 결과만 남는다.
+    fake = FakeLLMClient([json.dumps({**LLM_OUT, "bodyParts": ["finger"]})])
+    out = post(fake)
+
+    assert out["extraction"]["bodyParts"] == ["hand"]
+
+
+def ex(**fields) -> Extraction:
+    return Extraction.model_validate({"bodyParts": [], "symptoms": [], "onset": None, "workRelated": None, "workType": None, **fields})
+
+
+def test_combine_unions_body_parts_and_symptoms():
+    got = combine(ex(bodyParts=["hand"], symptoms=["dizzy"]), ex(bodyParts=["arm", "hand"], symptoms=["dizzy", "chemical"]))
+    assert (got.body_parts, got.symptoms) == (["arm", "hand"], ["dizzy", "chemical"])
+
+
+def test_combine_keeps_keyword_symptom_llm_missed():
+    assert combine(ex(bodyParts=["leg"]), ex(bodyParts=["leg"], symptoms=["pain"])).symptoms == ["pain"]
+
+
+@pytest.mark.parametrize(("llm", "keywords"), [("yes", None), (None, "yes"), ("no", "yes"), ("unknown", None)])
+def test_combine_work_related_is_keywords_only(llm, keywords):
+    assert combine(ex(workRelated=llm), ex(workRelated=keywords)).work_related == keywords
+
+
+def test_combine_onset_and_work_type_are_llm():
+    # "ở nhà máy"(공장에서): 키워드는 "máy"를 기계 작업으로 잡지만 LLM은 비운다.
+    got = combine(ex(onset="yesterday", workType=None), ex(onset="today", workType="machine"))
+    assert (got.onset, got.work_type) == ("yesterday", None)
+
+
+def test_llm_work_related_guess_is_not_used():
+    fake = FakeLLMClient([json.dumps({**LLM_OUT, "workRelated": "yes"})])
+    out = post(fake, {**INTAKE, "freeText": NO_KEYWORDS})
+
+    assert out["source"] == "llm"
+    assert out["extraction"]["workRelated"] is None
+    assert out["intake"]["workRelated"] is None
 
 
 @pytest.mark.parametrize(
