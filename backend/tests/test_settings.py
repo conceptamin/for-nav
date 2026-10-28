@@ -8,7 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from app.settings import DEFAULT_INFO_DATE, load_settings, settings
+from app.llm_providers.anthropic import AnthropicClient
+from app.settings import DEFAULT_INFO_DATE, get_llm_client, load_settings, settings
 
 BACKEND = Path(__file__).parent.parent
 
@@ -18,6 +19,7 @@ def test_defaults():
     assert s.center_hours.model_dump() == {"open_hour": 9, "close_hour": 18, "workdays": [1, 2, 3, 4, 5]}
     assert s.info_date == DEFAULT_INFO_DATE
     assert s.cors_origins == ("http://localhost:5180",)
+    assert (s.llm_provider, s.llm_model, s.llm_api_key, s.llm_timeout_s, s.llm_attempts) == ("anthropic", "claude-haiku-5-5", "", 10.0, 2)
 
 
 def test_test_run_uses_defaults():
@@ -32,6 +34,23 @@ def test_reads_env():
     assert s.cors_origins == ("http://a.test", "http://b.test")
 
 
+def test_reads_llm_env():
+    s = load_settings({"LLM_MODEL": "claude-sonnet-5-5", "LLM_API_KEY": " sk-test ", "LLM_TIMEOUT_S": "4.5", "LLM_ATTEMPTS": "3"})
+    assert (s.llm_model, s.llm_api_key, s.llm_timeout_s, s.llm_attempts) == ("claude-sonnet-5-5", "sk-test", 4.5, 3)
+
+
+def test_api_key_is_not_in_repr():
+    assert "sk-test-secret" not in repr(load_settings({"LLM_API_KEY": "sk-test-secret"}))
+
+
+def test_llm_client_only_with_key():
+    assert get_llm_client(load_settings({})) is None
+    assert get_llm_client(load_settings({"LLM_API_KEY": "  "})) is None
+    client = get_llm_client(load_settings({"LLM_API_KEY": "sk-test", "LLM_MODEL": "claude-sonnet-5-5"}))
+    assert isinstance(client, AnthropicClient)
+    assert client.model == "claude-sonnet-5-5"
+
+
 @pytest.mark.parametrize(
     "env",
     [
@@ -41,6 +60,12 @@ def test_reads_env():
         {"CENTER_HOURS": "09:00-25:00"},
         {"INFO_DATE": "2026-13-01"},
         {"INFO_DATE": "next week"},
+        {"LLM_PROVIDER": "openai"},
+        {"LLM_MODEL": " "},
+        {"LLM_TIMEOUT_S": "0"},
+        {"LLM_TIMEOUT_S": "ten"},
+        {"LLM_ATTEMPTS": "0"},
+        {"LLM_ATTEMPTS": "1.5"},
     ],
 )
 def test_rejects_bad_values(env):
@@ -68,3 +93,17 @@ print(json.dumps({
     got = json.loads(out.stdout.strip().splitlines()[-1])
     assert got["meta"] == {"infoDate": "2026-11-01", "centerHours": {"openHour": 10, "closeHour": 17, "workdays": [1, 2, 3, 4, 5]}}
     assert got["afterHours"] == [True, False, False, True]
+
+
+def test_server_starts_without_llm_key():
+    """LLM_API_KEY가 없는 프로세스에서 서버가 뜨고 get_llm_client()는 None이다."""
+    script = """
+import json
+from fastapi.testclient import TestClient
+from app.main import app
+from app.settings import get_llm_client
+print(json.dumps({"health": TestClient(app).get("/api/health").status_code, "client": get_llm_client() is None}))
+"""
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("LLM_", "ANTHROPIC_"))}
+    out = subprocess.run([sys.executable, "-c", script], cwd=BACKEND, env=env, capture_output=True, text=True, check=True)
+    assert json.loads(out.stdout.strip().splitlines()[-1]) == {"health": 200, "client": True}

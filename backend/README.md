@@ -9,7 +9,7 @@
 2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-LLM 호출과 학습 모델(`modeling/README.md`)은 이번 범위가 아니다. 들어갈 자리만 응답 스키마에 비워 둔다.
+학습 모델(`modeling/README.md`)과 기능별 LLM 프롬프트는 아직 붙이지 않았다. 들어갈 자리만 응답 스키마에 비워 두고, LLM 호출 계층(`app/llm.py`)만 먼저 둔다("실행"의 LLM).
 
 ## 기술 스택
 
@@ -19,6 +19,7 @@ LLM 호출과 학습 모델(`modeling/README.md`)은 이번 범위가 아니다.
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict) | 목업이므로 재시작하면 mock 시드 상태로 돌아간다 |
+| LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
 
 ## 폴더 구조
@@ -28,7 +29,10 @@ backend/
   pyproject.toml
   app/
     main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
-    settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처)
+    settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
+    llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
+    llm_providers/
+      anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
@@ -46,10 +50,14 @@ backend/
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*
+  scripts/
+    llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_api.py        경로별 응답 형태·상태 코드
+    test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
+    fakes.py           FakeLLMClient
 ```
 
 ## 공통 규칙
@@ -252,8 +260,26 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(평일, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
 | `INFO_DATE` | `2026-10-24` | `YYYY-MM-DD` | `/api/meta`, `/api/route`의 `infoDate` |
 | `CORS_ORIGINS` | `http://localhost:5180` | 쉼표 구분 출처 목록 | CORS 허용 출처 |
+| `LLM_PROVIDER` | `anthropic` | `anthropic`만 지원 | LLM 어댑터 선택 |
+| `LLM_MODEL` | `claude-haiku-5-5` | 공급자 모델 이름 | LLM 호출 |
+| `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
+| `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
+| `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
+
+### LLM
+
+**키가 없으면 템플릿으로 동작한다.** `LLM_API_KEY`가 비어 있으면 `get_llm_client()`가 `None`을 돌려주고, LLM 자리(추출·템플릿 슬롯·번역)는 지금 규칙·템플릿을 그대로 쓴다. 키가 있어도 호출이 시간 제한을 넘기거나 출력이 스키마에 맞지 않으면 `LLM_ATTEMPTS`번까지 시도한 뒤 같은 기본값으로 돌아간다. LLM 실패는 API 실패가 되지 않는다(발표장 네트워크 대비).
+
+- 출력은 Pydantic 모델의 JSON 스키마로 고정한다(Anthropic `output_config.format`). 받은 뒤에도 같은 모델로 다시 검증한다.
+- 로그에는 시도 횟수와 실패 종류(`llm attempt=1/2 failed=LLMError/RateLimitError`)만 남는다. 프롬프트·응답 원문은 로그·예외에 들어가지 않는다.
+- SDK 자체 재시도는 끄고 재시도는 `generate()` 한 곳에서만 한다.
+- 테스트는 가짜 LLM으로 돌고 키·네트워크가 필요 없다. 실제 공급자 확인은 손으로 한 번 돌린다.
+
+```sh
+uv run --env-file .env python scripts/llm_smoke.py   # 모델 이름, 소요 시간, 스키마 통과 여부만 찍는다
+```
 
 프론트와 함께 띄울 때:
 
