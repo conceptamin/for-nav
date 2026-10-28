@@ -16,6 +16,16 @@
   --danger: #c4231b;
   --danger-2: #a11a13;
   --danger-bg: #fde8e6;
+  --on-brand: #ffffff; /* 브랜드·위험색 같은 진한 바탕 위 글자 */
+  --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
+  --info: #0b4f8a;
+  --info-bg: #dceeff; /* 신규 상태 칩 */
+  --warn-ink: #5c3700; /* 파스텔 안내 상자 글자(진한 변형) */
+  --brand-ink: #0b3e52;
+  --ok-ink: #134d31;
+  --bg-2: #eef2f5; /* 센터 바닥, 낮음 칩, 막대 트랙 */
+  --bg-3: #f7f9fa; /* 표 머리, 행 강조, 원문 상자 */
+  --live-bg: #fff8e1; /* 실제 전송 행 */
   --radius: 14px;
   --shadow: 0 1px 2px rgb(18 35 46 / 6%), 0 4px 14px rgb(18 35 46 / 6%);
   font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -62,7 +72,7 @@ p {
 }
 
 :focus-visible {
-  outline: 3px solid #f0a500;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -85,14 +95,14 @@ p {
   gap: 8px;
   padding: 10px 16px;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .w-header .title {
   flex: 1;
   font-weight: 700;
   font-size: 1rem;
-  color: #fff;
+  color: var(--on-brand);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -143,7 +153,7 @@ p {
   min-height: 52px;
   border-radius: 12px;
   background: var(--danger);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 800;
   font-size: 1.1rem;
   text-decoration: none;
@@ -190,7 +200,7 @@ p {
   border-radius: 12px;
   border: 1.5px solid var(--brand);
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   font: inherit;
   font-weight: 700;
   font-size: 1rem;
@@ -205,7 +215,7 @@ p {
 }
 
 .btn.secondary {
-  background: #fff;
+  background: var(--card);
   color: var(--brand);
 }
 
@@ -240,7 +250,7 @@ p {
   padding: 8px 12px;
   border-radius: 12px;
   border: 1.5px solid var(--line);
-  background: #fff;
+  background: var(--card);
   font: inherit;
   font-size: 0.98rem;
   color: var(--ink);
@@ -299,7 +309,7 @@ select.input {
   border: 1.5px solid var(--line);
   border-radius: 10px;
   font: inherit;
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
 }
 
@@ -315,7 +325,7 @@ textarea {
   padding: 12px;
   border-radius: 12px;
   border: 1.5px solid var(--line);
-  background: #fff;
+  background: var(--card);
   cursor: pointer;
 }
 
@@ -336,12 +346,12 @@ textarea {
 
 .notice.warn {
   background: var(--warn-bg);
-  color: #5c3700;
+  color: var(--warn-ink);
 }
 
 .notice.info {
   background: var(--brand-2);
-  color: #0b3e52;
+  color: var(--brand-ink);
 }
 
 .notice.danger {
@@ -352,7 +362,7 @@ textarea {
 
 .notice.ok {
   background: var(--ok-bg);
-  color: #134d31;
+  color: var(--ok-ink);
 }
 
 /* 실패 문구 + 바로 옆 다시 시도 버튼(센터 전송·상태 변경·초기화·통계). 좁으면 버튼이 아래로 내려간다 */
@@ -396,7 +406,7 @@ textarea {
   align-items: center;
   gap: 14px;
   padding: 16px;
-  background: #fff;
+  background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   text-decoration: none;
@@ -417,7 +427,7 @@ textarea {
 
 .menu a.primary {
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .menu a.primary .ico {
@@ -437,7 +447,7 @@ textarea {
   border: 2px solid var(--brand);
   border-radius: var(--radius);
   padding: 14px;
-  background: #fff;
+  background: var(--card);
 }
 
 .dept .ko {
@@ -515,7 +525,7 @@ textarea {
   flex: 1;
   min-height: 44px;
   border: 0;
-  background: #fff;
+  background: var(--card);
   color: var(--brand);
   font: inherit;
   font-weight: 700;
@@ -524,7 +534,7 @@ textarea {
 
 .toggle button[aria-pressed='true'] {
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .report-row {
@@ -551,7 +561,7 @@ textarea {
 
 .em-hero {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-brand);
   border-radius: var(--radius);
   padding: 20px 16px;
   margin-bottom: 12px;
@@ -567,7 +577,7 @@ textarea {
   justify-content: center;
   min-height: 76px;
   border-radius: 16px;
-  background: #fff;
+  background: var(--card);
   color: var(--danger);
   font-size: 1.7rem;
   font-weight: 900;
@@ -584,7 +594,7 @@ textarea {
 /* ---------- 센터 레이아웃 ---------- */
 .c-shell {
   min-height: 100dvh;
-  background: #eef2f5;
+  background: var(--bg-2);
 }
 
 .c-header {
@@ -593,7 +603,7 @@ textarea {
   gap: 24px;
   padding: 0 24px;
   height: 60px;
-  background: #fff;
+  background: var(--card);
   border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
@@ -648,7 +658,7 @@ textarea {
 }
 
 .kpi {
-  background: #fff;
+  background: var(--card);
   border-radius: 12px;
   padding: 14px 16px;
   box-shadow: var(--shadow);
@@ -665,7 +675,7 @@ textarea {
 }
 
 .table-wrap {
-  background: #fff;
+  background: var(--card);
   border-radius: 12px;
   box-shadow: var(--shadow);
   overflow-x: auto;
@@ -686,7 +696,7 @@ table.cases td {
 }
 
 table.cases th {
-  background: #f7f9fa;
+  background: var(--bg-3);
   color: var(--ink-2);
   font-weight: 700;
   position: sticky;
@@ -698,12 +708,12 @@ table.cases tbody tr {
 }
 
 table.cases tbody tr:hover {
-  background: #f5f9fb;
+  background: var(--bg-3);
 }
 
 table.cases tr.fresh {
-  background: #fff8e1;
-  box-shadow: inset 4px 0 0 #f0a500;
+  background: var(--live-bg);
+  box-shadow: inset 4px 0 0 var(--accent);
 }
 
 .pill {
@@ -728,13 +738,13 @@ table.cases tr.fresh {
 }
 
 .pill.low {
-  background: #edf1f3;
+  background: var(--bg-2);
   color: var(--ink-2);
 }
 
 .pill.new {
-  background: #dceeff;
-  color: #0b4f8a;
+  background: var(--info-bg);
+  color: var(--info);
 }
 
 .pill.progress {
@@ -748,8 +758,8 @@ table.cases tr.fresh {
 }
 
 .pill.live {
-  background: #f0a500;
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-brand);
 }
 
 .filters {
@@ -766,7 +776,7 @@ table.cases tr.fresh {
   padding: 0 14px;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--card);
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
@@ -775,7 +785,7 @@ table.cases tr.fresh {
 .filters button[aria-pressed='true'] {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .detail {
@@ -785,7 +795,7 @@ table.cases tr.fresh {
 }
 
 .panel {
-  background: #fff;
+  background: var(--card);
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 18px 20px;
@@ -800,7 +810,7 @@ table.cases tr.fresh {
 
 .native-box {
   white-space: pre-wrap;
-  background: #f7f9fa;
+  background: var(--bg-3);
   border-radius: 8px;
   padding: 12px;
   font-size: 0.95rem;
@@ -822,7 +832,7 @@ table.cases tr.fresh {
 
 .bar-track {
   height: 20px;
-  background: #edf1f3;
+  background: var(--bg-2);
   border-radius: 4px;
   overflow: hidden;
 }
