@@ -5,17 +5,17 @@
   --ink-2: #4a5a66;
   --ink-3: #74838e;
   --line: #d9e1e6;
-  --bg: #f3f6f8;
-  --card: #ffffff;
+  --bg: #e6edf2; /* 화면 바닥. 점토가 놓이는 면 */
+  --card: #f8fafc; /* 점토 표면. 순백이 아니어야 흰 하이라이트가 보인다 */
   --brand: #0f5b78;
-  --brand-2: #e3f0f5;
+  --brand-2: #dcebf2;
   --ok: #1f7a4d;
-  --ok-bg: #e5f4ec;
+  --ok-bg: #e2f3ea;
   --warn: #9a5b00;
-  --warn-bg: #fff3dc;
+  --warn-bg: #fff1d6;
   --danger: #c4231b;
   --danger-2: #a11a13;
-  --danger-bg: #fde8e6;
+  --danger-bg: #fbe3e1;
   --on-brand: #ffffff; /* 브랜드·위험색 같은 진한 바탕 위 글자 */
   --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
   --info: #0b4f8a;
@@ -23,11 +23,27 @@
   --warn-ink: #5c3700; /* 파스텔 안내 상자 글자(진한 변형) */
   --brand-ink: #0b3e52;
   --ok-ink: #134d31;
-  --bg-2: #eef2f5; /* 센터 바닥, 낮음 칩, 막대 트랙 */
-  --bg-3: #f7f9fa; /* 표 머리, 행 강조, 원문 상자 */
+  --bg-2: #eef3f6; /* 들어간 홈의 바탕(원문 상자, 막대 트랙), 낮음 칩. --bg와 --card 사이 */
+  --bg-3: #f2f6f9; /* 표 머리, 행 강조. --card보다 한 단계 어둡다 */
   --live-bg: #fff8e1; /* 실제 전송 행 */
-  --radius: 14px;
-  --shadow: 0 1px 2px rgb(18 35 46 / 6%), 0 4px 14px rgb(18 35 46 / 6%);
+  --radius: 20px;
+  --radius-sm: 16px;
+  --radius-lg: 28px;
+
+  /* 클레이 그림자(design.md "그림자"). 빛은 왼쪽 위에서 온다. 값은 여기에만 둔다 */
+  --clay-light: rgb(255 255 255 / 85%); /* 왼쪽 위 하이라이트 */
+  --clay-dark: rgb(18 35 46 / 12%); /* 오른쪽 아래 음영 */
+  --clay-drop: rgb(18 35 46 / 10%); /* 바닥 그림자 */
+  /* 떠 있음: 카드·패널·KPI·메뉴·진료과 상자 */
+  --clay: 0 8px 16px var(--clay-drop), inset 6px 6px 12px var(--clay-light), inset -6px -6px 12px var(--clay-dark);
+  /* 떠 있음(작게): 버튼·칩·체크·필터 */
+  --clay-sm: 0 4px 8px var(--clay-drop), inset 3px 3px 6px var(--clay-light), inset -3px -3px 6px var(--clay-dark);
+  /* 들어감: 입력란·눌린 것·선택된 칩·트랙 */
+  --clay-in: inset 4px 4px 8px var(--clay-dark), inset -3px -3px 6px var(--clay-light);
+  /* 색이 있는 면: 브랜드 버튼·응급 히어로·119 띠 */
+  --clay-color: 0 8px 16px var(--clay-drop), inset 4px 4px 10px rgb(255 255 255 / 35%), inset -4px -4px 10px rgb(0 0 0 / 20%);
+  --clay-color-sm: 0 4px 8px var(--clay-drop), inset 3px 3px 6px rgb(255 255 255 / 35%), inset -3px -3px 6px rgb(0 0 0 / 20%);
+  --clay-color-in: inset 4px 4px 8px rgb(0 0 0 / 22%), inset -3px -3px 6px rgb(255 255 255 / 25%);
   font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--bg);
@@ -111,7 +127,7 @@ p {
 
 .w-header select {
   min-height: 36px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 0;
   padding: 0 8px;
   font: inherit;
@@ -151,22 +167,26 @@ p {
   justify-content: center;
   gap: 8px;
   min-height: 52px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--danger);
   color: var(--on-brand);
   font-weight: 800;
   font-size: 1.1rem;
   text-decoration: none;
-  box-shadow: var(--shadow);
+  box-shadow: var(--clay-color-sm);
+}
+
+.bar-119 a:active {
+  box-shadow: var(--clay-color-in);
 }
 
 /* ---------- 공통 요소 ---------- */
 .card {
   background: var(--card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--clay);
   padding: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .muted {
@@ -197,10 +217,11 @@ p {
   gap: 8px;
   min-height: 48px;
   padding: 10px 16px;
-  border-radius: 12px;
-  border: 1.5px solid var(--brand);
+  border-radius: var(--radius-sm);
+  border: 0;
   background: var(--brand);
   color: var(--on-brand);
+  box-shadow: var(--clay-color-sm);
   font: inherit;
   font-weight: 700;
   font-size: 1rem;
@@ -209,25 +230,36 @@ p {
   text-align: center;
 }
 
+/* 비활성은 떠 있음을 유지한 채 흐리기만 한다. 눌림도 없다 */
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
+.btn:not(:disabled):active {
+  box-shadow: var(--clay-color-in);
+}
+
 .btn.secondary {
   background: var(--card);
   color: var(--brand);
+  box-shadow: var(--clay-sm);
 }
 
-.btn.ghost {
+.btn.secondary:not(:disabled):active {
+  box-shadow: var(--clay-in);
+}
+
+/* 평평. 되돌아가기 */
+.btn.ghost,
+.btn.ghost:not(:disabled):active {
   background: transparent;
-  border-color: transparent;
   color: var(--brand);
+  box-shadow: none;
 }
 
 .btn.danger {
   background: var(--danger);
-  border-color: var(--danger);
 }
 
 .btn.block {
@@ -248,9 +280,10 @@ p {
 .chip {
   min-height: 52px;
   padding: 8px 12px;
-  border-radius: 12px;
-  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  border: 0;
   background: var(--card);
+  box-shadow: var(--clay-sm);
   font: inherit;
   font-size: 0.98rem;
   color: var(--ink);
@@ -261,8 +294,12 @@ p {
   gap: 8px;
 }
 
+.chip:active,
 .chip[aria-pressed='true'] {
-  border-color: var(--brand);
+  box-shadow: var(--clay-in);
+}
+
+.chip[aria-pressed='true'] {
   background: var(--brand-2);
   font-weight: 700;
 }
@@ -306,8 +343,9 @@ select.input {
   width: 100%;
   min-height: 48px;
   padding: 10px 12px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--clay-in);
   font: inherit;
   background: var(--card);
   color: var(--ink);
@@ -323,10 +361,21 @@ textarea {
   gap: 12px;
   align-items: flex-start;
   padding: 12px;
-  border-radius: 12px;
-  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  border: 0;
   background: var(--card);
+  box-shadow: var(--clay-sm);
   cursor: pointer;
+}
+
+/* 체크된 동의 줄은 눌려 들어간다(:has 미지원 브라우저에서는 떠 있음으로 남고 동작은 같다) */
+.check:active,
+.check:has(:checked) {
+  box-shadow: var(--clay-in);
+}
+
+.check:has(:checked) {
+  background: var(--brand-2);
 }
 
 .check input {
@@ -338,7 +387,7 @@ textarea {
 }
 
 .notice {
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 0.92rem;
   margin-bottom: 12px;
@@ -387,8 +436,9 @@ textarea {
 .steps span {
   flex: 1;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 999px;
   background: var(--line);
+  box-shadow: var(--clay-in);
 }
 
 .steps span.on {
@@ -398,7 +448,7 @@ textarea {
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .menu a {
@@ -407,31 +457,42 @@ textarea {
   gap: 14px;
   padding: 16px;
   background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--clay);
   text-decoration: none;
   color: var(--ink);
   min-height: 72px;
 }
 
+.menu a:active {
+  box-shadow: var(--clay-in);
+}
+
 .menu a .ico {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
   font-size: 1.4rem;
   background: var(--brand-2);
+  box-shadow: var(--clay-in);
   flex: none;
 }
 
 .menu a.primary {
   background: var(--brand);
   color: var(--on-brand);
+  box-shadow: var(--clay-color);
+}
+
+.menu a.primary:active {
+  box-shadow: var(--clay-color-in);
 }
 
 .menu a.primary .ico {
   background: rgb(255 255 255 / 18%);
+  box-shadow: var(--clay-color-in);
 }
 
 .menu a strong {
@@ -444,10 +505,11 @@ textarea {
 }
 
 .dept {
-  border: 2px solid var(--brand);
+  border: 0;
   border-radius: var(--radius);
   padding: 14px;
-  background: var(--card);
+  background: var(--brand-2);
+  box-shadow: var(--clay);
 }
 
 .dept .ko {
@@ -456,8 +518,8 @@ textarea {
 }
 
 .dept.alt {
-  border-width: 1px;
-  border-color: var(--line);
+  background: var(--card);
+  box-shadow: var(--clay-sm);
 }
 
 .dept.alt .ko {
@@ -516,16 +578,19 @@ textarea {
 
 .toggle {
   display: flex;
-  border: 1.5px solid var(--brand);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  box-shadow: var(--clay-in);
   overflow: hidden;
 }
 
+/* 토글 전체가 홈이고, 고른 쪽만 그 안에서 떠오른다 */
 .toggle button {
   flex: 1;
   min-height: 44px;
   border: 0;
-  background: var(--card);
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--brand);
   font: inherit;
   font-weight: 700;
@@ -535,6 +600,11 @@ textarea {
 .toggle button[aria-pressed='true'] {
   background: var(--brand);
   color: var(--on-brand);
+  box-shadow: var(--clay-color-sm);
+}
+
+.toggle button[aria-pressed='true']:active {
+  box-shadow: var(--clay-color-in);
 }
 
 .report-row {
@@ -563,8 +633,9 @@ textarea {
   background: var(--danger);
   color: var(--on-brand);
   border-radius: var(--radius);
+  box-shadow: var(--clay-color);
   padding: 20px 16px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .em-hero h1 {
@@ -576,13 +647,18 @@ textarea {
   align-items: center;
   justify-content: center;
   min-height: 76px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--card);
+  box-shadow: var(--clay);
   color: var(--danger);
   font-size: 1.7rem;
   font-weight: 900;
   text-decoration: none;
   margin-top: 12px;
+}
+
+.em-call:active {
+  box-shadow: var(--clay-in);
 }
 
 .footer-note {
@@ -594,7 +670,7 @@ textarea {
 /* ---------- 센터 레이아웃 ---------- */
 .c-shell {
   min-height: 100dvh;
-  background: var(--bg-2);
+  background: var(--bg);
 }
 
 .c-header {
@@ -624,7 +700,7 @@ textarea {
 
 .c-header nav a {
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 12px;
   text-decoration: none;
   color: var(--ink-2);
   font-weight: 600;
@@ -633,6 +709,7 @@ textarea {
 .c-header nav a.active {
   background: var(--brand-2);
   color: var(--brand);
+  box-shadow: var(--clay-in);
 }
 
 /* 서버와 끊겼을 때 헤더 아래 가로 띠. 평평하고 흐름 안에 있어 표를 덮지 않는다 */
@@ -653,15 +730,15 @@ textarea {
 .c-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 16px;
 }
 
 .kpi {
   background: var(--card);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px 16px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--clay);
 }
 
 .kpi .n {
@@ -674,10 +751,11 @@ textarea {
   font-size: 0.88rem;
 }
 
+/* overflow-x: auto가 둥근 모서리로 행을 잘라 주고, 900px 아래에서 가로 스크롤을 만든다 */
 .table-wrap {
   background: var(--card);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  box-shadow: var(--clay);
   overflow-x: auto;
 }
 
@@ -774,18 +852,28 @@ table.cases tr.fresh {
 .filters select {
   min-height: 38px;
   padding: 0 14px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
+  border-radius: 12px;
+  border: 0;
   background: var(--card);
+  box-shadow: var(--clay-sm);
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
 }
 
+.filters button:not(:disabled):active {
+  box-shadow: var(--clay-in);
+}
+
+.filters button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .filters button[aria-pressed='true'] {
   background: var(--brand);
-  border-color: var(--brand);
   color: var(--on-brand);
+  box-shadow: var(--clay-color-in);
 }
 
 .detail {
@@ -796,8 +884,8 @@ table.cases tr.fresh {
 
 .panel {
   background: var(--card);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  box-shadow: var(--clay);
   padding: 18px 20px;
   margin-bottom: 16px;
 }
@@ -810,8 +898,9 @@ table.cases tr.fresh {
 
 .native-box {
   white-space: pre-wrap;
-  background: var(--bg-3);
-  border-radius: 8px;
+  background: var(--bg-2);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--clay-in);
   padding: 12px;
   font-size: 0.95rem;
 }
@@ -833,14 +922,15 @@ table.cases tr.fresh {
 .bar-track {
   height: 20px;
   background: var(--bg-2);
-  border-radius: 4px;
+  border-radius: 999px;
+  box-shadow: var(--clay-in);
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
   background: var(--brand);
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 .bar-row .num {
@@ -872,7 +962,7 @@ table.cases tr.fresh {
   display: inline-block;
   width: 12px;
   height: 12px;
-  border-radius: 3px;
+  border-radius: 999px;
   margin-right: 6px;
   vertical-align: -1px;
 }

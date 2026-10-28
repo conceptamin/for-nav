@@ -1,6 +1,6 @@
 # 06. 클레이모피즘 적용
 
-상태: 대기
+상태: 완료
 의존: 04 (`:root` 밖에 16진수 색이 없어진 뒤에 한다. 04가 더하는 `--on-brand`·`--accent`·`--info`/`--info-bg`·`*-ink`·`--bg-2`/`--bg-3`·`--live-bg`를 그대로 쓴다)
 
 ## 목표
@@ -60,22 +60,64 @@
 - 부르는 API·새 문구 키: 없음
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] `awk '/^:root/,/^}/{next} /#[0-9a-fA-F]{3,6}\b/' src/styles.css`의 출력이 비어 있다(04의 기준이 깨지지 않았다)
-- [ ] `awk '/^:root/,/^}/{next} /box-shadow:/ && !/var\(--clay/ && !/box-shadow: none/' src/styles.css`의 출력이 `table.cases tr.fresh`의 왼쪽 띠(`inset 4px 0 0 var(--accent)`) 한 줄뿐이다(`:root` 밖에 그림자 리터럴이 없다)
-- [ ] `grep -n 'var(--shadow)' src/styles.css`와 `grep -n -- '--shadow:' src/styles.css`의 출력이 비어 있다(옛 토큰이 남지 않았다)
-- [ ] `awk '/^:root/,/^}/{next} /border-radius:/ && !/var\(--radius/ && !/999px/ && !/12px/' src/styles.css`의 출력이 비어 있다(`:root` 밖의 둥글기는 토큰·999px·12px뿐이다)
-- [ ] `awk '/^:root/,/^}/{next} /^[[:space:]]*border(-color|-width)?:/ && !/border: 0;/' src/styles.css`의 출력이 비어 있다(면의 테두리가 없다. `border-bottom`·`border-collapse`는 매치되지 않는다)
-- [ ] `grep -c 'transition\|transform: scale\|text-shadow\|backdrop-filter' src/styles.css`가 `0`이다
-- [ ] 360px에서 `/home`, `/intake`, `/result`, `/visit/desk`, `/report/new`, `/report/:id`, `/emergency`를, 1280px과 900px 아래에서 `/center`, `/center/stats`를 en·vi·ko로 스크린샷. 파일 이름을 `## 결과`에 적는다. 베트남어 긴 문구가 칩·버튼·메뉴의 모서리 안쪽 음영에 걸리지 않고, 가로 스크롤이 생기지 않는다
-- [ ] 스크린샷에서 `design.md` "세 가지 면" 표대로 보인다: 카드·버튼·칩·메뉴·KPI·패널은 왼쪽 위가 밝고 오른쪽 아래가 어둡고 아래로 그림자가 떨어진다. 입력란·선택된 칩·체크된 동의 줄(`/consent`)·단계 점 트랙·막대 트랙은 반대로 안으로 들어가 있다. 안내 상자·`pill`·헤더는 그림자가 없다
-- [ ] 360×640에서 `/result`의 첫 화면에 h1·1순위 진료과(`.dept`)·첫 행동 버튼이 스크롤 없이 보인다(카드 간격이 16px로 늘어난 뒤 다시 확인)
-- [ ] `Tab`으로 `/intake`·`/consent`·`/center`를 이동하면 버튼·칩·입력란·필터에 3px `--accent` 포커스 윤곽이 면 바깥(`outline-offset: 2px`)에 보인다. 입력란은 테두리가 없으므로 윤곽이 보이는 것이 "지금 여기" 표시다
-- [ ] 버튼·칩을 누르고 있는 동안(`:active`) 그림자가 들어감으로 바뀌고 놓으면 돌아온다. `disabled` 버튼은 떠 있음을 유지한 채 흐리기만 하다
-- [ ] `/center` 표가 900px 아래에서 지금처럼 가로 스크롤되고, 표 상자의 둥근 모서리 밖으로 행이 삐져나오지 않는다
-- [ ] `design.md`에 "클레이모피즘 적용 항목이 할 일" 절과 "평면 카드 스타일" 단락이 없고, 토큰 표의 `--bg-2`/`--bg-3` 값이 `styles.css`와 같다
+- [x] `npm run build` 통과
+- [x] `awk '/^:root/,/^}/{next} {print NR": "$0}' src/styles.css | grep -E '#[0-9a-fA-F]{3,6}([^0-9a-fA-F]|$)'`의 출력이 비어 있다(04의 기준이 깨지지 않았다. macOS awk는 `\b`를 몰라 04에서 grep으로 바꾼 명령을 쓴다)
+- [x] `awk '/^:root/,/^}/{next} /box-shadow:/ && !/var\(--clay/ && !/box-shadow: none/' src/styles.css`의 출력이 `table.cases tr.fresh`의 왼쪽 띠(`inset 4px 0 0 var(--accent)`) 한 줄뿐이다(`:root` 밖에 그림자 리터럴이 없다)
+- [x] `grep -n 'var(--shadow)' src/styles.css`와 `grep -n -- '--shadow:' src/styles.css`의 출력이 비어 있다(옛 토큰이 남지 않았다)
+- [x] `awk '/^:root/,/^}/{next} /border-radius:/ && !/var\(--radius/ && !/999px/ && !/12px/' src/styles.css`의 출력이 비어 있다(`:root` 밖의 둥글기는 토큰·999px·12px뿐이다)
+- [x] `awk '/^:root/,/^}/{next} /^[[:space:]]*border(-color|-width)?:/ && !/border: 0;/' src/styles.css`의 출력이 비어 있다(면의 테두리가 없다. `border-bottom`·`border-collapse`는 매치되지 않는다)
+- [x] `grep -c 'transition\|transform: scale\|text-shadow\|backdrop-filter' src/styles.css`가 `0`이다
+- [x] 360px에서 `/home`, `/intake`, `/result`, `/visit/desk`, `/report/new`, `/report/:id`, `/emergency`를, 1280px과 900px 아래에서 `/center`, `/center/stats`를 en·vi·ko로 스크린샷. 파일 이름을 `## 결과`에 적는다. 베트남어 긴 문구가 칩·버튼·메뉴의 모서리 안쪽 음영에 걸리지 않고, 가로 스크롤이 생기지 않는다
+- [x] 스크린샷에서 `design.md` "세 가지 면" 표대로 보인다: 카드·버튼·칩·메뉴·KPI·패널은 왼쪽 위가 밝고 오른쪽 아래가 어둡고 아래로 그림자가 떨어진다. 입력란·선택된 칩·체크된 동의 줄(`/consent`)·단계 점 트랙·막대 트랙은 반대로 안으로 들어가 있다. 안내 상자·`pill`·헤더는 그림자가 없다
+- [x] 360×640에서 `/result`의 첫 화면에 h1·1순위 진료과(`.dept`)·첫 행동 버튼이 스크롤 없이 보인다(카드 간격이 16px로 늘어난 뒤 다시 확인)
+- [x] `Tab`으로 `/intake`·`/consent`·`/center`를 이동하면 버튼·칩·입력란·필터에 3px `--accent` 포커스 윤곽이 면 바깥(`outline-offset: 2px`)에 보인다. 입력란은 테두리가 없으므로 윤곽이 보이는 것이 "지금 여기" 표시다
+- [x] 버튼·칩을 누르고 있는 동안(`:active`) 그림자가 들어감으로 바뀌고 놓으면 돌아온다. `disabled` 버튼은 떠 있음을 유지한 채 흐리기만 하다
+- [x] `/center` 표가 900px 아래에서 지금처럼 가로 스크롤되고, 표 상자의 둥근 모서리 밖으로 행이 삐져나오지 않는다
+- [x] `design.md`에 "클레이모피즘 적용 항목이 할 일" 절과 "평면 카드 스타일" 단락이 없고, 토큰 표의 `--bg-2`/`--bg-3` 값이 `styles.css`와 같다
 
 ## 결과
+
+2026-10-29. `frontend/claymorphism` 브랜치. 04(PR 62) 위에 쌓았다.
+
+정적 검사
+
+| 검사 | 결과 |
+|---|---|
+| `npm run build` | 통과 |
+| `:root` 밖 16진수 색 | 없음 |
+| `:root` 밖 그림자 리터럴 | `table.cases tr.fresh`의 `inset 4px 0 0 var(--accent)` 한 줄 |
+| `var(--shadow)`, `--shadow:` | 없음 |
+| `:root` 밖 둥글기 | 토큰·`999px`·`12px`뿐. `12px`은 `.w-header select`, `.c-header nav a`, `.filters button`·`select` |
+| 면의 테두리 | 없음 |
+| `transition`·`transform: scale`·`text-shadow`·`backdrop-filter` | 0 |
+
+화면 확인(Playwright Chromium, 시계 2026-10-29 10:00 KST 고정). 파일은 스크래치 폴더의 `clay/after-<언어>-<폭>-<화면>.png`이고, 비교용 `before-` 같은 이름이 있다.
+
+- 360px, en·vi·ko: `home`, `consent`, `intake`, `intake-text`, `result`, `result-fold`(첫 화면), `visit-desk`, `report-new`, `report-view`, `emergency`, `center-request`, `chip-active`, `focus`
+- 1280px·880px, en·vi·ko: `center`, `center-stats`, `center-detail`
+
+| 점검 | 결과 |
+|---|---|
+| 가로 스크롤 | 세 언어 모든 근로자 화면과 센터 두 폭에서 없음 |
+| 세 가지 면 | 카드·버튼·칩·메뉴·KPI·패널은 왼쪽 위가 밝고 아래로 그림자. 입력란·선택된 칩·체크된 동의 줄·단계 점·막대 트랙·원문 상자·센터 활성 탭은 들어감. 안내 상자·`pill`·헤더는 평평 |
+| `/result` 첫 화면(360×640) | h1 아래 끝 182px, 첫 행동 버튼 345px, 1순위 진료과 상자 359px(en·vi). ko는 160·299·313px. 모두 640px 안 |
+| `:active` | 칩·체크·보조 버튼·필터: 떠 있음 → 누르는 동안 들어감 → 놓으면 떠 있음 |
+| `disabled` | `opacity 0.45`, 그림자는 떠 있음 그대로, 눌러도 바뀌지 않음 |
+| 포커스 윤곽 | `/intake`·`/consent`·`/center`의 칩·select·체크·버튼·필터·탭에서 `3px rgb(240, 165, 0)`, 오프셋 2px |
+| 센터 표 | 1280px은 스크롤 없음, 880px은 표 상자 안에서 가로 스크롤. 둥글기 20px 밖으로 행이 나오지 않음 |
+| 베트남어 긴 문구 | 칩·버튼·메뉴 모두 안쪽 여백 12px 이상이라 모서리 음영에 걸리지 않음 |
+
+backlog 표에서 더 정한 것
+- `.toggle button`의 바탕을 `--card`에서 투명으로 바꿨다. 토글 전체가 들어간 홈이므로, 버튼이 바탕을 칠하면 홈의 안쪽 그림자를 덮는다. 고른 쪽만 브랜드색으로 떠오른다
+- `.menu a .ico`의 둥글기는 표에 없어서 `--radius-sm`(16px)으로 했다. 리터럴 둥글기를 999px·12px로만 제한하는 기준을 지키기 위해서다
+- 눌림은 `:not(:disabled):active`로 걸었다. 비활성 버튼은 눌러도 들어가지 않는다
+- `.filters button:disabled`(데모 초기화 중)도 근로자 버튼처럼 흐리게 했다. 03에서 이 버튼에 `disabled`가 생겼다
+- `--bg-2`는 `#eef3f6`, `--bg-3`은 `#f2f6f9`로 새 `--bg`(`#e6edf2`)와 `--card`(`#f8fafc`) 사이에서 골랐다
+
+남은 것
+- 발표 기기 브라우저는 확인하지 않았다. Chromium에서만 봤고, `:has()`는 Safari 15.4·Chrome 105·Firefox 121 이상에서 동작한다
+- 실제 기기의 손가락 눌림은 확인하지 않았다(마우스 누름으로 대신)
+- 컴포넌트 안 색(`Center.tsx`의 도넛 색 세 개, 인라인 `var(--danger)`·`borderTop`)과 `.badge`·`.menu a.primary .ico`의 반투명 흰색은 이 항목 범위(`.tsx` 수정 없음, 색 토큰 추가 없음) 밖이라 그대로다. 별도 항목이 필요하다
 
 ## 메모
 - 순서: **04(토큰 밖 색상 정리) → 06**. 04가 `:root` 밖 16진수 색을 없애고 `--on-brand`·`--accent` 등을 더한 뒤에 이 항목이 `:root` 값·그림자·테두리·둥글기만 바꾼다. 둘을 한 PR에 섞지 않는다(04는 모양이 같아야 하는 치환이고, 06은 모양을 바꾸는 작업이라 스크린샷 비교 기준이 다르다). 05(응급도 입력)와는 파일이 겹치지 않는다
