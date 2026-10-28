@@ -1,0 +1,107 @@
+{
+  "round": "v0",
+  "final": true,
+  "note": "test 평가는 이 라운드에서 한 번만 했다. Kaggle 행은 증상 여러 개·손상 여부 모름",
+  "rows": 59,
+  "files": {
+    "weights.json": "fd6930ea78abd24c7a562a5ba102d7ee076e76700ad73f715c80e80632cfa0ab"
+  },
+  "department": {
+    "top1": {
+      "n": 27,
+      "of": 59,
+      "value": 0.4576
+    },
+    "top2": {
+      "n": 45,
+      "of": 59,
+      "value": 0.7627
+    },
+    "per_class": {
+      "ortho": {
+        "top1": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        },
+        "top2": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        }
+      },
+      "surgery": {
+        "top1": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        },
+        "top2": {
+          "n": 1,
+          "of": 3,
+          "value": 0.3333
+        }
+      },
+      "internal": {
+        "top1": {
+          "n": 19,
+          "of": 40,
+          "value": 0.475
+        },
+        "top2": {
+          "n": 33,
+          "of": 40,
+          "value": 0.825
+        }
+      },
+      "ent": {
+        "top1": {
+          "n": 1,
+          "of": 2,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 1,
+          "of": 2,
+          "value": 0.5
+        }
+      },
+      "derm": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        }
+      },
+      "neuro": {
+        "top1": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        },
+        "top2": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        }
+      },
+      "family": {
+        "top1": {
+          "n": 2,
+          "of": 5,
+          "value": 0.4
+        },
+        "top2": {
+          "n": 5,
+          "of": 5,
+          "value": 1.0
+        }
+      }
+    }
+  }
+}
