@@ -1,0 +1,65 @@
+name: Deploy frontend
+
+# main에 병합될 때마다 frontend/를 Vercel production에 배포한다.
+# frontend/ 밖만 바뀐 병합(backend·modeling·문서)은 배포하지 않는다.
+# 필요한 secrets(VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID)와 Vercel 프로젝트 준비는 frontend/README.md "배포"에 있다.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 배포는 한 번에 하나씩, 들어온 순서대로 한다. 앞선 배포를 취소하지 않는다.
+concurrency:
+  group: deploy-frontend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      # Vercel 프로젝트 설정과 production 환경 변수(VITE_API_BASE 등)를 .vercel/ 아래로 받는다.
+      - name: Pull Vercel project settings
+        run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      # GitHub Actions 안에서 npm run build(타입 검사 + vite build)를 돌린다. 실패하면 배포하지 않는다.
+      - name: Build
+        run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      # 빌드 결과물(.vercel/output)만 올린다. Vercel 쪽에서 다시 빌드하지 않는다.
+      - name: Deploy to Vercel (production)
+        id: deploy
+        run: |
+          url="$(npx vercel@latest deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "배포 주소: $url" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
