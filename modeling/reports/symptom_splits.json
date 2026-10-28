@@ -1,0 +1,62 @@
+{
+  "seed": 20261027,
+  "sizes": {
+    "test": 0.2,
+    "valid": 0.15
+  },
+  "conversion": {
+    "raw_rows": 4920,
+    "unique_rows": 304,
+    "dropped_no_symptom": {
+      "rows": 12,
+      "diseases_lost": 1
+    },
+    "rows": 292,
+    "diseases": 40,
+    "kaggle_symptoms": {
+      "total": 131,
+      "to_our_symptom": 75,
+      "dropped": 56,
+      "mapped_seen_in_rows": 101
+    },
+    "button_features_seen": {
+      "body_parts": [
+        "head",
+        "eye",
+        "ent",
+        "chest",
+        "abdomen",
+        "back",
+        "arm",
+        "hand",
+        "leg",
+        "foot",
+        "skin",
+        "whole"
+      ],
+      "symptoms": [
+        "pain",
+        "swelling",
+        "bleeding",
+        "numb",
+        "cantmove",
+        "fever",
+        "cough",
+        "dizzy",
+        "rash",
+        "nausea",
+        "breath"
+      ]
+    }
+  },
+  "rows": {
+    "train": 189,
+    "valid": 44,
+    "test": 59
+  },
+  "diseases_per_split": {
+    "train": 40,
+    "valid": 40,
+    "test": 40
+  }
+}
