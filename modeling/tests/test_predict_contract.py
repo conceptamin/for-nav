@@ -1,4 +1,4 @@
-# predict()의 출력이 TriageResult.model 자리에 넣을 형태인지, 커밋된 v1 아티팩트만으로 동작하는지(backlog 08).
+# predict()의 출력이 TriageResult.model 자리에 넣을 형태인지, 커밋된 서빙 묶음(predict.VERSION)만으로 동작하는지(backlog 08, 10).
 # 학습 코드를 import하지 않는지, 아티팩트를 읽을 때 pickle을 쓰지 않는지, "모름" 처리와 앙상블이 정한 대로인지도 본다.
 
 import json
@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 from fornav_modeling import predict as P
-from fornav_modeling.features.buttons import AGE_GROUPS, FEATURE_NAMES, featurize_many
+from fornav_modeling.features.buttons import FEATURE_NAMES, featurize_many
 from fornav_modeling.labels.ktas import ACUITIES
 from fornav_modeling.models import acuity, dept_a, dept_b
 from fornav_modeling.schema import DEPARTMENTS
@@ -97,7 +97,7 @@ def test_predict_does_not_import_training_code():
 
 def test_tampered_artifact_is_refused(tmp_path):
     shutil.copytree(MODELING / "models", tmp_path / "models")
-    path = tmp_path / "models" / "ensemble" / "v1" / "ensemble.json"
+    path = tmp_path / "models" / "ensemble" / P.VERSION / "ensemble.json"
     path.write_text(path.read_text().replace('"weight_a": 0.5', '"weight_a": 0.9'))
     with pytest.raises(P.ArtifactError):
         P.predict(EXAMPLES["teeth"], models_dir=tmp_path / "models")
@@ -110,16 +110,22 @@ def test_unknown_mental_is_alert():
     assert P.predict(EXAMPLES["internal"]) == P.predict(EXAMPLES["internal"] | {"mental": "alert"})
 
 
-def test_unknown_fields_take_the_most_urgent_value():
-    booster = P.load_artifacts(str(P.MODELS_DIR))["acuity_booster"]
-    known = EXAMPLES["full"]
-    _, unknown_age = P.worst_case_acuity(booster, known | {"age_group": None})
-    for age in AGE_GROUPS:
-        _, p = P.worst_case_acuity(booster, known | {"age_group": age})
-        assert unknown_age[P.EMERGENCY] >= p[P.EMERGENCY]
+def test_unknown_fields_stay_missing():
+    x = P.acuity_features(EXAMPLES["full"] | {"age_group": None, "sex": None, "injury": None, "pain_score": None, "mental": None})
+    for name in ("age_group", "sex_male", "injury", "pain_score"):
+        assert np.isnan(x[FEATURE_NAMES.index(name)]), name
+    assert x[FEATURE_NAMES.index("mental")] == 0.0  # alert
     # 다 알면 그대로 쓴다
-    x, p = P.worst_case_acuity(booster, known)
-    assert np.array_equal(x, featurize_many([known])[0], equal_nan=True)
+    assert np.array_equal(P.acuity_features(EXAMPLES["full"]), featurize_many([EXAMPLES["full"]])[0], equal_nan=True)
+
+
+def test_acuity_serving_matches_training_backend_profile():
+    # 지금 백엔드 입력(네 값 모름)으로 낸 예측이 학습 쪽 backend_profile로 낸 예측과 같다 — 임계값을 정한 입력 모양 그대로다
+    booster = P.load_artifacts(str(P.MODELS_DIR))["acuity_booster"]
+    intake = EXAMPLES["trauma"] | {"injury": None}
+    full = featurize_many([intake | {"sex": "male", "age_group": "30to44", "injury": True, "pain_score": 3, "mental": "verbal"}])
+    expected = booster.predict(acuity.backend_profile(full))[0]
+    assert np.allclose(P.predict(intake)["acuityProba"]["emergency"], expected[0])
 
 
 def test_decide_acuity_matches_training_rule():
@@ -134,9 +140,11 @@ def test_decide_acuity_matches_training_rule():
 
 def test_department_proba_is_weighted_mean_of_saved_models():
     a = P.load_artifacts(str(P.MODELS_DIR))
-    v1 = MODELING / "models"
-    model_a = dept_a.DeptA.from_files({f: (v1 / "dept_a" / "v1" / f).read_text() for f in (dept_a.MODEL_FILE, dept_a.DEPARTMENTS_FILE)})
-    weights_b = json.loads((v1 / "dept_b" / "v1" / dept_b.WEIGHTS_FILE).read_text())
+    root = MODELING / "models"
+    model_a = dept_a.DeptA.from_files(
+        {f: (root / "dept_a" / P.VERSION / f).read_text() for f in (dept_a.MODEL_FILE, dept_a.DEPARTMENTS_FILE)}
+    )
+    weights_b = json.loads((root / "dept_b" / P.VERSION / dept_b.WEIGHTS_FILE).read_text())
     for intake in EXAMPLES.values():
         X = featurize_many([intake])
         expected = a["weight_a"] * model_a.predict_proba(X)[0] + (1 - a["weight_a"]) * dept_b.predict_from_weights(weights_b, X)[0]
@@ -185,8 +193,8 @@ REQUIRED = {
 
 @pytest.mark.parametrize("name", list(REQUIRED))
 def test_v1_metadata_has_required_fields(name):
-    meta = json.loads((MODELING / "models" / name / "v1" / "metadata.json").read_text())
+    meta = json.loads((MODELING / "models" / name / P.VERSION / "metadata.json").read_text())
     assert REQUIRED[name] <= set(meta)
-    assert meta["model_version"] == f"{name}/v1"
+    assert meta["model_version"] == f"{name}/{P.VERSION}"
     final = [k for k in meta["metrics"] if k.startswith("final")]
     assert final and all(meta["metrics"][k]["final"] is True for k in final)

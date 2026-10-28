@@ -1,7 +1,7 @@
 # 05. 응급도 모델 입력(나이대·성별·손상 여부·통증 점수)을 증상 입력에서 받기
 
 상태: 완료
-의존: 없음(backend 10이 같은 필드를 선택으로 받는다. 병합 전이어도 프론트는 답한 값만 보내므로 지금 서버와도 맞다)
+의존: 없음(backend 10이 같은 필드를 선택으로 받는다, conceptamin/for-nav#52 병합됨)
 
 ## 목표
 응급도 모델은 부위·증상만으로 재현율 95%를 맞추면 60%를 응급으로 본다(modeling backlog 10). 나이대·성별·손상 여부·통증 점수를 받으면 훨씬 정확하다. 백엔드 `Intake`가 이 값을 선택 필드로 받게 됐으므로(backend 10), 근로자가 증상 입력 4단계에서 버튼으로 답할 수 있게 한다.
@@ -28,19 +28,22 @@
 - [x] 답하면 `ageGroup: "30to44"`, `sex: "female"`, `injury: true`, `painScore: 7`처럼 백엔드 값 그대로 들어간다(en·vi·ko)
 - [x] `parity.json`을 다시 만들어도 `generatedAt` 외에 바뀌지 않고, `backend`에서 `uv run pytest` 통과
 - [x] 360px에서 가로 넘침 없음(en·vi·ko)
+- [x] API 모드(`VITE_API_BASE=/api`)에서 `/api/triage`가 200이고, 답한 키만 요청 본문에 들어간다(en·vi·ko)
 
 ## 결과
 - 실행(2026-10-28)
   - `npm run build` → 통과
   - `npx rolldown scripts/dump-fixtures.ts …`로 `parity.json` 재생성 → `generatedAt` 한 줄만 달라 되돌림(출력 동일)
   - `cd backend && uv run pytest` → `1008 passed`
+  - main(frontend 01 `src/api/` 전환, backend 10) 병합 후 다시: `npm run build` → 통과, `parity.json` 재생성 → `generatedAt`만 달라 되돌림, `uv run pytest` → `1019 passed`
+  - API 모드(`VITE_API_BASE=/api` + `uv run fastapi run app/main.py`)에서 같은 흐름: `/api/extract`·`/api/triage` 모두 200. 답하면 `/api/triage` 본문에 `ageGroup`·`sex`·`injury`·`painScore`가 있고, 답하지 않으면 없다(en·vi·ko). `/api/extract`는 2단계라 새 키가 없다
   - 헤드리스 Chromium(360×800, 단독 모드)으로 `/intake`를 손(Hand)·부기(Swelling)로 끝까지 진행해 세션 저장소의 `intake`를 확인. en·vi·ko 모두 답하지 않으면 새 키 없음, 답하면 `{ageGroup: "30to44", sex: "female", injury: true, painScore: 7}`, `/result`로 이동, 가로 넘침 없음
 - 결정 사항
   - 통증 점수는 선택지가 11개라 `design.md`("선택지가 5개를 넘으면 `select`")대로 `select.input`을 쓴다. 0과 10에만 "안 아픔"·"참을 수 없이 아픔"을 붙인다. 처음 값은 비활성 `—`라 고르기 전에는 키가 없다
   - 손상 여부는 예/아니요만 둔다. "모름"은 답하지 않은 것과 같다(서버·모델이 키가 없을 때 최악 조합을 본다)
   - 칩은 다른 질문처럼 다시 눌러도 해제되지 않는다. 한 번 답한 값을 비우는 동작은 없다
 - 남은 문제
-  - backend 10(conceptamin/for-nav#52)이 병합되기 전 서버는 이 키를 모른다. 단독 모드는 영향 없음
+  - 없음(backend 10이 병합돼 API 모드에서도 서버가 이 키를 받는다)
 
 ## 메모
 - 베트남어 문구(`painQ`, `painNone`, `painWorst`, `injuryQ`, `ageGroupQ`, `AGE_GROUPS`·`SEXES`의 `vi`)와 발음 표기(`roman`, `viPron`)는 원어민 검수가 필요하다

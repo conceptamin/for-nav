@@ -1,13 +1,16 @@
 // S-05 증상 입력 → S-06 응급 안내 / S-07 진료 안내
 // 단계마다 응급 감지를 돌려, 응급이면 남은 질문 없이 바로 119 화면으로 보낸다.
+// 추출과 최종 판정은 src/api/worker.ts를 거친다(단독/API 모드와 대체는 그 안에만 있다).
+// 서버를 기다리는 동안은 버튼만 비활성으로 둔다(design.md "로딩과 실패를 그리는 법").
 
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Chip, kakaoSearchUrl, SingleSelect, toggleIn, Worse119, YesNoSeg } from '../../components/common';
 import { useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
-import type { Intake } from '../../domain/triage';
-import { extractFromText, mergeExtraction, newIntake, REASON_KO, triage } from '../../domain/triage';
+import { checkTriage, extract, screenEmergency } from '../../api/worker';
+import type { ExtractResult, Intake, TriageResult } from '../../domain/triage';
+import { newIntake, REASON_KO } from '../../domain/triage';
 import type { AgeGroup, BodyPart, Industry, Onset, Sex, Symptom, WorkType } from '../../domain/vocab';
 import { AGE_GROUPS, BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, pron, SEXES, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
 import type { District } from '../../domain/vocab';
@@ -23,10 +26,12 @@ export function IntakePage() {
   const [intake, setIntake] = useState<Intake>(() => newIntake(lang));
   const [missingMsg, setMissingMsg] = useState(false);
   const [extracted, setExtracted] = useState(false);
+  /** 서버 응답을 기다리는 중. 다음·이전 버튼을 막아 두 번 눌리지 않게 한다 */
+  const [busy, setBusy] = useState(false);
 
-  /** 응급이면 저장 후 119 화면으로 이동하고 true를 돌려준다. */
+  /** 응급이면 저장 후 119 화면으로 이동하고 true를 돌려준다. 브라우저 규칙만 쓰므로 기다리지 않는다. */
   const checkEmergency = (draft: Intake): boolean => {
-    const r = triage(draft);
+    const r = screenEmergency(draft);
     if (r.emergency) {
       app.setIntake(draft);
       app.setTriage(r);
@@ -36,19 +41,20 @@ export function IntakePage() {
     return false;
   };
 
-  const goNext = () => {
+  const goNext = async () => {
+    if (busy) return;
     setMissingMsg(false);
     if (step === 1 && checkEmergency(intake)) return;
     if (step === 2) {
-      const ex = extractFromText(intake.freeText);
-      const merged = mergeExtraction({ ...intake, language: lang }, ex);
-      const filled =
-        (merged.bodyParts !== intake.bodyParts && merged.bodyParts.length > 0) ||
-        (merged.symptoms !== intake.symptoms && merged.symptoms.length > 0) ||
-        merged.onset !== intake.onset ||
-        merged.workRelated !== intake.workRelated ||
-        merged.workType !== intake.workType;
-      setExtracted(filled);
+      let out: ExtractResult;
+      setBusy(true);
+      try {
+        out = await extract({ ...intake, language: lang });
+      } finally {
+        setBusy(false);
+      }
+      const merged = out.intake;
+      setExtracted(out.filled);
       setIntake(merged);
       if (checkEmergency(merged)) return;
       // 필수 항목(부위·증상)이 비면 해당 버튼 질문으로 되돌아간다.
@@ -60,7 +66,13 @@ export function IntakePage() {
     }
     if (step === 3) {
       const final = { ...intake, language: lang };
-      const r = triage(final);
+      let r: TriageResult;
+      setBusy(true);
+      try {
+        r = await checkTriage(final);
+      } finally {
+        setBusy(false);
+      }
       app.setIntake(final);
       app.setTriage(r);
       navigate(r.emergency ? '/emergency' : '/result');
@@ -198,11 +210,12 @@ export function IntakePage() {
         <button
           type="button"
           className="btn secondary"
+          disabled={busy}
           onClick={() => (step === 0 ? navigate('/home') : setStep(step - 1))}
         >
           {t('back')}
         </button>
-        <button type="button" className="btn block" onClick={goNext}>
+        <button type="button" className="btn block" disabled={busy} onClick={() => void goNext()}>
           {step === 3 ? t('seeResult') : step === 2 && !intake.freeText ? t('skip') : t('next')}
         </button>
       </div>

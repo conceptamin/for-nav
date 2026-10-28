@@ -260,6 +260,35 @@ export function mergeExtraction(intake: Intake, ex: Extraction): Intake {
   };
 }
 
+/** 자유 입력 추출 한 번의 결과(POST /api/extract 응답과 같은 형태). */
+export interface ExtractResult {
+  extraction: Extraction;
+  /** 버튼 입력을 우선하고 빈 항목만 추출값으로 채운 Intake */
+  intake: Intake;
+  /** 추출로 채운 값이 있는지 */
+  filled: boolean;
+  /** 서버 전용 선택 필드. 브라우저 추출에는 없다 */
+  source?: 'llm' | 'keywords';
+}
+
+/** 추출로 채운 값이 있는지. 백엔드 `filled_by_extraction`과 같은 판단이다. */
+function filledByExtraction(before: Intake, merged: Intake): boolean {
+  return (
+    (before.bodyParts.length === 0 && merged.bodyParts.length > 0) ||
+    (before.symptoms.length === 0 && merged.symptoms.length > 0) ||
+    merged.onset !== before.onset ||
+    merged.workRelated !== before.workRelated ||
+    merged.workType !== before.workType
+  );
+}
+
+/** 자유 입력에서 추출해 빈 항목을 채운다(extractFromText + mergeExtraction). 단독 모드와 서버 실패 시의 대체 함수다. */
+export function extractIntake(intake: Intake): ExtractResult {
+  const extraction = extractFromText(intake.freeText);
+  const merged = mergeExtraction(intake, extraction);
+  return { extraction, intake: merged, filled: filledByExtraction(intake, merged) };
+}
+
 export function newIntake(language: Lang): Intake {
   return {
     id: `in-${Date.now().toString(36)}`,

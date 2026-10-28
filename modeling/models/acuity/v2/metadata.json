@@ -1,0 +1,381 @@
+{
+  "status": "backlog 10(결측 학습)",
+  "thresholds": {
+    "lightgbm": {
+      "rule": "입력 모양(full, backend)마다 select_threshold를 적용해 그중 작은 값 — 모든 입력 모양에서 응급 재현율 ≥ 0.95",
+      "target_recall": 0.95,
+      "threshold": 0.07166781241288586,
+      "per_profile": {
+        "full": {
+          "own_threshold": 0.07166781241288586,
+          "recall": [
+            36,
+            37
+          ],
+          "flagged": [
+            103,
+            190
+          ]
+        },
+        "backend": {
+          "own_threshold": 0.10137115947770559,
+          "recall": [
+            36,
+            37
+          ],
+          "flagged": [
+            115,
+            190
+          ]
+        }
+      }
+    },
+    "logistic": {
+      "rule": "입력 모양(full, backend)마다 select_threshold를 적용해 그중 작은 값 — 모든 입력 모양에서 응급 재현율 ≥ 0.95",
+      "target_recall": 0.95,
+      "threshold": 0.01664623400060534,
+      "per_profile": {
+        "full": {
+          "own_threshold": 0.05590266840282265,
+          "recall": [
+            36,
+            37
+          ],
+          "flagged": [
+            150,
+            190
+          ]
+        },
+        "backend": {
+          "own_threshold": 0.01664623400060534,
+          "recall": [
+            37,
+            37
+          ],
+          "flagged": [
+            163,
+            190
+          ]
+        }
+      }
+    }
+  },
+  "profiles": [
+    "full",
+    "backend"
+  ],
+  "unknown_inputs_training": {
+    "features": [
+      "sex_male",
+      "age_group",
+      "injury",
+      "pain_score"
+    ],
+    "augment": "train 행 × 3: 원본, 네 값을 모두 지운 복사본, 값마다 확률 0.5로 지운 복사본(seed 고정). 라운드 수 교차검증은 원본 행 단위로 겹을 나눈다",
+    "backend_profile": "네 값 결측, 의식 상태 alert(predict가 모름 → alert)"
+  },
+  "model_version": "acuity/v2",
+  "source": "acuity/v2",
+  "model": "LightGBM multiclass(텍스트). 비교용 로지스틱 회귀는 서빙하지 않는다",
+  "seed": 20261028,
+  "lightgbm_params": {
+    "objective": "multiclass",
+    "num_class": 3,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "min_data_in_leaf": 20,
+    "lambda_l2": 1.0,
+    "seed": 20261028,
+    "deterministic": true,
+    "num_threads": 1,
+    "force_row_wise": true,
+    "verbosity": -1
+  },
+  "num_rounds": 80,
+  "data": {
+    "processed_sha256": "61c31f11f9e1150d8663c46caea9f47a1da5ca95a8e48b5d5663bffedb402b56",
+    "train_ids_sha256": "b40b7a6b54577fa0f9f85168c691f432a5abc34fc25c1047d42345e3ade65b1e",
+    "valid_ids_sha256": "9d3e573bef54059e89f613ab7708897eda61444cea98c4aec6252e7eb0ad366c",
+    "rows": {
+      "train": 823,
+      "valid": 190
+    }
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ],
+  "labels": [
+    "emergency",
+    "today",
+    "outpatient"
+  ],
+  "threshold": 0.07166781241288586,
+  "threshold_rule": "입력 모양(full, backend)마다 select_threshold를 적용해 그중 작은 값 — 모든 입력 모양에서 응급 재현율 ≥ 0.95",
+  "decision_rule": "emergency 확률 ≥ 임계값이면 emergency, 아니면 today·outpatient 중 확률이 큰 쪽",
+  "unknown_inputs": "의식 상태 모름 → alert. 성별·나이대·손상 여부·통증 점수·발생 시점 모름 → 결측 그대로(모델이 결측이 섞인 행으로 학습함)",
+  "metrics": {
+    "valid": {
+      "full": {
+        "emergency_recall": {
+          "n": 36,
+          "of": 37,
+          "value": 0.973
+        },
+        "emergency_precision": {
+          "n": 36,
+          "of": 103,
+          "value": 0.3495
+        },
+        "accuracy": {
+          "n": 108,
+          "of": 190,
+          "value": 0.5684
+        },
+        "per_class": {
+          "emergency": {
+            "recall": {
+              "n": 36,
+              "of": 37,
+              "value": 0.973
+            },
+            "precision": {
+              "n": 36,
+              "of": 103,
+              "value": 0.3495
+            }
+          },
+          "today": {
+            "recall": {
+              "n": 22,
+              "of": 73,
+              "value": 0.3014
+            },
+            "precision": {
+              "n": 22,
+              "of": 29,
+              "value": 0.7586
+            }
+          },
+          "outpatient": {
+            "recall": {
+              "n": 50,
+              "of": 80,
+              "value": 0.625
+            },
+            "precision": {
+              "n": 50,
+              "of": 58,
+              "value": 0.8621
+            }
+          }
+        }
+      },
+      "backend": {
+        "emergency_recall": {
+          "n": 36,
+          "of": 37,
+          "value": 0.973
+        },
+        "emergency_precision": {
+          "n": 36,
+          "of": 115,
+          "value": 0.313
+        },
+        "accuracy": {
+          "n": 93,
+          "of": 190,
+          "value": 0.4895
+        },
+        "per_class": {
+          "emergency": {
+            "recall": {
+              "n": 36,
+              "of": 37,
+              "value": 0.973
+            },
+            "precision": {
+              "n": 36,
+              "of": 115,
+              "value": 0.313
+            }
+          },
+          "today": {
+            "recall": {
+              "n": 22,
+              "of": 73,
+              "value": 0.3014
+            },
+            "precision": {
+              "n": 22,
+              "of": 34,
+              "value": 0.6471
+            }
+          },
+          "outpatient": {
+            "recall": {
+              "n": 35,
+              "of": 80,
+              "value": 0.4375
+            },
+            "precision": {
+              "n": 35,
+              "of": 41,
+              "value": 0.8537
+            }
+          }
+        }
+      }
+    },
+    "final_test": {
+      "full": {
+        "emergency_recall": {
+          "n": 42,
+          "of": 49,
+          "value": 0.8571
+        },
+        "emergency_precision": {
+          "n": 42,
+          "of": 129,
+          "value": 0.3256
+        },
+        "accuracy": {
+          "n": 142,
+          "of": 254,
+          "value": 0.5591
+        },
+        "per_class": {
+          "emergency": {
+            "recall": {
+              "n": 42,
+              "of": 49,
+              "value": 0.8571
+            },
+            "precision": {
+              "n": 42,
+              "of": 129,
+              "value": 0.3256
+            }
+          },
+          "today": {
+            "recall": {
+              "n": 31,
+              "of": 98,
+              "value": 0.3163
+            },
+            "precision": {
+              "n": 31,
+              "of": 41,
+              "value": 0.7561
+            }
+          },
+          "outpatient": {
+            "recall": {
+              "n": 69,
+              "of": 107,
+              "value": 0.6449
+            },
+            "precision": {
+              "n": 69,
+              "of": 84,
+              "value": 0.8214
+            }
+          }
+        }
+      },
+      "backend": {
+        "emergency_recall": {
+          "n": 40,
+          "of": 49,
+          "value": 0.8163
+        },
+        "emergency_precision": {
+          "n": 40,
+          "of": 129,
+          "value": 0.3101
+        },
+        "accuracy": {
+          "n": 124,
+          "of": 254,
+          "value": 0.4882
+        },
+        "per_class": {
+          "emergency": {
+            "recall": {
+              "n": 40,
+              "of": 49,
+              "value": 0.8163
+            },
+            "precision": {
+              "n": 40,
+              "of": 129,
+              "value": 0.3101
+            }
+          },
+          "today": {
+            "recall": {
+              "n": 33,
+              "of": 98,
+              "value": 0.3367
+            },
+            "precision": {
+              "n": 33,
+              "of": 60,
+              "value": 0.55
+            }
+          },
+          "outpatient": {
+            "recall": {
+              "n": 51,
+              "of": 107,
+              "value": 0.4766
+            },
+            "precision": {
+              "n": 51,
+              "of": 65,
+              "value": 0.7846
+            }
+          }
+        }
+      },
+      "final": true
+    }
+  },
+  "created_at": "2026-10-28T09:25:31+00:00",
+  "files": {
+    "model.txt": "934ffc0d4528bea87c9f95f8646d97aca8775eda484b54ebeb4404e42cf72cd2",
+    "logistic.json": "dc6524fa138a778512da61b9f6ab6a6fa1d583822519c07cf0d62134fec9f86d"
+  }
+}

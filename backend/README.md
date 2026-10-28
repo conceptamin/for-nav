@@ -135,6 +135,18 @@ backend/
   "department": { "primary": "internal", "alt": "family" }, "missing": [] }
 ```
 
+**`Intake`의 응급도 모델 입력(선택)** — 모든 `Intake` 요청은 아래 키를 선택으로 더 받는다(backlog 10). 프론트 `Intake` 타입에는 아직 없고, 규칙은 이 값을 쓰지 않는다. 응급도 모델을 붙이면(backlog 06) 모델 입력으로 넘긴다. 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다.
+
+| 키 | 값 |
+|---|---|
+| `ageGroup` | `"under30"` · `"30to44"` · `"45to64"` · `"65plus"` |
+| `sex` | `"female"` · `"male"` |
+| `injury` | `true` · `false`(손상·외상 여부) |
+| `painScore` | 0~10 정수 |
+| `mental` | `"alert"` · `"verbal"` · `"pain"` · `"unresponsive"`(AVPU) |
+
+범위 밖 값과 타입이 다른 값(`painScore: "3"`, `injury: "yes"`)은 422다.
+
 **`POST /api/extract`** — 자유 입력 `"Ngón tay bị kẹp vào máy dập, bị sưng."`
 
 ```json

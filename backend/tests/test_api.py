@@ -95,6 +95,54 @@ def test_extract_keeps_button_input():
     assert out["filled"] is False
 
 
+# 응급도 모델 입력(backlog 10) -----------------------------------------------------
+
+ACUITY_INPUTS = {"ageGroup": "45to64", "sex": "female", "injury": True, "painScore": 7, "mental": "alert"}
+
+
+def test_acuity_inputs_are_optional_and_absent_when_unset():
+    # 새 키가 없는 요청의 응답은 지금과 같다(프론트 타입·동기화 테스트와 맞는다)
+    out = client.post("/api/extract", json={"intake": INTAKE}).json()
+    assert out["intake"] == INTAKE
+    assert client.post("/api/triage", json=INTAKE).json() == client.post("/api/triage", json={**INTAKE, "ageGroup": None}).json()
+
+
+def test_acuity_inputs_round_trip():
+    r = client.post("/api/extract", json={"intake": {**INTAKE, **ACUITY_INPUTS}})
+    assert r.status_code == 200
+    assert r.json()["intake"] == {**INTAKE, **ACUITY_INPUTS}
+    # 규칙은 아직 이 값을 쓰지 않는다(모델 연결은 backlog 06)
+    assert client.post("/api/triage", json={**INTAKE, **ACUITY_INPUTS}).json() == client.post("/api/triage", json=INTAKE).json()
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"painScore": 11},
+        {"painScore": -1},
+        {"painScore": "3"},
+        {"painScore": 2.5},
+        {"ageGroup": "child"},
+        {"mental": "asleep"},
+        {"sex": "x"},
+        {"injury": "yes"},
+    ],
+)
+def test_acuity_inputs_out_of_range_are_422(bad):
+    assert client.post("/api/triage", json={**INTAKE, **bad}).status_code == 422
+
+
+def test_acuity_enums_match_model_features():
+    # 순서가 모델 피처 값이다. modeling/src/fornav_modeling/features/buttons.py의 MENTALS·AGE_GROUPS·SEXES와 같아야 한다
+    from typing import get_args
+
+    from app import vocab
+
+    assert get_args(vocab.AgeGroup) == ("under30", "30to44", "45to64", "65plus")
+    assert get_args(vocab.Sex) == ("female", "male")
+    assert get_args(vocab.Mental) == ("alert", "verbal", "pain", "unresponsive")
+
+
 def test_route_readme_example():
     out = client.post("/api/route", json={"workRelated": "unknown", "insurance": "no", "ulsan90": "yes"}).json()
     assert out == {

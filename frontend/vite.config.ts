@@ -1,9 +1,11 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-// 독립 데모 앱: 백엔드 없이 브라우저 안의 규칙·mock으로 동작한다.
+// 두 모드로 돈다(README "API 연결").
+// - 단독 모드: VITE_API_BASE가 비어 있으면 브라우저 안의 규칙·mock만 쓰고 네트워크 요청이 없다.
+// - API 모드: VITE_API_BASE=/api 로 띄우면 아래 프록시가 /api 요청을 백엔드(:8000)로 넘긴다.
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5180 },
+  server: { port: 5180, proxy: { '/api': 'http://localhost:8000' } },
   preview: { port: 5180 },
 });
