@@ -33,6 +33,31 @@ VITE_API_BASE=/api npm run dev                          # Vite 프록시가 /api
 - 센터 접수함의 **데모 초기화** 버튼으로 실제 전송 사례를 지울 수 있다.
 - 발표용으로 서버 하나만 띄우는 방법(프론트 빌드를 FastAPI가 서빙)은 backend 08 이후 `backend/README.md`에 적는다.
 
+## 배포
+
+`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-frontend.yml`)가 `frontend/`를 Vercel production에 올린다. `frontend/` 밖만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy frontend"를 직접 실행할 수도 있다.
+
+흐름: `npm ci` → `vercel pull`(프로젝트 설정·환경 변수 내려받기) → `vercel build`(`npm run build`, 타입 검사 포함) → `vercel deploy --prebuilt --prod`. 빌드가 실패하면 배포하지 않는다. Vercel 쪽 Git 연동은 쓰지 않는다(연결하면 두 번 배포된다).
+
+처음 한 번 준비할 것:
+
+1. Vercel 프로젝트를 만들고 이 폴더를 연결한다. 프로젝트의 Root Directory는 비워 둔다(워크플로가 `frontend/` 안에서 돈다).
+   ```sh
+   cd frontend
+   npx vercel@latest link          # 로그인 → 새 프로젝트 생성 → .vercel/project.json 생성(커밋하지 않는다)
+   cat .vercel/project.json        # orgId, projectId
+   ```
+2. https://vercel.com/account/tokens 에서 토큰을 만든다.
+3. 저장소 secrets에 넣는다.
+   ```sh
+   gh secret set VERCEL_TOKEN
+   gh secret set VERCEL_ORG_ID
+   gh secret set VERCEL_PROJECT_ID
+   ```
+4. 환경 변수는 Vercel 프로젝트 설정(Settings → Environment Variables, Production)에 둔다. 아무것도 넣지 않으면 단독 모드로 배포된다. 백엔드가 공개 주소를 갖게 되면 `VITE_API_BASE`를 그 주소로 넣는다(아래 "API 연결").
+
+`vercel.json`은 `react-router`의 주소(`/center` 등)를 새로고침해도 `index.html`이 나오도록 모든 경로를 `index.html`로 되돌린다.
+
 ## 화면 구성
 
 PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
