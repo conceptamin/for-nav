@@ -4,10 +4,11 @@
 from datetime import date, datetime, timedelta
 
 from app.clock import SEOUL
-from app.schemas import CenterHours, CoverageInput, CoveragePath, CoverageResult, Institution
+from app.schemas import CoverageInput, CoveragePath, CoverageResult, Institution
+from app.settings import settings
 
-# 제도 정보 기준일. 실제 운영 시 담당자가 확인한 날짜로 바꾼다.
-INFO_DATE = "2026-10-24"
+# 제도 정보 기준일(설정값 INFO_DATE). 실제 운영 시 담당자가 확인한 날짜로 바꾼다.
+INFO_DATE = settings.info_date
 
 # 대표번호는 공개된 기관 대표번호만 둔다. 센터·울산시 지원사업 연락처는 미확인(PRD Q1·Q6).
 KCOMWEL = Institution(id="kcomwel", phone="1588-0075")
@@ -35,11 +36,11 @@ PATH_KO: dict[CoveragePath, str] = {
 }
 
 # ---------------------------------------------------------------------------
-# 센터 운영 시간(설정값). PRD Q1 미결: 확인 전까지 평일 09:00~18:00으로 가정한다.
+# 센터 운영 시간(설정값 CENTER_HOURS). PRD Q1 미결: 확인 전까지 평일 09:00~18:00으로 가정한다.
 # 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일.
 # 프론트는 브라우저 로컬 시각을 쓰지만 서버는 항상 Asia/Seoul 기준으로 계산한다.
 # ---------------------------------------------------------------------------
-CENTER_HOURS = CenterHours(open_hour=9, close_hour=18, workdays=[1, 2, 3, 4, 5])
+CENTER_HOURS = settings.center_hours
 
 
 def _js_day(d: datetime) -> int:

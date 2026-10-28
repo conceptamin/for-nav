@@ -28,6 +28,8 @@ backend/
   pyproject.toml
   app/
     main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
+    settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처)
+    errors.py          공통 오류 형식, X-Request-Id, 접근 로그
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (부위·증상·진료과·업종·구군 어휘, josa)
@@ -58,6 +60,25 @@ backend/
 - **결정적 규칙**: 규칙·템플릿에는 난수·LLM·현재 시각을 넣지 않는다. 시각이 필요한 곳(`createdAt`, 운영 시간 외 판정)만 서버 시각(Asia/Seoul)을 쓴다.
 - **시간대**: `isAfterHours`는 브라우저 로컬 시각을 쓰고 있다. 서버에서는 반드시 `ZoneInfo("Asia/Seoul")` 기준으로 계산한다.
 - **진단 표현 금지**: 템플릿을 옮길 때 문구를 바꾸지 않는다. 병명·추측 문장을 새로 넣지 않는다.
+- **로그**: 요청마다 한 줄(메서드, 경로, 상태 코드, 소요 ms, request id)만 남긴다. 쿼리 문자열·본문·헤더·예외 메시지는 남기지 않는다. uvicorn 기본 접근 로그는 쿼리 문자열을 남기므로 앱에서 끈다.
+
+### 오류 형식
+
+404·422·500을 포함한 모든 오류 응답은 같은 형태다. 성공 응답은 바뀌지 않는다.
+
+```json
+{ "error": { "code": "VALIDATION", "message": "요청 형식이 올바르지 않다: body.bodyParts.0", "requestId": "fd083399e3094ab3a529d73199beaafe" } }
+```
+
+| 상태 | `code` | `message` |
+|---|---|---|
+| 404 | `NOT_FOUND` | 없는 경로·사례(`사례 C-0를 찾을 수 없다`) |
+| 422 | `VALIDATION` | 어긋난 필드 위치만 적는다(요청 값은 넣지 않는다). 경로 안 검사(`days`)도 이 코드 |
+| 500 | `INTERNAL` | `서버 오류가 발생했다` |
+| 그 밖 4xx | `BAD_REQUEST` | 예: 405 |
+
+- 모든 응답에 `X-Request-Id` 헤더가 붙고, 오류 본문의 `requestId`와 같다. 클라이언트가 보내면 그대로 쓰고(영문·숫자·`._-` 128자 이내), 없거나 그 밖이면 서버가 만든다. CORS `expose_headers`에 넣어 브라우저에서 읽을 수 있다.
+- 오류는 이 id로 서버 로그에서 찾는다. 500 로그에는 예외 타입과 코드 위치만 남는다.
 
 ## API 목록
 
@@ -211,11 +232,28 @@ backend/
 ```sh
 cd backend
 uv sync
-uv run fastapi dev app/main.py        # http://localhost:8000, 문서: /docs
+uv run fastapi dev app/main.py        # http://localhost:8000, 문서: /docs (설정은 기본값)
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
 ```
+
+설정값을 바꿀 때는 `.env`를 만들어 `--env-file`로 넘기거나 환경 변수를 직접 준다. `fastapi dev`는 `.env`를 스스로 읽지 않고, `uv run --env-file .env`는 파일이 없으면 실패한다. `.env`는 커밋하지 않는다.
+
+```sh
+cp .env.example .env                  # 값 수정
+uv run --env-file .env fastapi dev app/main.py
+# 또는
+CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
+```
+
+| 환경 변수 | 기본값 | 형식 | 쓰는 곳 |
+|---|---|---|---|
+| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(평일, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
+| `INFO_DATE` | `2026-10-24` | `YYYY-MM-DD` | `/api/meta`, `/api/route`의 `infoDate` |
+| `CORS_ORIGINS` | `http://localhost:5180` | 쉼표 구분 출처 목록 | CORS 허용 출처 |
+
+값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
 프론트와 함께 띄울 때:
 
@@ -273,8 +311,9 @@ backend:
 
 ## 확인이 필요한 값
 
-프론트 `README.md`의 미결 사항을 그대로 따른다. 서버로 옮길 때 설정값으로 빼 둔다.
+프론트 `README.md`의 미결 사항을 그대로 따른다. 코드를 고치지 않고 바꿀 수 있도록 환경 변수로 빼 두었다("실행"의 환경 변수 표).
 
-- 센터 운영 시간(평일 09:00~18:00 가정) → 환경 변수 또는 `app/rules/coverage.py` 상수
-- 정보 기준일 `INFO_DATE`, 기관 대표번호 → 발표 전 재확인
+- 센터 운영 시간(평일 09:00~18:00 가정) → `CENTER_HOURS`
+- 정보 기준일 → `INFO_DATE`. 발표 전 재확인
+- 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
 - 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지
