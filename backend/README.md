@@ -9,7 +9,7 @@
 2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-학습 모델(`modeling/README.md`)과 기능별 LLM 프롬프트는 아직 붙이지 않았다. 들어갈 자리만 응답 스키마에 비워 두고, LLM 호출 계층(`app/llm.py`)만 먼저 둔다("실행"의 LLM).
+학습 모델(`modeling/README.md`)은 아직 붙이지 않았고, LLM은 `/api/extract`에만 붙였다(키가 없거나 실패하면 키워드 사전). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
 
 ## 기술 스택
 
@@ -39,6 +39,7 @@ backend/
     vocab.py           ← domain/vocab.ts (부위·증상·진료과·업종·구군 어휘, josa)
     rules/
       triage.py        ← domain/triage.ts (응급 키워드, 보조 점수, 진료과 규칙표, 자유 입력 추출)
+      extract_llm.py   자유 입력 LLM 추출(프롬프트, 열거값 밖 필드 버리기, 실패 시 키워드 사전)
       coverage.py      ← domain/coverage.ts (제도 경로, INFO_DATE, 센터 운영 시간)
       urgency.py       ← domain/centerCase.ts (rateUrgency)
     templates/
@@ -52,11 +53,13 @@ backend/
       center.py        /api/center/*
   scripts/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
+    extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_api.py        경로별 응답 형태·상태 코드
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
+    test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
     fakes.py           FakeLLMClient
 ```
 
@@ -96,7 +99,7 @@ backend/
 |---|---|---|---|---|
 | `GET /api/health` | — | — | — | `{ "ok": true }` |
 | `GET /api/meta` | `INFO_DATE`, `CENTER_HOURS` | S-08, S-12 | — | `{ infoDate, centerHours }` |
-| `POST /api/extract` | `extractFromText` + `mergeExtraction` | S-05 3단계 | `{ intake }` | `{ extraction, intake, filled }` |
+| `POST /api/extract` | `extractFromText` + `mergeExtraction` | S-05 3단계 | `{ intake }` | `{ extraction, intake, filled, source }` |
 | `POST /api/triage` | `triage` | S-05 | `Intake` | `TriageResult` |
 | `POST /api/route` | `routeCoverage` | S-08 | `CoverageInput` | `CoverageResult` |
 | `POST /api/visit-helper` | `buildDeskSheet`, `buildCallScript` | S-09, S-10 | `{ intake, department, firstVisit, lang }` | `{ desk: DeskSheet, call: { lines, faq } }` |
@@ -138,11 +141,19 @@ backend/
 {
   "extraction": { "bodyParts": ["hand"], "symptoms": ["swelling"], "onset": null, "workRelated": "yes", "workType": "machine" },
   "intake": { "...": "버튼 입력을 우선하고 빈 항목만 위 추출값으로 채운 Intake" },
-  "filled": true
+  "filled": true,
+  "source": "keywords"
 }
 ```
 
 `filled`는 프론트 `Intake.tsx`의 "추출로 채운 값이 있는지" 판단과 같다. 부위·증상이 여전히 비면 프론트가 해당 버튼 질문으로 되돌아간다.
+
+`source`는 서버 전용 선택 필드로, 추출에 무엇을 썼는지 알려 준다. 위 예시는 LLM이 꺼진 기본 상태(키 없음)의 결과다.
+
+- `"llm"`: LLM 출력을 썼다. 출력은 `vocab.py` 열거값으로 고정하고, 열거값을 벗어난 필드는 그 필드만 비운다(목록은 `[]`, 나머지는 `null`). 그 뒤 키워드 결과와 필드별로 합친다. 부위·증상은 합집합, 업무 관련은 키워드 값만, 발생 시점·작업 유형은 LLM 값이다(backlog 09).
+- `"keywords"`: 키가 없거나, LLM이 `LLM_ATTEMPTS`번 모두 실패했거나, 자유 입력이 비어 키워드 사전을 썼다. 결과는 프론트 `extractFromText`와 같다.
+
+어느 쪽이든 버튼으로 고른 값이 우선이고 빈 항목만 채운다. 응급 판정(`/api/triage`)은 LLM과 관계없이 자유 입력에 키워드 규칙으로 돈다.
 
 **`POST /api/route`** — 업무 관련 "모름", 보험 "없음", 울산 90일 "예"
 
@@ -231,7 +242,7 @@ backend/
 
 - `VITE_API_BASE`가 비어 있으면 지금처럼 브라우저 안의 함수를 쓰고, 값이 있으면 API를 호출한다. 화면 컴포넌트는 `src/api/` 아래 함수만 부르게 하고, 그 안에서 둘 중 하나를 고른다.
 - `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:8000' }`를 추가한다. 배포 시에는 같은 도메인 아래에 두어 CORS를 피한다. 개발 중 직접 호출에 대비해 서버 CORS는 `http://localhost:5180`만 허용한다.
-- **응급 판정은 API 실패 시 브라우저 규칙으로 즉시 대체한다.** 네트워크 오류 때문에 119 안내가 늦어지면 안 된다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
+- **응급 판정은 API 실패 시 브라우저 규칙으로 즉시 대체한다.** 네트워크 오류 때문에 119 안내가 늦어지면 안 된다. 자유 입력 추출(`/api/extract`)도 실패하면 브라우저 키워드 추출로 대체한다. 추출에서 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
 - 센터 접수함은 지금처럼 2초 주기로 `GET /api/center/cases`를 다시 부른다. 사례 수가 적어 전체 목록을 받아도 된다. 기존 `storage` 이벤트 갱신은 API 모드에서 끈다.
 - 근로자 세션 상태(언어, 동의, 현재 입력, 비회원 리포트)는 계속 브라우저에 둔다. 서버는 로그인·회원 정보를 저장하지 않는다.
 
@@ -275,10 +286,12 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 - 출력은 Pydantic 모델의 JSON 스키마로 고정한다(Anthropic `output_config.format`). 받은 뒤에도 같은 모델로 다시 검증한다.
 - 로그에는 시도 횟수와 실패 종류(`llm attempt=1/2 failed=LLMError/RateLimitError`)만 남는다. 프롬프트·응답 원문은 로그·예외에 들어가지 않는다.
 - SDK 자체 재시도는 끄고 재시도는 `generate()` 한 곳에서만 한다.
+- 서버는 시작 시(lifespan) 클라이언트를 한 번 만들어 `app.state.llm`에 두고 종료 시 닫는다.
 - 테스트는 가짜 LLM으로 돌고 키·네트워크가 필요 없다. 실제 공급자 확인은 손으로 한 번 돌린다.
 
 ```sh
 uv run --env-file .env python scripts/llm_smoke.py   # 모델 이름, 소요 시간, 스키마 통과 여부만 찍는다
+uv run --env-file .env python scripts/extract_compare.py   # 픽스처 자유 입력의 LLM·키워드 추출 비교(번호와 열거값만 찍는다)
 ```
 
 프론트와 함께 띄울 때:
@@ -328,7 +341,7 @@ backend:
 |---|---|---|
 | `TriageResult.modelScore`, `byModel` | 위험 신호 가산 점수(임계값 3) | 응급도 분류 모델(LightGBM, 3단계) — `modeling/README.md` |
 | `TriageResult.department` | 결정적 규칙표 | 명확 케이스 규칙 → 진료과 앙상블(모델 A + B) 상위 2개 |
-| `POST /api/extract` | 다국어 키워드 사전 | LLM(JSON 스키마 고정), 실패 시 버튼 질문 |
+| `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 기본 템플릿 | LLM 슬롯 채우기, 실패 시 지금 템플릿 |
 | 리포트 `note` 번역 | 원문 + "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 저장소 | 프로세스 메모리 | 서버 DB |
