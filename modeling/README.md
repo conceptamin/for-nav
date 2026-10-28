@@ -106,24 +106,24 @@ uv run python scripts/download_data.py                   # 원본(data/raw)
 uv run python scripts/make_splits.py                     # 응급도 분할
 uv run python scripts/make_splits.py --dataset symptom   # 질환·증상 분할(진료과 모델 A)
 uv run python scripts/build_tables.py                    # 진료과 표·검증셋 id
-uv run python scripts/train_acuity.py                    # models/acuity/v0
+uv run python scripts/train_acuity.py --round v2 --unknown-inputs   # models/acuity/v2(서빙). v0은 인자 없이
 uv run python scripts/train_dept_a.py                    # models/dept_a/v0
 uv run python scripts/train_dept_b.py                    # models/dept_b/v0
 uv run python scripts/tune_ensemble.py                   # models/ensemble/v1/ensemble.json
 uv run python scripts/evaluate.py --model <acuity|dept_a|dept_b|ensemble> --round <v0|v1>   # test 1회, "최종"
-uv run python scripts/export_models.py                   # models/{acuity,dept_a,dept_b,ensemble}/v1/
+uv run python scripts/export_models.py                   # models/{acuity,dept_a,dept_b,ensemble}/v2/
 ```
 
 ## 아티팩트와 `predict`
 
-서빙은 `models/*/v1/`만 읽는다. 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
+서빙은 `models/*/v2/`만 읽는다(08의 `v1` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
 
 | 폴더 | 파일 | 내용 |
 |---|---|---|
-| `acuity/v1/` | `model.txt` | LightGBM 텍스트(응급도 3단계). 임계값·"모름" 처리 규칙은 `metadata.json` |
-| `dept_a/v1/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
-| `dept_b/v1/` | `weights.json` | MLP 가중치(`W1`, `b1`, `W2`, `b2`), 입력 피처·라벨 순서 |
-| `ensemble/v1/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
+| `acuity/v2/` | `model.txt` | LightGBM 텍스트(응급도 3단계, 결측을 섞어 학습). 임계값·"모름" 처리 규칙은 `metadata.json`. 학습 라운드 폴더와 같아 `logistic.json`(비교용)도 있다 |
+| `dept_a/v2/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
+| `dept_b/v2/` | `weights.json` | MLP 가중치(`W1`, `b1`, `W2`, `b2`), 입력 피처·라벨 순서 |
+| `ensemble/v2/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
 
 `metadata.json`에는 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 임계값·가중치·폴백 기준, 피처·라벨 순서, 검증·최종(test) 측정값, 생성 시각이 있다.
 
@@ -149,7 +149,7 @@ predict(
 ```
 
 - 입력은 백엔드 `Intake` 필드 이름(snake_case)이다. `pain_score`, `mental`, `age_group`, `sex`, `injury`는 아직 `Intake`에 없어 같은 dict에 더 받는다(`features/buttons.py`)
-- 응급도 "모름": 의식 상태를 모르면 alert, 성별·나이대·손상 여부를 모르면 응급 확률이 가장 높은 값으로 채운다. 이 값들을 받지 않으면 응급으로 나오는 비율이 크게 늘어난다(backlog 08 결과)
+- 응급도 "모름": 의식 상태를 모르면 alert, 성별·나이대·손상 여부·통증 점수는 결측 그대로 넘긴다. 응급도 v2가 이 값들이 빈 행으로 학습했고, 임계값은 "다 앎"과 "이 값들 모름" 두 입력 모양 모두 응급 재현율 95%를 넘게 정했다(backlog 10). 이 값들을 받으면 응급 판단이 더 정확해진다
 - 레드플래그·명확 케이스 규칙은 백엔드가 `predict` 앞에서 실행한다. `predict`에는 규칙이 없다
 - `predict`는 학습 코드(`fornav_modeling.models`)를 import하지 않는다(`tests/test_predict_contract.py`)
 
