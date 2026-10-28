@@ -2,7 +2,7 @@
 
 `src/styles.css` 한 파일과 `src/components/`의 공통 조각으로 화면을 그릴 때 지키는 규칙이다. 모양의 기준은 **클레이모피즘(Claymorphism)** 이다. 점토 인형처럼 동글동글하고 푹신한 면이 화면 바닥 위에 올라앉아 있고, 누르면 점토가 눌리듯 안으로 들어간다. 여기에 없는 모양을 새로 그릴 때는 이 문서를 먼저 고친다. 무엇을 보여 주는지는 `README.md`, 코드 규칙은 `CLAUDE.md`가 정한다.
 
-지금 `styles.css`는 평면 카드(흰 배경 + 얇은 테두리 + 2겹 그림자) 스타일이다. 이 문서대로 옮기는 일은 backlog 항목 하나(클레이모피즘 적용)로 한꺼번에 하고, backlog 04(토큰 밖 색상 정리) 다음에 한다. 적용 전에 새 화면을 그릴 때는 지금 `styles.css`의 클래스를 그대로 쓰고 클레이 모양을 화면 쪽에서 따로 흉내 내지 않는다. 적용 항목이 클래스 단위로 한 번에 바꾼다.
+지금 `styles.css`는 평면 카드(흰 배경 + 얇은 테두리 + 2겹 그림자) 스타일이다. 이 문서대로 옮기는 일은 backlog 항목 하나(클레이모피즘 적용)로 한꺼번에 하고, backlog 04(토큰 밖 색상 정리, 끝남) 다음에 한다. 적용 전에 새 화면을 그릴 때는 지금 `styles.css`의 클래스를 그대로 쓰고 클레이 모양을 화면 쪽에서 따로 흉내 내지 않는다. 적용 항목이 클래스 단위로 한 번에 바꾼다.
 
 ## 두 영역의 원칙
 
@@ -59,6 +59,13 @@
 | `--ok` / `--ok-bg` | `#1f7a4d` / `#e2f3ea` | 완료, 해당됨 |
 | `--warn` / `--warn-bg` | `#9a5b00` / `#fff1d6` | 주의, 제도·운영 시간 안내, 보통 긴급도, 진행 중 |
 | `--danger` / `--danger-2` / `--danger-bg` | `#c4231b` / `#a11a13` / `#fbe3e1` | 119·응급(근로자), 높은 긴급도(센터) |
+| `--on-brand` | `#ffffff` | 브랜드·위험색처럼 진한 바탕 위의 글자. 흰 배경에는 쓰지 않는다(배경은 `--card`) |
+| `--accent` | `#f0a500` | 포커스 윤곽, 실제 전송 칩(`pill.live`), 실제 전송 행의 왼쪽 띠. 이 셋에만 쓴다 |
+| `--info` / `--info-bg` | `#0b4f8a` / `#dceeff` | 신규 상태 칩(`pill.new`) |
+| `--warn-ink` / `--brand-ink` / `--ok-ink` | `#5c3700` / `#0b3e52` / `#134d31` | 안내 상자(`notice.warn`·`info`·`ok`)의 글자. 파스텔 배경 위에서 본문처럼 읽히도록 각 색보다 진하다 |
+| `--bg-2` | `#eef2f5` | 센터 바닥(`.c-shell`), 낮음 칩(`pill.low`, 홈의 회원 링크 포함), 막대 트랙 |
+| `--bg-3` | `#f7f9fa` | 표 머리, 표 행 강조(호버), 모국어 원문 상자 |
+| `--live-bg` | `#fff8e1` | 실제 전송 행 배경 |
 
 파스텔 배경(`*-bg`, `--brand-2`)은 평평한 면과 들어간 면의 바탕이다. 그 위 글자는 각각의 진한 색(`--ok`, `--warn`, `--danger-2`, `--brand`)이고 대비 4.5:1을 지킨다.
 
@@ -149,18 +156,6 @@ input[type='text'], textarea, select.input { background: var(--card); border: 0;
 - `warn`은 "확인이 필요하다"는 뜻이다. 제도 안내, 운영 시간 외, 진행 중 상태가 여기에 속한다.
 - `ok`는 끝났거나 해당된다는 뜻이다.
 - **그림자는 뜻을 전하지 않는다.** 떠 있음과 들어감은 "누를 수 있다"와 "눌렸다·값을 받는다"의 느낌일 뿐이고, 선택됨은 ✓와 굵기, 상태는 글자가 전한다.
-
-### 토큰이 없는 색(정리 대상, backlog 04)
-
-지금 `styles.css`에는 토큰 밖 색이 남아 있다. 새 코드에서는 쓰지 않고, 기존 자리는 backlog 04에서 토큰으로 바꾼다. 클레이모피즘 적용은 04 다음이다. 04가 더하는 토큰(`--on-brand`, `--accent`, `--info`/`--info-bg`, `*-ink`, `--bg-2`/`--bg-3`, `--live-bg`)은 그대로 쓰고, 적용 항목은 `:root` 값과 `box-shadow`·`border`·`border-radius`만 바꾼다.
-
-| 색 | 쓰인 곳 | 바꿀 토큰 |
-|---|---|---|
-| `#fff` 배경·글자 | 칩, 입력란, 버튼, 카드류 전반 | `--card`(배경), 새 토큰 `--on-brand`(어두운 배경 위 글자) |
-| `#f0a500` | 포커스 윤곽, `pill.live`, 실제 전송 행 왼쪽 띠 | 새 토큰 `--accent` |
-| `#5c3700`, `#0b3e52`, `#134d31` | `notice` 글자색 | `--warn`, `--brand`, `--ok`의 어두운 변형 토큰 |
-| `#dceeff` / `#0b4f8a` | `pill.new` | 새 토큰 `--info` / `--info-bg` |
-| `#edf1f3`, `#eef2f5`, `#f7f9fa`, `#f5f9fb`, `#fff8e1` | 센터 배경·표 줄무늬 | `--bg` 계열 토큰 |
 
 ## 글자
 
@@ -314,6 +309,7 @@ PC 화면은 밀도가 우선이라 클레이를 **묶음 단위**에만 쓴다.
 
 이 문서대로 `styles.css`를 옮기는 backlog 항목의 범위다. 문서를 고칠 때 같이 고친다.
 
+- `:root` 밖에는 16진수 색이 없다(backlog 04). 색은 토큰 이름을 그대로 쓰고, 바꿀 것은 `:root` 값과 `box-shadow`·`border`·`border-radius`뿐이다
 - `:root`: `--bg`·`--card`·파스텔 값 교체, `--radius-sm`·`--radius-lg` 추가, `--shadow` 제거와 `--clay*` 여섯 토큰 추가
 - 떠 있음: `.card`, `.btn`(+ `secondary`·`danger`), `.chip`, `.check`, `.menu a`, `.dept`, `.em-hero`, `.em-call`, `.bar-119 a`, `.kpi`, `.table-wrap`, `.panel`, `.filters button`, `.toggle`
 - 들어감: `input`·`textarea`·`select.input`, `.chip[aria-pressed='true']`, `.check:has(:checked)`, `.steps span`, `.menu a .ico`, `.native-box`, `.bar-track`, `.c-header nav a.active`, 떠 있는 것들의 `:active`
