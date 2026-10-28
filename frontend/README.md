@@ -64,8 +64,8 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 
 | ID | 경로 | 내용 |
 |---|---|---|
-| S-01~S-04 | `/`, `/consent`, `/signup`, `/home` | 언어(영어·베트남어·한국어), 3개 분리 동의, 비회원/간단 프로필(생년월일·성별만), 홈 + 하단 119 고정 |
-| S-05~S-07 | `/intake`, `/emergency`, `/result` | 부위·증상 버튼 → 자유 입력 추출 → 추가 질문(4단계), 응급 시 119 우선, 진료과 + 카카오맵 |
+| S-01~S-04 | `/`, `/consent`, `/signup`, `/home` | 언어(영어·베트남어·한국어), 3개 분리 동의(전체 동의 줄 + 항목별 전문 펼치기), 로그인(데모 Google 로그인 → 간단 프로필: 생년월일·성별만 / 비회원으로 계속), 홈 + 하단 119 고정 |
+| S-05~S-07 | `/intake`, `/emergency`, `/result` | 부위·증상 칩 묶음 → 사진(브라우저 메모리만) + 자유 입력 추출 → 추가 질문(화면 하나에 질문 하나) → 분석 중 화면 → 응급 시 119 우선, 진료과 + 카카오맵 |
 | S-08 | `/coverage` | 산재 / 건강보험 / 울산 지원 / 센터 상담 경로 + 기관 최종 결정 문구·기준일 |
 | S-09·S-10 | `/visit/desk`, `/visit/call` | 접수 창구용 큰 한국어 화면, 전화 스크립트(발음 표기) + 예상 질문 답변 버튼 |
 | S-11 | `/report/new` → `/report/:id` | 항목 선택(기본 전체) → 한국어·모국어 토글 리포트 |
@@ -73,7 +73,7 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 | — | `/guide` | 병원 이용 안내 5개 항목(고정 문구) |
 | C-01~C-03 | `/center`, `/center/cases/:id`, `/center/stats` | 접수함(mock 24건 + 실제 전송), 상세·상태 변경, 익명 통계(5건 미만 칸은 `<5`) |
 
-근로자 화면의 진입 순서(언어 → 동의 → 이용 방식)는 `WorkerLayout`이 지킨다. 앞 단계를 건너뛰고 들어오면 그 단계로 되돌린다.
+근로자 화면의 진입 순서(언어 → 동의 → 로그인/비회원)는 `WorkerLayout`이 지킨다. 앞 단계를 건너뛰고 들어오면 그 단계로 되돌린다.
 
 ## 폴더 구조
 
@@ -82,7 +82,7 @@ src/
   main.tsx          경로 표. PRD 화면 ID를 주석으로 단다
   pages/            worker/ (S-01~S-13, /guide), center/ (C-01~C-03)
                     화면은 api/·state/·i18n/·components/만 부른다. domain/을 직접 부르지 않는다(아래 "API 연결")
-  components/       WorkerLayout(헤더·언어 변경·하단 119 띠·진입 순서 가드), common(Chip·YesNoSeg·SingleSelect·Worse119·PolicyDisclaimer)
+  components/       WorkerLayout(앱 바 ←·화면 이름·언어 변경·하단 119 띠·진입 순서 가드, useScreenBar), common(Chip·Steps·YesNoSeg·SingleSelect·PainRange·PhotoPicker·Worse119·PolicyDisclaimer)
   api/              호출 계층. http(요청·오류), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), meta
                     단독/API 모드 선택과 경로별 대체 정책은 여기에만 있다
   domain/           규칙 엔진(triage·coverage·centerCase)과 템플릿(templates), 어휘(vocab) — 타입·규칙·문장의 원본

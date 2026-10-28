@@ -33,6 +33,7 @@
   --radius: 20px;
   --radius-sm: 16px;
   --radius-lg: 28px;
+  --bar-119: 72px; /* 하단 119 띠 높이(위아래 10px + 버튼 52px). .w-main 아래 여백과 .w-footer가 붙는 자리 */
 
   /* 클레이 그림자(design.md "그림자"). 빛은 왼쪽 위에서 온다. 값은 여기에만 둔다 */
   --clay-light: rgb(255 255 255 / 85%); /* 왼쪽 위 하이라이트 */
@@ -129,6 +130,22 @@ p {
   text-overflow: ellipsis;
 }
 
+/* 앱 바의 ← 되돌아가기. 아이콘 24px, 누르는 영역 48px, 평평 */
+.w-header .back {
+  width: 48px;
+  height: 48px;
+  margin: -6px 0 -6px -12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--on-brand);
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  flex: none;
+}
+
 .w-header select {
   min-height: 36px;
   border-radius: 12px;
@@ -150,7 +167,67 @@ p {
 
 .w-main {
   flex: 1;
-  padding: 16px 16px 96px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px calc(var(--bar-119) + 16px + env(safe-area-inset-bottom));
+}
+
+/* 바닥 버튼을 쓰는 화면의 뿌리. 본문이 짧아도 .w-footer를 바닥으로 민다 */
+.w-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 바닥에 붙는 주 동작 버튼 한 자리. 119 띠 바로 위에 sticky로 붙고, 끝까지 내려도 같은 자리다 */
+.w-footer {
+  position: sticky;
+  bottom: calc(var(--bar-119) + env(safe-area-inset-bottom));
+  z-index: 5;
+  margin: 16px 0 -16px;
+  padding: 16px 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.w-screen .w-footer {
+  margin-top: auto;
+}
+
+/* 로고 화면(S-01 언어 선택, S-03 로그인). 위를 비우고 가운데에 로고, 버튼은 바닥에 쌓인다 */
+.w-logo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.w-logo .mark {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+/* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */
+.w-wait {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.w-wait .pic {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 16px;
 }
 
 .bar-119 {
@@ -295,10 +372,21 @@ p {
   font-size: 1.15rem;
 }
 
+/* 칩은 내용 너비로 줄바꿈한다(2열 격자가 아니다) */
 .chips {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+/* 칩 묶음: h2 제목 + .chips. 묶음 사이 24px */
+.chip-group {
+  margin-bottom: 24px;
+}
+
+.chip-group h2 {
+  font-size: 1rem;
+  color: var(--ink-2);
 }
 
 .chip {
@@ -316,6 +404,7 @@ p {
   display: flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
 }
 
 .chip:active,
@@ -344,6 +433,18 @@ p {
   flex: 1 1 auto;
   justify-content: center;
   min-height: 48px;
+}
+
+/* 선택지 목록: 가로 꽉 찬 행 하나에 선택지 하나, 왼쪽 정렬, 56px, 행 사이 16px */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.options .chip {
+  width: 100%;
+  min-height: 56px;
 }
 
 .field {
@@ -410,6 +511,37 @@ textarea {
   accent-color: var(--brand);
 }
 
+/* 전체 동의 줄: 굵은 제목 + 아래 설명 문단 */
+.check strong {
+  display: block;
+}
+
+/* 동의 항목 줄: 체크 줄(48px) + 오른쪽 › 전문 보기 */
+.check-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.check-row .check {
+  flex: 1;
+  align-items: center;
+  min-height: 48px;
+}
+
+.check-row .btn {
+  min-width: 48px;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+/* 구분선. 면이 아니라 선이다 */
+hr.divider {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 16px 0;
+}
+
 .notice {
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -451,22 +583,32 @@ textarea {
   margin: 12px 0 0;
 }
 
+/* 단계 숫자 원. 현재는 브랜드색으로 떠 있고, 지난·남은 단계는 들어간 홈 + 흐린 숫자 */
 .steps {
   display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
 }
 
-.steps span {
-  flex: 1;
-  height: 6px;
+.steps li {
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
-  background: var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  background: var(--card);
   box-shadow: var(--clay-in);
 }
 
-.steps span.on {
+.steps li.on {
+  color: var(--on-brand);
   background: var(--brand);
+  box-shadow: var(--clay-color-sm);
 }
 
 .menu {
@@ -695,6 +837,182 @@ textarea {
   font-size: 0.82rem;
   color: var(--ink-3);
   margin-top: 8px;
+}
+
+/* 버튼 왼쪽의 글자 아이콘(데모 Google 로그인의 G) */
+.btn .mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--brand-2);
+  color: var(--brand);
+  font-weight: 800;
+  flex: none;
+}
+
+/* 사진 올리기: 제목·개수 → 구분선 → 타일 한 줄. 첫 타일은 들어간 홈, 고른 사진은 떠 있는 썸네일 */
+.photos-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-add,
+.photo {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  flex: none;
+}
+
+.photo-add {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  box-shadow: var(--clay-in);
+  cursor: pointer;
+}
+
+.photo-add .plus {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* 파일 입력은 타일 전체를 덮어 보이지 않는다. 포커스 윤곽은 타일에 그린다 */
+.photo-add input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.photo-add:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.photo {
+  box-shadow: var(--clay-sm);
+  overflow: hidden;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo .rm {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--clay-sm);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.photo .rm:active {
+  box-shadow: var(--clay-in);
+}
+
+/* 슬라이더(통증 점수): 얼굴 → 단계 이름 → 숫자 크게 → range → 양 끝 레이블. 트랙은 들어감, 손잡이는 떠 있음 */
+.range {
+  text-align: center;
+}
+
+.range .face {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.range .level {
+  font-weight: 700;
+  color: var(--ink-2);
+  margin: 8px 0 0;
+}
+
+.range .num {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.range input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  margin: 8px 0 0;
+  background: transparent;
+  accent-color: var(--brand);
+}
+
+.range input[type='range']::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  box-shadow: var(--clay-in);
+}
+
+.range input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: var(--clay-color-sm);
+}
+
+.range input[type='range']::-moz-range-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  box-shadow: var(--clay-in);
+}
+
+.range input[type='range']::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: var(--clay-color-sm);
+}
+
+.range .ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--ink-2);
 }
 
 /* ---------- 센터 레이아웃 ---------- */
