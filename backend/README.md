@@ -9,7 +9,7 @@
 2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-LLM 호출과 학습 모델(`modeling/README.md`)은 이번 범위가 아니다. 들어갈 자리만 응답 스키마에 비워 둔다.
+학습 모델(`modeling/README.md`)과 기능별 LLM 프롬프트는 아직 붙이지 않았다. 들어갈 자리만 응답 스키마에 비워 두고, LLM 호출 계층(`app/llm.py`)만 먼저 둔다("실행"의 LLM).
 
 ## 기술 스택
 
@@ -19,6 +19,7 @@ LLM 호출과 학습 모델(`modeling/README.md`)은 이번 범위가 아니다.
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict) | 목업이므로 재시작하면 mock 시드 상태로 돌아간다 |
+| LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
 
 ## 폴더 구조
@@ -28,6 +29,11 @@ backend/
   pyproject.toml
   app/
     main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
+    settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
+    llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
+    llm_providers/
+      anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
+    errors.py          공통 오류 형식, X-Request-Id, 접근 로그
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (부위·증상·진료과·업종·구군 어휘, josa)
@@ -44,10 +50,14 @@ backend/
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*
+  scripts/
+    llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_api.py        경로별 응답 형태·상태 코드
+    test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
+    fakes.py           FakeLLMClient
 ```
 
 ## 공통 규칙
@@ -58,6 +68,25 @@ backend/
 - **결정적 규칙**: 규칙·템플릿에는 난수·LLM·현재 시각을 넣지 않는다. 시각이 필요한 곳(`createdAt`, 운영 시간 외 판정)만 서버 시각(Asia/Seoul)을 쓴다.
 - **시간대**: `isAfterHours`는 브라우저 로컬 시각을 쓰고 있다. 서버에서는 반드시 `ZoneInfo("Asia/Seoul")` 기준으로 계산한다.
 - **진단 표현 금지**: 템플릿을 옮길 때 문구를 바꾸지 않는다. 병명·추측 문장을 새로 넣지 않는다.
+- **로그**: 요청마다 한 줄(메서드, 경로, 상태 코드, 소요 ms, request id)만 남긴다. 쿼리 문자열·본문·헤더·예외 메시지는 남기지 않는다. uvicorn 기본 접근 로그는 쿼리 문자열을 남기므로 앱에서 끈다.
+
+### 오류 형식
+
+404·422·500을 포함한 모든 오류 응답은 같은 형태다. 성공 응답은 바뀌지 않는다.
+
+```json
+{ "error": { "code": "VALIDATION", "message": "요청 형식이 올바르지 않다: body.bodyParts.0", "requestId": "fd083399e3094ab3a529d73199beaafe" } }
+```
+
+| 상태 | `code` | `message` |
+|---|---|---|
+| 404 | `NOT_FOUND` | 없는 경로·사례(`사례 C-0를 찾을 수 없다`) |
+| 422 | `VALIDATION` | 어긋난 필드 위치만 적는다(요청 값은 넣지 않는다). 경로 안 검사(`days`)도 이 코드 |
+| 500 | `INTERNAL` | `서버 오류가 발생했다` |
+| 그 밖 4xx | `BAD_REQUEST` | 예: 405 |
+
+- 모든 응답에 `X-Request-Id` 헤더가 붙고, 오류 본문의 `requestId`와 같다. 클라이언트가 보내면 그대로 쓰고(영문·숫자·`._-` 128자 이내), 없거나 그 밖이면 서버가 만든다. CORS `expose_headers`에 넣어 브라우저에서 읽을 수 있다.
+- 오류는 이 id로 서버 로그에서 찾는다. 500 로그에는 예외 타입과 코드 위치만 남는다.
 
 ## API 목록
 
@@ -211,10 +240,45 @@ backend/
 ```sh
 cd backend
 uv sync
-uv run fastapi dev app/main.py        # http://localhost:8000, 문서: /docs
+uv run fastapi dev app/main.py        # http://localhost:8000, 문서: /docs (설정은 기본값)
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
+```
+
+설정값을 바꿀 때는 `.env`를 만들어 `--env-file`로 넘기거나 환경 변수를 직접 준다. `fastapi dev`는 `.env`를 스스로 읽지 않고, `uv run --env-file .env`는 파일이 없으면 실패한다. `.env`는 커밋하지 않는다.
+
+```sh
+cp .env.example .env                  # 값 수정
+uv run --env-file .env fastapi dev app/main.py
+# 또는
+CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
+```
+
+| 환경 변수 | 기본값 | 형식 | 쓰는 곳 |
+|---|---|---|---|
+| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(평일, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
+| `INFO_DATE` | `2026-10-24` | `YYYY-MM-DD` | `/api/meta`, `/api/route`의 `infoDate` |
+| `CORS_ORIGINS` | `http://localhost:5180` | 쉼표 구분 출처 목록 | CORS 허용 출처 |
+| `LLM_PROVIDER` | `anthropic` | `anthropic`만 지원 | LLM 어댑터 선택 |
+| `LLM_MODEL` | `claude-haiku-5-5` | 공급자 모델 이름 | LLM 호출 |
+| `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
+| `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
+| `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
+
+값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
+
+### LLM
+
+**키가 없으면 템플릿으로 동작한다.** `LLM_API_KEY`가 비어 있으면 `get_llm_client()`가 `None`을 돌려주고, LLM 자리(추출·템플릿 슬롯·번역)는 지금 규칙·템플릿을 그대로 쓴다. 키가 있어도 호출이 시간 제한을 넘기거나 출력이 스키마에 맞지 않으면 `LLM_ATTEMPTS`번까지 시도한 뒤 같은 기본값으로 돌아간다. LLM 실패는 API 실패가 되지 않는다(발표장 네트워크 대비).
+
+- 출력은 Pydantic 모델의 JSON 스키마로 고정한다(Anthropic `output_config.format`). 받은 뒤에도 같은 모델로 다시 검증한다.
+- 로그에는 시도 횟수와 실패 종류(`llm attempt=1/2 failed=LLMError/RateLimitError`)만 남는다. 프롬프트·응답 원문은 로그·예외에 들어가지 않는다.
+- SDK 자체 재시도는 끄고 재시도는 `generate()` 한 곳에서만 한다.
+- 테스트는 가짜 LLM으로 돌고 키·네트워크가 필요 없다. 실제 공급자 확인은 손으로 한 번 돌린다.
+
+```sh
+uv run --env-file .env python scripts/llm_smoke.py   # 모델 이름, 소요 시간, 스키마 통과 여부만 찍는다
 ```
 
 프론트와 함께 띄울 때:
@@ -273,8 +337,9 @@ backend:
 
 ## 확인이 필요한 값
 
-프론트 `README.md`의 미결 사항을 그대로 따른다. 서버로 옮길 때 설정값으로 빼 둔다.
+프론트 `README.md`의 미결 사항을 그대로 따른다. 코드를 고치지 않고 바꿀 수 있도록 환경 변수로 빼 두었다("실행"의 환경 변수 표).
 
-- 센터 운영 시간(평일 09:00~18:00 가정) → 환경 변수 또는 `app/rules/coverage.py` 상수
-- 정보 기준일 `INFO_DATE`, 기관 대표번호 → 발표 전 재확인
+- 센터 운영 시간(평일 09:00~18:00 가정) → `CENTER_HOURS`
+- 정보 기준일 → `INFO_DATE`. 발표 전 재확인
+- 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
 - 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지
