@@ -76,6 +76,8 @@
   - 첫 예시처럼 임계값이 낮아 응급으로 잡힌 행은 응급 쪽 기여가 작다. 리포트 문장에 SHAP을 넣을 때는 이 점을 고려한다
 - 발생 시점(`onset`, 03에서 넘김): valid 190행에 `onset`을 0~3으로 채워도 두 모델의 확률 변화 최댓값이 0.0. 학습 데이터에 없던 값이라 서빙 때 들어와도 예측에 영향이 없다(테스트 `test_unseen_onset_does_not_change_prediction`로도 확인)
 - 만든 파일: `src/fornav_modeling/models/acuity.py`, `src/fornav_modeling/explain.py`, `src/fornav_modeling/evaluate.py`, `scripts/train_acuity.py`, `scripts/evaluate.py`, `tests/test_determinism.py`, `tests/test_acuity.py`, `models/acuity/v0/{model.txt,logistic.json,metadata.json}`, `reports/acuity_v0.{json,md}`, `reports/acuity_v0_test.{json,md}`
+- 보고서 노트북: `notebooks/04_acuity_model_report.ipynb` — 데이터셋, 실제로 한 탐색, 전처리, 하이퍼파라미터를 정한 방법, 임계값, 결과, SHAP을 정리했다. 실행에 필요한 패키지는 `notebook` 의존성 그룹(`uv sync --group notebook`, ipykernel 7.4.0·matplotlib 3.11.2·nbconvert 7.17.2)에 있다. test 데이터는 읽지 않는다. 커밋본은 출력을 지웠다
+  - 노트북을 쓰며 train+valid로 새로 확인한 것(모델 결정에는 쓰지 않음): 주증상 매핑이 안 된 행의 응급 비율 53 / 161(32.9%), 매핑된 행 144 / 852(16.9%). 응급 환자의 주증상(의식 변화·쇠약·실신 등)이 버튼 어휘에 없어 증상 피처가 비어서 들어간다. 참고로 간호사 KTAS의 응급 재현율은 171 / 197, 정밀도 171 / 186이다
 - 결정
   - SHAP 값은 LightGBM 내장 `pred_contrib`(TreeSHAP)로 구한다. `shap.TreeExplainer`와 값이 같은지 테스트로 확인했고, 서빙(08)에서 shap 패키지 없이 쓸 수 있다. `top_contributions`는 `{feature, value, contribution}`, |기여도| 순, 0은 뺀다
   - test 평가 결과는 `reports/acuity_<round>_test.json`에 `"final": true`로 쓰고, 파일이 있으면 다시 평가하지 않는다. 이 라운드를 test로 평가한 뒤 학습 결과가 바뀌면 `train_round`가 덮어쓰지 않고 멈춘다
