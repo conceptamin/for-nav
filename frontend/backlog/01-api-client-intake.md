@@ -44,6 +44,6 @@
 - 뒤이을 항목(이 항목이 끝나면 문서로 쓴다)
   - 02 근로자 나머지 경로: `/api/route`(S-08), `/api/visit-helper`(S-09·S-10), `/api/report/clinician`(S-11), `/api/report/center`(S-12 미리보기), `/api/meta`. 실패 시 오류 문구 + 다시 시도. 새 문구 키가 생기므로 베트남어 원어민 검수 필요
   - 03 센터 경로: `POST /api/center/cases`(S-12 전송), `GET`(2초 주기)·`PATCH /api/center/cases`, `POST /api/center/reset`, `GET /api/center/stats`(집계만 그림). API 모드에서 `storage` 이벤트 갱신을 끈다
-- **확인 필요:** `backend/README.md` "프론트 전환 방법"은 응급 판정만 브라우저 규칙으로 대체하고 나머지는 오류 문구를 보이라고 한다. 이 항목은 추출도 브라우저 함수로 대체한다. 추출이 실패해 증상 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. 이 결정으로 README를 고칠지 사용자 확인을 받은 뒤 구현한다
+- 추출 실패 시 브라우저 함수로 대체하는 것은 사용자 확인을 받았다(2026-10-28). 추출이 실패해 증상 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. `backend/README.md` "프론트 전환 방법"도 같이 고쳤다
 - 시간 제한 값(3초, 8초)은 `src/api/worker.ts` 상수로 둔다. backend 03(추출 LLM)이 붙으면 서버 쪽 LLM 시간 제한(10초 × 2회)보다 짧아 프론트가 먼저 포기하게 된다. 그때 추출 시간 제한을 다시 정한다
 - 서버가 돌려준 `TriageResult.model`(backend 06)은 이 항목에서 그대로 `AppState`에 넣기만 하고 화면에 보이지 않는다
