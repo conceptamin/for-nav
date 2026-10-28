@@ -241,6 +241,8 @@ PC 화면은 밀도가 우선이라 클레이를 **묶음 단위**에만 쓴다.
 | `.filters` | 상태 필터 버튼(`aria-pressed`)과 select. 12px 둥글기 + `--clay-sm`, 눌리면 브랜드색 + `--clay-color-in` | 떠 있음 → 들어감 | 접수함 |
 | `.detail`, `.panel` | 상세 2열(900px 아래 1열), 패널(`--radius` + `--clay`) | 떠 있음 | 사례 상세 |
 | `.native-box` | 모국어 원문 상자. `--clay-in` | 들어감 | 상세의 자유 입력 원문 |
+| `.c-offline` | 서버와 끊겼을 때 `.c-header` 아래 가로 띠. `--warn-bg` 바탕 + `--warn` 굵은 글자, 흐름 안에 있어 표를 덮지 않는다 | 평평 | API 모드에서 접수함 다시 읽기가 실패했을 때. C-01~C-03 공통(`CenterLayout`) |
+| `.notice.danger.with-retry` | 실패 문구 + 오른쪽 "다시 시도" `btn secondary`. 좁으면 버튼이 아래 줄로 내려간다. `.panel` 안에서는 위 간격 12px | 평평 | 데모 초기화·상태 변경·통계 실패. 근로자 S-12 전송 실패도 같은 클래스 |
 | `.bars`, `.donut-wrap`, `.legend` | 막대·도넛 집계. 막대 트랙은 `--clay-in`, 채움은 브랜드색 평평 | 들어감(트랙) | 통계. 라이브러리 없이 div와 SVG로 그린다. 5건 미만 칸은 막대를 그리지 않고 `<5` |
 
 ## 화면 유형별 규칙

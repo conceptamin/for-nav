@@ -228,6 +228,8 @@ export const en = {
   cenNoIntake: 'You have not entered symptoms. You can still send a request.',
   cenConsent: 'I agree to send the content above to the Ulsan Foreign Residents & Workers Support Centre.',
   cenSend: 'Send',
+  sendFailed: 'Could not send to the centre. Your answers are kept. Please try again.',
+  retry: 'Try again',
   cenSentTitle: 'Sent to the centre',
   cenSentBody: 'A counsellor will check your request and contact you.',
   cenAfterHours: 'The centre is closed now. We will contact you on the next working day:',

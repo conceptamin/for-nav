@@ -217,6 +217,8 @@ export const vi: Record<MessageKey, string> = {
   cenNoIntake: 'Bạn chưa nhập triệu chứng. Bạn vẫn có thể gửi yêu cầu.',
   cenConsent: 'Tôi đồng ý gửi nội dung trên đến Trung tâm hỗ trợ cư dân và lao động nước ngoài Ulsan.',
   cenSend: 'Gửi',
+  sendFailed: 'Không gửi được đến trung tâm. Câu trả lời của bạn vẫn được giữ. Vui lòng thử lại.',
+  retry: 'Thử lại',
   cenSentTitle: 'Đã gửi đến trung tâm',
   cenSentBody: 'Tư vấn viên sẽ xem yêu cầu và liên lạc với bạn.',
   cenAfterHours: 'Trung tâm đang đóng cửa. Chúng tôi sẽ liên lạc vào ngày làm việc tiếp theo:',

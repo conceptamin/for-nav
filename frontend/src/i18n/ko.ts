@@ -217,6 +217,8 @@ export const ko: Record<MessageKey, string> = {
   cenNoIntake: '증상을 입력하지 않았습니다. 그래도 요청을 보낼 수 있습니다.',
   cenConsent: '위 내용을 울산외국인주민·근로자지원센터에 보내는 데 동의합니다.',
   cenSend: '보내기',
+  sendFailed: '센터로 보내지 못했습니다. 입력한 내용은 그대로 있습니다. 다시 시도해 주세요.',
+  retry: '다시 시도',
   cenSentTitle: '센터로 보냈습니다',
   cenSentBody: '상담원이 요청을 확인하고 연락드립니다.',
   cenAfterHours: '지금은 센터 운영 시간이 아닙니다. 다음 운영일에 연락드립니다:',
