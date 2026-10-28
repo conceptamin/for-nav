@@ -1,0 +1,108 @@
+{
+  "round": "v0",
+  "final": true,
+  "note": "test 평가는 이 라운드에서 한 번만 했다",
+  "rows": 59,
+  "files": {
+    "model.txt": "8fa6048612abefddaf5ca2d0155b652c8d1ada8415be7d5d33862160995b5933",
+    "departments.json": "513a54fdcb8c48a1bf306ac63d6043e7e0b22e9ee3ee07d2818893caa9433b5f"
+  },
+  "department": {
+    "top1": {
+      "n": 56,
+      "of": 59,
+      "value": 0.9492
+    },
+    "top2": {
+      "n": 58,
+      "of": 59,
+      "value": 0.9831
+    },
+    "per_class": {
+      "ortho": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        }
+      },
+      "surgery": {
+        "top1": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        },
+        "top2": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        }
+      },
+      "internal": {
+        "top1": {
+          "n": 40,
+          "of": 40,
+          "value": 1.0
+        },
+        "top2": {
+          "n": 40,
+          "of": 40,
+          "value": 1.0
+        }
+      },
+      "ent": {
+        "top1": {
+          "n": 2,
+          "of": 2,
+          "value": 1.0
+        },
+        "top2": {
+          "n": 2,
+          "of": 2,
+          "value": 1.0
+        }
+      },
+      "derm": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 3,
+          "of": 3,
+          "value": 1.0
+        }
+      },
+      "neuro": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        }
+      },
+      "family": {
+        "top1": {
+          "n": 5,
+          "of": 5,
+          "value": 1.0
+        },
+        "top2": {
+          "n": 5,
+          "of": 5,
+          "value": 1.0
+        }
+      }
+    }
+  }
+}

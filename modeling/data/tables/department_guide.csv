@@ -1,0 +1,30 @@
+body_part,symptom,injury,department,alt,url,site,evidence,note,source,reviewed
+abdomen,pain,no,internal,family,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000068,snuh,"복통 진료과: 소화기내과, 가정의학과, 소아청소년과",소화기내과→internal; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+arm,cantmove,no,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000192,snuh,"오십견 진료과: 정형외과, 재활의학과",질환 페이지(어깨 운동 범위 제한); 재활의학과→ortho,snuh-guide(Claude Opus 5.5 수집),no
+arm,pain,no,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000148,snuh,"어깨 통증 진료과: 마취통증의학과, 정형외과","마취통증의학과→ortho, 정형외과 모두 ortho",snuh-guide(Claude Opus 5.5 수집),no
+back,pain,no,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000182,snuh,"요통 진료과: 정형외과, 마취통증의학과, 신경외과…",나열된 과가 모두 ortho로 매핑되어 alt 없음,snuh-guide(Claude Opus 5.5 수집),no
+back,pain,yes,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000787,snuh,요추 염좌 진료과: 정형외과,질환 페이지(허리 인대 손상),snuh-guide(Claude Opus 5.5 수집),no
+chest,chemical,any,occ,,https://www.ywmc.or.kr/web/www/occupational-and-environmental_medicine/intro,ywmc-occ,TDI에 의한 천식,"증상 안내가 아닌 직업환경의학과 소개 페이지(진료 범위 예시) — 약한 근거, 검토 필요",ywmc-guide(Claude Opus 5.5 수집),no
+chest,cough,no,internal,ent,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000026,snuh,"기침 진료과: 호흡기내과, 이비인후과, 가정의학과",호흡기내과→internal; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+chest,pain,no,internal,family,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000060,snuh,"가슴통증 진료과: 순환기내과, 가정의학과, 흉부외과…",순환기내과→internal; 흉부외과(surgery)·응급의학과도 나열; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+ent,bleeding,any,ent,family,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000029,snuh,"비출혈 진료과: 이비인후과, 가정의학과",코피; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+ent,pain,no,family,ent,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000027,snuh,"인두통 및 인후통 진료과: 가정의학과, 이비인후과",목 통증; 가정의학과가 먼저 나열됨; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+ent,pain,yes,ent,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000177,snuh,외상성 고막의 천공 진료과: 이비인후과,질환 페이지; 외상 후 귀 통증 조합에 대응시킴(증상 대응은 검토 필요),snuh-guide(Claude Opus 5.5 수집),no
+eye,bleeding,any,ophth,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000089,snuh,결막하 출혈 진료과: 안과,,snuh-guide(Claude Opus 5.5 수집),no
+eye,foreign,any,ophth,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000387,snuh,외안의 이물 진료과: 안과,눈꺼풀·각막·결막 이물,snuh-guide(Claude Opus 5.5 수집),no
+eye,pain,no,ophth,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000210,snuh,눈의 통증 진료과: 안과,,snuh-guide(Claude Opus 5.5 수집),no
+eye,swelling,no,ophth,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000377,snuh,눈다래끼 진료과: 안과,질환 페이지(눈꺼풀 분비샘 염증=눈꺼풀 부음)로 swelling에 대응시킴,snuh-guide(Claude Opus 5.5 수집),no
+foot,numb,no,neuro,ortho,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000011,snuh,"손발 저림, 감각 없음 진료과: 신경과, 재활의학과…",세 번째로 가정의학과 나열; 재활의학과→ortho; 손에도 해당,snuh-guide(Claude Opus 5.5 수집),no
+foot,swelling,yes,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000550,snuh,발목염좌 진료과: 정형외과,발목 삠,snuh-guide(Claude Opus 5.5 수집),no
+hand,numb,no,neuro,ortho,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000113,snuh,"수근관 증후군 진료과: 신경과, 정형외과, 재활의학과","AMC 31570도 신경과, 정형외과로 일치",snuh-guide(Claude Opus 5.5 수집),no
+head,dizzy,no,neuro,family,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000020,snuh,"어지럼증 진료과: 신경과, 가정의학과, 신경외과, 이비인후과",SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+head,pain,no,neuro,ortho,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000007,snuh,"두통 진료과: 소아청소년과, 신경과, 신경외과, 가정의학과",소아청소년과 제외 후 첫 매핑과=신경과; 신경외과→ortho 매핑; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no
+leg,pain,no,ortho,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000184,snuh,"좌골신경통 진료과: 정형외과, 마취통증의학과, 신경외과",대퇴부·종아리 통증; 모두 ortho로 매핑,snuh-guide(Claude Opus 5.5 수집),no
+skin,burn,no,derm,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA001096,snuh,일광화상 진료과: 피부과,햇볕 화상을 비외상(no)으로 둠 — 검토 필요,snuh-guide(Claude Opus 5.5 수집),no
+skin,burn,yes,surgery,derm,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA001094,snuh,"화상 진료과: 응급의학과, 성형외과, 외과, 피부과","응급의학과 제외; 성형외과·외과 모두 surgery; AMC 32321은 성형외과, 응급의학과, 피부과",snuh-guide(Claude Opus 5.5 수집),no
+skin,chemical,any,derm,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000397,snuh,접촉성 피부염 진료과: 피부과,"외부 물질 접촉 피부염(화학물질 한정 아님); AMC 31534는 피부과, 알레르기내과",snuh-guide(Claude Opus 5.5 수집),no
+skin,cut,yes,surgery,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000144,snuh,"찰과상 진료과: 외과, 응급의학과",긁힌 상처(찰과상)로 cut에 대응; 열상 전용 페이지는 못 찾음,snuh-guide(Claude Opus 5.5 수집),no
+teeth,pain,no,dental,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000096,snuh,치통 진료과: 치과,,snuh-guide(Claude Opus 5.5 수집),no
+whole,chemical,any,family,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AA000677,snuh,납 중독 진료과: 가정의학과,"중금속(납) 중독 페이지; SNUH AA000674 수은 중독은 가정의학과, 내과; ywmc 직업환경의학과 소개도 화학물질 노출 질환을 다룸 — occ 후보",snuh-guide(Claude Opus 5.5 수집),no
+whole,fever,no,internal,,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000191,snuh,발열 진료과: 내과,,snuh-guide(Claude Opus 5.5 수집),no
+whole,pain,no,family,ortho,https://www.snuh.org/health/nMedInfo/nView.do?medid=AC000061,snuh,"근육통 진료과: 가정의학과, 재활의학과",재활의학과→ortho; SNUH 진료과 필드는 순위 표시 없음(페이지 나열 순서를 따름),snuh-guide(Claude Opus 5.5 수집),no

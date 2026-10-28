@@ -1,0 +1,169 @@
+disease,kcd,department,ratio,source,reviewed
+(vertigo) Paroymsal Positional Vertigo,H81,ent,0.5699,hira:2025,no
+(vertigo) Paroymsal Positional Vertigo,H81,neuro,0.1886,hira:2025,no
+(vertigo) Paroymsal Positional Vertigo,H81,family,0.1101,hira:2025,no
+(vertigo) Paroymsal Positional Vertigo,H81,internal,0.1063,hira:2025,no
+(vertigo) Paroymsal Positional Vertigo,H81,ortho,0.0251,hira:2025,no
+AIDS,B20|B21|B22|B23|B24,internal,0.9811,hira:2025,no
+AIDS,B20|B21|B22|B23|B24,ophth,0.0189,hira:2025,no
+Acne,L70,family,0.5816,hira:2025,no
+Acne,L70,derm,0.3152,hira:2025,no
+Acne,L70,internal,0.0522,hira:2025,no
+Acne,L70,ortho,0.0197,hira:2025,no
+Acne,L70,surgery,0.0179,hira:2025,no
+Acne,L70,ent,0.0133,hira:2025,no
+Alcoholic hepatitis,K70,internal,0.8522,hira:2025,no
+Alcoholic hepatitis,K70,family,0.1225,hira:2025,no
+Alcoholic hepatitis,K70,surgery,0.0253,hira:2025,no
+Allergy,J30,ent,0.5343,hira:2025,no
+Allergy,J30,family,0.2608,hira:2025,no
+Allergy,J30,internal,0.2049,hira:2025,no
+Arthritis,M13,ortho,0.4996,hira:2025,no
+Arthritis,M13,family,0.2614,hira:2025,no
+Arthritis,M13,internal,0.1926,hira:2025,no
+Arthritis,M13,surgery,0.0245,hira:2025,no
+Arthritis,M13,ent,0.0218,hira:2025,no
+Bronchial Asthma,J45,internal,0.6403,hira:2025,no
+Bronchial Asthma,J45,family,0.2109,hira:2025,no
+Bronchial Asthma,J45,ent,0.1354,hira:2025,no
+Bronchial Asthma,J45,surgery,0.0135,hira:2025,no
+Cervical spondylosis,M47,ortho,0.7807,hira:2025,no
+Cervical spondylosis,M47,family,0.1670,hira:2025,no
+Cervical spondylosis,M47,internal,0.0185,hira:2025,no
+Cervical spondylosis,M47,surgery,0.0181,hira:2025,no
+Cervical spondylosis,M47,neuro,0.0158,hira:2025,no
+Chicken pox,B01,family,0.4177,hira:2025,no
+Chicken pox,B01,derm,0.3267,hira:2025,no
+Chicken pox,B01,internal,0.2016,hira:2025,no
+Chicken pox,B01,ent,0.0297,hira:2025,no
+Chicken pox,B01,surgery,0.0242,hira:2025,no
+Chronic cholestasis,K83|K71,internal,0.8326,hira:2025,no
+Chronic cholestasis,K83|K71,family,0.0993,hira:2025,no
+Chronic cholestasis,K83|K71,surgery,0.0682,hira:2025,no
+Common Cold,J00,internal,0.4274,hira:2025,no
+Common Cold,J00,family,0.3115,hira:2025,no
+Common Cold,J00,ent,0.2221,hira:2025,no
+Common Cold,J00,ortho,0.0267,hira:2025,no
+Common Cold,J00,surgery,0.0122,hira:2025,no
+Dengue,A97,internal,0.9122,hira:2025,no
+Dengue,A97,family,0.0541,hira:2025,no
+Dengue,A97,surgery,0.0203,hira:2025,no
+Dengue,A97,ent,0.0135,hira:2025,no
+Diabetes,E11|E14,internal,0.7659,hira:2025,no
+Diabetes,E11|E14,family,0.2002,hira:2025,no
+Diabetes,E11|E14,ortho,0.0190,hira:2025,no
+Diabetes,E11|E14,surgery,0.0150,hira:2025,no
+Dimorphic hemmorhoids(piles),K64,surgery,0.8732,hira:2025,no
+Dimorphic hemmorhoids(piles),K64,family,0.0678,hira:2025,no
+Dimorphic hemmorhoids(piles),K64,internal,0.0590,hira:2025,no
+Drug Reaction,L27,derm,0.6033,hira:2025,no
+Drug Reaction,L27,family,0.2538,hira:2025,no
+Drug Reaction,L27,internal,0.1156,hira:2025,no
+Drug Reaction,L27,surgery,0.0152,hira:2025,no
+Drug Reaction,L27,ortho,0.0120,hira:2025,no
+Fungal infection,B35|B36,derm,0.4480,hira:2025,no
+Fungal infection,B35|B36,family,0.4390,hira:2025,no
+Fungal infection,B35|B36,internal,0.0673,hira:2025,no
+Fungal infection,B35|B36,ortho,0.0230,hira:2025,no
+Fungal infection,B35|B36,surgery,0.0226,hira:2025,no
+GERD,K21,internal,0.6801,hira:2025,no
+GERD,K21,family,0.2007,hira:2025,no
+GERD,K21,ent,0.0918,hira:2025,no
+GERD,K21,ortho,0.0158,hira:2025,no
+GERD,K21,surgery,0.0116,hira:2025,no
+Gastroenteritis,A09|K52,internal,0.6307,hira:2025,no
+Gastroenteritis,A09|K52,family,0.3392,hira:2025,no
+Gastroenteritis,A09|K52,ent,0.0153,hira:2025,no
+Gastroenteritis,A09|K52,surgery,0.0148,hira:2025,no
+Heart attack,I21,internal,0.9247,hira:2025,no
+Heart attack,I21,ortho,0.0325,hira:2025,no
+Heart attack,I21,surgery,0.0286,hira:2025,no
+Heart attack,I21,family,0.0142,hira:2025,no
+Hepatitis B,B16|B18,internal,0.9420,hira:2025,no
+Hepatitis B,B16|B18,family,0.0580,hira:2025,no
+Hepatitis C,B17|B18,internal,0.9393,hira:2025,no
+Hepatitis C,B17|B18,family,0.0607,hira:2025,no
+Hepatitis D,B17|B18,internal,0.9393,hira:2025,no
+Hepatitis D,B17|B18,family,0.0607,hira:2025,no
+Hepatitis E,B17,internal,0.8502,hira:2025,no
+Hepatitis E,B17,family,0.1117,hira:2025,no
+Hepatitis E,B17,surgery,0.0137,hira:2025,no
+Hepatitis E,B17,ortho,0.0124,hira:2025,no
+Hepatitis E,B17,ent,0.0121,hira:2025,no
+Hypertension,I10,internal,0.6590,hira:2025,no
+Hypertension,I10,family,0.2980,hira:2025,no
+Hypertension,I10,ortho,0.0234,hira:2025,no
+Hypertension,I10,surgery,0.0196,hira:2025,no
+Hyperthyroidism,E05,internal,0.8236,hira:2025,no
+Hyperthyroidism,E05,family,0.0941,hira:2025,no
+Hyperthyroidism,E05,surgery,0.0696,hira:2025,no
+Hyperthyroidism,E05,ophth,0.0127,hira:2025,no
+Hypoglycemia,E16,internal,0.6438,hira:2025,no
+Hypoglycemia,E16,family,0.2987,hira:2025,no
+Hypoglycemia,E16,ortho,0.0253,hira:2025,no
+Hypoglycemia,E16,neuro,0.0163,hira:2025,no
+Hypoglycemia,E16,surgery,0.0159,hira:2025,no
+Hypothyroidism,E03,internal,0.7813,hira:2025,no
+Hypothyroidism,E03,family,0.1499,hira:2025,no
+Hypothyroidism,E03,surgery,0.0688,hira:2025,no
+Impetigo,L01,family,0.4671,hira:2025,no
+Impetigo,L01,derm,0.3349,hira:2025,no
+Impetigo,L01,ent,0.1307,hira:2025,no
+Impetigo,L01,internal,0.0673,hira:2025,no
+Jaundice,R17,internal,0.8285,hira:2025,no
+Jaundice,R17,family,0.1458,hira:2025,no
+Jaundice,R17,surgery,0.0256,hira:2025,no
+Malaria,B50|B51|B52|B53|B54,internal,0.8169,hira:2025,no
+Malaria,B50|B51|B52|B53|B54,family,0.1654,hira:2025,no
+Malaria,B50|B51|B52|B53|B54,ent,0.0177,hira:2025,no
+Migraine,G43,neuro,0.4747,hira:2025,no
+Migraine,G43,internal,0.2686,hira:2025,no
+Migraine,G43,family,0.1983,hira:2025,no
+Migraine,G43,ent,0.0356,hira:2025,no
+Migraine,G43,ortho,0.0229,hira:2025,no
+Osteoarthristis,M15|M16|M17|M19,ortho,0.7459,hira:2025,no
+Osteoarthristis,M15|M16|M17|M19,family,0.1693,hira:2025,no
+Osteoarthristis,M15|M16|M17|M19,internal,0.0655,hira:2025,no
+Osteoarthristis,M15|M16|M17|M19,surgery,0.0193,hira:2025,no
+Paralysis (brain hemorrhage),I61,neuro,0.6474,hira:2025,no
+Paralysis (brain hemorrhage),I61,ortho,0.2467,hira:2025,no
+Paralysis (brain hemorrhage),I61,internal,0.0561,hira:2025,no
+Paralysis (brain hemorrhage),I61,family,0.0319,hira:2025,no
+Paralysis (brain hemorrhage),I61,surgery,0.0179,hira:2025,no
+Peptic ulcer diseae,K25|K26|K27,internal,0.7169,hira:2025,no
+Peptic ulcer diseae,K25|K26|K27,family,0.2510,hira:2025,no
+Peptic ulcer diseae,K25|K26|K27,surgery,0.0220,hira:2025,no
+Peptic ulcer diseae,K25|K26|K27,ortho,0.0102,hira:2025,no
+Pneumonia,J18,internal,0.6263,hira:2025,no
+Pneumonia,J18,family,0.2280,hira:2025,no
+Pneumonia,J18,ent,0.0967,hira:2025,no
+Pneumonia,J18,surgery,0.0264,hira:2025,no
+Pneumonia,J18,ortho,0.0226,hira:2025,no
+Psoriasis,L40,derm,0.6902,hira:2025,no
+Psoriasis,L40,family,0.2676,hira:2025,no
+Psoriasis,L40,internal,0.0313,hira:2025,no
+Psoriasis,L40,surgery,0.0109,hira:2025,no
+Tuberculosis,A15|A16,internal,0.9035,hira:2025,no
+Tuberculosis,A15|A16,surgery,0.0396,hira:2025,no
+Tuberculosis,A15|A16,family,0.0280,hira:2025,no
+Tuberculosis,A15|A16,ortho,0.0152,hira:2025,no
+Tuberculosis,A15|A16,ophth,0.0137,hira:2025,no
+Typhoid,A01,internal,0.8219,hira:2025,no
+Typhoid,A01,family,0.0822,hira:2025,no
+Typhoid,A01,ortho,0.0274,hira:2025,no
+Typhoid,A01,dental,0.0274,hira:2025,no
+Typhoid,A01,surgery,0.0137,hira:2025,no
+Typhoid,A01,ophth,0.0137,hira:2025,no
+Typhoid,A01,neuro,0.0137,hira:2025,no
+Urinary tract infection,N39|N30,family,0.5351,hira:2025,no
+Urinary tract infection,N39|N30,internal,0.4241,hira:2025,no
+Urinary tract infection,N39|N30,surgery,0.0229,hira:2025,no
+Urinary tract infection,N39|N30,ortho,0.0179,hira:2025,no
+Varicose veins,I83,surgery,0.7312,hira:2025,no
+Varicose veins,I83,family,0.1853,hira:2025,no
+Varicose veins,I83,ortho,0.0437,hira:2025,no
+Varicose veins,I83,internal,0.0398,hira:2025,no
+hepatitis A,B15,internal,0.8142,hira:2025,no
+hepatitis A,B15,family,0.1630,hira:2025,no
+hepatitis A,B15,surgery,0.0128,hira:2025,no
+hepatitis A,B15,ortho,0.0100,hira:2025,no

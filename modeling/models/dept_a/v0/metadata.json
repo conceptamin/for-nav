@@ -1,0 +1,83 @@
+{
+  "model_version": "dept_a/v0",
+  "seed": 20261028,
+  "lightgbm_params": {
+    "objective": "multiclass",
+    "learning_rate": 0.05,
+    "num_leaves": 7,
+    "min_data_in_leaf": 3,
+    "lambda_l2": 1.0,
+    "seed": 20261028,
+    "deterministic": true,
+    "num_threads": 1,
+    "force_row_wise": true,
+    "verbosity": -1,
+    "num_class": 40
+  },
+  "num_rounds": 954,
+  "data": {
+    "processed_sha256": "5ad8131fa2adeaf7e3b31a5c24c2700426d2f9e6fdd68f1e567b908741881bdf",
+    "train_ids_sha256": "343417c03e05b3860594f5f8b6ada8509ce7c99587b2f6f62c8fe7b16153f145",
+    "valid_ids_sha256": "94379131623f7e8d6db082cc5992fd99d6271afeb7e6545db67f7441f0b12619",
+    "disease_department_sha256": "6cdae657844ff1eecdb9298670786409a88bb514d04b7d546be60bd3329784ba",
+    "rows": {
+      "train": 189,
+      "valid": 44
+    },
+    "classes": 40
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "status": "임시(backlog 06). 형식 확정은 backlog 08",
+  "files": {
+    "model.txt": "8fa6048612abefddaf5ca2d0155b652c8d1ada8415be7d5d33862160995b5933",
+    "departments.json": "513a54fdcb8c48a1bf306ac63d6043e7e0b22e9ee3ee07d2818893caa9433b5f"
+  },
+  "output": "질환 확률(내부) × departments.json의 질환 번호별 진료과 비율 → 진료과 10종 확률"
+}
