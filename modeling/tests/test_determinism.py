@@ -83,3 +83,12 @@ def test_dept_b_same_seed_same_weights():
     _, X, T, w = dept_b.training_rows(DEPT_B_TABLE)
     first, second = dept_b.DeptB().fit(X, T, w, 1e-3, 200), dept_b.DeptB().fit(X, T, w, 1e-3, 200)
     assert digest(first.to_text()) == digest(second.to_text())
+
+
+def test_lightgbm_with_augmented_rows_same_model_string():
+    from fornav_modeling.models import acuity
+
+    X, y = synthetic()
+    first = LightGBMAcuity().fit(*acuity.augment(X, y), copies=acuity.AUGMENT_COPIES)
+    second = LightGBMAcuity().fit(*acuity.augment(X, y), copies=acuity.AUGMENT_COPIES)
+    assert digest(first.to_text()) == digest(second.to_text())
