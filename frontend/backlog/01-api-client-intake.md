@@ -1,6 +1,6 @@
 # 01. API 호출 계층과 증상 입력(추출·응급 판정) 전환
 
-상태: 대기
+상태: 완료
 의존: 없음(backend 구현 순서 1~6, backend 01 오류 형식 완료)
 
 ## 목표
@@ -29,15 +29,50 @@
 - 수정: `vite.config.ts`, `src/domain/triage.ts`, `src/pages/worker/Intake.tsx`, `README.md`
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] 단독 모드(`npm run dev`): 개발자 도구 네트워크 탭에 `/api` 요청이 없고, 손 + 베인 상처 + 출혈 → `/result`에 외과·정형외과, 가슴 + 통증 → `/emergency`로 지금과 같이 동작한다
-- [ ] API 모드(백엔드 켬, `VITE_API_BASE=/api npm run dev`): 위 두 입력에서 비응급 입력은 `/api/triage`가 불리고 결과가 같다. 가슴 + 통증은 `/api/triage` 응답을 기다리지 않고 `/emergency`로 간다. 자유 입력 `"Ngón tay bị kẹp vào máy dập, bị sưng."`이 `/api/extract`를 거쳐 손·부음·업무 중으로 채워진다
-- [ ] API 모드(백엔드 끔): 같은 입력이 단독 모드와 같은 화면으로 간다
-- [ ] API 모드(응답하지 않는 서버, `nc -lk 8000`): 비응급 입력이 3초 안팎에 브라우저 결과로 `/result`에 가고, 가슴 + 통증은 기다림 없이 `/emergency`로 간다. 기다리는 동안 다음 버튼이 눌리지 않는다
-- [ ] 위 확인을 en·vi·ko에서 한 번씩 했다
-- [ ] `domain/triage.ts`를 고친 뒤 `parity.json`을 다시 만들면 diff가 없고, `backend`에서 `uv run pytest`가 통과한다
+- [x] `npm run build` 통과
+- [x] 단독 모드(`npm run dev`): 개발자 도구 네트워크 탭에 `/api` 요청이 없고, 손 + 베인 상처 + 출혈 → `/result`에 외과·정형외과, 가슴 + 통증 → `/emergency`로 지금과 같이 동작한다
+- [x] API 모드(백엔드 켬, `VITE_API_BASE=/api npm run dev`): 위 두 입력에서 비응급 입력은 `/api/triage`가 불리고 결과가 같다. 가슴 + 통증은 `/api/triage` 응답을 기다리지 않고 `/emergency`로 간다. 자유 입력 `"Ngón tay bị kẹp vào máy dập, bị sưng."`이 `/api/extract`를 거쳐 손·부음·업무 중으로 채워진다
+- [x] API 모드(백엔드 끔): 같은 입력이 단독 모드와 같은 화면으로 간다
+- [x] API 모드(응답하지 않는 서버, `nc -lk 8000`): 비응급 입력이 3초 안팎에 브라우저 결과로 `/result`에 가고, 가슴 + 통증은 기다림 없이 `/emergency`로 간다. 기다리는 동안 다음 버튼이 눌리지 않는다
+- [x] 위 확인을 en·vi·ko에서 한 번씩 했다
+- [x] `domain/triage.ts`를 고친 뒤 `parity.json`을 다시 만들면 diff가 없고, `backend`에서 `uv run pytest`가 통과한다
 
 ## 결과
+2026-10-28, 브랜치 `frontend/api-client-intake`.
+
+실행 명령 → 결과
+
+- `cd frontend && npm run build` → 통과(tsc + vite build)
+- `npx rolldown scripts/dump-fixtures.ts … > ../backend/tests/fixtures/parity.json` → `generatedAt` 시각만 바뀌고 내용 diff 없음. `extractIntake`는 기존 `extractFromText`·`mergeExtraction`을 그대로 부르므로 기대값이 바뀌지 않는다. 시각만 다른 파일은 커밋하지 않았다
+- `cd backend && uv run pytest` → 1008 passed
+
+브라우저 확인(Playwright headless Chromium, 360×640, en·vi·ko 각 언어에서 아래 표를 한 번씩). Claude in Chrome 확장이 연결되지 않아 스크립트로 확인했고, 사람 눈으로 본 스크린샷은 없다. 언어·동의·이용 방식은 `sessionStorage`에 넣고 `/intake`부터 시작했다.
+
+| 상황 | 손 + 베인 상처 + 출혈 | 가슴 + 통증 | 자유 입력 `"Ngón tay bị kẹp vào máy dập, bị sưng."` |
+|---|---|---|---|
+| 단독(`npm run dev`) | `/result` 외과·정형외과, `/api` 요청 없음 | 2단계(증상)에서 바로 `/emergency`, 요청 없음 | 서버 없이 손·부음·업무 중·기계(`machine`) 채움, 추출 안내 줄 표시 |
+| API, 백엔드 켬 | `POST /api/triage` 200 한 번, 결과 같음 | `/emergency`, `/api/triage`를 부르지 않음 | `POST /api/extract` 200 → 같은 값(`source: keywords`) |
+| API, 백엔드 끔 | `/api/triage` 502(Vite 프록시) → 즉시 브라우저 결과로 `/result` | 같음 | `/api/extract` 502 → 브라우저 사전, 같은 값 |
+| API, 응답 없음(`nc -lk 8000`) | 3.04초 뒤 `TIMEOUT` → 브라우저 결과로 `/result`. 기다리는 동안 다음·이전 버튼 `disabled` | 기다림 없이 `/emergency` | 8.5초 뒤 `TIMEOUT` → 브라우저 사전, 같은 값 |
+
+콘솔에는 대체했을 때 `[api] /triage TIMEOUT → 브라우저 함수로 대체` 한 줄만 남고 요청·응답 본문은 없다. 하단 119 띠와 `/emergency`의 전화 버튼은 네 경우 모두 그대로다.
+
+결정 사항
+
+- **서버는 마지막 단계에서 한 번만 부른다.** 2단계(증상 고른 뒤)와 3단계(추출 뒤)의 응급 선별은 `screenEmergency()`(브라우저 규칙만)이고, 4단계 "결과 보기"에서만 `checkTriage()`가 서버를 부른다. 단계마다 서버를 부르면 응답 없는 서버에서 3초가 세 번 쌓이고, 응급 화면으로 가는 길에 비동기 호출이 생기기 때문이다(README "비동기 UX 규칙")
+- 자유 입력이 비어 있으면 `extract()`가 서버를 부르지 않고 브라우저 함수를 쓴다. "건너뛰기"가 응답 없는 서버에서 8초를 기다리지 않게 하기 위해서다
+- 기다리는 동안 다음 버튼과 함께 **이전 버튼도** `disabled`로 둔다. 기다리는 중에 단계를 바꾸면 늦게 온 응답이 다른 단계에 적용되기 때문이다. 스피너·문구는 없다
+- 서버 `/api/triage` 결과는 `{ ...브라우저 결과, ...서버 결과 }`로 합쳐 서버가 더하는 선택 필드(`model` 등)가 그대로 `AppState`에 실린다. `emergency`가 boolean이 아니거나 `department` 키가 없으면 `BAD_RESPONSE`로 보고 브라우저 결과를 쓴다. `/api/extract`는 `extraction`·`intake`·`filled`가 없으면 같은 처리다
+- `domain/triage.ts`에 `ExtractResult`(`{ extraction, intake, filled, source? }`)와 `extractIntake()`를 더했다. `source`는 서버 전용 선택 필드로 타입에만 두고 화면에는 쓰지 않는다(새 문구 키 없음). `TriageResult.model` 타입은 backend 06이 형태를 정하지 않아 더하지 않았다
+- `README.md`는 PR #50(`docs/frontend-design`)의 내용을 그대로 가져왔다. "실행" 절의 API 모드 명령이 거기에 이미 있다. 이 문서의 `## 메모`도 PR #50과 같아 두 PR을 어느 순서로 병합해도 충돌하지 않는다
+
+02·03에 넘기는 것
+
+- `http.ts`: `isApiMode()`, `requestJson<T>(path, { method?, body?, timeoutMs })`(GET은 `body` 없이), `ApiError(code, status, requestId)`, `logFallback(path, e)`. 센터 경로처럼 대체하지 않는 곳은 `requestJson`의 `ApiError`를 그대로 화면에 전달하면 된다. 쓰기 어렵게 만든 점은 없다
+
+남은 문제
+
+- `nc -lk 8000`을 터미널이 아닌 곳(stdin이 닫힌 백그라운드)에서 띄우면 연결을 바로 끊어 502가 나고 시간 제한을 확인할 수 없다. 터미널에서 직접 띄우거나 `tail -f /dev/null | nc -lk 8000`으로 띄운다
 
 ## 메모
 - 01~03을 합친 것이 `backend/README.md` "구현 순서" 7번(`src/api/` 전환, Vite 프록시)이다. 백엔드 문서가 "frontend 항목 7"이라고 부르는 것이 이것이며, backend 08(같은 출처 서빙)은 03까지 끝난 뒤에 할 수 있다
