@@ -95,6 +95,8 @@ uv run ruff check . && uv run ruff format --check .  # 린트·포맷 검사
 uv run pytest                                        # 테스트
 ```
 
+노트북(`notebooks/`)을 실행하려면 `uv sync --group notebook`으로 ipykernel·matplotlib을 더 설치하고 이 프로젝트 `.venv`를 커널로 쓴다.
+
 데이터 내려받기·학습·평가 명령은 `scripts/`에 하나씩 추가한다. 무엇을 언제 만드는지는 `backlog/` 문서를 따른다.
 
 ## 폴더 구조

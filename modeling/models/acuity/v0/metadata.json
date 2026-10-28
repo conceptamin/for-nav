@@ -1,0 +1,102 @@
+{
+  "model_version": "acuity/v0",
+  "seed": 20261028,
+  "lightgbm_params": {
+    "objective": "multiclass",
+    "num_class": 3,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "min_data_in_leaf": 20,
+    "lambda_l2": 1.0,
+    "seed": 20261028,
+    "deterministic": true,
+    "num_threads": 1,
+    "force_row_wise": true,
+    "verbosity": -1
+  },
+  "num_rounds": 86,
+  "data": {
+    "processed_sha256": "61c31f11f9e1150d8663c46caea9f47a1da5ca95a8e48b5d5663bffedb402b56",
+    "train_ids_sha256": "b40b7a6b54577fa0f9f85168c691f432a5abc34fc25c1047d42345e3ade65b1e",
+    "valid_ids_sha256": "9d3e573bef54059e89f613ab7708897eda61444cea98c4aec6252e7eb0ad366c",
+    "rows": {
+      "train": 823,
+      "valid": 190
+    }
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ],
+  "labels": [
+    "emergency",
+    "today",
+    "outpatient"
+  ],
+  "status": "임시(backlog 04). 형식 확정은 backlog 08",
+  "files": {
+    "model.txt": "bec5c99116c1bc21d27017ac9e71761b76733a49377b40eefb0cf4955c255c21",
+    "logistic.json": "b892d49cd493fd17aa23d59c86a2300cf721772647535b81533a26bec371ed7c"
+  },
+  "thresholds": {
+    "lightgbm": {
+      "rule": "검증셋 응급 재현율 ≥ 0.95인 임계값 중 응급 정밀도 최대(같으면 높은 임계값), 경계는 바로 아래 확률과의 중간",
+      "target_recall": 0.95,
+      "threshold": 0.07382006898727805,
+      "recall": [
+        36,
+        37
+      ],
+      "precision": [
+        36,
+        99
+      ]
+    },
+    "logistic": {
+      "rule": "검증셋 응급 재현율 ≥ 0.95인 임계값 중 응급 정밀도 최대(같으면 높은 임계값), 경계는 바로 아래 확률과의 중간",
+      "target_recall": 0.95,
+      "threshold": 0.05976954881189263,
+      "recall": [
+        36,
+        37
+      ],
+      "precision": [
+        36,
+        112
+      ]
+    }
+  },
+  "decision_rule": "emergency 확률 ≥ 임계값이면 emergency, 아니면 today·outpatient 중 확률이 큰 쪽"
+}
