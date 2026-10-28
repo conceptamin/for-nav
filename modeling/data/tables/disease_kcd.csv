@@ -1,0 +1,42 @@
+disease,kcd,note,source,reviewed
+(vertigo) Paroymsal Positional Vertigo,H81,전정기능 장애(H81.1 양성 발작성 현기증 포함),llm-draft(Claude Opus 5.5),no
+AIDS,B20|B21|B22|B23|B24,HIV 질환 전체,llm-draft(Claude Opus 5.5),no
+Acne,L70,,llm-draft(Claude Opus 5.5),no
+Alcoholic hepatitis,K70,알코올성 간질환(K70.1 알코올성 간염 포함),llm-draft(Claude Opus 5.5),no
+Allergy,J30,증상(재채기·오한·눈물)이 알레르기 비염에 가까워 J30. 상세불명 알레르기 T78은 쓰지 않는다,llm-draft(Claude Opus 5.5),no
+Arthritis,M13,기타 관절염. 증상(관절 부기·뻣뻣함·보행 통증)이 특정 관절염을 가리키지 않는다,llm-draft(Claude Opus 5.5),no
+Bronchial Asthma,J45,,llm-draft(Claude Opus 5.5),no
+Cervical spondylosis,M47,척추증 전체(3단에서 경추만 따로 나뉘지 않는다),llm-draft(Claude Opus 5.5),no
+Chicken pox,B01,,llm-draft(Claude Opus 5.5),no
+Chronic cholestasis,K83|K71,담도 질환(K83.1 담관 폐쇄)과 독성 간질환(K71.0 담즙정체형) — 3단에 담즙정체 단독 코드가 없다,llm-draft(Claude Opus 5.5),no
+Common Cold,J00,,llm-draft(Claude Opus 5.5),no
+Dengue,A97,KCD-8 코드. 이전 코드 A90·A91은 2025 통계에 없다,llm-draft(Claude Opus 5.5),no
+Diabetes,E11|E14,2형·상세불명 당뇨병,llm-draft(Claude Opus 5.5),no
+Dimorphic hemmorhoids(piles),K64,KCD-8 코드. 이전 코드 I84는 2025 통계에 없다,llm-draft(Claude Opus 5.5),no
+Drug Reaction,L27,섭취 물질에 의한 피부염. 증상이 발진·가려움 위주다,llm-draft(Claude Opus 5.5),no
+Fungal infection,B35|B36,피부사상균증·기타 표재성 진균증,llm-draft(Claude Opus 5.5),no
+GERD,K21,,llm-draft(Claude Opus 5.5),no
+Gastroenteritis,A09|K52,감염성·비감염성 위장염,llm-draft(Claude Opus 5.5),no
+Heart attack,I21,,llm-draft(Claude Opus 5.5),no
+Hepatitis B,B16|B18,B18(만성 바이러스 간염)은 B·C형이 함께 들어 있다,llm-draft(Claude Opus 5.5),no
+Hepatitis C,B17|B18,B17(기타 급성 바이러스 간염)·B18은 다른 형과 함께 들어 있다,llm-draft(Claude Opus 5.5),no
+Hepatitis D,B17|B18,B17·B18은 다른 형과 함께 들어 있다,llm-draft(Claude Opus 5.5),no
+Hepatitis E,B17,B17은 다른 형과 함께 들어 있다,llm-draft(Claude Opus 5.5),no
+Hypertension,I10,,llm-draft(Claude Opus 5.5),no
+Hyperthyroidism,E05,,llm-draft(Claude Opus 5.5),no
+Hypoglycemia,E16,,llm-draft(Claude Opus 5.5),no
+Hypothyroidism,E03,,llm-draft(Claude Opus 5.5),no
+Impetigo,L01,,llm-draft(Claude Opus 5.5),no
+Jaundice,R17,,llm-draft(Claude Opus 5.5),no
+Malaria,B50|B51|B52|B53|B54,말라리아 전체,llm-draft(Claude Opus 5.5),no
+Migraine,G43,,llm-draft(Claude Opus 5.5),no
+Osteoarthristis,M15|M16|M17|M19,관절증 전체(M18 엄지 관절증은 2025 통계에 없다),llm-draft(Claude Opus 5.5),no
+Paralysis (brain hemorrhage),I61,뇌내출혈,llm-draft(Claude Opus 5.5),no
+Peptic ulcer diseae,K25|K26|K27,위·십이지장·소화성 궤양,llm-draft(Claude Opus 5.5),no
+Pneumonia,J18,병원체 불명 폐렴,llm-draft(Claude Opus 5.5),no
+Psoriasis,L40,,llm-draft(Claude Opus 5.5),no
+Tuberculosis,A15|A16,호흡기 결핵,llm-draft(Claude Opus 5.5),no
+Typhoid,A01,장티푸스·파라티푸스,llm-draft(Claude Opus 5.5),no
+Urinary tract infection,N39|N30,요로감염(N39.0)·방광염,llm-draft(Claude Opus 5.5),no
+Varicose veins,I83,하지 정맥류,llm-draft(Claude Opus 5.5),no
+hepatitis A,B15,,llm-draft(Claude Opus 5.5),no

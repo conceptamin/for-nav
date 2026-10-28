@@ -1,0 +1,132 @@
+kaggle_symptom,body_parts,symptoms,note,source,reviewed
+abdominal_pain,abdomen,pain,,llm-draft(Claude Opus 5.5),no
+abnormal_menstruation,abdomen,none,월경 이상은 버튼 증상에 없다,llm-draft(Claude Opus 5.5),no
+acidity,abdomen,pain,속쓰림을 복부 통증으로 본다,llm-draft(Claude Opus 5.5),no
+acute_liver_failure,none,none,진단명,llm-draft(Claude Opus 5.5),no
+altered_sensorium,none,none,의식 상태는 증상 버튼이 아니라 응급도 피처(mental)다,llm-draft(Claude Opus 5.5),no
+anxiety,none,none,,llm-draft(Claude Opus 5.5),no
+back_pain,back,pain,,llm-draft(Claude Opus 5.5),no
+belly_pain,abdomen,pain,,llm-draft(Claude Opus 5.5),no
+blackheads,skin,rash,,llm-draft(Claude Opus 5.5),no
+bladder_discomfort,abdomen,pain,아랫배 불편감,llm-draft(Claude Opus 5.5),no
+blister,skin,rash,,llm-draft(Claude Opus 5.5),no
+blood_in_sputum,chest,cough|bleeding,,llm-draft(Claude Opus 5.5),no
+bloody_stool,abdomen,bleeding,,llm-draft(Claude Opus 5.5),no
+blurred_and_distorted_vision,eye,none,시력 증상 버튼이 없다,llm-draft(Claude Opus 5.5),no
+breathlessness,chest,breath,,llm-draft(Claude Opus 5.5),no
+brittle_nails,hand,none,,llm-draft(Claude Opus 5.5),no
+bruising,skin,bleeding,피하 출혈,llm-draft(Claude Opus 5.5),no
+burning_micturition,abdomen,pain,배뇨통,llm-draft(Claude Opus 5.5),no
+chest_pain,chest,pain,,llm-draft(Claude Opus 5.5),no
+chills,whole,fever,오한,llm-draft(Claude Opus 5.5),no
+cold_hands_and_feets,hand|foot,numb,손발 냉감을 저림에 가깝게 본다,llm-draft(Claude Opus 5.5),no
+coma,none,none,의식 상태(mental),llm-draft(Claude Opus 5.5),no
+congestion,ent,none,코막힘 버튼이 없다,llm-draft(Claude Opus 5.5),no
+constipation,abdomen,none,,llm-draft(Claude Opus 5.5),no
+continuous_feel_of_urine,abdomen,none,,llm-draft(Claude Opus 5.5),no
+continuous_sneezing,ent,none,,llm-draft(Claude Opus 5.5),no
+cough,chest,cough,,llm-draft(Claude Opus 5.5),no
+cramps,leg,pain,근육 경련,llm-draft(Claude Opus 5.5),no
+dark_urine,none,none,,llm-draft(Claude Opus 5.5),no
+dehydration,none,none,,llm-draft(Claude Opus 5.5),no
+depression,none,none,,llm-draft(Claude Opus 5.5),no
+diarrhoea,abdomen,none,설사 버튼이 없다,llm-draft(Claude Opus 5.5),no
+dischromic_patches,skin,rash,,llm-draft(Claude Opus 5.5),no
+distention_of_abdomen,abdomen,swelling,,llm-draft(Claude Opus 5.5),no
+dizziness,head,dizzy,,llm-draft(Claude Opus 5.5),no
+drying_and_tingling_lips,ent,numb,입술,llm-draft(Claude Opus 5.5),no
+enlarged_thyroid,ent,swelling,목(갑상선),llm-draft(Claude Opus 5.5),no
+excessive_hunger,none,none,,llm-draft(Claude Opus 5.5),no
+extra_marital_contacts,none,none,병력,llm-draft(Claude Opus 5.5),no
+family_history,none,none,병력,llm-draft(Claude Opus 5.5),no
+fast_heart_rate,chest,none,두근거림 버튼이 없다,llm-draft(Claude Opus 5.5),no
+fatigue,whole,none,,llm-draft(Claude Opus 5.5),no
+fluid_overload,whole,swelling,,llm-draft(Claude Opus 5.5),no
+foul_smell_ofurine,none,none,,llm-draft(Claude Opus 5.5),no
+headache,head,pain,,llm-draft(Claude Opus 5.5),no
+high_fever,whole,fever,,llm-draft(Claude Opus 5.5),no
+hip_joint_pain,leg,pain,고관절을 다리로 본다,llm-draft(Claude Opus 5.5),no
+history_of_alcohol_consumption,none,none,병력,llm-draft(Claude Opus 5.5),no
+increased_appetite,none,none,,llm-draft(Claude Opus 5.5),no
+indigestion,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+inflammatory_nails,hand,swelling,,llm-draft(Claude Opus 5.5),no
+internal_itching,whole,rash,,llm-draft(Claude Opus 5.5),no
+irregular_sugar_level,none,none,검사값,llm-draft(Claude Opus 5.5),no
+irritability,none,none,,llm-draft(Claude Opus 5.5),no
+irritation_in_anus,none,none,항문 부위 버튼이 없다,llm-draft(Claude Opus 5.5),no
+itching,skin,rash,,llm-draft(Claude Opus 5.5),no
+joint_pain,arm|hand|leg|foot,pain,,llm-draft(Claude Opus 5.5),no
+knee_pain,leg,pain,,llm-draft(Claude Opus 5.5),no
+lack_of_concentration,none,none,,llm-draft(Claude Opus 5.5),no
+lethargy,whole,none,,llm-draft(Claude Opus 5.5),no
+loss_of_appetite,none,none,,llm-draft(Claude Opus 5.5),no
+loss_of_balance,head,dizzy,,llm-draft(Claude Opus 5.5),no
+loss_of_smell,ent,none,,llm-draft(Claude Opus 5.5),no
+malaise,whole,none,,llm-draft(Claude Opus 5.5),no
+mild_fever,whole,fever,,llm-draft(Claude Opus 5.5),no
+mood_swings,none,none,,llm-draft(Claude Opus 5.5),no
+movement_stiffness,whole,cantmove,,llm-draft(Claude Opus 5.5),no
+mucoid_sputum,chest,cough,,llm-draft(Claude Opus 5.5),no
+muscle_pain,whole,pain,,llm-draft(Claude Opus 5.5),no
+muscle_wasting,none,none,,llm-draft(Claude Opus 5.5),no
+muscle_weakness,whole,cantmove,,llm-draft(Claude Opus 5.5),no
+nausea,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+neck_pain,back,pain,목 근골격 통증을 허리·등으로 본다,llm-draft(Claude Opus 5.5),no
+nodal_skin_eruptions,skin,rash,,llm-draft(Claude Opus 5.5),no
+obesity,none,none,,llm-draft(Claude Opus 5.5),no
+pain_behind_the_eyes,eye,pain,,llm-draft(Claude Opus 5.5),no
+pain_during_bowel_movements,abdomen,pain,,llm-draft(Claude Opus 5.5),no
+pain_in_anal_region,abdomen,pain,항문 부위 버튼이 없어 배로 본다,llm-draft(Claude Opus 5.5),no
+painful_walking,leg|foot,pain,,llm-draft(Claude Opus 5.5),no
+palpitations,chest,none,,llm-draft(Claude Opus 5.5),no
+passage_of_gases,abdomen,none,,llm-draft(Claude Opus 5.5),no
+patches_in_throat,ent,none,,llm-draft(Claude Opus 5.5),no
+phlegm,chest,cough,,llm-draft(Claude Opus 5.5),no
+polyuria,none,none,,llm-draft(Claude Opus 5.5),no
+prominent_veins_on_calf,leg,swelling,,llm-draft(Claude Opus 5.5),no
+puffy_face_and_eyes,head|eye,swelling,,llm-draft(Claude Opus 5.5),no
+pus_filled_pimples,skin,rash,,llm-draft(Claude Opus 5.5),no
+receiving_blood_transfusion,none,none,병력,llm-draft(Claude Opus 5.5),no
+receiving_unsterile_injections,none,none,병력,llm-draft(Claude Opus 5.5),no
+red_sore_around_nose,skin,rash,,llm-draft(Claude Opus 5.5),no
+red_spots_over_body,skin|whole,rash,,llm-draft(Claude Opus 5.5),no
+redness_of_eyes,eye,none,충혈 버튼이 없다,llm-draft(Claude Opus 5.5),no
+restlessness,none,none,,llm-draft(Claude Opus 5.5),no
+runny_nose,ent,none,,llm-draft(Claude Opus 5.5),no
+rusty_sputum,chest,cough,,llm-draft(Claude Opus 5.5),no
+scurring,skin,rash,,llm-draft(Claude Opus 5.5),no
+shivering,whole,fever,오한,llm-draft(Claude Opus 5.5),no
+silver_like_dusting,skin,rash,,llm-draft(Claude Opus 5.5),no
+sinus_pressure,ent,pain,,llm-draft(Claude Opus 5.5),no
+skin_peeling,skin,rash,,llm-draft(Claude Opus 5.5),no
+skin_rash,skin,rash,,llm-draft(Claude Opus 5.5),no
+slurred_speech,head,none,말 어눌함은 레드플래그(stroke) 키워드로 잡는다,llm-draft(Claude Opus 5.5),no
+small_dents_in_nails,hand,none,,llm-draft(Claude Opus 5.5),no
+spinning_movements,head,dizzy,,llm-draft(Claude Opus 5.5),no
+spotting_urination,none,none,,llm-draft(Claude Opus 5.5),no
+stiff_neck,back,cantmove,,llm-draft(Claude Opus 5.5),no
+stomach_bleeding,abdomen,bleeding,,llm-draft(Claude Opus 5.5),no
+stomach_pain,abdomen,pain,,llm-draft(Claude Opus 5.5),no
+sunken_eyes,eye,none,,llm-draft(Claude Opus 5.5),no
+sweating,whole,none,,llm-draft(Claude Opus 5.5),no
+swelled_lymph_nodes,ent,swelling,목 림프절,llm-draft(Claude Opus 5.5),no
+swelling_joints,arm|hand|leg|foot,swelling,,llm-draft(Claude Opus 5.5),no
+swelling_of_stomach,abdomen,swelling,,llm-draft(Claude Opus 5.5),no
+swollen_blood_vessels,leg,swelling,,llm-draft(Claude Opus 5.5),no
+swollen_extremeties,arm|hand|leg|foot,swelling,,llm-draft(Claude Opus 5.5),no
+swollen_legs,leg,swelling,,llm-draft(Claude Opus 5.5),no
+throat_irritation,ent,pain,,llm-draft(Claude Opus 5.5),no
+toxic_look_(typhos),none,none,,llm-draft(Claude Opus 5.5),no
+ulcers_on_tongue,ent,pain,혀 궤양,llm-draft(Claude Opus 5.5),no
+unsteadiness,head,dizzy,,llm-draft(Claude Opus 5.5),no
+visual_disturbances,eye,none,,llm-draft(Claude Opus 5.5),no
+vomiting,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+watering_from_eyes,eye,none,,llm-draft(Claude Opus 5.5),no
+weakness_in_limbs,arm|leg,cantmove,,llm-draft(Claude Opus 5.5),no
+weakness_of_one_body_side,whole,cantmove|numb,편마비는 레드플래그(stroke) 키워드로도 잡는다,llm-draft(Claude Opus 5.5),no
+weight_gain,none,none,,llm-draft(Claude Opus 5.5),no
+weight_loss,none,none,,llm-draft(Claude Opus 5.5),no
+yellow_crust_ooze,skin,rash,,llm-draft(Claude Opus 5.5),no
+yellow_urine,none,none,,llm-draft(Claude Opus 5.5),no
+yellowing_of_eyes,eye,none,황달,llm-draft(Claude Opus 5.5),no
+yellowish_skin,skin,none,황달,llm-draft(Claude Opus 5.5),no
