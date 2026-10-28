@@ -11,11 +11,12 @@ import { useApp } from '../../state/AppState';
 import { checkTriage, extract, screenEmergency } from '../../api/worker';
 import type { ExtractResult, Intake, TriageResult } from '../../domain/triage';
 import { newIntake, REASON_KO } from '../../domain/triage';
-import type { BodyPart, Industry, Onset, Symptom, WorkType } from '../../domain/vocab';
-import { BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, pron, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
+import type { AgeGroup, BodyPart, Industry, Onset, Sex, Symptom, WorkType } from '../../domain/vocab';
+import { AGE_GROUPS, BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, pron, SEXES, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
 import type { District } from '../../domain/vocab';
 
 const STEP_COUNT = 4;
+const PAIN_SCORES = Array.from({ length: 11 }, (_, i) => i);
 
 export function IntakePage() {
   const app = useApp();
@@ -142,6 +143,33 @@ export function IntakePage() {
             <span className="label">{t('onsetQ')}</span>
             <SingleSelect options={Object.keys(ONSETS) as Onset[]} value={intake.onset} onChange={(v) => set({ onset: v })} label={(k) => term(ONSETS[k])} />
           </div>
+          {/* 통증 점수·손상 여부·나이대·성별은 응급도 모델 입력이다. 답하지 않으면 키가 없다. */}
+          <div className="field">
+            <label htmlFor="pain">{t('painQ')}</label>
+            <select
+              id="pain"
+              className="input"
+              value={intake.painScore ?? ''}
+              onChange={(e) => set({ painScore: Number(e.target.value) })}
+            >
+              <option value="" disabled>
+                —
+              </option>
+              {PAIN_SCORES.map((n) => (
+                <option key={n} value={n}>
+                  {n === 0 ? `0 · ${t('painNone')}` : n === 10 ? `10 · ${t('painWorst')}` : n}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <span className="label">{t('injuryQ')}</span>
+            <YesNoSeg
+              withUnknown={false}
+              value={intake.injury === undefined ? null : intake.injury ? 'yes' : 'no'}
+              onChange={(v) => set({ injury: v === 'yes' })}
+            />
+          </div>
           <div className="field">
             <span className="label">{t('workQ')}</span>
             <YesNoSeg value={intake.workRelated} onChange={(v) => set({ workRelated: v })} />
@@ -154,6 +182,14 @@ export function IntakePage() {
               <SingleSelect options={Object.keys(WORK_TYPES) as WorkType[]} value={intake.workType} onChange={(v) => set({ workType: v })} label={(k) => term(WORK_TYPES[k])} />
             </div>
           )}
+          <div className="field">
+            <span className="label">{t('ageGroupQ')}</span>
+            <SingleSelect options={Object.keys(AGE_GROUPS) as AgeGroup[]} value={intake.ageGroup ?? null} onChange={(v) => set({ ageGroup: v })} label={(k) => term(AGE_GROUPS[k])} />
+          </div>
+          <div className="field">
+            <span className="label">{t('sex')}</span>
+            <SingleSelect options={Object.keys(SEXES) as Sex[]} value={intake.sex ?? null} onChange={(v) => set({ sex: v })} label={(k) => term(SEXES[k])} />
+          </div>
           <div className="field">
             <span className="label">{t('industryQ')}</span>
             <SingleSelect options={Object.keys(INDUSTRIES) as Industry[]} value={intake.industry} onChange={(v) => set({ industry: v })} label={(k) => term(INDUSTRIES[k])} />

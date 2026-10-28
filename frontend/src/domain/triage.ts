@@ -3,7 +3,7 @@
 // - 증상 추출: LLM 자리. 데모에서는 다국어 키워드 사전으로 추출하고, 못 찾은 항목은 버튼으로 다시 묻는다.
 // - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과.
 
-import type { BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown } from './vocab';
+import type { AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown } from './vocab';
 
 export interface Intake {
   id: string;
@@ -17,6 +17,13 @@ export interface Intake {
   industry: Industry | null;
   district: District | null;
   createdAt: string;
+  // 응급도 모델 입력(backend backlog 10). 규칙은 쓰지 않는다. 답하지 않으면 키를 넣지 않는다(서버도 응답에서 뺀다).
+  ageGroup?: AgeGroup;
+  sex?: Sex;
+  injury?: boolean;
+  /** 0–10 정수 */
+  painScore?: number;
+  mental?: Mental;
 }
 
 export type EmergencyReason =
