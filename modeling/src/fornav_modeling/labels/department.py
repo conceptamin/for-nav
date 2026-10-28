@@ -270,6 +270,31 @@ def read_guide(tables_dir: Path) -> dict[str, GuideAnswer]:
     return guide
 
 
+INJURY_FLAGS = {"yes": True, "no": False, "any": None}  # combo_id의 손상 여부 → 버튼 입력값(any는 모름)
+TRAUMA_SYMPTOMS = ("cut", "burn", "chemical", "foreign")
+
+
+def combo_intake(cid: str) -> dict:
+    """combo_id → features/buttons.featurize에 넘길 입력 dict(부위 1, 증상 1, 손상 여부)."""
+    body_part, symptom, injury = cid.split("-")
+    return {"body_parts": [body_part], "symptoms": [symptom], "injury": INJURY_FLAGS[injury]}
+
+
+def is_trauma(cid: str) -> bool:
+    """외상·산재 조합: 손상 있음이거나 베임·화상·화학물질·이물감."""
+    _, symptom, injury = cid.split("-")
+    return injury == "yes" or symptom in TRAUMA_SYMPTOMS
+
+
+def guide_set(tables_dir: Path, splits_dir: Path) -> tuple[list[str], dict[str, GuideAnswer]]:
+    """진료과 검증셋: dept_valid.txt의 combo_id 순서와 정답. 두 파일이 어긋나면 TableError."""
+    guide = read_guide(tables_dir)
+    ids = (splits_dir / VALID_IDS).read_text().split()
+    if ids != sorted(guide):
+        raise TableError(f"{VALID_IDS}와 {GUIDE}가 다르다. scripts/build_tables.py를 다시 돌린다")
+    return ids, guide
+
+
 def same_combo(a: str, b: str) -> bool:
     """부위·증상이 같고 손상 여부가 같거나 한쪽이 any. 검증셋 조합을 학습 표에서 뺄 때 쓴다."""
     *ab, ai = a.split("-")

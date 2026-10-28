@@ -1,0 +1,993 @@
+{
+  "round": "v0",
+  "model_version": "dept_b/v0",
+  "seed": 20261028,
+  "architecture": {
+    "inputs": 29,
+    "hidden": 32,
+    "activation": "relu",
+    "outputs": 10,
+    "optimizer": "전체 배치 Adam, 학습률 0.01"
+  },
+  "hyperparams": {
+    "l2": 0.001,
+    "epochs": 125,
+    "cv_soft_cross_entropy": 1.360318,
+    "grid": {
+      "0.0001": {
+        "best_epochs": 125,
+        "best_loss": 1.395624
+      },
+      "0.001": {
+        "best_epochs": 125,
+        "best_loss": 1.360318
+      },
+      "0.01": {
+        "best_epochs": 125,
+        "best_loss": 1.397977
+      }
+    },
+    "rule": "학습 조합 5겹 교차검증(조합 단위), L2 [0.0001, 0.001, 0.01] × 에폭 25~3000(25 간격), 겹 밖 소프트 교차엔트로피 평균 최소"
+  },
+  "data": {
+    "button_department_sha256": "91c67ec7176d11ba306db43b242a1e98f8389acc71b99beddf64e0e09d67b25d",
+    "dept_valid_sha256": "867210c86a65c6e9cbae07035e11baf5fde6430a3d1c4e4890388c054c285b75",
+    "combos": {
+      "table": 129,
+      "train": 101,
+      "held_out": 28,
+      "guide": 29
+    },
+    "train_rows_after_any_split": 139
+  },
+  "input_features": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "results": {
+    "guide": {
+      "all": {
+        "top1": {
+          "n": 18,
+          "of": 29,
+          "value": 0.6207
+        },
+        "top2": {
+          "n": 23,
+          "of": 29,
+          "value": 0.7931
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            },
+            "top2": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 4,
+              "of": 4,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 4,
+              "of": 4,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            },
+            "top2": {
+              "n": 2,
+              "of": 4,
+              "value": 0.5
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 3,
+              "value": 0.6667
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "reviewed_yes": null,
+      "reviewed_no_rows": 29,
+      "trauma": {
+        "top1": {
+          "n": 6,
+          "of": 10,
+          "value": 0.6
+        },
+        "top2": {
+          "n": 7,
+          "of": 10,
+          "value": 0.7
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "non_trauma": {
+        "top1": {
+          "n": 12,
+          "of": 19,
+          "value": 0.6316
+        },
+        "top2": {
+          "n": 16,
+          "of": 19,
+          "value": 0.8421
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 4,
+              "of": 4,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 4,
+              "of": 4,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            },
+            "top2": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 3,
+              "of": 3,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 3,
+              "of": 3,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            },
+            "top2": {
+              "n": 2,
+              "of": 4,
+              "value": 0.5
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "trauma_ids": [
+        "back-pain-yes",
+        "chest-chemical-any",
+        "ent-pain-yes",
+        "eye-foreign-any",
+        "foot-swelling-yes",
+        "skin-burn-no",
+        "skin-burn-yes",
+        "skin-chemical-any",
+        "skin-cut-yes",
+        "whole-chemical-any"
+      ]
+    },
+    "held_out_table": {
+      "kl_mean": 0.2676,
+      "kl_mean_trauma": 0.1839,
+      "kl_mean_non_trauma": 0.3073,
+      "vs_table_top1": {
+        "top1": {
+          "n": 19,
+          "of": 28,
+          "value": 0.6786
+        },
+        "top2": {
+          "n": 26,
+          "of": 28,
+          "value": 0.9286
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 8,
+              "of": 8,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 8,
+              "of": 8,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 3,
+              "of": 6,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 5,
+              "of": 6,
+              "value": 0.8333
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 1,
+              "of": 3,
+              "value": 0.3333
+            },
+            "top2": {
+              "n": 3,
+              "of": 3,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "trauma_vs_table_top1": {
+        "top1": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 8,
+          "of": 9,
+          "value": 0.8889
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "trauma_rows": {
+        "n": 9,
+        "of": 28,
+        "value": 0.3214
+      }
+    },
+    "train_table": {
+      "kl_mean": 0.0512,
+      "kl_mean_trauma": 0.0467,
+      "kl_mean_non_trauma": 0.0575,
+      "vs_table_top1": {
+        "top1": {
+          "n": 90,
+          "of": 101,
+          "value": 0.8911
+        },
+        "top2": {
+          "n": 99,
+          "of": 101,
+          "value": 0.9802
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 39,
+              "of": 39,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 39,
+              "of": 39,
+              "value": 1.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 12,
+              "of": 14,
+              "value": 0.8571
+            },
+            "top2": {
+              "n": 13,
+              "of": 14,
+              "value": 0.9286
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 11,
+              "of": 15,
+              "value": 0.7333
+            },
+            "top2": {
+              "n": 14,
+              "of": 15,
+              "value": 0.9333
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 3,
+              "of": 3,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 3,
+              "of": 3,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 4,
+              "of": 6,
+              "value": 0.6667
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            },
+            "top2": {
+              "n": 4,
+              "of": 4,
+              "value": 1.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 4,
+              "of": 6,
+              "value": 0.6667
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "trauma_vs_table_top1": {
+        "top1": {
+          "n": 54,
+          "of": 59,
+          "value": 0.9153
+        },
+        "top2": {
+          "n": 59,
+          "of": 59,
+          "value": 1.0
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 30,
+              "of": 30,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 30,
+              "of": 30,
+              "value": 1.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 12,
+              "of": 13,
+              "value": 0.9231
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 6,
+              "of": 6,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "trauma_rows": {
+        "n": 59,
+        "of": 101,
+        "value": 0.5842
+      }
+    },
+    "unseen_examples": [
+      {
+        "input": {
+          "body_parts": [
+            "back"
+          ],
+          "symptoms": [
+            "bleeding"
+          ],
+          "injury": true
+        },
+        "sum": 1.0,
+        "top2": {
+          "ortho": 0.4651,
+          "family": 0.3415
+        }
+      },
+      {
+        "input": {
+          "body_parts": [
+            "arm"
+          ],
+          "symptoms": [
+            "rash"
+          ]
+        },
+        "sum": 1.0,
+        "top2": {
+          "derm": 0.5062,
+          "family": 0.386
+        }
+      },
+      {
+        "input": {
+          "body_parts": [
+            "teeth"
+          ],
+          "symptoms": [
+            "fever"
+          ]
+        },
+        "sum": 1.0,
+        "top2": {
+          "dental": 0.471,
+          "internal": 0.1622
+        }
+      },
+      {
+        "input": {
+          "body_parts": [
+            "whole"
+          ],
+          "symptoms": [
+            "bleeding"
+          ],
+          "injury": true
+        },
+        "sum": 1.0,
+        "top2": {
+          "family": 0.3378,
+          "internal": 0.2388
+        }
+      },
+      {
+        "input": {
+          "body_parts": [
+            "hand"
+          ],
+          "symptoms": [
+            "cut",
+            "bleeding"
+          ],
+          "injury": true
+        },
+        "sum": 1.0,
+        "top2": {
+          "ortho": 0.6212,
+          "family": 0.2077
+        }
+      },
+      {
+        "input": {
+          "body_parts": [
+            "head",
+            "whole"
+          ],
+          "symptoms": [
+            "fever",
+            "cough"
+          ],
+          "injury": false
+        },
+        "sum": 1.0,
+        "top2": {
+          "internal": 0.4089,
+          "ent": 0.3156
+        }
+      }
+    ]
+  }
+}

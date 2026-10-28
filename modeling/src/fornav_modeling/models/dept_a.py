@@ -202,16 +202,8 @@ def train_round(processed_dir: Path, splits_dir: Path, tables_dir: Path, model_d
 
 def evaluate_guide(model: DeptA, tables_dir: Path, splits_dir: Path) -> dict:
     """진료과 검증셋(backlog 05): 조합 하나(부위 1, 증상 1, 손상 여부) → 진료과 Top-k. 정답은 안내 페이지의 1순위."""
-    guide = dept.read_guide(tables_dir)
-    ids = (splits_dir / dept.VALID_IDS).read_text().split()
-    if ids != sorted(guide):
-        raise ValueError(f"{dept.VALID_IDS}와 {dept.GUIDE}가 다르다. scripts/build_tables.py를 다시 돌린다")
-    injury = {"yes": True, "no": False, "any": None}
-    intakes = []
-    for cid in ids:
-        body_part, symptom, inj = cid.split("-")
-        intakes.append({"body_parts": [body_part], "symptoms": [symptom], "injury": injury[inj]})
-    proba = model.predict_proba(featurize_many(intakes))
+    ids, guide = dept.guide_set(tables_dir, splits_dir)
+    proba = model.predict_proba(featurize_many([dept.combo_intake(cid) for cid in ids]))
     y = np.array([DEPARTMENTS.index(guide[cid].department) for cid in ids], dtype=np.int64)
     reviewed = np.array([guide[cid].reviewed for cid in ids])
     return {

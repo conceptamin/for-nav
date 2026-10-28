@@ -1,0 +1,125 @@
+{
+  "model_version": "dept_b/v0",
+  "seed": 20261028,
+  "architecture": {
+    "inputs": 29,
+    "hidden": 32,
+    "activation": "relu",
+    "outputs": 10,
+    "optimizer": "전체 배치 Adam, 학습률 0.01"
+  },
+  "hyperparams": {
+    "l2": 0.001,
+    "epochs": 125,
+    "cv_soft_cross_entropy": 1.360318,
+    "grid": {
+      "0.0001": {
+        "best_epochs": 125,
+        "best_loss": 1.395624
+      },
+      "0.001": {
+        "best_epochs": 125,
+        "best_loss": 1.360318
+      },
+      "0.01": {
+        "best_epochs": 125,
+        "best_loss": 1.397977
+      }
+    },
+    "rule": "학습 조합 5겹 교차검증(조합 단위), L2 [0.0001, 0.001, 0.01] × 에폭 25~3000(25 간격), 겹 밖 소프트 교차엔트로피 평균 최소"
+  },
+  "data": {
+    "button_department_sha256": "91c67ec7176d11ba306db43b242a1e98f8389acc71b99beddf64e0e09d67b25d",
+    "dept_valid_sha256": "867210c86a65c6e9cbae07035e11baf5fde6430a3d1c4e4890388c054c285b75",
+    "combos": {
+      "table": 129,
+      "train": 101,
+      "held_out": 28,
+      "guide": 29
+    },
+    "train_rows_after_any_split": 139
+  },
+  "input_features": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "status": "임시(backlog 07). 형식 확정은 backlog 08",
+  "files": {
+    "weights.json": "fd6930ea78abd24c7a562a5ba102d7ee076e76700ad73f715c80e80632cfa0ab"
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ]
+}
