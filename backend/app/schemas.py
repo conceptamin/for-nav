@@ -80,6 +80,8 @@ class ExtractResponse(CamelModel):
     intake: Intake
     # 추출로 채운 값이 있는지(프론트 Intake.tsx의 판단과 같다)
     filled: bool
+    # 서버 전용 선택 필드. 추출에 LLM을 썼는지, 키워드 사전으로 대체했는지
+    source: Literal["llm", "keywords"] | None = None
 
 
 # ---------------------------------------------------------------------------
