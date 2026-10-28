@@ -396,6 +396,7 @@ wheels = [
 name = "for-nav-modeling"
 version = "0.1.0"
 source = { virtual = "." }
+default-groups = ["dev", "notebook"]
 dependencies = [
     { name = "lightgbm" },
     { name = "numpy" },
