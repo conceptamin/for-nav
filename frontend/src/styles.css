@@ -286,6 +286,11 @@ p {
   gap: 10px;
 }
 
+/* 홈처럼 덩어리(줄·메뉴) 사이가 카드 간격과 같아야 할 때 */
+.stack.wide {
+  gap: 16px;
+}
+
 .row {
   display: flex;
   gap: 8px;

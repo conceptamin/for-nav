@@ -121,7 +121,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       clearMyData: () => {
         removeKey(localStorage, DEVICE_KEY);
         setDevice(initialDevice);
-        setSession((s) => ({ ...initialSession, lang: s.lang, consents: s.consents }));
+        // 언어·동의는 남기고 비회원으로 돌아간다. 로그인 화면으로 되돌리지 않는다(S-13에서 지운 뒤 그 자리에 머문다)
+        setSession((s) => ({ ...initialSession, lang: s.lang, consents: s.consents, mode: 'guest' }));
       },
     };
   }, [session, device, meta, patch]);

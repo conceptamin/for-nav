@@ -9,6 +9,7 @@ import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
 import { useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
+import { LOCALES, SEXES } from '../../domain/vocab';
 
 /** 온보딩 단계: 1 언어 · 2 동의 · 3 로그인 · 4 프로필 */
 const ONBOARDING_STEPS = 4;
@@ -136,7 +137,9 @@ export function SignupPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = params.get('next') ?? '/home';
-  const [form, setForm] = useState(false);
+  // 회원이 /my의 '프로필 수정'으로 들어오면(next가 있고 프로필이 있다) 로그인 화면을 건너뛰고 프로필 단계로 간다
+  const editing = app.mode === 'member' && Boolean(app.profile) && params.has('next');
+  const [form, setForm] = useState(editing);
   const [p, setP] = useState<Profile>(
     app.profile ?? { birthDate: '', sex: 'male', height: null, weight: null, drinking: null, smoking: null },
   );
@@ -145,7 +148,7 @@ export function SignupPage() {
   const num = (v: string) => (v ? Math.max(0, Number(v)) || null : null);
   useScreenBar({
     title: form ? t('profileTitle') : t('loginTitle'),
-    onBack: () => (form ? setForm(false) : navigate('/consent')),
+    onBack: () => (form ? (editing ? navigate(next) : setForm(false)) : navigate('/consent')),
   });
 
   if (!form) {
@@ -261,29 +264,61 @@ export function SignupPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-04
+// S-04 홈. 배치는 design.md "홈과 내 화면": 인사 → 나 한 줄 → 주 동작 → 최근 메모(있을 때) → 메뉴.
+// 나 한 줄에는 출생 연도만 쓴다(어깨 너머로 보이는 화면). 최근 메모 줄에 판정은 보이지 않는다.
 // ---------------------------------------------------------------------------
 export function HomePage() {
   const app = useApp();
-  const { t } = useT();
+  const { t, term } = useT();
   const menu = [
-    { to: '/intake', ico: '🤕', title: t('menuSick'), sub: t('menuSickSub'), primary: true },
     { to: '/guide', ico: '🏥', title: t('menuGuide'), sub: t('menuGuideSub') },
     { to: '/coverage', ico: '💳', title: t('menuCoverage'), sub: t('menuCoverageSub') },
     { to: '/center-request', ico: '🤝', title: t('menuCenter'), sub: t('menuCenterSub') },
-    { to: '/my', ico: '📄', title: t('menuMy'), sub: t('menuMySub') },
+    { to: '/my', ico: '👤', title: t('menuMy'), sub: t('menuMySub') },
   ];
+  const profile = app.mode === 'member' ? app.profile : null;
+  const recent = app.reports[0];
   return (
-    <div>
-      <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
-        <h1 style={{ margin: 0 }}>{t('homeHello')}</h1>
-        <Link to="/signup" className="pill low" style={{ textDecoration: 'none' }}>
-          {app.mode === 'member' ? t('modeMember') : t('modeGuest')}
+    <div className="stack wide">
+      <h1 style={{ margin: 0 }}>{t('homeHello')}</h1>
+      {profile ? (
+        <Link to="/my" className="row link">
+          <span>
+            👤 {term(SEXES[profile.sex])} · {profile.birthDate.slice(0, 4)}
+          </span>
+          <span className="small">›</span>
         </Link>
-      </div>
+      ) : (
+        <Link to="/signup" className="row link">
+          <span>
+            👤 {t('modeGuest')} · {t('myProfileCreate')}
+          </span>
+          <span className="small">›</span>
+        </Link>
+      )}
+      <nav className="menu">
+        <Link to="/intake" className="primary">
+          <span className="ico" aria-hidden>
+            🤕
+          </span>
+          <span>
+            <strong>{t('menuSick')}</strong>
+            <small>{t('menuSickSub')}</small>
+          </span>
+        </Link>
+      </nav>
+      {recent && (
+        <Link to={`/report/${recent.id}`} className="row link">
+          <span>
+            🩺 {t('homeRecent')} · {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { month: '2-digit', day: '2-digit' })}
+            <span className="small muted"> · {recent.rows.find((row) => row.field === 'symptoms')?.valueNative ?? ''}</span>
+          </span>
+          <span className="small">›</span>
+        </Link>
+      )}
       <nav className="menu">
         {menu.map((m) => (
-          <Link key={m.to} to={m.to} className={m.primary ? 'primary' : undefined}>
+          <Link key={m.to} to={m.to}>
             <span className="ico" aria-hidden>
               {m.ico}
             </span>
