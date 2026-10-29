@@ -76,7 +76,6 @@ export function WorkerLayout() {
                 <span className="title">{bar.title ?? appName}</span>
               </>
             )}
-            <span className="badge">{app.lang ? t('demoBadge') : 'Demo'}</span>
             {app.lang && (
               <select
                 aria-label={t('changeLang')}

@@ -45,7 +45,7 @@ export function LanguagePage() {
           </button>
         ))}
         <p className="footer-note" style={{ textAlign: 'center' }}>
-          <Link to="/center">센터 상담원 화면(데모) →</Link>
+          <Link to="/center">센터 상담원 화면 →</Link>
         </p>
       </div>
     </div>

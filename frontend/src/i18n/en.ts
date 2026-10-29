@@ -4,7 +4,6 @@
 export const en = {
   appName: 'Ulsan Medical Navigator',
   appTag: 'Medical help for foreign workers in Ulsan',
-  demoBadge: 'Demo',
   back: 'Back',
   next: 'Next',
   home: 'Home',
@@ -22,7 +21,6 @@ export const en = {
   // S-01
   langTitle: 'Choose your language',
   langHint: 'You can change it later at the top of the screen.',
-  centerDemoLink: 'Centre staff screen (demo)',
 
   // S-02
   consentTitle: 'Before you start',
@@ -101,7 +99,7 @@ export const en = {
   profileTitle: 'Simple profile',
   loginGoogle: 'Sign in with Google',
   loginGuest: 'Continue as a guest',
-  loginDemoNote: 'Demo: this button does not contact Google. It only starts a member profile on this phone.',
+  loginDemoNote: 'This button does not contact Google. It only starts a member profile on this phone.',
   groupHead: 'Head and face',
   groupTrunk: 'Body',
   groupLimbs: 'Arms and legs',

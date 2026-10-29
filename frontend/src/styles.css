@@ -26,7 +26,7 @@
   --bg-2: #eef3f6; /* 들어간 홈의 바탕(원문 상자, 막대 트랙), 낮음 칩. --bg와 --card 사이 */
   --bg-3: #f2f6f9; /* 표 머리, 행 강조. --card보다 한 단계 어둡다 */
   --live-bg: #fff8e1; /* 실제 전송 행 */
-  --on-brand-soft: rgb(255 255 255 / 20%); /* 진한 바탕 위의 옅은 흰 칸(데모 배지, 첫 메뉴 아이콘) */
+  --on-brand-soft: rgb(255 255 255 / 20%); /* 진한 바탕 위의 옅은 흰 칸(첫 메뉴 아이콘) */
   --chart-1: var(--brand); /* 차트 계열색. 범례 글자와 함께 쓴다 */
   --chart-2: #e08a00;
   --chart-3: #9aa8b2;
@@ -153,16 +153,6 @@ p {
   padding: 0 8px;
   font: inherit;
   font-size: 0.9rem;
-}
-
-.badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--on-brand-soft);
-  color: inherit;
 }
 
 .w-main {
