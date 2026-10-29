@@ -115,15 +115,15 @@ p {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: var(--brand);
-  color: var(--on-brand);
+  background: var(--bg); /* 바닥색 그대로. 띠가 아니라 ← 하나가 놓인 자리다(심토미 기준, backlog 15) */
+  color: var(--ink);
 }
 
 .w-header .title {
   flex: 1;
   font-weight: 700;
   font-size: 1rem;
-  color: var(--on-brand);
+  color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -138,7 +138,7 @@ p {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--on-brand);
+  color: var(--ink);
   font: inherit;
   font-size: 1.5rem;
   line-height: 1;
@@ -153,6 +153,9 @@ p {
   padding: 0 8px;
   font: inherit;
   font-size: 0.9rem;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--clay-sm);
 }
 
 .w-main {
@@ -442,6 +445,17 @@ p {
   min-height: 56px;
 }
 
+/* 선택지가 둘셋뿐이고 글자가 짧으면(성별·음주·흡연) 가로 칸, 가운데 정렬 */
+.options.inline {
+  flex-direction: row;
+}
+
+.options.inline .chip {
+  width: auto;
+  flex: 1 1 0;
+  justify-content: center;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -511,23 +525,34 @@ textarea {
   display: block;
 }
 
-/* 동의 항목 줄: 체크 줄(48px) + 오른쪽 › 전문 보기 */
+/* 동의 항목 줄: 체크 + 제목 + 오른쪽 › 전문 보기가 한 면(떠 있음)이다. 체크되면 줄 전체가 들어간다 */
 .check-row {
   display: flex;
-  gap: 8px;
   align-items: stretch;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--clay-sm);
 }
 
-.check-row .check {
+.check-row:has(:checked) {
+  background: var(--brand-2);
+  box-shadow: var(--clay-in);
+}
+
+.check-row .check,
+.check-row .check:has(:checked) {
   flex: 1;
   align-items: center;
   min-height: 48px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .check-row .btn {
   min-width: 48px;
   padding: 0;
   font-size: 1.5rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 /* 구분선. 면이 아니라 선이다 */

@@ -79,14 +79,17 @@ export function SingleSelect<K extends string>({
   value,
   onChange,
   label,
+  inline,
 }: {
   options: K[];
   value: K | null;
   onChange: (v: K) => void;
   label: (k: K) => string;
+  /** 선택지가 둘셋뿐이고 글자가 짧을 때(성별·음주·흡연) 가로 칸 */
+  inline?: boolean;
 }) {
   return (
-    <div className="options" role="group">
+    <div className={inline ? 'options inline' : 'options'} role="group">
       {options.map((o) => (
         <Chip key={o} pressed={value === o} onClick={() => onChange(o)}>
           {label(o)}

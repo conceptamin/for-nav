@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { SingleSelect, Steps } from '../../components/common';
+import { SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
@@ -11,15 +11,13 @@ import { useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
 import { LOCALES, SEXES } from '../../domain/vocab';
 
-/** 온보딩 단계: 1 언어 · 2 동의 · 3 로그인 · 4 프로필 */
-const ONBOARDING_STEPS = 4;
-
 // ---------------------------------------------------------------------------
-// S-01: 위를 비우고 가운데 로고, 언어 버튼은 바닥에 세로로.
+// S-01: 위를 비우고 가운데 로고, 언어 버튼은 바닥에 세로로. 로고 화면이라 앱 바가 없다.
 // ---------------------------------------------------------------------------
 export function LanguagePage() {
   const app = useApp();
   const navigate = useNavigate();
+  useScreenBar({ hidden: true });
   const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
   return (
     <div className="w-screen">
@@ -55,7 +53,7 @@ export function LanguagePage() {
 
 // ---------------------------------------------------------------------------
 // S-02: 이용약관·민감정보·외부 AI 고지를 분리해 각각 동의받는다.
-// 전체 동의 한 줄 → 구분선 → 항목 줄(› 전문 보기는 같은 화면 안에서 펼친다) → 바닥 다음.
+// 전체 동의 한 줄 → 구분선 → 항목 줄(체크 + 제목 + › 가 한 면, 전문은 같은 화면 안에서 펼친다) → 바닥 다음. 단계 원은 없다.
 // ---------------------------------------------------------------------------
 export function ConsentPage() {
   const app = useApp();
@@ -74,7 +72,6 @@ export function ConsentPage() {
 
   return (
     <div className="w-screen">
-      <Steps count={ONBOARDING_STEPS} current={1} />
       <h1>{t('consentTitle')}</h1>
       <label className="check">
         <input type="checkbox" checked={all} onChange={(e) => setC({ terms: e.target.checked, sensitive: e.target.checked, ai: e.target.checked })} />
@@ -146,8 +143,10 @@ export function SignupPage() {
   const [sexChosen, setSexChosen] = useState(Boolean(app.profile));
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(p.birthDate) && sexChosen;
   const num = (v: string) => (v ? Math.max(0, Number(v)) || null : null);
+  // 로그인은 로고 화면이라 앱 바가 없다. 프로필 단계에서만 ← 가 있다
   useScreenBar({
     title: form ? t('profileTitle') : t('loginTitle'),
+    hidden: !form,
     onBack: () => (form ? (editing ? navigate(next) : setForm(false)) : navigate('/consent')),
   });
 
@@ -187,7 +186,6 @@ export function SignupPage() {
 
   return (
     <div className="w-screen">
-      <Steps count={ONBOARDING_STEPS} current={3} />
       <h1>{t('profileTitle')}</h1>
       <p className="small muted">🔒 {t('signupNoVisa')}</p>
       <div className="field">
@@ -201,6 +199,7 @@ export function SignupPage() {
           {t('sex')} <span className="small muted">({t('required')})</span>
         </span>
         <SingleSelect
+          inline
           options={['male', 'female'] as Profile['sex'][]}
           value={sexChosen ? p.sex : null}
           onChange={(s) => {
@@ -229,6 +228,7 @@ export function SignupPage() {
           {t('drinking')} <span className="small muted">({t('optional')})</span>
         </span>
         <SingleSelect
+          inline
           options={['none', 'sometimes', 'often'] as NonNullable<Profile['drinking']>[]}
           value={p.drinking}
           onChange={(v) => setP({ ...p, drinking: v })}
@@ -240,6 +240,7 @@ export function SignupPage() {
           {t('smoking')} <span className="small muted">({t('optional')})</span>
         </span>
         <SingleSelect
+          inline
           options={['no', 'yes', 'quit'] as NonNullable<Profile['smoking']>[]}
           value={p.smoking}
           onChange={(v) => setP({ ...p, smoking: v })}
