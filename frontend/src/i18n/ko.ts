@@ -5,7 +5,6 @@ import type { MessageKey } from './en';
 export const ko: Record<MessageKey, string> = {
   appName: '울산 의료 내비게이터',
   appTag: '울산 외국인 근로자를 위한 병원 이용 안내',
-  demoBadge: '데모',
   back: '뒤로',
   next: '다음',
   home: '홈',
@@ -22,7 +21,6 @@ export const ko: Record<MessageKey, string> = {
 
   langTitle: '언어를 선택하세요',
   langHint: '화면 위쪽에서 언제든 바꿀 수 있습니다.',
-  centerDemoLink: '센터 상담원 화면(데모)',
 
   consentTitle: '시작하기 전에',
   consentIntro: '읽고 동의해 주세요. 입력한 정보는 안내에만 씁니다.',
@@ -97,7 +95,7 @@ export const ko: Record<MessageKey, string> = {
   profileTitle: '간단 프로필',
   loginGoogle: 'Google 계정으로 로그인',
   loginGuest: '비회원으로 계속',
-  loginDemoNote: '데모입니다. 이 버튼은 Google에 연결하지 않고, 이 휴대폰에 회원 프로필만 만듭니다.',
+  loginDemoNote: '이 버튼은 Google에 연결하지 않고, 이 휴대폰에 회원 프로필만 만듭니다.',
   groupHead: '머리·얼굴',
   groupTrunk: '몸통',
   groupLimbs: '팔·다리',

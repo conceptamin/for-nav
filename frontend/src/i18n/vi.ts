@@ -5,7 +5,6 @@ import type { MessageKey } from './en';
 export const vi: Record<MessageKey, string> = {
   appName: 'Hướng dẫn y tế Ulsan',
   appTag: 'Hỗ trợ khám bệnh cho lao động nước ngoài tại Ulsan',
-  demoBadge: 'Bản thử',
   back: 'Quay lại',
   next: 'Tiếp',
   home: 'Trang chủ',
@@ -22,7 +21,6 @@ export const vi: Record<MessageKey, string> = {
 
   langTitle: 'Chọn ngôn ngữ',
   langHint: 'Bạn có thể đổi lại ở phía trên màn hình.',
-  centerDemoLink: 'Màn hình nhân viên trung tâm (bản thử)',
 
   consentTitle: 'Trước khi bắt đầu',
   consentIntro: 'Vui lòng đọc và đồng ý. Thông tin của bạn chỉ dùng để hướng dẫn bạn.',
@@ -97,7 +95,7 @@ export const vi: Record<MessageKey, string> = {
   profileTitle: 'Hồ sơ đơn giản',
   loginGoogle: 'Đăng nhập bằng Google',
   loginGuest: 'Tiếp tục với tư cách khách',
-  loginDemoNote: 'Bản demo: nút này không kết nối với Google. Nó chỉ tạo hồ sơ thành viên trên điện thoại này.',
+  loginDemoNote: 'Nút này không kết nối với Google. Nó chỉ tạo hồ sơ thành viên trên điện thoại này.',
   groupHead: 'Đầu và mặt',
   groupTrunk: 'Thân mình',
   groupLimbs: 'Tay và chân',

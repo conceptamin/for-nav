@@ -1,6 +1,6 @@
 # 11. 화면의 "데모" 표시 지우기
 
-상태: 대기
+상태: 완료(브라우저 확인은 PR 검토에서)
 의존: 없음
 
 ## 목표
@@ -27,15 +27,25 @@
 - 지우는 문구 키: `demoBadge`, `centerDemoLink`. 바꾸는 문구 키: `loginDemoNote`. 새 키 없음
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] 브라우저 탭 제목에 `(데모)`가 없다
+- [x] `npm run build` 통과
+- [x] 브라우저 탭 제목에 `(데모)`가 없다
 - [ ] 단독 모드 en·vi·ko에서 `/`, `/consent`, `/signup`, `/home`, `/intake`의 앱 바와 각주에 `데모`·`Demo`·`demo`·`Bản thử`가 없다
 - [ ] `/center`, `/center/cases/:id`, `/center/stats`에 `데모` 글자가 없다
 - [ ] `접수함 초기화`가 단독 모드와 API 모드(`VITE_API_BASE=/api`) 둘 다에서 지금처럼 전송 사례와 상태 변경을 지운다. API 모드에서 서버를 끄면 `.notice.danger.with-retry`에 새 실패 문구가 뜬다
-- [ ] `grep -rn "데모\|Demo\|demo\|Bản thử" index.html src/i18n src/pages src/components` 결과가 주석과 함수·변수 이름뿐이다
+- [x] `grep -rn "데모\|Demo\|demo\|Bản thử" index.html src/i18n src/pages src/components` 결과가 주석과 함수·변수 이름뿐이다
 - [ ] 360px en·vi·ko에서 앱 바 오른쪽(언어 선택)이 배지 없이도 제자리이고 가로 넘침 없음
 
 ## 결과
+- 실행(2026-10-29, 브랜치 `frontend/demo-label`)
+  - `npm run build` → 통과
+  - `grep -rn "데모\|Demo\|demo\|Bản thử" index.html src/i18n src/pages src/components` → 주석 3곳, `resetDemo` import·호출, i18n 키 이름 `loginDemoNote`뿐. 화면 문구 없음
+  - 빌드 결과물 `dist/assets/*.js`에서 같은 패턴 → 키 이름 `loginDemoNote`만 남음(화면에 보이지 않는다). `접수함 초기화`·`센터 상담원 화면 →`·`익명 집계입니다`는 들어 있음
+  - 단독 모드 개발 서버의 `<title>` → `울산 외국인 의료 내비게이터`
+- 확인하지 못한 것: Chrome 확장이 연결되지 않고 헤드리스 브라우저도 없어 360px en·vi·ko 앱 바 모양, 센터 화면, API 모드의 초기화 실패 문구는 눈으로 보지 못했다. 완료 기준의 남은 네 칸은 PR 검토 때 브라우저에서 본다. 바뀐 것이 문구 삭제·치환뿐이라 배치는 앱 바 오른쪽의 배지 하나가 빠진 것 외에 같다
+- 결정 사항
+  - i18n 키 이름 `loginDemoNote`와 함수 `resetDemo`·`resetCenterDemoLocal`, API 경로 `/api/center/reset`은 그대로 둔다. 화면에 보이지 않고, 백엔드를 건드리지 않기 위해서다
+  - `.badge`는 쓰는 곳이 없어져 `styles.css`에서 지웠다. `--on-brand-soft`는 홈 첫 메뉴 아이콘 칸이 아직 써서 남긴다
+  - `design.md` 온보딩 표의 S-03 설명은 "데모 로그인"이라는 개념 설명은 남기고, 각주가 알리는 내용만 "Google에 연결하지 않음"으로 바꿨다
 
 ## 메모
 - 2026-10-29 프론트 피드백 4번("데모 표시 삭제(시연 영상 촬영시)")에서 왔다. 1번(명칭)·3번(로고)은 결정이 필요해 별도 항목으로, 2번(홈·개인 화면)은 12번이다

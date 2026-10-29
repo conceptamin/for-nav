@@ -21,7 +21,7 @@ const TEXT = {
   loading: '목록을 불러오는 중입니다.',
   notLoaded: '목록을 아직 받지 못했습니다.',
   statusFailed: '상태를 바꾸지 못했습니다. 서버 연결을 확인해 주세요.',
-  resetFailed: '데모를 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
+  resetFailed: '접수함을 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
   statsFailed: '통계를 불러오지 못했습니다. 서버 연결을 확인해 주세요.',
   statsLoading: '통계를 불러오는 중입니다.',
 } as const;
@@ -52,7 +52,6 @@ export function CenterLayout() {
           </NavLink>
           <NavLink to="/center/stats">통계</NavLink>
         </nav>
-        <span className="pill low">데모 · 로그인 생략</span>
         <a href="/" target="_blank" rel="noreferrer" className="small">
           근로자 화면 열기 ↗
         </a>
@@ -169,10 +168,10 @@ export function InboxPage() {
           type="button"
           disabled={resetting}
           onClick={() => {
-            if (window.confirm('데모로 전송한 사례와 상태 변경을 모두 지울까요?')) void reset();
+            if (window.confirm('전송된 사례와 상태 변경을 모두 지울까요?')) void reset();
           }}
         >
-          데모 초기화
+          접수함 초기화
         </button>
       </div>
       {resetFailed && <Failure text={TEXT.resetFailed} onRetry={() => void reset()} busy={resetting} />}
@@ -486,7 +485,7 @@ export function StatsPage() {
       {state.kind === 'error' && <Failure text={TEXT.statsFailed} onRetry={() => setAttempt((n) => n + 1)} busy={false} />}
       {state.kind === 'ok' && <StatsView s={state.stats} />}
       <p className="footer-note">
-        데모 mock 익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 울산시 담당자는 같은 화면을 읽기 전용으로 사용합니다(실서비스).
+        익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 울산시 담당자는 같은 화면을 읽기 전용으로 사용합니다(실서비스).
       </p>
     </div>
   );
