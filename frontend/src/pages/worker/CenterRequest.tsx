@@ -221,6 +221,7 @@ export function MyPage() {
     : [];
   return (
     <div>
+      <h1>{t('myTitle')}</h1>
       {app.mode !== 'member' && <div className="notice warn">{t('repSavedGuest')}</div>}
       <section className="card">
         <h2>{t('myProfile')}</h2>

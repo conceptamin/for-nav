@@ -1,5 +1,6 @@
-// 근로자 영역 레이아웃: 앱 바(← + 화면 이름 + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드.
-// 화면 이름과 ← 동작은 화면이 useScreenBar로 등록한다(design.md "화면 골격(Figma 기준)" 앱 바).
+// 근로자 영역 레이아웃: 앱 바(← + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드.
+// 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
+// title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다(design.md "화면 골격(Figma 기준)" 앱 바).
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
@@ -8,11 +9,11 @@ import { useApp } from '../state/AppState';
 import type { Lang } from '../domain/vocab';
 
 export interface ScreenBar {
-  /** 앱 바 가운데 화면 이름. 없으면 앱 이름 */
+  /** 화면 이름. 브라우저 탭 제목에 쓴다(앱 바에는 보이지 않는다) */
   title?: string;
   /** ←를 눌렀을 때. 없으면 /home */
   onBack?: () => void;
-  /** true면 앱 바를 그리지 않는다(분석 중 화면) */
+  /** true면 앱 바를 그리지 않는다(로고 화면 S-01·S-03, 분석 중 화면) */
   hidden?: boolean;
 }
 
@@ -55,9 +56,14 @@ export function WorkerLayout() {
   }
 
   const show119Bar = pathname !== '/emergency';
-  // 홈과 S-01은 ← 대신 앱 이름(홈 링크). 그 밖은 ← + 화면 이름
+  // 홈은 ← 대신 앱 이름(홈 링크). 그 밖은 ← 하나. S-01은 앱 바를 숨긴다
   const isRoot = pathname === '/' || pathname === '/home';
   const appName = app.lang ? t('appName') : '울산 외국인 의료 내비게이터';
+
+  // 화면 이름은 브라우저 탭 제목으로만 쓴다
+  useEffect(() => {
+    document.title = bar.title ? `${bar.title} · ${appName}` : appName;
+  }, [bar.title, appName]);
 
   return (
     <ScreenBarContext.Provider value={setBarStable}>
@@ -73,7 +79,7 @@ export function WorkerLayout() {
                 <button type="button" className="back" aria-label={t('back')} onClick={bar.onBack ?? (() => navigate('/home'))}>
                   ←
                 </button>
-                <span className="title">{bar.title ?? appName}</span>
+                <span className="title" />
               </>
             )}
             {app.lang && (
