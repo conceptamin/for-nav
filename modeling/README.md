@@ -112,6 +112,7 @@ uv run python scripts/train_dept_b.py                    # models/dept_b/v0
 uv run python scripts/tune_ensemble.py                   # models/ensemble/v1/ensemble.json
 uv run python scripts/evaluate.py --model <acuity|dept_a|dept_b|ensemble> --round <v0|v1>   # test 1회, "최종"
 uv run python scripts/export_models.py                   # models/{acuity,dept_a,dept_b,ensemble}/v2/
+uv run python scripts/experiment_vitals.py               # 발표용 비교: 버튼 vs 버튼 + 활력징후(backlog 09). valid만, 서빙과 무관
 ```
 
 ## 아티팩트와 `predict`
@@ -165,6 +166,7 @@ modeling/
     features/              버튼 입력 → 피처 벡터. 학습과 서빙이 같은 함수를 쓴다
     labels/                KTAS → 3단계, 질환·버튼 조합 → 진료과
     models/                응급도, 진료과 모델 A·B, 앙상블
+    experiment_vitals.py   발표용 활력징후 비교 실험(backlog 09). 서빙과 무관
   scripts/                 명령 하나 = 일 하나. 패키지 함수를 부르기만 한다
   data/
     raw/  processed/  test/   git 제외(폴더만 .gitkeep)
