@@ -63,10 +63,10 @@ export const en = {
   menuCoverageSub: 'Where to ask about costs first',
   menuCenter: 'Ask the support centre',
   menuCenterSub: 'Booking, interpretation, advice',
-  menuMy: 'My reports',
-  menuMySub: 'Saved reports on this phone',
+  menuMy: 'My info',
+  menuMySub: 'Profile, settings, my reports',
+  homeRecent: 'Latest report',
   modeGuest: 'Guest',
-  modeMember: 'Member',
 
   // S-05
   intakeTitle: 'Tell us about your symptoms',
@@ -253,7 +253,13 @@ export const en = {
   cenCaseNo: 'Request number',
 
   // S-13
-  myTitle: 'My reports',
+  myTitle: 'My info',
+  myProfile: 'Profile',
+  myProfileEdit: 'Edit profile',
+  myProfileCreate: 'Create a profile',
+  myProfileGuestHint: 'With a profile you can send requests to the support centre and keep reports on this phone.',
+  mySettings: 'Settings',
+  myReports: 'My reports',
   myEmpty: 'No reports yet.',
   myCases: 'Requests sent to the centre',
   myDelete: 'Delete all my data on this phone',
