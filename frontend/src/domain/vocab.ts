@@ -1,18 +1,37 @@
 // 고정 어휘: 신체 부위·증상·진료과·업종·구군 등.
-// 모든 항목은 한국어(의료진·센터 표시), 영어·베트남어(근로자 표시), 발음 표기(전화 스크립트용)를 함께 가진다.
+// 여기에는 한국어(의료진·센터 표시)와 발음 표기(전화 스크립트용)를 두고, 근로자 모국어 표기는 lang/<언어>.ts에서 합친다.
 // 한국어를 고른 근로자는 한국어 표기를 그대로 보고, 발음 표기는 쓰지 않는다.
 
-export type Lang = 'en' | 'vi' | 'ko';
-export const LANGS: Lang[] = ['en', 'vi', 'ko'];
+import { PACKS } from './lang';
+import type { LangPack } from './lang/types';
 
-export interface Term {
+// 순서는 동기화 테스트 기대값(parity.json)의 순서다. 처음 세 언어 뒤에 붙여 기존 기대값이 바뀌지 않게 한다.
+// 화면의 언어 목록 순서는 i18n/index.ts의 LANGUAGE_OPTIONS가 정한다.
+export const LANGS = ['en', 'vi', 'ko', 'ne', 'ru', 'mn', 'my', 'si', 'ar', 'uz', 'ja', 'zh-CN', 'zh-TW', 'kk', 'km', 'ky', 'th', 'fr', 'tl', 'id'] as const;
+export type Lang = (typeof LANGS)[number];
+/** 한국어를 뺀 근로자 모국어. 언어마다 lang/<언어>.ts 내용 묶음이 있다 */
+export type NativeLang = Exclude<Lang, 'ko'>;
+const NATIVE_LANGS = LANGS.filter((l): l is NativeLang => l !== 'ko');
+
+interface KoTerm {
   ko: string;
-  en: string;
-  vi: string;
-  /** 영어 사용자용 로마자 발음 */
+  /** 로마자 발음. 베트남어를 뺀 모든 외국어 사용자에게 보인다 */
   roman: string;
   /** 베트남어 사용자용 발음 표기 */
   viPron: string;
+}
+
+/** 한국어·발음 표기에 모든 근로자 언어의 표기를 더한 어휘 항목 */
+export type Term = KoTerm & Record<Lang, string>;
+
+/** 한국어 표에 각 언어 묶음의 표기를 합친다. 키 순서는 한국어 표를 따른다. */
+function withNative<K extends string>(base: Record<K, KoTerm>, pick: (p: LangPack) => Record<K, string>): Record<K, Term> {
+  const out = {} as Record<K, Term>;
+  for (const k of Object.keys(base) as K[]) {
+    const native = Object.fromEntries(NATIVE_LANGS.map((l) => [l, pick(PACKS[l])[k]])) as Record<NativeLang, string>;
+    out[k] = { ...base[k], ...native };
+  }
+  return out;
 }
 
 /** 근로자 언어에 맞는 발음 표기. 한국어 사용자는 발음 표기가 필요 없어 빈 문자열을 돌려준다. */
@@ -22,117 +41,171 @@ export function pron(term: Term, lang: Lang): string {
 }
 
 /** 날짜·시간 표시 로캘 */
-export const LOCALES: Record<Lang, string> = { en: 'en-GB', vi: 'vi-VN', ko: 'ko-KR' };
+export const LOCALES: Record<Lang, string> = {
+  en: 'en-GB',
+  vi: 'vi-VN',
+  ko: 'ko-KR',
+  ne: 'ne-NP',
+  ru: 'ru-RU',
+  mn: 'mn-MN',
+  my: 'my-MM',
+  si: 'si-LK',
+  ar: 'ar-AE',
+  uz: 'uz-Latn-UZ',
+  ja: 'ja-JP',
+  'zh-CN': 'zh-CN',
+  'zh-TW': 'zh-TW',
+  kk: 'kk-KZ',
+  km: 'km-KH',
+  ky: 'ky-KG',
+  th: 'th-TH',
+  fr: 'fr-FR',
+  tl: 'fil-PH',
+  id: 'id-ID',
+};
 
-export const BODY_PARTS = {
-  head: { ko: '머리', en: 'Head', vi: 'Đầu', roman: 'meo-ri', viPron: 'mơ-ri' },
-  eye: { ko: '눈', en: 'Eye', vi: 'Mắt', roman: 'nun', viPron: 'nun' },
-  ent: { ko: '귀·코·목', en: 'Ear, nose, throat', vi: 'Tai, mũi, họng', roman: 'gwi, ko, mok', viPron: 'guy, cô, mốc' },
-  teeth: { ko: '이·잇몸', en: 'Teeth, gums', vi: 'Răng, lợi', roman: 'i, in-mom', viPron: 'i, in-môm' },
-  chest: { ko: '가슴', en: 'Chest', vi: 'Ngực', roman: 'ga-seum', viPron: 'ca-xưm' },
-  abdomen: { ko: '배', en: 'Stomach', vi: 'Bụng', roman: 'bae', viPron: 'be' },
-  back: { ko: '허리·등', en: 'Back, waist', vi: 'Lưng, eo', roman: 'heo-ri, deung', viPron: 'hơ-ri, tưng' },
-  arm: { ko: '팔·어깨', en: 'Arm, shoulder', vi: 'Cánh tay, vai', roman: 'pal, eo-kkae', viPron: 'pan, ơ-ke' },
-  hand: { ko: '손·손가락', en: 'Hand, finger', vi: 'Bàn tay, ngón tay', roman: 'son, son-ga-rak', viPron: 'xôn, xôn-ca-rác' },
-  leg: { ko: '다리·무릎', en: 'Leg, knee', vi: 'Chân, đầu gối', roman: 'da-ri, mu-reup', viPron: 'ta-ri, mu-rứp' },
-  foot: { ko: '발·발목', en: 'Foot, ankle', vi: 'Bàn chân, cổ chân', roman: 'bal, bal-mok', viPron: 'pan, pan-mốc' },
-  skin: { ko: '피부', en: 'Skin', vi: 'Da', roman: 'pi-bu', viPron: 'pi-bu' },
-  whole: { ko: '온몸', en: 'Whole body', vi: 'Toàn thân', roman: 'on-mom', viPron: 'ôn-môm' },
-} satisfies Record<string, Term>;
-export type BodyPart = keyof typeof BODY_PARTS;
+/** 오른쪽에서 왼쪽으로 쓰는 언어. 문서 방향(dir)을 바꾼다 */
+export const RTL_LANGS: Lang[] = ['ar'];
+
+const BODY_PARTS_KO = {
+  head: { ko: '머리', roman: 'meo-ri', viPron: 'mơ-ri' },
+  eye: { ko: '눈', roman: 'nun', viPron: 'nun' },
+  ent: { ko: '귀·코·목', roman: 'gwi, ko, mok', viPron: 'guy, cô, mốc' },
+  teeth: { ko: '이·잇몸', roman: 'i, in-mom', viPron: 'i, in-môm' },
+  chest: { ko: '가슴', roman: 'ga-seum', viPron: 'ca-xưm' },
+  abdomen: { ko: '배', roman: 'bae', viPron: 'be' },
+  back: { ko: '허리·등', roman: 'heo-ri, deung', viPron: 'hơ-ri, tưng' },
+  arm: { ko: '팔·어깨', roman: 'pal, eo-kkae', viPron: 'pan, ơ-ke' },
+  hand: { ko: '손·손가락', roman: 'son, son-ga-rak', viPron: 'xôn, xôn-ca-rác' },
+  leg: { ko: '다리·무릎', roman: 'da-ri, mu-reup', viPron: 'ta-ri, mu-rứp' },
+  foot: { ko: '발·발목', roman: 'bal, bal-mok', viPron: 'pan, pan-mốc' },
+  skin: { ko: '피부', roman: 'pi-bu', viPron: 'pi-bu' },
+  whole: { ko: '온몸', roman: 'on-mom', viPron: 'ôn-môm' },
+} satisfies Record<string, KoTerm>;
+export type BodyPart = keyof typeof BODY_PARTS_KO;
+export const BODY_PARTS = withNative(BODY_PARTS_KO, (p) => p.terms.bodyParts);
 
 // 증상 한국어 표기는 "~이/가 있습니다" 문장에 들어가도록 명사형으로 둔다.
-export const SYMPTOMS = {
-  pain: { ko: '통증', en: 'Pain', vi: 'Đau', roman: 'tong-jeung', viPron: 'thông-chưng' },
-  swelling: { ko: '부기', en: 'Swelling', vi: 'Sưng', roman: 'bu-gi', viPron: 'bu-ghi' },
-  cut: { ko: '베인 상처', en: 'Cut, wound', vi: 'Vết cắt, vết thương', roman: 'be-in sang-cheo', viPron: 'bê-in xang-chơ' },
-  bleeding: { ko: '출혈', en: 'Bleeding', vi: 'Chảy máu', roman: 'chul-hyeol', viPron: 'chun-hiơn' },
-  burn: { ko: '화상', en: 'Burn', vi: 'Bỏng', roman: 'hwa-sang', viPron: 'hoa-xang' },
-  numb: { ko: '저림', en: 'Numbness', vi: 'Tê', roman: 'jeo-rim', viPron: 'chơ-rim' },
-  cantmove: { ko: '움직이기 어려움', en: 'Hard to move', vi: 'Khó cử động', roman: 'um-ji-gi-gi eo-ryeo-um', viPron: 'um-chi-ghi-ghi ơ-riơ-um' },
-  fever: { ko: '열', en: 'Fever', vi: 'Sốt', roman: 'yeol', viPron: 'iơn' },
-  cough: { ko: '기침', en: 'Cough', vi: 'Ho', roman: 'gi-chim', viPron: 'ki-chim' },
-  dizzy: { ko: '어지러움', en: 'Dizziness', vi: 'Chóng mặt', roman: 'eo-ji-reo-um', viPron: 'ơ-chi-rơ-um' },
-  rash: { ko: '발진·가려움', en: 'Rash, itching', vi: 'Phát ban, ngứa', roman: 'bal-jin, ga-ryeo-um', viPron: 'pan-chin, ca-riơ-um' },
-  nausea: { ko: '구토·메스꺼움', en: 'Nausea, vomiting', vi: 'Buồn nôn, nôn', roman: 'gu-to, me-seu-kkeo-um', viPron: 'cu-thô, mê-xư-cơ-um' },
-  breath: { ko: '호흡 곤란', en: 'Hard to breathe', vi: 'Khó thở', roman: 'ho-heup gol-lan', viPron: 'hô-hứp côn-lan' },
-  chemical: { ko: '화학물질 노출', en: 'Chemical exposure', vi: 'Tiếp xúc hóa chất', roman: 'hwa-hak-mul-jil no-chul', viPron: 'hoa-hác-mun-chin nô-chun' },
-  foreign: { ko: '눈의 이물감', en: 'Something in the eye', vi: 'Dị vật trong mắt', roman: 'nu-ne i-mul-gam', viPron: 'nu-nê i-mun-cam' },
-} satisfies Record<string, Term>;
-export type Symptom = keyof typeof SYMPTOMS;
+const SYMPTOMS_KO = {
+  pain: { ko: '통증', roman: 'tong-jeung', viPron: 'thông-chưng' },
+  swelling: { ko: '부기', roman: 'bu-gi', viPron: 'bu-ghi' },
+  cut: { ko: '베인 상처', roman: 'be-in sang-cheo', viPron: 'bê-in xang-chơ' },
+  bleeding: { ko: '출혈', roman: 'chul-hyeol', viPron: 'chun-hiơn' },
+  burn: { ko: '화상', roman: 'hwa-sang', viPron: 'hoa-xang' },
+  numb: { ko: '저림', roman: 'jeo-rim', viPron: 'chơ-rim' },
+  cantmove: { ko: '움직이기 어려움', roman: 'um-ji-gi-gi eo-ryeo-um', viPron: 'um-chi-ghi-ghi ơ-riơ-um' },
+  fever: { ko: '열', roman: 'yeol', viPron: 'iơn' },
+  cough: { ko: '기침', roman: 'gi-chim', viPron: 'ki-chim' },
+  dizzy: { ko: '어지러움', roman: 'eo-ji-reo-um', viPron: 'ơ-chi-rơ-um' },
+  rash: { ko: '발진·가려움', roman: 'bal-jin, ga-ryeo-um', viPron: 'pan-chin, ca-riơ-um' },
+  nausea: { ko: '구토·메스꺼움', roman: 'gu-to, me-seu-kkeo-um', viPron: 'cu-thô, mê-xư-cơ-um' },
+  breath: { ko: '호흡 곤란', roman: 'ho-heup gol-lan', viPron: 'hô-hứp côn-lan' },
+  chemical: { ko: '화학물질 노출', roman: 'hwa-hak-mul-jil no-chul', viPron: 'hoa-hác-mun-chin nô-chun' },
+  foreign: { ko: '눈의 이물감', roman: 'nu-ne i-mul-gam', viPron: 'nu-nê i-mun-cam' },
+} satisfies Record<string, KoTerm>;
+export type Symptom = keyof typeof SYMPTOMS_KO;
+export const SYMPTOMS = withNative(SYMPTOMS_KO, (p) => p.terms.symptoms);
 
-export const DEPARTMENTS = {
-  ortho: { ko: '정형외과', en: 'Orthopaedics', vi: 'Chỉnh hình', roman: 'jeong-hyeong-oe-gwa', viPron: 'chơng-hiơng-uê-qua' },
-  surgery: { ko: '외과', en: 'General surgery', vi: 'Ngoại khoa', roman: 'oe-gwa', viPron: 'uê-qua' },
-  internal: { ko: '내과', en: 'Internal medicine', vi: 'Nội khoa', roman: 'nae-gwa', viPron: 'ne-qua' },
-  ophth: { ko: '안과', en: 'Eye clinic', vi: 'Nhãn khoa', roman: 'an-gwa', viPron: 'an-qua' },
-  ent: { ko: '이비인후과', en: 'ENT (ear, nose, throat)', vi: 'Tai mũi họng', roman: 'i-bi-in-hu-gwa', viPron: 'i-bi-in-hu-qua' },
-  derm: { ko: '피부과', en: 'Dermatology (skin)', vi: 'Da liễu', roman: 'pi-bu-gwa', viPron: 'pi-bu-qua' },
-  dental: { ko: '치과', en: 'Dentist', vi: 'Nha khoa', roman: 'chi-gwa', viPron: 'chi-qua' },
-  neuro: { ko: '신경과', en: 'Neurology', vi: 'Thần kinh', roman: 'sin-gyeong-gwa', viPron: 'xin-ghiơng-qua' },
-  family: { ko: '가정의학과', en: 'Family medicine', vi: 'Y học gia đình', roman: 'ga-jeong-ui-hak-gwa', viPron: 'ca-chơng-ưi-hác-qua' },
-  occ: { ko: '직업환경의학과', en: 'Occupational medicine', vi: 'Y học nghề nghiệp', roman: 'ji-geop-hwan-gyeong-ui-hak-gwa', viPron: 'chi-gớp-hoan-ghiơng-ưi-hác-qua' },
-} satisfies Record<string, Term>;
-export type Department = keyof typeof DEPARTMENTS;
+const DEPARTMENTS_KO = {
+  ortho: { ko: '정형외과', roman: 'jeong-hyeong-oe-gwa', viPron: 'chơng-hiơng-uê-qua' },
+  surgery: { ko: '외과', roman: 'oe-gwa', viPron: 'uê-qua' },
+  internal: { ko: '내과', roman: 'nae-gwa', viPron: 'ne-qua' },
+  ophth: { ko: '안과', roman: 'an-gwa', viPron: 'an-qua' },
+  ent: { ko: '이비인후과', roman: 'i-bi-in-hu-gwa', viPron: 'i-bi-in-hu-qua' },
+  derm: { ko: '피부과', roman: 'pi-bu-gwa', viPron: 'pi-bu-qua' },
+  dental: { ko: '치과', roman: 'chi-gwa', viPron: 'chi-qua' },
+  neuro: { ko: '신경과', roman: 'sin-gyeong-gwa', viPron: 'xin-ghiơng-qua' },
+  family: { ko: '가정의학과', roman: 'ga-jeong-ui-hak-gwa', viPron: 'ca-chơng-ưi-hác-qua' },
+  occ: { ko: '직업환경의학과', roman: 'ji-geop-hwan-gyeong-ui-hak-gwa', viPron: 'chi-gớp-hoan-ghiơng-ưi-hác-qua' },
+} satisfies Record<string, KoTerm>;
+export type Department = keyof typeof DEPARTMENTS_KO;
+export const DEPARTMENTS = withNative(DEPARTMENTS_KO, (p) => p.terms.departments);
 
-export const ONSETS = {
-  today: { ko: '오늘', en: 'Today', vi: 'Hôm nay', roman: 'o-neul', viPron: 'ô-nưn' },
-  yesterday: { ko: '어제', en: 'Yesterday', vi: 'Hôm qua', roman: 'eo-je', viPron: 'ơ-chê' },
-  days: { ko: '2~3일 전', en: '2–3 days ago', vi: '2–3 ngày trước', roman: 'i-sam-il jeon', viPron: 'i-xam-in chơn' },
-  week: { ko: '일주일 이상 전', en: 'Over a week ago', vi: 'Hơn một tuần trước', roman: 'il-ju-il i-sang jeon', viPron: 'in-chu-in i-xang chơn' },
-} satisfies Record<string, Term>;
-export type Onset = keyof typeof ONSETS;
+const ONSETS_KO = {
+  today: { ko: '오늘', roman: 'o-neul', viPron: 'ô-nưn' },
+  yesterday: { ko: '어제', roman: 'eo-je', viPron: 'ơ-chê' },
+  days: { ko: '2~3일 전', roman: 'i-sam-il jeon', viPron: 'i-xam-in chơn' },
+  week: { ko: '일주일 이상 전', roman: 'il-ju-il i-sang jeon', viPron: 'in-chu-in i-xang chơn' },
+} satisfies Record<string, KoTerm>;
+export type Onset = keyof typeof ONSETS_KO;
+export const ONSETS = withNative(ONSETS_KO, (p) => p.terms.onsets);
 
-export const INDUSTRIES = {
-  shipbuilding: { ko: '조선', en: 'Shipbuilding', vi: 'Đóng tàu', roman: 'jo-seon', viPron: 'chô-xơn' },
-  autoparts: { ko: '자동차 부품', en: 'Auto parts', vi: 'Phụ tùng ô tô', roman: 'ja-dong-cha bu-pum', viPron: 'cha-đông-cha bu-pum' },
-  chemical: { ko: '화학', en: 'Chemical', vi: 'Hóa chất', roman: 'hwa-hak', viPron: 'hoa-hác' },
-  construction: { ko: '건설', en: 'Construction', vi: 'Xây dựng', roman: 'geon-seol', viPron: 'cơn-xơn' },
-  other: { ko: '기타', en: 'Other', vi: 'Khác', roman: 'gi-ta', viPron: 'ki-tha' },
-} satisfies Record<string, Term>;
-export type Industry = keyof typeof INDUSTRIES;
+const INDUSTRIES_KO = {
+  shipbuilding: { ko: '조선', roman: 'jo-seon', viPron: 'chô-xơn' },
+  autoparts: { ko: '자동차 부품', roman: 'ja-dong-cha bu-pum', viPron: 'cha-đông-cha bu-pum' },
+  chemical: { ko: '화학', roman: 'hwa-hak', viPron: 'hoa-hác' },
+  construction: { ko: '건설', roman: 'geon-seol', viPron: 'cơn-xơn' },
+  other: { ko: '기타', roman: 'gi-ta', viPron: 'ki-tha' },
+} satisfies Record<string, KoTerm>;
+export type Industry = keyof typeof INDUSTRIES_KO;
+export const INDUSTRIES = withNative(INDUSTRIES_KO, (p) => p.terms.industries);
 
-export const WORK_TYPES = {
-  welding: { ko: '용접', en: 'Welding', vi: 'Hàn', roman: 'yong-jeop', viPron: 'iông-chớp' },
-  lifting: { ko: '중량물 운반', en: 'Lifting, carrying', vi: 'Nâng, khuân vác', roman: 'jung-nyang-mul un-ban', viPron: 'chung-niang-mun un-ban' },
-  machine: { ko: '기계(프레스 등) 작업', en: 'Machine work (press etc.)', vi: 'Vận hành máy (máy dập...)', roman: 'gi-gye jak-eop', viPron: 'ki-ghiê chác-ớp' },
-  grinding: { ko: '절단·연마', en: 'Cutting, grinding', vi: 'Cắt, mài', roman: 'jeol-dan, yeon-ma', viPron: 'chơn-tan, iơn-ma' },
-  painting: { ko: '도장·화학물질 취급', en: 'Painting, chemical handling', vi: 'Sơn, xử lý hóa chất', roman: 'do-jang', viPron: 'tô-chang' },
-  assembly: { ko: '조립', en: 'Assembly', vi: 'Lắp ráp', roman: 'jo-rip', viPron: 'chô-ríp' },
-} satisfies Record<string, Term>;
-export type WorkType = keyof typeof WORK_TYPES;
+const WORK_TYPES_KO = {
+  welding: { ko: '용접', roman: 'yong-jeop', viPron: 'iông-chớp' },
+  lifting: { ko: '중량물 운반', roman: 'jung-nyang-mul un-ban', viPron: 'chung-niang-mun un-ban' },
+  machine: { ko: '기계(프레스 등) 작업', roman: 'gi-gye jak-eop', viPron: 'ki-ghiê chác-ớp' },
+  grinding: { ko: '절단·연마', roman: 'jeol-dan, yeon-ma', viPron: 'chơn-tan, iơn-ma' },
+  painting: { ko: '도장·화학물질 취급', roman: 'do-jang', viPron: 'tô-chang' },
+  assembly: { ko: '조립', roman: 'jo-rip', viPron: 'chô-ríp' },
+} satisfies Record<string, KoTerm>;
+export type WorkType = keyof typeof WORK_TYPES_KO;
+export const WORK_TYPES = withNative(WORK_TYPES_KO, (p) => p.terms.workTypes);
 
-export const DISTRICTS = {
-  jung: { ko: '중구', en: 'Jung-gu', vi: 'Jung-gu', roman: 'jung-gu', viPron: 'chung-cu' },
-  nam: { ko: '남구', en: 'Nam-gu', vi: 'Nam-gu', roman: 'nam-gu', viPron: 'nam-cu' },
-  dong: { ko: '동구', en: 'Dong-gu', vi: 'Dong-gu', roman: 'dong-gu', viPron: 'tông-cu' },
-  buk: { ko: '북구', en: 'Buk-gu', vi: 'Buk-gu', roman: 'buk-gu', viPron: 'búc-cu' },
-  ulju: { ko: '울주군', en: 'Ulju-gun', vi: 'Ulju-gun', roman: 'ul-ju-gun', viPron: 'un-chu-cun' },
-} satisfies Record<string, Term>;
-export type District = keyof typeof DISTRICTS;
+const DISTRICTS_KO = {
+  jung: { ko: '중구', roman: 'jung-gu', viPron: 'chung-cu' },
+  nam: { ko: '남구', roman: 'nam-gu', viPron: 'nam-cu' },
+  dong: { ko: '동구', roman: 'dong-gu', viPron: 'tông-cu' },
+  buk: { ko: '북구', roman: 'buk-gu', viPron: 'búc-cu' },
+  ulju: { ko: '울주군', roman: 'ul-ju-gun', viPron: 'un-chu-cun' },
+} satisfies Record<string, KoTerm>;
+export type District = keyof typeof DISTRICTS_KO;
+export const DISTRICTS = withNative(DISTRICTS_KO, (p) => p.terms.districts);
 
 export type YesNoUnknown = 'yes' | 'no' | 'unknown';
 
 // 응급도 모델 입력(backend backlog 10). 값과 순서는 backend/app/vocab.py의 AgeGroup·Sex·Mental과 같다.
 // 순서가 모델 피처 값(0, 1, 2, …)이므로 바꾸지 않는다. 규칙(triage.ts)은 이 값을 쓰지 않는다.
-export const AGE_GROUPS = {
-  under30: { ko: '30세 미만', en: 'Under 30', vi: 'Dưới 30 tuổi', roman: 'sam-sip-se mi-man', viPron: 'xam-xíp-xê mi-man' },
-  '30to44': { ko: '30~44세', en: '30–44', vi: '30–44 tuổi', roman: 'sam-sip~sa-sip-sa-se', viPron: 'xam-xíp~xa-xíp-xa-xê' },
-  '45to64': { ko: '45~64세', en: '45–64', vi: '45–64 tuổi', roman: 'sa-sip-o~yuk-sip-sa-se', viPron: 'xa-xíp-ô~iúc-xíp-xa-xê' },
-  '65plus': { ko: '65세 이상', en: '65 or older', vi: 'Từ 65 tuổi trở lên', roman: 'yuk-sip-o-se i-sang', viPron: 'iúc-xíp-ô-xê i-xang' },
-} satisfies Record<string, Term>;
-export type AgeGroup = keyof typeof AGE_GROUPS;
+const AGE_GROUPS_KO = {
+  under30: { ko: '30세 미만', roman: 'sam-sip-se mi-man', viPron: 'xam-xíp-xê mi-man' },
+  '30to44': { ko: '30~44세', roman: 'sam-sip~sa-sip-sa-se', viPron: 'xam-xíp~xa-xíp-xa-xê' },
+  '45to64': { ko: '45~64세', roman: 'sa-sip-o~yuk-sip-sa-se', viPron: 'xa-xíp-ô~iúc-xíp-xa-xê' },
+  '65plus': { ko: '65세 이상', roman: 'yuk-sip-o-se i-sang', viPron: 'iúc-xíp-ô-xê i-xang' },
+} satisfies Record<string, KoTerm>;
+export type AgeGroup = keyof typeof AGE_GROUPS_KO;
+export const AGE_GROUPS = withNative(AGE_GROUPS_KO, (p) => p.terms.ageGroups);
 
-export const SEXES = {
-  female: { ko: '여성', en: 'Female', vi: 'Nữ', roman: 'yeo-seong', viPron: 'iơ-xơng' },
-  male: { ko: '남성', en: 'Male', vi: 'Nam', roman: 'nam-seong', viPron: 'nam-xơng' },
-} satisfies Record<string, Term>;
-export type Sex = keyof typeof SEXES;
+const SEXES_KO = {
+  female: { ko: '여성', roman: 'yeo-seong', viPron: 'iơ-xơng' },
+  male: { ko: '남성', roman: 'nam-seong', viPron: 'nam-xơng' },
+} satisfies Record<string, KoTerm>;
+export type Sex = keyof typeof SEXES_KO;
+export const SEXES = withNative(SEXES_KO, (p) => p.terms.sexes);
 
 /** 의식 상태(AVPU). 앱을 쓰는 사람은 깨어 있으므로 근로자에게 묻지 않는다(센터·연계 입력 자리). */
 export type Mental = 'alert' | 'verbal' | 'pain' | 'unresponsive';
 
-export const LANGUAGE_NAMES_KO: Record<Lang, string> = { en: '영어', vi: '베트남어', ko: '한국어' };
+export const LANGUAGE_NAMES_KO: Record<Lang, string> = {
+  en: '영어',
+  vi: '베트남어',
+  ko: '한국어',
+  ne: '네팔어',
+  ru: '러시아어',
+  mn: '몽골어',
+  my: '미얀마어',
+  si: '싱할라어',
+  ar: '아랍어',
+  uz: '우즈베크어',
+  ja: '일본어',
+  'zh-CN': '중국어(간체)',
+  'zh-TW': '중국어(번체)',
+  kk: '카자흐어',
+  km: '크메르어',
+  ky: '키르기스어',
+  th: '태국어',
+  fr: '프랑스어',
+  tl: '필리핀어',
+  id: '인도네시아어',
+};
 
 /** 한국어 단어 끝 받침 여부에 따라 조사를 고른다(이/가, 은/는 등). */
 export function josa(word: string, withBatchim: string, withoutBatchim: string): string {
