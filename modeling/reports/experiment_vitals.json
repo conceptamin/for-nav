@@ -1,0 +1,1000 @@
+{
+  "experiment": "backlog 09 — 버튼 피처 vs 버튼 + 활력징후(응급도 LightGBM)",
+  "seed": 20261028,
+  "lightgbm_params": {
+    "objective": "multiclass",
+    "num_class": 3,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "min_data_in_leaf": 20,
+    "lambda_l2": 1.0,
+    "seed": 20261028,
+    "deterministic": true,
+    "num_threads": 1,
+    "force_row_wise": true,
+    "verbosity": -1
+  },
+  "data": {
+    "processed_sha256": "61c31f11f9e1150d8663c46caea9f47a1da5ca95a8e48b5d5663bffedb402b56",
+    "train_ids_sha256": "b40b7a6b54577fa0f9f85168c691f432a5abc34fc25c1047d42345e3ade65b1e",
+    "valid_ids_sha256": "9d3e573bef54059e89f613ab7708897eda61444cea98c4aec6252e7eb0ad366c",
+    "rows": {
+      "train": 823,
+      "valid": 190
+    },
+    "vitals_missing": {
+      "train": {
+        "sbp": [
+          11,
+          823
+        ],
+        "dbp": [
+          15,
+          823
+        ],
+        "hr": [
+          8,
+          823
+        ],
+        "rr": [
+          10,
+          823
+        ],
+        "bt": [
+          9,
+          823
+        ],
+        "saturation": [
+          446,
+          823
+        ]
+      },
+      "valid": {
+        "sbp": [
+          10,
+          190
+        ],
+        "dbp": [
+          10,
+          190
+        ],
+        "hr": [
+          8,
+          190
+        ],
+        "rr": [
+          6,
+          190
+        ],
+        "bt": [
+          5,
+          190
+        ],
+        "saturation": [
+          112,
+          190
+        ]
+      }
+    }
+  },
+  "missing_rule": "활력징후 결측(측정 불가·빈칸)은 NaN 그대로 LightGBM에 넘긴다(분기마다 결측 쪽 방향을 학습한다). 채우지 않는다",
+  "threshold_rule": "설정마다 acuity.select_threshold로 valid에서 응급 재현율 ≥ 0.95 중 정밀도 최대. valid 지표는 임계값을 정한 데이터라 낙관적이다",
+  "cv_note": "cv_train_valid는 train+valid 층화 5겹 교차검증 예측(라운드 수는 train에서 정한 값). 임계값은 valid로 정한 값을 그대로 쓴다",
+  "test_used": false,
+  "setups": {
+    "buttons": {
+      "feature_names": [
+        "body_head",
+        "body_eye",
+        "body_ent",
+        "body_teeth",
+        "body_chest",
+        "body_abdomen",
+        "body_back",
+        "body_arm",
+        "body_hand",
+        "body_leg",
+        "body_foot",
+        "body_skin",
+        "body_whole",
+        "symptom_pain",
+        "symptom_swelling",
+        "symptom_cut",
+        "symptom_bleeding",
+        "symptom_burn",
+        "symptom_numb",
+        "symptom_cantmove",
+        "symptom_fever",
+        "symptom_cough",
+        "symptom_dizzy",
+        "symptom_rash",
+        "symptom_nausea",
+        "symptom_breath",
+        "symptom_chemical",
+        "symptom_foreign",
+        "pain_score",
+        "mental",
+        "age_group",
+        "onset",
+        "sex_male",
+        "injury"
+      ],
+      "num_rounds": 86,
+      "model_sha256": "bec5c99116c1bc21d27017ac9e71761b76733a49377b40eefb0cf4955c255c21",
+      "threshold": {
+        "rule": "검증셋 응급 재현율 ≥ 0.95인 임계값 중 응급 정밀도 최대(같으면 높은 임계값), 경계는 바로 아래 확률과의 중간",
+        "target_recall": 0.95,
+        "threshold": 0.07382006898727805,
+        "recall": [
+          36,
+          37
+        ],
+        "precision": [
+          36,
+          99
+        ]
+      },
+      "valid": {
+        "argmax": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 25,
+                "of": 37,
+                "value": 0.6757
+              },
+              "precision": {
+                "n": 25,
+                "of": 34,
+                "value": 0.7353
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 47,
+                "of": 73,
+                "value": 0.6438
+              },
+              "precision": {
+                "n": 47,
+                "of": 69,
+                "value": 0.6812
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 66,
+                "of": 80,
+                "value": 0.825
+              },
+              "precision": {
+                "n": 66,
+                "of": 87,
+                "value": 0.7586
+              }
+            }
+          },
+          "accuracy": {
+            "n": 138,
+            "of": 190,
+            "value": 0.7263
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                25,
+                10,
+                2
+              ],
+              [
+                7,
+                47,
+                19
+              ],
+              [
+                2,
+                12,
+                66
+              ]
+            ]
+          }
+        },
+        "threshold": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 36,
+                "of": 37,
+                "value": 0.973
+              },
+              "precision": {
+                "n": 36,
+                "of": 99,
+                "value": 0.3636
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 26,
+                "of": 73,
+                "value": 0.3562
+              },
+              "precision": {
+                "n": 26,
+                "of": 31,
+                "value": 0.8387
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 50,
+                "of": 80,
+                "value": 0.625
+              },
+              "precision": {
+                "n": 50,
+                "of": 60,
+                "value": 0.8333
+              }
+            }
+          },
+          "accuracy": {
+            "n": 112,
+            "of": 190,
+            "value": 0.5895
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                36,
+                1,
+                0
+              ],
+              [
+                37,
+                26,
+                10
+              ],
+              [
+                26,
+                4,
+                50
+              ]
+            ]
+          }
+        }
+      },
+      "cv_train_valid": {
+        "argmax": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 119,
+                "of": 197,
+                "value": 0.6041
+              },
+              "precision": {
+                "n": 119,
+                "of": 165,
+                "value": 0.7212
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 270,
+                "of": 389,
+                "value": 0.6941
+              },
+              "precision": {
+                "n": 270,
+                "of": 379,
+                "value": 0.7124
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 349,
+                "of": 427,
+                "value": 0.8173
+              },
+              "precision": {
+                "n": 349,
+                "of": 469,
+                "value": 0.7441
+              }
+            }
+          },
+          "accuracy": {
+            "n": 738,
+            "of": 1013,
+            "value": 0.7285
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                119,
+                45,
+                33
+              ],
+              [
+                32,
+                270,
+                87
+              ],
+              [
+                14,
+                64,
+                349
+              ]
+            ]
+          }
+        },
+        "threshold": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 184,
+                "of": 197,
+                "value": 0.934
+              },
+              "precision": {
+                "n": 184,
+                "of": 500,
+                "value": 0.368
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 156,
+                "of": 389,
+                "value": 0.401
+              },
+              "precision": {
+                "n": 156,
+                "of": 190,
+                "value": 0.8211
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 276,
+                "of": 427,
+                "value": 0.6464
+              },
+              "precision": {
+                "n": 276,
+                "of": 323,
+                "value": 0.8545
+              }
+            }
+          },
+          "accuracy": {
+            "n": 616,
+            "of": 1013,
+            "value": 0.6081
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                184,
+                9,
+                4
+              ],
+              [
+                190,
+                156,
+                43
+              ],
+              [
+                126,
+                25,
+                276
+              ]
+            ]
+          }
+        }
+      },
+      "shap_valid": {
+        "emergency": {
+          "top": [
+            {
+              "feature": "body_chest",
+              "mean_abs_shap": 0.386
+            },
+            {
+              "feature": "age_group",
+              "mean_abs_shap": 0.3578
+            },
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.2972
+            },
+            {
+              "feature": "mental",
+              "mean_abs_shap": 0.2231
+            },
+            {
+              "feature": "sex_male",
+              "mean_abs_shap": 0.1162
+            },
+            {
+              "feature": "symptom_cantmove",
+              "mean_abs_shap": 0.0961
+            },
+            {
+              "feature": "symptom_pain",
+              "mean_abs_shap": 0.0722
+            },
+            {
+              "feature": "body_head",
+              "mean_abs_shap": 0.0632
+            }
+          ],
+          "vitals_share": 0.0
+        },
+        "today": {
+          "top": [
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.2911
+            },
+            {
+              "feature": "body_abdomen",
+              "mean_abs_shap": 0.2256
+            },
+            {
+              "feature": "symptom_pain",
+              "mean_abs_shap": 0.21
+            },
+            {
+              "feature": "injury",
+              "mean_abs_shap": 0.1918
+            },
+            {
+              "feature": "symptom_dizzy",
+              "mean_abs_shap": 0.1441
+            },
+            {
+              "feature": "mental",
+              "mean_abs_shap": 0.1352
+            },
+            {
+              "feature": "age_group",
+              "mean_abs_shap": 0.1292
+            },
+            {
+              "feature": "sex_male",
+              "mean_abs_shap": 0.092
+            }
+          ],
+          "vitals_share": 0.0
+        },
+        "outpatient": {
+          "top": [
+            {
+              "feature": "body_chest",
+              "mean_abs_shap": 0.5947
+            },
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.4517
+            },
+            {
+              "feature": "body_abdomen",
+              "mean_abs_shap": 0.1436
+            },
+            {
+              "feature": "symptom_pain",
+              "mean_abs_shap": 0.1285
+            },
+            {
+              "feature": "symptom_dizzy",
+              "mean_abs_shap": 0.1166
+            },
+            {
+              "feature": "age_group",
+              "mean_abs_shap": 0.0993
+            },
+            {
+              "feature": "symptom_cut",
+              "mean_abs_shap": 0.089
+            },
+            {
+              "feature": "symptom_bleeding",
+              "mean_abs_shap": 0.0873
+            }
+          ],
+          "vitals_share": 0.0
+        }
+      }
+    },
+    "buttons_vitals": {
+      "feature_names": [
+        "body_head",
+        "body_eye",
+        "body_ent",
+        "body_teeth",
+        "body_chest",
+        "body_abdomen",
+        "body_back",
+        "body_arm",
+        "body_hand",
+        "body_leg",
+        "body_foot",
+        "body_skin",
+        "body_whole",
+        "symptom_pain",
+        "symptom_swelling",
+        "symptom_cut",
+        "symptom_bleeding",
+        "symptom_burn",
+        "symptom_numb",
+        "symptom_cantmove",
+        "symptom_fever",
+        "symptom_cough",
+        "symptom_dizzy",
+        "symptom_rash",
+        "symptom_nausea",
+        "symptom_breath",
+        "symptom_chemical",
+        "symptom_foreign",
+        "pain_score",
+        "mental",
+        "age_group",
+        "onset",
+        "sex_male",
+        "injury",
+        "sbp",
+        "dbp",
+        "hr",
+        "rr",
+        "bt",
+        "saturation"
+      ],
+      "num_rounds": 69,
+      "model_sha256": "c944a2a7efbda77dada8139503da1f5d4c91925264a0b491c35735b1c94b560b",
+      "threshold": {
+        "rule": "검증셋 응급 재현율 ≥ 0.95인 임계값 중 응급 정밀도 최대(같으면 높은 임계값), 경계는 바로 아래 확률과의 중간",
+        "target_recall": 0.95,
+        "threshold": 0.05003181331507768,
+        "recall": [
+          36,
+          37
+        ],
+        "precision": [
+          36,
+          124
+        ]
+      },
+      "valid": {
+        "argmax": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 23,
+                "of": 37,
+                "value": 0.6216
+              },
+              "precision": {
+                "n": 23,
+                "of": 34,
+                "value": 0.6765
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 49,
+                "of": 73,
+                "value": 0.6712
+              },
+              "precision": {
+                "n": 49,
+                "of": 69,
+                "value": 0.7101
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 61,
+                "of": 80,
+                "value": 0.7625
+              },
+              "precision": {
+                "n": 61,
+                "of": 87,
+                "value": 0.7011
+              }
+            }
+          },
+          "accuracy": {
+            "n": 133,
+            "of": 190,
+            "value": 0.7
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                23,
+                7,
+                7
+              ],
+              [
+                5,
+                49,
+                19
+              ],
+              [
+                6,
+                13,
+                61
+              ]
+            ]
+          }
+        },
+        "threshold": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 36,
+                "of": 37,
+                "value": 0.973
+              },
+              "precision": {
+                "n": 36,
+                "of": 124,
+                "value": 0.2903
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 16,
+                "of": 73,
+                "value": 0.2192
+              },
+              "precision": {
+                "n": 16,
+                "of": 18,
+                "value": 0.8889
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 42,
+                "of": 80,
+                "value": 0.525
+              },
+              "precision": {
+                "n": 42,
+                "of": 48,
+                "value": 0.875
+              }
+            }
+          },
+          "accuracy": {
+            "n": 94,
+            "of": 190,
+            "value": 0.4947
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                36,
+                0,
+                1
+              ],
+              [
+                52,
+                16,
+                5
+              ],
+              [
+                36,
+                2,
+                42
+              ]
+            ]
+          }
+        }
+      },
+      "cv_train_valid": {
+        "argmax": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 128,
+                "of": 197,
+                "value": 0.6497
+              },
+              "precision": {
+                "n": 128,
+                "of": 171,
+                "value": 0.7485
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 270,
+                "of": 389,
+                "value": 0.6941
+              },
+              "precision": {
+                "n": 270,
+                "of": 398,
+                "value": 0.6784
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 339,
+                "of": 427,
+                "value": 0.7939
+              },
+              "precision": {
+                "n": 339,
+                "of": 444,
+                "value": 0.7635
+              }
+            }
+          },
+          "accuracy": {
+            "n": 737,
+            "of": 1013,
+            "value": 0.7275
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                128,
+                53,
+                16
+              ],
+              [
+                30,
+                270,
+                89
+              ],
+              [
+                13,
+                75,
+                339
+              ]
+            ]
+          }
+        },
+        "threshold": {
+          "per_class": {
+            "emergency": {
+              "recall": {
+                "n": 190,
+                "of": 197,
+                "value": 0.9645
+              },
+              "precision": {
+                "n": 190,
+                "of": 588,
+                "value": 0.3231
+              }
+            },
+            "today": {
+              "recall": {
+                "n": 120,
+                "of": 389,
+                "value": 0.3085
+              },
+              "precision": {
+                "n": 120,
+                "of": 150,
+                "value": 0.8
+              }
+            },
+            "outpatient": {
+              "recall": {
+                "n": 244,
+                "of": 427,
+                "value": 0.5714
+              },
+              "precision": {
+                "n": 244,
+                "of": 275,
+                "value": 0.8873
+              }
+            }
+          },
+          "accuracy": {
+            "n": 554,
+            "of": 1013,
+            "value": 0.5469
+          },
+          "confusion": {
+            "labels": [
+              "emergency",
+              "today",
+              "outpatient"
+            ],
+            "rows": "정답",
+            "columns": "예측",
+            "matrix": [
+              [
+                190,
+                6,
+                1
+              ],
+              [
+                239,
+                120,
+                30
+              ],
+              [
+                159,
+                24,
+                244
+              ]
+            ]
+          }
+        }
+      },
+      "shap_valid": {
+        "emergency": {
+          "top": [
+            {
+              "feature": "body_chest",
+              "mean_abs_shap": 0.3102
+            },
+            {
+              "feature": "age_group",
+              "mean_abs_shap": 0.2663
+            },
+            {
+              "feature": "sbp",
+              "mean_abs_shap": 0.2454
+            },
+            {
+              "feature": "saturation",
+              "mean_abs_shap": 0.2052
+            },
+            {
+              "feature": "hr",
+              "mean_abs_shap": 0.1837
+            },
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.1598
+            },
+            {
+              "feature": "mental",
+              "mean_abs_shap": 0.1459
+            },
+            {
+              "feature": "bt",
+              "mean_abs_shap": 0.1454
+            }
+          ],
+          "vitals_share": 0.4332
+        },
+        "today": {
+          "top": [
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.2425
+            },
+            {
+              "feature": "body_abdomen",
+              "mean_abs_shap": 0.1901
+            },
+            {
+              "feature": "symptom_dizzy",
+              "mean_abs_shap": 0.1703
+            },
+            {
+              "feature": "symptom_pain",
+              "mean_abs_shap": 0.1391
+            },
+            {
+              "feature": "bt",
+              "mean_abs_shap": 0.1195
+            },
+            {
+              "feature": "injury",
+              "mean_abs_shap": 0.1122
+            },
+            {
+              "feature": "dbp",
+              "mean_abs_shap": 0.0964
+            },
+            {
+              "feature": "sbp",
+              "mean_abs_shap": 0.0789
+            }
+          ],
+          "vitals_share": 0.2633
+        },
+        "outpatient": {
+          "top": [
+            {
+              "feature": "body_chest",
+              "mean_abs_shap": 0.491
+            },
+            {
+              "feature": "pain_score",
+              "mean_abs_shap": 0.3852
+            },
+            {
+              "feature": "saturation",
+              "mean_abs_shap": 0.1612
+            },
+            {
+              "feature": "hr",
+              "mean_abs_shap": 0.1151
+            },
+            {
+              "feature": "body_abdomen",
+              "mean_abs_shap": 0.1147
+            },
+            {
+              "feature": "injury",
+              "mean_abs_shap": 0.0991
+            },
+            {
+              "feature": "symptom_pain",
+              "mean_abs_shap": 0.0987
+            },
+            {
+              "feature": "bt",
+              "mean_abs_shap": 0.0976
+            }
+          ],
+          "vitals_share": 0.2579
+        }
+      }
+    }
+  }
+}
