@@ -1,19 +1,21 @@
-// S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 리포트, 병원 이용 안내(정적)
+// S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기는 api/worker.ts의 useCenterSummary가 만든다. 브라우저 요약을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
 // 전송은 api/center.ts의 sendCase가 한다. API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
 
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/common';
+import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
-import { useT } from '../../i18n';
+import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { sendCase } from '../../api/center';
 import type { NewCaseResponse } from '../../domain/centerCase';
 import { useCenterSummary } from '../../api/worker';
 import type { CenterSummaryInput, ContactMethod, RequestType } from '../../domain/templates';
 import { newIntake } from '../../domain/triage';
-import { LOCALES } from '../../domain/vocab';
+import type { Lang } from '../../domain/vocab';
+import { LOCALES, SEXES } from '../../domain/vocab';
 
 const REQUEST_TYPES: RequestType[] = ['booking', 'interpret', 'policy', 'referral', 'other'];
 const CONTACT_METHODS: ContactMethod[] = ['phone', 'sms', 'kakao', 'zalo', 'visit'];
@@ -194,17 +196,70 @@ export function CenterRequestPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-13 내 리포트(P2): 기기에만 저장된 기록을 보여 주고 삭제할 수 있다.
+// S-13 내 정보: 프로필 → 설정(언어) → 내 메모 → 센터로 보낸 요청 → 전체 지우기.
+// 배치는 design.md "홈과 내 화면". 전부 브라우저 안 상태(AppState)이고 서버 계정은 없다.
 // ---------------------------------------------------------------------------
+const DRINK_KEY = { none: 'drinkNone', sometimes: 'drinkSometimes', often: 'drinkOften' } as const;
+const SMOKE_KEY = { no: 'smokeNo', yes: 'smokeYes', quit: 'smokeQuit' } as const;
+
 export function MyPage() {
   const app = useApp();
-  const { t } = useT();
+  const { t, term } = useT();
   const [deleted, setDeleted] = useState(false);
+  useScreenBar({ title: t('myTitle') });
+  const profile = app.mode === 'member' ? app.profile : null;
+  // 값이 있는 줄만 만든다. null은 줄을 만들지 않는다
+  const profileRows: [string, string][] = profile
+    ? [
+        [t('birthDate'), profile.birthDate],
+        [t('sex'), term(SEXES[profile.sex])],
+        ...(profile.height != null ? [[t('heightCm'), String(profile.height)] as [string, string]] : []),
+        ...(profile.weight != null ? [[t('weightKg'), String(profile.weight)] as [string, string]] : []),
+        ...(profile.drinking ? [[t('drinking'), t(DRINK_KEY[profile.drinking])] as [string, string]] : []),
+        ...(profile.smoking ? [[t('smoking'), t(SMOKE_KEY[profile.smoking])] as [string, string]] : []),
+      ]
+    : [];
   return (
     <div>
-      <h1>{t('myTitle')}</h1>
       {app.mode !== 'member' && <div className="notice warn">{t('repSavedGuest')}</div>}
       <section className="card">
+        <h2>{t('myProfile')}</h2>
+        {profile ? (
+          <>
+            {profileRows.map(([label, value]) => (
+              <div className="report-row" key={label}>
+                <div className="lbl">{label}</div>
+                <div className="val">{value}</div>
+              </div>
+            ))}
+            <Link to="/signup?next=/my" className="btn secondary block">
+              {t('myProfileEdit')}
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="muted">{t('myProfileGuestHint')}</p>
+            <Link to="/signup?next=/my" className="btn block">
+              {t('myProfileCreate')}
+            </Link>
+          </>
+        )}
+      </section>
+      <section className="card">
+        <h2>{t('mySettings')}</h2>
+        <div className="field">
+          <label htmlFor="my-lang">{t('changeLang')}</label>
+          <select id="my-lang" className="input" value={app.lang ?? 'en'} onChange={(e) => app.setLang(e.target.value as Lang)}>
+            {LANGUAGE_OPTIONS.map((o) => (
+              <option key={o.lang} value={o.lang}>
+                {o.native}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
+      <section className="card">
+        <h2>{t('myReports')}</h2>
         {app.reports.length === 0 ? (
           <p className="muted">{t('myEmpty')}</p>
         ) : (
