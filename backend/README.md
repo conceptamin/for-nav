@@ -28,7 +28,7 @@
 backend/
   pyproject.toml
   app/
-    main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
+    main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta, STATIC_DIR 프론트 서빙
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
     llm_providers/
@@ -64,6 +64,7 @@ backend/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_api.py        경로별 응답 형태·상태 코드
+    test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
     test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
@@ -289,7 +290,7 @@ backend/
 목업 서버가 생겨도 **프론트 단독 데모는 계속 동작해야 한다**(발표장 네트워크 문제 대비).
 
 - `VITE_API_BASE`가 비어 있으면 지금처럼 브라우저 안의 함수를 쓰고, 값이 있으면 API를 호출한다. 화면 컴포넌트는 `src/api/` 아래 함수만 부르게 하고, 그 안에서 둘 중 하나를 고른다.
-- `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:8000' }`를 추가한다. 배포 시에는 같은 도메인 아래에 두어 CORS를 피한다. 개발 중 직접 호출에 대비해 서버 CORS는 `http://localhost:5180`만 허용한다.
+- `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:8000' }`를 추가한다. 배포·발표 때는 서버가 프론트 빌드를 같은 출처에서 서빙해 CORS를 피한다(`STATIC_DIR`, 아래 "발표용 실행"). 개발 중 직접 호출에 대비해 서버 CORS는 `http://localhost:5180`만 허용한다.
 - **응급 판정은 API 실패 시 브라우저 규칙으로 즉시 대체한다.** 네트워크 오류 때문에 119 안내가 늦어지면 안 된다. 자유 입력 추출(`/api/extract`)도 실패하면 브라우저 키워드 추출로 대체한다. 추출에서 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
 - 센터 접수함은 지금처럼 2초 주기로 `GET /api/center/cases`를 다시 부른다. 사례 수가 적어 전체 목록을 받아도 된다. 기존 `storage` 이벤트 갱신은 API 모드에서 끈다.
 - 근로자 세션 상태(언어, 동의, 현재 입력, 비회원 리포트)는 계속 브라우저에 둔다. 서버는 로그인·회원 정보를 저장하지 않는다.
@@ -324,6 +325,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
+| `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -350,6 +352,21 @@ uv run --env-file .env python scripts/translate_check.py   # 픽스처 자유 �
 uv run --directory backend fastapi dev app/main.py
 VITE_API_BASE=/api npm --prefix frontend run dev
 ```
+
+### 발표용 실행(서버 하나, 같은 출처)
+
+근로자 화면·센터 화면·API를 한 주소에서 띄운다. 같은 Wi-Fi의 휴대폰에서 `http://<맥 IP>:8000/`로 근로자 화면을 열고, PC에서 `/center`로 접수함을 본다.
+
+```sh
+VITE_API_BASE=/api npm --prefix ../frontend run build   # 프론트를 API 모드로 빌드(frontend/dist)
+STATIC_DIR=../frontend/dist uv run fastapi run app/main.py --host 0.0.0.0
+ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
+```
+
+- `/api/*`가 먼저 매칭되고, 나머지 경로는 빌드 폴더의 파일, 없으면 `index.html`이다(프론트 라우팅 `/center` 등). 확장자가 있는 없는 파일(`/assets/x.js`)은 404다.
+- 프론트를 API 모드(`VITE_API_BASE=/api`)로 빌드해야 같은 출처의 `/api`를 부른다. 단독 모드로 빌드하면 서버가 떠 있어도 브라우저 안 mock만 쓴다.
+- 시연 전에 휴대폰에서 응급 판정 실패 시 브라우저 규칙 대체가 동작하는지(서버를 잠깐 끄고 증상 입력) 확인한다.
+- 필요하면 `DB_PATH`, `MODEL_DIR`, `LLM_API_KEY`를 같은 명령에 더한다.
 
 ## CI
 

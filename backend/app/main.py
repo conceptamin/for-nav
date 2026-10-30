@@ -4,9 +4,12 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import errors
 from app.routers import center, worker
@@ -51,3 +54,29 @@ def meta() -> Meta:
 
 app.include_router(worker.router, prefix="/api", tags=["worker"])
 app.include_router(center.router, prefix="/api", tags=["center"])
+
+
+def mount_frontend(app: FastAPI, static_dir: str) -> None:
+    """프론트 빌드(frontend/dist)를 같은 출처에서 서빙한다(backlog 08). 위 /api 경로보다 뒤에 붙여야 한다.
+
+    있는 파일은 그대로, 나머지 경로는 index.html(SPA 라우팅)이다. /api 아래 없는 경로는 지금처럼 JSON 404다.
+    """
+    root = Path(static_dir).resolve()
+    index = root / "index.html"
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend(path: str) -> FileResponse:
+        if path == "api" or path.startswith("api/"):
+            raise StarletteHTTPException(status_code=404)
+        file = (root / path).resolve()
+        # ../ 로 폴더 밖 파일을 읽지 못하게 root 안의 파일만 돌려준다.
+        if path and file.is_relative_to(root) and file.is_file():
+            return FileResponse(file)
+        # 없는 /assets/x.js에 HTML을 주면 브라우저 오류가 헷갈리므로, 확장자가 있는 경로는 404다.
+        if Path(path).suffix:
+            raise StarletteHTTPException(status_code=404)
+        return FileResponse(index)
+
+
+if settings.static_dir:
+    mount_frontend(app, settings.static_dir)

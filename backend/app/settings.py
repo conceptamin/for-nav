@@ -7,6 +7,7 @@ import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date
+from pathlib import Path
 
 from app.llm import DEFAULT_ATTEMPTS, DEFAULT_TIMEOUT_S, LLMClient
 from app.llm_providers.anthropic import AnthropicClient
@@ -39,6 +40,8 @@ class Settings:
     llm_api_key: str = field(default="", repr=False)
     llm_timeout_s: float = DEFAULT_TIMEOUT_S
     llm_attempts: int = DEFAULT_ATTEMPTS
+    # 프론트 빌드 폴더(frontend/dist). 빈 문자열이면 정적 파일을 서빙하지 않는다(API만)
+    static_dir: str = ""
 
 
 def _center_hours(raw: str) -> CenterHours:
@@ -96,6 +99,13 @@ def _llm_attempts(raw: str) -> int:
     return value
 
 
+def _static_dir(raw: str) -> str:
+    path = raw.strip()
+    if path and not (Path(path) / "index.html").is_file():
+        raise ValueError(f"STATIC_DIR에 index.html이 없다(프론트를 먼저 빌드한다): {raw!r}")
+    return path
+
+
 def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
     return Settings(
         center_hours=_center_hours(env.get("CENTER_HOURS", DEFAULT_CENTER_HOURS)),
@@ -106,6 +116,7 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
         llm_api_key=env.get("LLM_API_KEY", "").strip(),
         llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
         llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
+        static_dir=_static_dir(env.get("STATIC_DIR", "")),
     )
 
 
