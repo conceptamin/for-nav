@@ -156,7 +156,8 @@ def test_route_readme_example():
 
 def test_visit_helper_shape():
     out = client.post("/api/visit-helper", json={"intake": INTAKE, "department": "surgery", "firstVisit": True, "lang": "vi"}).json()
-    assert set(out) == {"desk", "call"}
+    assert set(out) == {"desk", "call", "llmSlots"}
+    assert out["llmSlots"] == []
     assert out["desk"]["firstVisit"] is True
     assert out["desk"]["lines"][0]["native"] == "Tôi đến lần đầu."
     assert [f["id"] for f in out["call"]["faq"]] == ["first", "when", "where", "insurance", "help"]
@@ -169,6 +170,7 @@ def test_clinician_report_shape():
     assert out["createdAt"].endswith("Z")
     assert [r["field"] for r in out["rows"]] == ["symptoms", "note"]
     assert out["rows"][1]["valueKo"] == "Bị cắt tay (원문, 번역 미연결)"
+    assert out["llmSlots"] == []
 
 
 def test_center_summary():

@@ -178,6 +178,8 @@ class VisitHelperRequest(CamelModel):
 class VisitHelperResponse(CamelModel):
     desk: DeskSheet
     call: CallScript
+    # 서버 전용 선택 필드. LLM으로 채운 슬롯 이름 목록(templates/llm_slots.py), 없으면 빈 배열
+    llm_slots: list[str] | None = absent_if_none()
 
 
 class Profile(CamelModel):
@@ -208,6 +210,8 @@ class ClinicianReport(CamelModel):
     included: list[ReportField]
     rows: list[ReportRow]
     created_at: str
+    # 서버 전용 선택 필드. 템플릿 빌더는 비워 두고(동기화 테스트가 프론트 결과와 그대로 비교) 라우터가 채운다
+    llm_slots: list[str] | None = absent_if_none()
 
 
 class ClinicianReportRequest(CamelModel):
