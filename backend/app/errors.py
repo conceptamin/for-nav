@@ -92,7 +92,7 @@ class RequestContextMiddleware:
             log.info("%s %s %d %.1fms request_id=%s", scope["method"], scope["path"], status, ms, request_id)
 
     async def _websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """WebSocket(상담 채팅, backlog 13)은 연결이 끝날 때 한 줄: WS, 경로, 닫힘 코드, 연결 시간, request id.
+        """WebSocket(상담 채팅, backlog 14)은 연결이 끝날 때 한 줄: WS, 경로, 닫힘 코드, 연결 시간, request id.
         쿼리 문자열(채팅 토큰)과 메시지 본문은 남기지 않는다."""
         request_id = _assign_request_id(scope)
         started = time.perf_counter()

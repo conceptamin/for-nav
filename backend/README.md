@@ -19,7 +19,7 @@
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경, 채팅 토큰·메시지가 재시작 뒤에도 남는다 |
-| 상담 채팅 | FastAPI 기본 WebSocket(`uvicorn[standard]`에 든 `websockets`) | 새 의존성이 없다. 사례별 방과 재접속 뒤 이전 메시지면 충분해 socket.io는 쓰지 않는다(backlog 13). 열린 연결은 프로세스 메모리에 있으므로 `--workers 1`(기본)로만 띄운다 |
+| 상담 채팅 | FastAPI 기본 WebSocket(`uvicorn[standard]`에 든 `websockets`) | 새 의존성이 없다. 사례별 방과 재접속 뒤 이전 메시지면 충분해 socket.io는 쓰지 않는다(backlog 14). 열린 연결은 프로세스 메모리에 있으므로 `--workers 1`(기본)로만 띄운다 |
 | 모델 | `../modeling` 경로 의존성(editable)의 `predict()`. `lightgbm`·`numpy`가 따라 설치된다 | 응급도·진료과 모델(backlog 06, 12). 버전은 `modeling/pyproject.toml` 한 곳에서 고정한다. `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
@@ -60,6 +60,9 @@ backend/
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat
+  deploy/
+    deploy.sh          맥미니 배포 — 프론트 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
+    ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, MODEL_DIR=../modeling/models, .env 있으면 읽기)
   scripts/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
@@ -258,11 +261,11 @@ backend/
 { "case": { /* CenterCase, live: true, status: "new" */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
 ```
 
-`chatToken`은 서버 전용 선택 필드다(backlog 13). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
+`chatToken`은 서버 전용 선택 필드다(backlog 14). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
 
 긴급도는 `rateUrgency`와 같다. 예: 응급 이력 없음 + 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
 
-**`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 13)
+**`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
 사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(센터 로그인은 아직 없다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
 
@@ -439,6 +442,33 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 - 필요하면 `DB_PATH`, `MODEL_DIR`, `LLM_API_KEY`를 같은 명령에 더한다.
 - 상담 채팅의 열린 연결은 프로세스 메모리에 있으므로 `--workers`를 더하지 않는다(2 이상이면 같은 사례의 근로자·센터가 다른 프로세스에 붙어 서로 받지 못한다).
 
+### 맥미니 배포
+
+`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
+
+`deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에 빌드 → `uv sync --frozen --no-dev` → `static`으로 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 실패하면 떠 있는 서버와 `static`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+
+처음 한 번 준비할 것:
+
+1. 맥미니에 도구를 둔다: Homebrew `uv`, nvm Node 22 이상(`nvm install 22`), `npm i -g pm2`(nvm Node 22에 설치), 재부팅 뒤 자동 시작이 필요하면 `pm2 startup`.
+2. 맥미니에 저장소를 클론한다. 이 폴더에서는 파일을 손으로 고치지 않는다(`git pull --ff-only`가 실패한다).
+   ```sh
+   mkdir -p ~/srv && git clone https://github.com/conceptamin/for-nav.git ~/srv/for-nav
+   ```
+3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. `STATIC_DIR`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
+4. 맥미니에서 한 번 직접 돌려 본다: `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
+5. GitHub 저장소 Settings → Secrets and variables → Actions에 secrets 3개를 넣는다.
+
+| secret | 값 |
+|---|---|
+| `MAC_MINI_IP` | 맥미니의 외부 IP 또는 도메인(SSH 포트 2222로 열려 있는 주소) |
+| `MAC_MINI_USERNAME` | 맥미니 로그인 사용자 |
+| `MAC_MINI_SSH_KEY` | 맥미니 `~/.ssh/authorized_keys`에 공개키가 등록된 개인키 전체 |
+
+- 포트를 바꾸려면 `PORT=8080 bash backend/deploy/deploy.sh`처럼 넘긴다. 워크플로는 8000을 쓴다.
+- 서버 로그는 `pm2 logs for-nav`, 상태는 `pm2 status`로 본다. 배포가 실패하면 Actions 로그 끝에 pm2 로그 40줄이 찍힌다.
+- 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
+
 ## CI
 
 `.github/workflows/ci.yml`의 `backend` 작업은 다음 단계를 실행한다.
@@ -483,9 +513,9 @@ backend:
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
-| 상담 채팅 센터 인증 | `role=center`만으로 붙는다. 사례 id를 알면 누구나 센터로 붙을 수 있다(backlog 13) | 상담자 로그인·상담자별 권한 |
-| 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 13) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
-| 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 13) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
+| 상담 채팅 센터 인증 | `role=center`만으로 붙는다. 사례 id를 알면 누구나 센터로 붙을 수 있다(backlog 14) | 상담자 로그인·상담자별 권한 |
+| 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 14) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
+| 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
 

@@ -1,6 +1,6 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
 # 표는 넷이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
-# chat_tokens·chat_messages: 상담 채팅(backlog 13)의 근로자 토큰과 메시지.
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지가 평문으로 남는다(데모 범위, README "센터 저장소").
 

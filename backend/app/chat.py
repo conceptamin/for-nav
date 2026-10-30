@@ -1,4 +1,4 @@
-# 상담 채팅(backlog 13)의 열린 연결. 사례 하나가 방 하나다.
+# 상담 채팅(backlog 14)의 열린 연결. 사례 하나가 방 하나다.
 # 메시지·토큰은 저장소(store.py)에 두고, 여기에는 지금 붙어 있는 WebSocket만 둔다. 프로세스 하나 기준이다(다중 프로세스 중계는 범위 밖).
 
 from starlette.websockets import WebSocket

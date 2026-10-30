@@ -312,7 +312,7 @@ class NewCaseResponse(CamelModel):
     case: CenterCase
     # 다음 운영일(Asia/Seoul, YYYY-MM-DD)
     next_open_date: str
-    # 근로자가 이 사례의 상담 채팅에 붙을 때 쓰는 토큰(backlog 13). 프론트 타입에는 아직 없다
+    # 근로자가 이 사례의 상담 채팅에 붙을 때 쓰는 토큰(backlog 14). 프론트 타입에는 아직 없다
     chat_token: str | None = absent_if_none()
 
 
@@ -321,7 +321,7 @@ class StatusPatch(CamelModel):
 
 
 # ---------------------------------------------------------------------------
-# 상담 채팅(backlog 13). 프론트 타입은 아직 없다
+# 상담 채팅(backlog 14). 프론트 타입은 아직 없다
 # ---------------------------------------------------------------------------
 ChatRole = Literal["worker", "center"]
 

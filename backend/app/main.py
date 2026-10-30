@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="Ulsan Medical Navigator mock API", version="0.1.0", lifespan=lifespan)
-# 상담 채팅의 열린 연결(backlog 13). 닫을 것이 없어 lifespan 밖에서 만든다. 테스트가 TestClient를 `with` 없이 써도 있어야 한다.
+# 상담 채팅의 열린 연결(backlog 14). 닫을 것이 없어 lifespan 밖에서 만든다. 테스트가 TestClient를 `with` 없이 써도 있어야 한다.
 app.state.chat = ChatHub()
 
 errors.install(app)

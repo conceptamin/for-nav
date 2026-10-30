@@ -1,4 +1,4 @@
-# 13. 근로자·센터 상담 채팅(WebSocket)
+# 14. 근로자·센터 상담 채팅(WebSocket)
 
 상태: 완료
 의존: 07
@@ -98,6 +98,8 @@ WS /api/center/cases/{id}/chat?role=center
   - 틀린 토큰 → 4403, `C-0` → 4404, 재접속 → history 2건, `POST /api/center/reset` → 4000
   - 서버 로그: `app.access WS /api/center/cases/C-47625/chat 1000 1.4ms request_id=…` 등 5줄, `WebSocket`·`token=`이 든 줄 0개(필터 전에는 5줄이 토큰과 함께 남았다)
   - 메시지를 보낸 뒤 서버를 껐다 같은 `DB_PATH`로 다시 띄움 → 같은 토큰으로 붙고 history에 `["재시작 전"]`
+
+- 번호: 처음 13으로 병합됐지만(#95) 같은 날 `13-mac-mini-deploy.md`가 main에 함께 들어와 14로 옮겼다
 
 ### 바뀐 API
 - 추가: `WS /api/center/cases/{id}/chat`(프레임·닫힘 코드는 README)

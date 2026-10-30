@@ -241,7 +241,7 @@ def test_send_case_flow():
     assert case["id"].startswith("C-")
     assert len(out["nextOpenDate"]) == 10
 
-    # 채팅 토큰(backlog 13)은 전송 응답에만 있고 센터 목록·상세에는 없다.
+    # 채팅 토큰(backlog 14)은 전송 응답에만 있고 센터 목록·상세에는 없다.
     assert len(out["chatToken"]) >= 32
     assert "chatToken" not in case
 

@@ -253,111 +253,143 @@ p {
   unicode-bidi: isolate;
 }
 
-/* S-01 대화형 언어 선택(backlog 20·22). 안내원 말풍선(떠 있음) → 대답 말풍선(누르는 면, 끝쪽 정렬) → 바닥의 다른 언어 알약.
-   좌우는 글 방향을 따른다(아랍어 폰이면 뒤집힌다). 말풍선 꼬리 쪽 한 모서리만 6px */
-.w-chat {
-  gap: 16px;
-  padding-top: 16px;
-}
-
-.w-chat .ask {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-/* 안내원: 사람 모양을 담은 동그라미. 떠 있는 작은 면 */
-.w-chat .ask .avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: var(--brand-2);
-  color: var(--brand);
-  box-shadow: var(--clay-sm);
-}
-
-.w-chat .ask .avatar svg {
-  fill: currentColor;
-}
-
-.w-chat .ask .bubble {
-  max-width: 85%;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  border-end-start-radius: 6px;
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass);
-}
-
-.w-chat .ask h1 {
-  font-size: var(--t7);
-  margin: 0;
-}
-
-.w-chat .ask p {
-  margin: 4px 0 0;
-}
-
-.w-chat .replies {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.w-chat .reply {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  max-width: 85%;
-  min-height: 52px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: var(--radius);
-  border-end-end-radius: 6px;
-  background: var(--brand-2);
-  color: var(--brand-ink);
-  box-shadow: var(--glass-sm);
-  font: inherit;
-  text-align: end;
+/* 첫 진입 스플래시(backlog 24). 로고와 앱 이름만 화면 가운데에. 아무 곳이나 누르면 넘어간다. 119 띠는 그대로 보인다 */
+.w-splash {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   cursor: pointer;
 }
 
-.w-chat .reply:active {
-  box-shadow: var(--glass-in);
+.w-splash .mark {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 16px;
 }
 
-.w-chat .reply strong {
-  font-size: var(--t6);
+.w-splash h1 {
+  font-size: var(--t11);
+  margin: 0;
 }
 
-.w-chat .reply span {
-  font-size: var(--t3);
-  color: var(--ink-2);
-}
-
-/* 다른 언어 묶음은 바닥(119 띠 위)에 붙는다. 그 아래 안내·센터 링크도 함께 내려간다 */
-.w-chat .chip-group {
-  margin: auto 0 0;
+/* S-01 언어 선택 벤토 그리드(backlog 24). 질문 → 추천 격자(큰 타일 + 중간 타일) → 다른 언어 h2 → 작은 타일 격자.
+   6칸 격자라 큰 타일은 6칸, 중간은 3칸, 작은 것은 2칸. 줄 끝이 남으면 .wide(6칸)·.half(3칸)로 채운다.
+   타일은 바닥 위에 바로 놓이지만 칩처럼 흐림을 달지 않는다(20개를 한 화면에서 흐리면 저가형 폰이 끊긴다) */
+.w-lang {
+  gap: 16px;
   padding-top: 8px;
 }
 
-/* 다른 언어는 알약: 국기 + 모국어 이름. 칩의 면·눌림은 그대로 두고 모양만 둥글게 */
-.w-chat .chips .chip {
-  min-height: 44px;
-  padding: 8px 16px;
-  border-radius: 999px;
+.w-lang .ask h1 {
+  font-size: var(--t9);
+  margin: 0;
 }
 
-.w-chat .chip .flag {
-  font-size: var(--t6);
+.w-lang .ask p {
+  margin: 4px 0 0;
+}
+
+.w-lang h2 {
+  font-size: var(--t5);
+  color: var(--ink-2);
+  margin: 8px 0 -8px;
+}
+
+.lang-bento {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lang-bento .tile {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 2px;
+  min-height: 84px;
+  padding: 12px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--glass-sm);
+  font: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.lang-bento .tile:active {
+  box-shadow: var(--glass-in);
+}
+
+.lang-bento .tile .flag {
+  font-size: var(--t8);
   line-height: 1;
+  margin-bottom: auto;
+}
+
+.lang-bento .tile strong {
+  font-size: var(--t5);
+  line-height: 1.25;
+}
+
+.lang-bento .tile .en {
+  font-size: var(--t2);
+  color: var(--ink-2);
+}
+
+.lang-bento .tile.mid {
+  grid-column: span 3;
+  min-height: 96px;
+  background: var(--brand-2);
+  color: var(--brand-ink);
+  box-shadow: var(--glass);
+}
+
+.lang-bento .tile.mid strong {
+  font-size: var(--t7);
+}
+
+.lang-bento .tile.mid:active {
+  box-shadow: var(--glass-in);
+}
+
+.lang-bento .tile.big {
+  grid-column: span 6;
+  min-height: 120px;
+  padding: 16px 20px;
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--glass-color);
+}
+
+.lang-bento .tile.big:active {
+  box-shadow: var(--glass-color-in);
+}
+
+.lang-bento .tile.big .flag {
+  font-size: var(--t12);
+}
+
+.lang-bento .tile.big strong {
+  font-size: var(--t9);
+}
+
+.lang-bento .tile.big .en {
+  font-size: var(--t4);
+  color: var(--on-brand);
+}
+
+.lang-bento .tile.wide {
+  grid-column: span 6;
+}
+
+.lang-bento .tile.half {
+  grid-column: span 3;
 }
 
 /* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */

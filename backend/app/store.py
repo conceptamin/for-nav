@@ -1,6 +1,6 @@
 # 센터 사례 저장소. DB_PATH가 비면 메모리(재시작하면 mock 시드 상태로 돌아간다), 있으면 SQLite 파일(store_sqlite.py)이다.
 # 어느 쪽이든 mock 사례·통계 레코드는 서버 시작 시 한 번 메모리에서 만들고, 근로자가 실제로 보낸 사례(live)와 상태 변경만 따로 둔다.
-# 상담 채팅(backlog 13)의 근로자 토큰과 메시지도 같은 저장소에 둔다.
+# 상담 채팅(backlog 14)의 근로자 토큰과 메시지도 같은 저장소에 둔다.
 
 from collections.abc import Callable, Iterable
 from datetime import datetime

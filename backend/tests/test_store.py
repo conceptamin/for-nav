@@ -1,5 +1,5 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
-# 상담 채팅의 토큰·메시지(backlog 13)도 같은 방식으로 본다.
+# 상담 채팅의 토큰·메시지(backlog 14)도 같은 방식으로 본다.
 
 from datetime import datetime
 from pathlib import Path

@@ -1,0 +1,45 @@
+name: Deploy backend (Mac mini)
+
+# main에 병합될 때마다 맥미니의 클론(~/srv/for-nav)을 main으로 올리고 backend/deploy/deploy.sh를 돌린다.
+# 서버가 프론트 빌드를 같은 출처에서 서빙하므로 frontend·modeling 변경도 배포한다. 문서만 바뀐 병합은 배포하지 않는다.
+# 필요한 secrets(MAC_MINI_IP, MAC_MINI_USERNAME, MAC_MINI_SSH_KEY)와 맥미니 준비는 backend/README.md "맥미니 배포"에 있다.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'modeling/src/**'
+      - 'modeling/models/**'
+      - 'modeling/pyproject.toml'
+      - '.github/workflows/deploy-backend.yml'
+      - '!**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 배포는 한 번에 하나씩, 들어온 순서대로 한다. 앞선 배포를 취소하지 않는다.
+concurrency:
+  group: deploy-mac-mini
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Deploy to Mac mini
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.MAC_MINI_IP }}
+          username: ${{ secrets.MAC_MINI_USERNAME }}
+          key: ${{ secrets.MAC_MINI_SSH_KEY }}
+          port: 2222
+          command_timeout: 15m
+          # git pull을 먼저 끝내고 스크립트를 부른다. 실행 중인 스크립트 파일을 pull로 바꾸지 않기 위해서다
+          script: |
+            set -e
+            cd ~/srv/for-nav
+            git pull --ff-only origin main
+            bash backend/deploy/deploy.sh

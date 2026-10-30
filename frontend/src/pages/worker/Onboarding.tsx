@@ -13,10 +13,17 @@ import { suggestLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 대화형. 안내원(사람 동그라미)이 폰 언어로 묻고, 근로자는 자기 언어로 된 대답 말풍선을 누른다.
-// 폰 언어와 가까운 언어를 위에 크게, 나머지는 국기 붙은 "다른 언어" 알약으로 바닥에 모두 보인다(backlog 20·22). 앱 바가 없다.
+// S-01: 벤토 그리드(backlog 24). 폰 언어로 묻고, 20개 언어를 크기가 다른 타일로 한 격자에 모두 보인다.
+// 추천 첫째(폰 언어)는 한 줄 전체 큰 타일, 추천 나머지는 두 개씩 중간 타일, 나머지는 세 개씩 작은 타일. 앱 바가 없다.
 // ---------------------------------------------------------------------------
 const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
+
+/** 줄 끝이 비지 않게 마지막 타일들의 폭을 늘린다. perRow개씩 놓이는 타일 목록에서 i번째의 폭 클래스 */
+function tileSpan(i: number, count: number, perRow: 2 | 3): string {
+  const left = count % perRow;
+  if (left === 0 || i < count - left) return '';
+  return left === 1 ? 'wide' : 'half';
+}
 
 export function LanguagePage() {
   const app = useApp();
@@ -34,45 +41,40 @@ export function LanguagePage() {
     navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
   };
 
-  return (
-    <div className="w-screen w-chat" dir={RTL_LANGS.includes(ask) ? 'rtl' : undefined}>
-      <div className="ask" lang={ask}>
-        <span className="avatar" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <circle cx="12" cy="8.5" r="4" />
-            <path d="M4.5 20.5c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5z" />
-          </svg>
+  const [big, ...mid] = suggested;
+  const tile = (l: Lang, size: 'big' | 'mid' | 'small', span = '') => {
+    const o = LANG_OPTION.get(l);
+    return (
+      <button key={l} type="button" className={`tile ${size} ${span}`.trim()} lang={l} onClick={() => choose(l)}>
+        <span className="flag" aria-hidden="true">
+          {o?.flag}
         </span>
-        <div className="bubble">
-          <h1>{translate(ask, 'langAsk')}</h1>
-          {ask !== 'en' && (
-            <p className="small muted" lang="en" dir="ltr">
-              {translate('en', 'langAsk')}
-            </p>
-          )}
-        </div>
+        <strong>{size === 'big' ? translate(l, 'langReply') : o?.native}</strong>
+        {l !== 'en' && (
+          <span className="en" lang="en">
+            {o?.english}
+          </span>
+        )}
+      </button>
+    );
+  };
+
+  return (
+    <div className="w-screen w-lang" dir={RTL_LANGS.includes(ask) ? 'rtl' : undefined}>
+      <div className="ask" lang={ask}>
+        <h1>{translate(ask, 'langAsk')}</h1>
+        {ask !== 'en' && (
+          <p className="small muted" lang="en" dir="ltr">
+            {translate('en', 'langAsk')}
+          </p>
+        )}
       </div>
-      <div className="replies">
-        {suggested.map((l) => (
-          <button key={l} type="button" className="reply" lang={l} onClick={() => choose(l)}>
-            <strong>{translate(l, 'langReply')}</strong>
-            {l !== 'en' && <span lang="en">{LANG_OPTION.get(l)?.english}</span>}
-          </button>
-        ))}
+      <div className="lang-bento">
+        {tile(big, 'big')}
+        {mid.map((l, i) => tile(l, 'mid', tileSpan(i, mid.length, 2)))}
       </div>
-      <div className="chip-group">
-        <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
-        <div className="chips">
-          {rest.map((l) => (
-            <button key={l} type="button" className="chip" lang={l} onClick={() => choose(l)}>
-              <span className="flag" aria-hidden="true">
-                {LANG_OPTION.get(l)?.flag}
-              </span>
-              {LANG_OPTION.get(l)?.native}
-            </button>
-          ))}
-        </div>
-      </div>
+      <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
+      <div className="lang-bento">{rest.map((l, i) => tile(l, 'small', tileSpan(i, rest.length, 3)))}</div>
       <p className="footer-note" lang={ask}>
         {translate(ask, 'langHint')}
       </p>

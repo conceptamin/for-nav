@@ -1,4 +1,4 @@
-# 상담 채팅(backlog 13): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그. 메모리·SQLite 두 저장소에 돌린다.
+# 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그. 메모리·SQLite 두 저장소에 돌린다.
 
 import json
 import logging
