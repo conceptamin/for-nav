@@ -1,28 +1,45 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
-# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)을 연다.
+# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)과 통화 시그널링·자막 번역(backlog 16)을 연다.
 
+import asyncio
+import logging
 import secrets
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, WebSocket, status
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 from starlette.websockets import WebSocketDisconnect
 
 from app import clock
-from app.chat import ChatHub
+from app.chat import CallHub, ChatHub
 from app.data.mock import StatRecord
 from app.llm import LLMClient
 from app.routers.worker import llm_client
 from app.rules.coverage import is_after_hours, next_open_day
 from app.rules.urgency import rate_urgency
-from app.schemas import CaseStatus, CenterCase, CenterStats, ChatIn, ChatRole, NewCaseRequest, NewCaseResponse, StatCell, StatusPatch
+from app.schemas import (
+    CallCaptionIn,
+    CallIn,
+    Caption,
+    CaseStatus,
+    CenterCase,
+    CenterStats,
+    ChatIn,
+    ChatRole,
+    NewCaseRequest,
+    NewCaseResponse,
+    StatCell,
+    StatusPatch,
+)
 from app.settings import settings
 from app.store import store
 from app.templates.reports import build_center_summary
-from app.templates.translate import translate_note
-from app.vocab import INDUSTRIES, District
+from app.templates.translate import translate_line, translate_note
+from app.vocab import INDUSTRIES, District, Lang
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/center")
 
@@ -108,10 +125,12 @@ def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
 
 @router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
 async def reset(request: Request) -> Response:
-    """C-01 데모 초기화: live 사례, 상태 변경, 채팅을 지우고 열린 채팅 연결을 닫는다."""
+    """C-01 데모 초기화: live 사례, 상태 변경, 채팅을 지우고 열린 채팅·통화 연결을 닫는다."""
     store.reset()
     hub: ChatHub = request.app.state.chat
     await hub.close_all()
+    call_hub: CallHub = request.app.state.call
+    await call_hub.close_all()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -166,6 +185,83 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
         pass
     finally:
         hub.leave(case_id, ws)
+
+
+# ---------------------------------------------------------------------------
+# 통화(backlog 16): 음성은 브라우저끼리 WebRTC로 오가고, 서버는 시그널링을 상대에게 중계하고 받아쓴 문장을 번역한다.
+# 권한·닫힘 코드는 채팅과 같다. 로그에는 SDP·ICE(IP 주소)와 자막 원문·번역을 남기지 않는다.
+# ---------------------------------------------------------------------------
+CLOSE_BUSY = 4409
+# 프레임 하나의 최대 크기(UTF-8 바이트). SDP 한 개가 수 KB다.
+MAX_CALL_FRAME = 16 * 1024
+_CALL_IN: TypeAdapter[CallIn] = TypeAdapter(CallIn)
+
+
+async def _send_caption(hub: CallHub, case_id: str, sender: ChatRole, text: str, case_lang: Lang, llm: LLMClient | None) -> None:
+    """근로자 말은 한국어로, 센터 말은 사례 언어로 옮겨 양쪽에 보낸다. 번호·시각은 받은 순서대로 먼저 정한다."""
+    caption_id, at = hub.next_caption_id(case_id), clock.now()
+    source, target = (case_lang, "ko") if sender == "worker" else ("ko", case_lang)
+    tr = await translate_line(text, source, target, llm, timeout_s=settings.llm_timeout_s)
+    logger.info("call caption translation=%s", tr.status)
+    caption = Caption(
+        id=caption_id,
+        from_=sender,
+        text=text,
+        lang=source,
+        translated=tr.text,
+        translated_lang=target,
+        translation=tr.status,
+        at=clock.iso_utc(at),
+    )
+    await hub.send(case_id, {"type": "caption", "caption": caption.model_dump(by_alias=True)})
+
+
+@router.websocket("/cases/{case_id}/call")
+async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
+    """근로자·센터 통화. 연결 직후 방에 있는 상대(joined)를 알리고, signal은 상대에게만, caption은 번역해 양쪽에 보낸다."""
+    await ws.accept()
+    denied = _chat_denied(case_id, role, token)
+    if denied:
+        await ws.close(denied)
+        return
+    me: ChatRole = "center" if role == "center" else "worker"
+    hub: CallHub = ws.app.state.call
+    if not hub.join(case_id, me, ws):
+        await ws.close(CLOSE_BUSY)
+        return
+    # 근로자 언어는 클라이언트 값이 아니라 사례의 언어다.
+    case_lang = store.get(case_id).language
+    llm: LLMClient | None = getattr(ws.app.state, "llm", None)
+    # 번역을 기다리는 동안에도 시그널링을 계속 중계하도록 자막은 따로 돌린다.
+    tasks: set[asyncio.Task] = set()
+    try:
+        await ws.send_json({"type": "joined", "role": me, "peers": hub.peers(case_id, me)})
+        await hub.send(case_id, {"type": "peer", "role": me, "present": True}, exclude=me)
+        while True:
+            message = await ws.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            raw = message.get("text") or ""
+            try:
+                if len(raw.encode()) > MAX_CALL_FRAME:
+                    raise ValueError
+                frame = _CALL_IN.validate_json(raw)
+            except (ValueError, ValidationError):
+                await ws.send_json(INVALID_FRAME)
+                continue
+            if isinstance(frame, CallCaptionIn):
+                task = asyncio.create_task(_send_caption(hub, case_id, me, frame.text, case_lang, llm))
+                tasks.add(task)
+                task.add_done_callback(tasks.discard)
+            else:
+                await hub.send(case_id, {"type": "signal", "from": me, "data": frame.data}, exclude=me)
+    except WebSocketDisconnect:
+        pass
+    finally:
+        for task in tasks:
+            task.cancel()
+        if hub.leave(case_id, me, ws):
+            await hub.send(case_id, {"type": "peer", "role": me, "present": False})
 
 
 # ---------------------------------------------------------------------------
