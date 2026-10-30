@@ -13,8 +13,8 @@ import { suggestLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 대화형. 안내원(로고)이 폰 언어로 묻고, 근로자는 자기 언어로 된 대답 말풍선을 누른다.
-// 폰 언어와 가까운 언어를 위에 크게, 나머지는 "다른 언어" 칩으로 모두 보인다(backlog 20). 로고 화면이라 앱 바가 없다.
+// S-01: 대화형. 안내원(사람 동그라미)이 폰 언어로 묻고, 근로자는 자기 언어로 된 대답 말풍선을 누른다.
+// 폰 언어와 가까운 언어를 위에 크게, 나머지는 국기 붙은 "다른 언어" 알약으로 바닥에 모두 보인다(backlog 20·21). 앱 바가 없다.
 // ---------------------------------------------------------------------------
 const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
 
@@ -37,7 +37,12 @@ export function LanguagePage() {
   return (
     <div className="w-screen w-chat" dir={RTL_LANGS.includes(ask) ? 'rtl' : undefined}>
       <div className="ask" lang={ask}>
-        <img className="mark" src="/logo.png" width="40" height="40" alt="" />
+        <span className="avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <circle cx="12" cy="8.5" r="4" />
+            <path d="M4.5 20.5c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5z" />
+          </svg>
+        </span>
         <div className="bubble">
           <h1>{translate(ask, 'langAsk')}</h1>
           {ask !== 'en' && (
@@ -60,6 +65,9 @@ export function LanguagePage() {
         <div className="chips">
           {rest.map((l) => (
             <button key={l} type="button" className="chip" lang={l} onClick={() => choose(l)}>
+              <span className="flag" aria-hidden="true">
+                {LANG_OPTION.get(l)?.flag}
+              </span>
               {LANG_OPTION.get(l)?.native}
             </button>
           ))}

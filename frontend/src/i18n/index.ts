@@ -48,27 +48,28 @@ const MESSAGES: Record<Lang, Record<MessageKey, string>> = {
 };
 
 // 언어 선택 화면의 순서. 요청받은 국기 목록(backlog 16)의 순서를 따른다.
-export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string }[] = [
-  { lang: 'ko', native: '한국어', english: 'Korean' },
-  { lang: 'ne', native: 'नेपाली', english: 'Nepali' },
-  { lang: 'ru', native: 'Русский', english: 'Russian' },
-  { lang: 'mn', native: 'Монгол', english: 'Mongolian' },
-  { lang: 'my', native: 'မြန်မာ', english: 'Burmese' },
-  { lang: 'vi', native: 'Tiếng Việt', english: 'Vietnamese' },
-  { lang: 'si', native: 'සිංහල', english: 'Sinhala' },
-  { lang: 'ar', native: 'العربية', english: 'Arabic' },
-  { lang: 'en', native: 'English', english: 'English' },
-  { lang: 'uz', native: 'Oʻzbekcha', english: 'Uzbek' },
-  { lang: 'ja', native: '日本語', english: 'Japanese' },
-  { lang: 'zh-CN', native: '简体中文', english: 'Chinese (Simplified)' },
-  { lang: 'zh-TW', native: '繁體中文', english: 'Chinese (Traditional)' },
-  { lang: 'kk', native: 'Қазақша', english: 'Kazakh' },
-  { lang: 'km', native: 'ខ្មែរ', english: 'Khmer' },
-  { lang: 'ky', native: 'Кыргызча', english: 'Kyrgyz' },
-  { lang: 'th', native: 'ไทย', english: 'Thai' },
-  { lang: 'fr', native: 'Français', english: 'French' },
-  { lang: 'tl', native: 'Filipino', english: 'Filipino' },
-  { lang: 'id', native: 'Bahasa Indonesia', english: 'Indonesian' },
+// flag는 S-01 "다른 언어" 알약의 국기(backlog 21). 국기는 나라 표시라 언어와 1:1이 아니다. 그 목록 이미지의 국기를 그대로 쓴다(번체도 🇨🇳)
+export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string; flag: string }[] = [
+  { lang: 'ko', native: '한국어', english: 'Korean', flag: '🇰🇷' },
+  { lang: 'ne', native: 'नेपाली', english: 'Nepali', flag: '🇳🇵' },
+  { lang: 'ru', native: 'Русский', english: 'Russian', flag: '🇷🇺' },
+  { lang: 'mn', native: 'Монгол', english: 'Mongolian', flag: '🇲🇳' },
+  { lang: 'my', native: 'မြန်မာ', english: 'Burmese', flag: '🇲🇲' },
+  { lang: 'vi', native: 'Tiếng Việt', english: 'Vietnamese', flag: '🇻🇳' },
+  { lang: 'si', native: 'සිංහල', english: 'Sinhala', flag: '🇱🇰' },
+  { lang: 'ar', native: 'العربية', english: 'Arabic', flag: '🇦🇪' },
+  { lang: 'en', native: 'English', english: 'English', flag: '🇺🇸' },
+  { lang: 'uz', native: 'Oʻzbekcha', english: 'Uzbek', flag: '🇺🇿' },
+  { lang: 'ja', native: '日本語', english: 'Japanese', flag: '🇯🇵' },
+  { lang: 'zh-CN', native: '简体中文', english: 'Chinese (Simplified)', flag: '🇨🇳' },
+  { lang: 'zh-TW', native: '繁體中文', english: 'Chinese (Traditional)', flag: '🇨🇳' },
+  { lang: 'kk', native: 'Қазақша', english: 'Kazakh', flag: '🇰🇿' },
+  { lang: 'km', native: 'ខ្មែរ', english: 'Khmer', flag: '🇰🇭' },
+  { lang: 'ky', native: 'Кыргызча', english: 'Kyrgyz', flag: '🇰🇬' },
+  { lang: 'th', native: 'ไทย', english: 'Thai', flag: '🇹🇭' },
+  { lang: 'fr', native: 'Français', english: 'French', flag: '🇫🇷' },
+  { lang: 'tl', native: 'Filipino', english: 'Filipino', flag: '🇵🇭' },
+  { lang: 'id', native: 'Bahasa Indonesia', english: 'Indonesian', flag: '🇮🇩' },
 ];
 
 export type { MessageKey };
