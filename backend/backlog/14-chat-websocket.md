@@ -115,4 +115,4 @@ WS /api/center/cases/{id}/chat?role=center
 - 센터 인증이 없으므로 사례 id만 알면 누구나 `role=center`로 붙을 수 있다. 데모 한정이고 README "나중에 붙일 자리"에 적는다
 - 프론트 작업(별도 `frontend/` backlog): `vite.config.ts` 프록시를 `{ '/api': { target: 'http://localhost:8000', ws: true } }`로 바꾸기, `chatToken`을 근로자 세션 상태(브라우저 저장)에 두기, 끊기면 몇 초 뒤 다시 연결하기, 단독 모드(`VITE_API_BASE` 없음)에서는 채팅을 숨기기
 - 보존 기간: 메시지는 자유 입력이라 개인 정보가 들어갈 수 있다. 07과 같이 보존 기간·자동 삭제·암호화는 미결로 둔다
-- 이 작업 밖에서 찾은 것: `fastapi run`으로 띄우면 uvicorn HTTP 접근 로그(`INFO: 127.0.0.1:50854 - "POST /api/center/cases HTTP/1.1" 201`)가 여전히 찍힌다. `_setup_logging()`의 `uvicorn.access` 끄기가 서버 시작 때 다시 켜지는 것으로 보인다. 클라이언트 주소와, `GET /api/center/cases?since=`처럼 쿼리가 있으면 쿼리 문자열까지 남으므로 README "공통 규칙"의 로그 규칙과 어긋난다. 별도 항목으로 고친다
+- 이 작업 밖에서 찾은 것: `fastapi run`으로 띄우면 uvicorn HTTP 접근 로그(`INFO: 127.0.0.1:50854 - "POST /api/center/cases HTTP/1.1" 201`)가 여전히 찍힌다. `_setup_logging()`의 `uvicorn.access` 끄기가 서버 시작 때 다시 켜지는 것으로 보인다. 클라이언트 주소와, `GET /api/center/cases?since=`처럼 쿼리가 있으면 쿼리 문자열까지 남으므로 README "공통 규칙"의 로그 규칙과 어긋난다. backlog 15에서 고쳤다(`uvicorn.access` 필터)

@@ -137,9 +137,18 @@ class _DropWebSocketLines(logging.Filter):
         return '"WebSocket ' not in str(record.msg)
 
 
+class _DropAccessLines(logging.Filter):
+    """uvicorn 접근 로그는 쿼리 문자열과 클라이언트 주소를 남기므로 모두 버리고 미들웨어의 한 줄로 대신한다.
+    `disabled = True`로는 안 된다. 서버 시작 때 uvicorn이 로그 설정(dictConfig)을 적용하며 되돌리기 때문이다. 필터는 남는다."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return False
+
+
 def _setup_logging() -> None:
-    # uvicorn 접근 로그는 쿼리 문자열과 클라이언트 주소를 남기므로 끄고 위 한 줄로 대신한다.
-    logging.getLogger("uvicorn.access").disabled = True
+    uvicorn_access = logging.getLogger("uvicorn.access")
+    if not any(isinstance(f, _DropAccessLines) for f in uvicorn_access.filters):
+        uvicorn_access.addFilter(_DropAccessLines())
     uvicorn_error = logging.getLogger("uvicorn.error")
     if not any(isinstance(f, _DropWebSocketLines) for f in uvicorn_error.filters):
         uvicorn_error.addFilter(_DropWebSocketLines())

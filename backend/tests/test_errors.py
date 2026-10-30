@@ -1,9 +1,11 @@
 # 공통 오류 형식, X-Request-Id, 접근 로그. 요청 본문·쿼리 문자열·헤더가 로그에 남지 않는지 표식 문자열로 확인한다.
 
 import logging
+import logging.config
 
 import pytest
 from fastapi.testclient import TestClient
+from fastapi_cli.utils.cli import get_uvicorn_log_config
 
 from app.main import app
 from app.routers import worker
@@ -115,6 +117,26 @@ def test_access_log_has_no_query_or_headers(caplog):
     assert lines[0].startswith("GET /api/center/cases 200 ")
     assert lines[0].endswith(f"request_id={r.headers['X-Request-Id']}")
     assert "status=" not in server_log(caplog) and "since" not in server_log(caplog) and MARKER not in server_log(caplog)
+
+
+def test_uvicorn_access_log_dropped_after_server_log_config():
+    """`fastapi run`처럼 앱을 불러온 뒤 uvicorn 로그 설정을 적용해도 uvicorn 접근 줄(주소·쿼리)이 나가지 않는다."""
+    names = ("uvicorn", "uvicorn.error", "uvicorn.access")
+    saved = {n: (lg.handlers[:], lg.level, lg.propagate, lg.disabled) for n in names for lg in [logging.getLogger(n)]}
+    seen: list[logging.LogRecord] = []
+    handler = logging.Handler()
+    handler.emit = seen.append
+    try:
+        logging.config.dictConfig(get_uvicorn_log_config())
+        access = logging.getLogger("uvicorn.access")
+        access.addHandler(handler)
+        access.info('%s - "%s %s HTTP/%s" %d', "127.0.0.1:50854", "GET", f"/api/center/cases?since={MARKER}", "1.1", 200)
+        assert not access.disabled  # 로그 설정이 되돌린다. 그래도 필터가 막아야 한다
+        assert seen == []
+    finally:
+        for n, (handlers, level, propagate, disabled) in saved.items():
+            lg = logging.getLogger(n)
+            lg.handlers[:], lg.level, lg.propagate, lg.disabled = handlers, level, propagate, disabled
 
 
 def test_cors_exposes_request_id():
