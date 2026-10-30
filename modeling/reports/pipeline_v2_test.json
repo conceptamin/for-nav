@@ -1,0 +1,111 @@
+{
+  "version": "v2",
+  "final": true,
+  "note": "test 평가는 한 번만 했다. 규칙은 backend app.rules.triage, 모델은 predict. 자유 입력 없음(버튼 조합 규칙만)",
+  "rows": 254,
+  "emergency": 49,
+  "results": {
+    "규칙만": {
+      "recall": {
+        "n": 17,
+        "of": 49,
+        "value": 0.3469
+      },
+      "flagged": {
+        "n": 29,
+        "of": 254,
+        "value": 0.1142
+      },
+      "precision": {
+        "n": 17,
+        "of": 29,
+        "value": 0.5862
+      }
+    },
+    "규칙 + 보조 점수(모델 없음, 프론트 오프라인과 같음)": {
+      "recall": {
+        "n": 17,
+        "of": 49,
+        "value": 0.3469
+      },
+      "flagged": {
+        "n": 29,
+        "of": 254,
+        "value": 0.1142
+      },
+      "precision": {
+        "n": 17,
+        "of": 29,
+        "value": 0.5862
+      }
+    },
+    "모델만, full": {
+      "recall": {
+        "n": 42,
+        "of": 49,
+        "value": 0.8571
+      },
+      "flagged": {
+        "n": 129,
+        "of": 254,
+        "value": 0.5079
+      },
+      "precision": {
+        "n": 42,
+        "of": 129,
+        "value": 0.3256
+      }
+    },
+    "규칙 + 모델, full (서빙)": {
+      "recall": {
+        "n": 42,
+        "of": 49,
+        "value": 0.8571
+      },
+      "flagged": {
+        "n": 130,
+        "of": 254,
+        "value": 0.5118
+      },
+      "precision": {
+        "n": 42,
+        "of": 130,
+        "value": 0.3231
+      }
+    },
+    "모델만, backend": {
+      "recall": {
+        "n": 40,
+        "of": 49,
+        "value": 0.8163
+      },
+      "flagged": {
+        "n": 129,
+        "of": 254,
+        "value": 0.5079
+      },
+      "precision": {
+        "n": 40,
+        "of": 129,
+        "value": 0.3101
+      }
+    },
+    "규칙 + 모델, backend (서빙)": {
+      "recall": {
+        "n": 40,
+        "of": 49,
+        "value": 0.8163
+      },
+      "flagged": {
+        "n": 129,
+        "of": 254,
+        "value": 0.5079
+      },
+      "precision": {
+        "n": 40,
+        "of": 129,
+        "value": 0.3101
+      }
+    }
+  }
+}
