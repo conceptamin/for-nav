@@ -449,8 +449,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "fastapi", extra = ["standard"] },
-    { name = "lightgbm" },
-    { name = "numpy" },
+    { name = "for-nav-modeling" },
 ]
 
 [package.dev-dependencies]
@@ -463,14 +462,46 @@ dev = [
 requires-dist = [
     { name = "anthropic", specifier = ">=2.3.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.162.0" },
-    { name = "lightgbm", specifier = "==4.7.0" },
-    { name = "numpy", specifier = "==2.5.4" },
+    { name = "for-nav-modeling", editable = "../modeling" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.17.2" },
+]
+
+[[package]]
+name = "for-nav-modeling"
+version = "0.1.0"
+source = { editable = "../modeling" }
+dependencies = [
+    { name = "lightgbm" },
+    { name = "numpy" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "lightgbm", specifier = "==4.7.0" },
+    { name = "numpy", specifier = "==2.5.4" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = "==9.1.1" },
+    { name = "ruff", specifier = "==0.17.2" },
+]
+notebook = [
+    { name = "ipykernel", specifier = "==7.4.0" },
+    { name = "matplotlib", specifier = "==3.11.2" },
+    { name = "nbconvert", specifier = "==7.17.2" },
+]
+train = [
+    { name = "openpyxl", specifier = "==3.1.5" },
+    { name = "pandas", specifier = "==3.1.0" },
+    { name = "pyarrow", specifier = "==26.0.0" },
+    { name = "scikit-learn", specifier = "==1.9.1" },
+    { name = "shap", specifier = "==0.54.1" },
 ]
 
 [[package]]
