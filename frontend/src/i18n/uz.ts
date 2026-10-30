@@ -23,7 +23,6 @@ export const uz: Record<MessageKey, string> = {
   langTitle: 'Tilni tanlang',
   langHint: 'Keyinroq ekranning yuqori qismida oʻzgartirishingiz mumkin.',
   langAsk: 'Qaysi tilda gaplashamiz?',
-  langOther: 'Boshqa tillar',
 
   // S-02
   consentTitle: 'Boshlashdan oldin',

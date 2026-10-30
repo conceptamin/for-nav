@@ -9,12 +9,12 @@ import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
 import { useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
-import { suggestLangs } from '../../i18n/suggest';
+import { orderLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 언어 격자(backlog 24). 폰 언어로 묻고, 20개 언어를 같은 크기 칸(국기 + 모국어 이름 + 영어 이름) 두 줄 격자로 모두 보인다.
-// 폰 언어 추천(suggestLangs)은 위 격자에 바탕색만 다르게, 나머지는 "다른 언어" 아래 격자에. 앱 바가 없다.
+// S-01: 언어 격자(backlog 24). 폰 언어로 묻고, 20개 언어를 같은 크기·같은 모양 칸(국기 + 모국어 이름 + 영어 이름)의
+// 두 줄 격자 하나로 모두 보인다. 폰 언어 하나만 맨 앞에 오고 나머지는 정해진 순서다. 앱 바가 없다.
 // ---------------------------------------------------------------------------
 const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
 
@@ -23,21 +23,21 @@ export function LanguagePage() {
   const navigate = useNavigate();
   useScreenBar({ hidden: true });
   const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
-  const { first, suggested, rest } = useMemo(
-    () => suggestLangs(navigator.languages ?? [navigator.language], LANGUAGE_OPTIONS.map((o) => o.lang)),
+  const { first, langs } = useMemo(
+    () => orderLangs(navigator.languages ?? [navigator.language], LANGUAGE_OPTIONS.map((o) => o.lang)),
     [],
   );
-  // 질문은 폰 언어로. 폰 언어를 모르면 영어로 묻고, 영어가 아니면 아래에 영어 한 줄을 붙인다(추천이 틀렸을 때를 위해)
+  // 질문은 폰 언어로. 폰 언어를 모르면 영어로 묻고, 영어가 아니면 아래에 영어 한 줄을 붙인다(폰 언어가 본인 언어가 아닐 때를 위해)
   const ask: Lang = first ?? 'en';
   const choose = (lang: Lang) => {
     app.setLang(lang);
     navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
   };
 
-  const tile = (l: Lang, suggest = false) => {
+  const tile = (l: Lang) => {
     const o = LANG_OPTION.get(l);
     return (
-      <button key={l} type="button" className={suggest ? 'tile suggest' : 'tile'} lang={l} onClick={() => choose(l)}>
+      <button key={l} type="button" className="tile" lang={l} onClick={() => choose(l)}>
         <img className="flag" src={`/flags/${o?.country}.svg`} width="32" height="24" alt="" />
         <span className="name">
           <strong>{o?.native}</strong>
@@ -61,9 +61,7 @@ export function LanguagePage() {
           </p>
         )}
       </div>
-      <div className="lang-grid">{suggested.map((l) => tile(l, true))}</div>
-      <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
-      <div className="lang-grid">{rest.map((l) => tile(l))}</div>
+      <div className="lang-grid">{langs.map(tile)}</div>
       <p className="footer-note" lang={ask}>
         {translate(ask, 'langHint')}
       </p>

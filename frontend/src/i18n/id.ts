@@ -23,7 +23,6 @@ export const id: Record<MessageKey, string> = {
   langTitle: 'Pilih bahasa Anda',
   langHint: 'Anda bisa menggantinya nanti di bagian atas layar.',
   langAsk: 'Kita bicara dalam bahasa apa?',
-  langOther: 'Bahasa lain',
 
   // S-02
   consentTitle: 'Sebelum mulai',

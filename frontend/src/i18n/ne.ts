@@ -23,7 +23,6 @@ export const ne: Record<MessageKey, string> = {
   langTitle: 'आफ्नो भाषा छान्नुहोस्',
   langHint: 'पछि स्क्रिनको माथिबाट बदल्न सक्नुहुन्छ।',
   langAsk: 'कुन भाषामा कुरा गरौं?',
-  langOther: 'अन्य भाषाहरू',
 
   // S-02
   consentTitle: 'सुरु गर्नुअघि',

@@ -22,7 +22,6 @@ export const th: Record<MessageKey, string> = {
   langTitle: 'เลือกภาษาของคุณ',
   langHint: 'คุณเปลี่ยนภาษาได้ภายหลังที่ด้านบนของหน้าจอ',
   langAsk: 'เราจะคุยกันภาษาอะไรดี',
-  langOther: 'ภาษาอื่น ๆ',
 
   consentTitle: 'ก่อนเริ่มใช้งาน',
   consentIntro: 'กรุณาอ่านและยินยอม ข้อมูลของคุณใช้เพื่อแนะนำคุณเท่านั้น',

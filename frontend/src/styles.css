@@ -273,8 +273,8 @@ p {
   margin: 0;
 }
 
-/* S-01 언어 격자(backlog 24). 질문 → 추천 격자 → 다른 언어 h2 → 나머지 격자. 20개 언어가 모두 같은 크기 칸이다.
-   칸 = 국기 + (모국어 이름 위, 영어 이름 아래). 추천 칸은 바탕색만 다르다.
+/* S-01 언어 격자(backlog 24). 질문 → 20개 언어 격자 하나. 모든 칸이 같은 크기·같은 모양이고 폰 언어 하나만 맨 앞에 온다.
+   칸 = 국기 + (모국어 이름 위, 영어 이름 아래).
    칸은 바닥 위에 바로 놓이지만 칩처럼 흐림을 달지 않는다(20개를 한 화면에서 흐리면 저가형 폰이 끊긴다) */
 .w-lang {
   gap: 16px;
@@ -288,12 +288,6 @@ p {
 
 .w-lang .ask p {
   margin: 4px 0 0;
-}
-
-.w-lang h2 {
-  font-size: var(--t5);
-  color: var(--ink-2);
-  margin: 8px 0 -8px;
 }
 
 .lang-grid {
@@ -320,11 +314,6 @@ p {
 
 .lang-grid .tile:active {
   box-shadow: var(--glass-in);
-}
-
-.lang-grid .tile.suggest {
-  background: var(--brand-2);
-  color: var(--brand-ink);
 }
 
 /* 국기 그림(public/flags, 4:3). 흰 바탕 국기(일본·한국)가 칸 바탕에 묻히지 않게 안쪽 1px 선을 겹친다 */

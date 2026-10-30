@@ -23,7 +23,6 @@ export const mn: Record<MessageKey, string> = {
   langTitle: 'Хэлээ сонгоно уу',
   langHint: 'Дараа нь дэлгэцийн дээд хэсгээс сольж болно.',
   langAsk: 'Аль хэлээр ярих вэ?',
-  langOther: 'Бусад хэл',
 
   // S-02
   consentTitle: 'Эхлэхээс өмнө',

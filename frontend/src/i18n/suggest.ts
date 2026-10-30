@@ -1,10 +1,8 @@
-// S-01 언어 추천. 폰 언어 목록(navigator.languages)을 지원 언어로 맞추고, 함께 읽을 가능성이 높은 언어를 뒤에 붙인다.
-// 폰 언어는 화면이 읽어 넘긴다(순수 함수라 DOM을 모른다). 서버가 옮기는 규칙이 아니라 domain/에 두지 않는다. 추천은 순서만 정하고 언어를 고르지는 않는다(backlog 20).
+// S-01 언어 순서. 폰 언어 목록(navigator.languages)에서 처음 맞는 지원 언어 하나만 맨 앞에 두고, 나머지는 정해진 순서 그대로다.
+// 추천 언어를 따로 묶거나 크게 보이지 않는다. 언어 사이에 위아래가 있어 보이지 않게 하려는 것이다(backlog 24).
+// 폰 언어는 화면이 읽어 넘긴다(순수 함수라 DOM을 모른다). 서버가 옮기는 규칙이 아니라 domain/에 두지 않는다.
 
 import { LANGS, type Lang } from '../domain/vocab';
-
-/** 추천 말풍선 최대 개수. 나머지 언어는 "다른 언어" 칩으로 모두 보인다 */
-const MAX_SUGGESTED = 4;
 
 /**
  * 지원하지 않는 폰 언어 → 가장 가까운 지원 언어. 서로 알아듣거나 같은 문자를 쓰는 언어로 옮긴다.
@@ -20,25 +18,6 @@ const DEVICE_ALIASES: Record<string, Lang> = {
   tg: 'ru',
 };
 
-/**
- * 가까운 언어 표: 이 언어를 쓰는 사람이 함께 읽을 가능성이 높은 언어(제2언어·서로 알아듣는 정도).
- * 계통상 거리가 아니다. 영어는 표 뒤에 늘 붙으므로 적지 않는다. 원어민·센터 상담원 검토 대상(backlog 20 메모).
- */
-const NEAR: Partial<Record<Lang, Lang[]>> = {
-  kk: ['ru', 'ky', 'uz'],
-  ky: ['ru', 'kk', 'uz'],
-  uz: ['ru', 'kk', 'ky'],
-  mn: ['ru', 'kk'],
-  ru: ['kk', 'ky', 'uz'],
-  'zh-CN': ['zh-TW'],
-  'zh-TW': ['zh-CN'],
-  km: ['th'],
-  ar: ['fr'],
-};
-
-/** 폰 언어 추천을 쓸 수 없을 때(지원 언어가 하나도 없음): 공용어와 이 나라 언어 */
-const FALLBACK: Lang[] = ['en', 'ko'];
-
 function isLang(tag: string): tag is Lang {
   return (LANGS as readonly string[]).includes(tag);
 }
@@ -52,20 +31,14 @@ export function matchLang(tag: string): Lang | null {
   return DEVICE_ALIASES[lower] ?? null;
 }
 
-export interface LangSuggestion {
-  /** 폰 언어에서 찾은 첫 지원 언어. 질문 말풍선의 언어. 없으면 null(영어로 묻는다) */
+export interface LangOrder {
+  /** 폰 언어에서 찾은 첫 지원 언어. 질문의 언어. 없으면 null(영어로 묻는다) */
   first: Lang | null;
-  /** 위에 크게 놓을 대답 말풍선 */
-  suggested: Lang[];
-  /** 나머지 언어. order의 순서를 지킨다 */
-  rest: Lang[];
+  /** 격자에 놓을 순서: first가 있으면 맨 앞, 나머지는 order 그대로 */
+  langs: Lang[];
 }
 
-/** 추천 순서: ① 폰 언어 목록에서 지원되는 것(순서대로) ② 첫 언어의 가까운 언어 ③ 영어. 중복 없이 최대 4개 */
-export function suggestLangs(deviceLangs: readonly string[], order: readonly Lang[]): LangSuggestion {
-  const device = deviceLangs.map(matchLang).filter((l): l is Lang => l !== null);
-  const first = device[0] ?? null;
-  const picked = first ? [...device, ...(NEAR[first] ?? []), 'en' as const] : FALLBACK;
-  const suggested = [...new Set(picked)].slice(0, MAX_SUGGESTED);
-  return { first, suggested, rest: order.filter((l) => !suggested.includes(l)) };
+export function orderLangs(deviceLangs: readonly string[], order: readonly Lang[]): LangOrder {
+  const first = deviceLangs.map(matchLang).find((l): l is Lang => l !== null) ?? null;
+  return { first, langs: first ? [first, ...order.filter((l) => l !== first)] : [...order] };
 }

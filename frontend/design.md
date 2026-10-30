@@ -886,12 +886,11 @@ input[type='text'], textarea, select.input { background: var(--bg-2); border: 0;
 
 ### 언어 격자
 
-S-01 언어 선택(backlog 24, 대화형 backlog 20·22를 대신한다). 폰 언어로 묻는 h1(`--t9`) + 영어 한 줄 아래에 두 줄 격자(`.lang-grid`, 간격 8px) 두 개를 놓고, 그 사이에 "다른 언어" h2(`--t5` `--ink-2`)를 둔다. **20개 언어가 모두 같은 크기 칸이다**(줄 높이 80px 이상, `grid-auto-rows`).
+S-01 언어 선택(backlog 24, 대화형 backlog 20·22를 대신한다). 폰 언어로 묻는 h1(`--t9`) + 영어 한 줄 아래에 두 줄 격자(`.lang-grid`, 간격 8px) **하나**를 둔다. **20개 언어가 모두 같은 크기·같은 모양 칸이다**(줄 높이 80px 이상, `grid-auto-rows`). 순서는 폰 언어 하나만 맨 앞, 나머지는 `LANGUAGE_OPTIONS` 순서 그대로다(`orderLangs`). 추천 묶음·바탕색 구분·"다른 언어" 제목은 두지 않는다 — 언어 사이에 위아래가 있어 보이지 않게 한다(2026-10-30 사용자 결정).
 
-| 칸 | 언어 | 면 | 바탕·글자 |
-|---|---|---|---|
-| 추천 `.tile.suggest` | 폰 언어 추천(`suggestLangs`, 최대 4개) | 떠 있음(작게) `--glass-sm`, 누르면 `--glass-in` | `--brand-2` 위 `--brand-ink` |
-| 나머지 `.tile` | 나머지 | 같다 | `--card` 위 `--ink` |
+| 칸 | 면 | 바탕·글자 |
+|---|---|---|
+| `.tile` (20개 모두) | 떠 있음(작게) `--glass-sm`, 누르면 `--glass-in` | `--card` 위 `--ink` |
 
 - 칸 안은 가로 한 줄: 국기 그림(`public/flags/<나라>.svg`, 32×24, 둥글기 4px, 안쪽 1px `--line` 윤곽선)이 시작 쪽, 그 옆에 모국어 이름(`--t5` 굵게) 위 + 영어 이름(`--t2` `--ink-2`) 아래. `--radius-sm`, 안쪽 여백 10·12px. 긴 이름(`Bahasa Indonesia`)은 줄을 바꾼다(`overflow-wrap: anywhere`)
 - 칸에는 흐림을 달지 않는다. 바닥 위에 바로 놓이지만 한 화면에 20개라 칩처럼 채움과 가장자리만 쓴다
