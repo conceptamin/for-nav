@@ -1,16 +1,661 @@
-# 화면을 그리는 규칙
+---
+name: 당근
+design_system_name: SEED Design
+slug: seed-design
+category: community
+last_updated: "2026-09-29"
+created_at: 2026-05-14
+lang: ko
+logo: https://getdesign.kr/logos/seed-design-symbol.png
+colors:
+  # ── palette (94) ──
+  gray-00: oklch(1.000 0.000 0)   # #ffffff
+  gray-100: oklch(0.979 0.002 248)   # #f7f8f9
+  gray-200: oklch(0.967 0.002 248)   # #f3f4f5
+  gray-300: oklch(0.952 0.003 265)   # #eeeff1
+  gray-400: oklch(0.901 0.007 269)   # #dcdee3
+  gray-500: oklch(0.867 0.007 269)   # #d1d3d8
+  gray-600: oklch(0.766 0.010 267)   # #b0b3ba
+  gray-700: oklch(0.636 0.015 262)   # #868b94
+  gray-800: oklch(0.477 0.028 264)   # #555d6d
+  gray-900: oklch(0.307 0.017 256)   # #2a3038
+  gray-1000: oklch(0.226 0.008 264)   # #1a1c20
+  carrot-100: oklch(0.970 0.016 47)   # #fff2ec
+  carrot-200: oklch(0.946 0.031 52)   # #ffe8db
+  carrot-300: oklch(0.903 0.055 48)   # #ffd5c0
+  carrot-400: oklch(0.843 0.092 46)   # #ffb999
+  carrot-500: oklch(0.769 0.144 44)   # #ff9364
+  carrot-600: oklch(0.696 0.204 43)   # #ff6600
+  carrot-700: oklch(0.618 0.195 40)   # #e14d00
+  carrot-800: oklch(0.529 0.173 38)   # #b93901
+  carrot-900: oklch(0.422 0.133 40)   # #862b00
+  carrot-1000: oklch(0.276 0.081 42)   # #471601
+  blue-100: oklch(0.970 0.014 255)   # #eff6ff
+  blue-200: oklch(0.942 0.023 256)   # #e2edfc
+  blue-300: oklch(0.897 0.043 256)   # #cbdffa
+  blue-400: oklch(0.842 0.077 255)   # #aacefd
+  blue-500: oklch(0.774 0.113 256)   # #85b8fd
+  blue-600: oklch(0.688 0.163 261)   # #5e98fe
+  blue-700: oklch(0.606 0.205 258)   # #217cf9
+  blue-800: oklch(0.510 0.185 259)   # #135fcd
+  blue-900: oklch(0.408 0.145 259)   # #0b4596
+  blue-1000: oklch(0.268 0.091 258)   # #032451
+  red-100: oklch(0.965 0.014 17)   # #fdf0f0
+  red-200: oklch(0.946 0.024 18)   # #fde7e7
+  red-300: oklch(0.905 0.047 21)   # #fed4d2
+  red-400: oklch(0.844 0.083 23)   # #feb7b3
+  red-500: oklch(0.773 0.131 23)   # #fe928d
+  red-600: oklch(0.705 0.180 24)   # #fc6a66
+  red-700: oklch(0.640 0.233 28)   # #fa342c
+  red-800: oklch(0.537 0.206 29)   # #ca1d13
+  red-900: oklch(0.426 0.159 31)   # #921708
+  red-1000: oklch(0.277 0.087 32)   # #4a1209
+  green-100: oklch(0.974 0.015 176)   # #edfaf6
+  green-200: oklch(0.949 0.035 167)   # #d9f6e9
+  green-300: oklch(0.894 0.059 164)   # #b9e9d2
+  green-400: oklch(0.824 0.109 164)   # #7ddcb3
+  green-500: oklch(0.739 0.136 164)   # #42c593
+  green-600: oklch(0.658 0.135 165)   # #10ab7d
+  green-700: oklch(0.585 0.115 170)   # #079171
+  green-800: oklch(0.499 0.095 174)   # #00745f
+  green-900: oklch(0.399 0.073 175)   # #075445
+  green-1000: oklch(0.263 0.040 176)   # #0a2b24
+  yellow-100: oklch(0.976 0.034 92)   # #fff7de
+  yellow-200: oklch(0.950 0.071 95)   # #fdefb9
+  yellow-300: oklch(0.898 0.141 95)   # #fbdc65
+  yellow-400: oklch(0.835 0.146 93)   # #e9c647
+  yellow-500: oklch(0.758 0.144 90)   # #d4ab28
+  yellow-600: oklch(0.700 0.133 85)   # #c49725
+  yellow-700: oklch(0.592 0.109 85)   # #9b7821
+  yellow-800: oklch(0.486 0.081 84)   # #755b22
+  yellow-900: oklch(0.375 0.052 81)   # #4f3e1f
+  yellow-1000: oklch(0.267 0.033 90)   # #2c2512
+  purple-100: oklch(0.969 0.015 294)   # #f5f3fe
+  purple-200: oklch(0.947 0.027 297)   # #efeafe
+  purple-300: oklch(0.902 0.054 296)   # #e1d8ff
+  purple-400: oklch(0.842 0.088 296)   # #d0c0ff
+  purple-500: oklch(0.765 0.134 294)   # #b8a1ff
+  purple-600: oklch(0.690 0.170 292)   # #9f84fb
+  purple-700: oklch(0.615 0.187 291)   # #8969ea
+  purple-800: oklch(0.528 0.182 290)   # #6d50cb
+  purple-900: oklch(0.424 0.155 290)   # #50379b
+  purple-1000: oklch(0.278 0.117 288)   # #29175d
+  static-black: oklch(0.000 0.000 0)   # #000000
+  static-black-alpha-100: oklch(0.000 0.000 0 / 0.027)   # #00000007
+  static-black-alpha-200: oklch(0.000 0.000 0 / 0.047)   # #0000000c
+  static-black-alpha-300: oklch(0.000 0.000 0 / 0.063)   # #00000010
+  static-black-alpha-400: oklch(0.000 0.000 0 / 0.129)   # #00000021
+  static-black-alpha-500: oklch(0.000 0.000 0 / 0.173)   # #0000002c
+  static-black-alpha-600: oklch(0.000 0.000 0 / 0.298)   # #0000004c
+  static-black-alpha-700: oklch(0.000 0.000 0 / 0.455)   # #00000074
+  static-black-alpha-800: oklch(0.000 0.000 0 / 0.635)   # #000000a2
+  static-black-alpha-900: oklch(0.000 0.000 0 / 0.816)   # #000000d0
+  static-black-alpha-1000: oklch(0.000 0.000 0 / 0.89)   # #000000e3
+  static-white: oklch(1.000 0.000 0)   # #ffffff
+  static-white-alpha-50: oklch(1.000 0.000 0 / 0.051)   # #ffffff0d
+  static-white-alpha-100: oklch(1.000 0.000 0 / 0.09)   # #ffffff17
+  static-white-alpha-200: oklch(1.000 0.000 0 / 0.125)   # #ffffff20
+  static-white-alpha-300: oklch(1.000 0.000 0 / 0.18)   # #ffffff2e
+  static-white-alpha-400: oklch(1.000 0.000 0 / 0.239)   # #ffffff3d
+  static-white-alpha-500: oklch(1.000 0.000 0 / 0.376)   # #ffffff60
+  static-white-alpha-600: oklch(1.000 0.000 0 / 0.545)   # #ffffff8b
+  static-white-alpha-700: oklch(1.000 0.000 0 / 0.702)   # #ffffffb3
+  static-white-alpha-800: oklch(1.000 0.000 0 / 0.871)   # #ffffffde
+  static-white-alpha-900: oklch(1.000 0.000 0 / 0.918)   # #ffffffea
+  static-white-alpha-1000: oklch(1.000 0.000 0 / 0.957)   # #fffffff4
+  # ── bg (2) ──
+  bg-magic-weak: oklch(0.965 0.009 52)   # #f9f2ee
+  bg-transparent: oklch(0.000 0.000 0 / 0)   # #00000000
+  # ── banner (10) ──
+  banner-blue: oklch(0.962 0.025 222)   # #e1f7ff
+  banner-cool-gray: oklch(0.955 0.008 237)   # #ebf1f5
+  banner-green: oklch(0.974 0.031 129)   # #f0fbe5
+  banner-orange: oklch(0.967 0.026 75)   # #fff2e1
+  banner-pink: oklch(0.958 0.023 357)   # #ffebf1
+  banner-purple: oklch(0.956 0.027 307)   # #f5ecff
+  banner-red: oklch(0.959 0.021 10)   # #ffecee
+  banner-teal: oklch(0.969 0.022 183)   # #e6faf6
+  banner-warm-gray: oklch(0.956 0.003 68)   # #f2f0ee
+  banner-yellow: oklch(0.982 0.033 98)   # #fffae1
+  # ── manner-temp (20) ──
+  manner-temp-l1-bg: oklch(0.961 0.002 248)   # #f1f2f3
+  manner-temp-l1-text: oklch(0.581 0.017 261)   # #757b85
+  manner-temp-l10-bg: oklch(0.957 0.022 7)   # #ffebee
+  manner-temp-l10-text: oklch(0.531 0.215 24)   # #cb0123
+  manner-temp-l2-bg: oklch(0.968 0.011 85)   # #f8f4ec
+  manner-temp-l2-text: oklch(0.641 0.100 82)   # #ab863f
+  manner-temp-l3-bg: oklch(0.974 0.024 80)   # #fff5e5
+  manner-temp-l3-text: oklch(0.707 0.156 67)   # #e08a00
+  manner-temp-l4-bg: oklch(0.970 0.023 72)   # #fff3e5
+  manner-temp-l4-text: oklch(0.715 0.178 54)   # #f57e00
+  manner-temp-l5-bg: oklch(0.966 0.022 63)   # #fff1e5
+  manner-temp-l5-text: oklch(0.713 0.195 48)   # #ff7300
+  manner-temp-l6-bg: oklch(0.964 0.022 59)   # #fff0e5
+  manner-temp-l6-text: oklch(0.696 0.204 43)   # #ff6600
+  manner-temp-l7-bg: oklch(0.962 0.022 54)   # #ffefe5
+  manner-temp-l7-text: oklch(0.672 0.221 38)   # #ff5100
+  manner-temp-l8-bg: oklch(0.960 0.022 50)   # #ffeee5
+  manner-temp-l8-text: oklch(0.646 0.241 33)   # #ff3300
+  manner-temp-l9-bg: oklch(0.959 0.017 17)   # #fdeded
+  manner-temp-l9-text: oklch(0.606 0.220 21)   # #e82c45
+  # ── role (73) — 팔레트 참조 ──
+  bg-brand-solid: "{colors.carrot-600}"
+  bg-brand-solid-pressed: "{colors.carrot-700}"
+  bg-brand-weak: "{colors.carrot-100}"
+  bg-brand-weak-pressed: "{colors.carrot-200}"
+  bg-critical-solid: "{colors.red-700}"
+  bg-critical-solid-pressed: "{colors.red-800}"
+  bg-critical-weak: "{colors.red-100}"
+  bg-critical-weak-pressed: "{colors.red-200}"
+  bg-disabled: "{colors.gray-200}"
+  bg-informative-solid: "{colors.blue-700}"
+  bg-informative-solid-pressed: "{colors.blue-800}"
+  bg-informative-weak: "{colors.blue-100}"
+  bg-informative-weak-pressed: "{colors.blue-200}"
+  bg-layer-basement: "{colors.gray-200}"
+  bg-layer-default: "{colors.gray-00}"
+  bg-layer-default-pressed: "{colors.gray-100}"
+  bg-layer-fill: "{colors.gray-100}"
+  bg-layer-floating: "{colors.gray-00}"
+  bg-layer-floating-pressed: "{colors.gray-100}"
+  bg-neutral-inverted: "{colors.gray-900}"
+  bg-neutral-inverted-pressed: "{colors.gray-800}"
+  bg-neutral-solid: "{colors.gray-1000}"
+  bg-neutral-solid-muted: "{colors.gray-800}"
+  bg-neutral-solid-muted-pressed: "{colors.gray-900}"
+  bg-neutral-weak: "{colors.gray-200}"
+  bg-neutral-weak-alpha: "{colors.static-black-alpha-200}"
+  bg-neutral-weak-alpha-pressed: "{colors.static-black-alpha-300}"
+  bg-neutral-weak-pressed: "{colors.gray-300}"
+  bg-overlay: "{colors.static-black-alpha-700}"
+  bg-overlay-muted: "{colors.static-black-alpha-500}"
+  bg-positive-solid: "{colors.green-700}"
+  bg-positive-solid-pressed: "{colors.green-800}"
+  bg-positive-weak: "{colors.green-100}"
+  bg-positive-weak-pressed: "{colors.green-200}"
+  bg-transparent-pressed: "{colors.static-black-alpha-100}"
+  bg-transparent-selected: "{colors.static-black-alpha-200}"
+  bg-transparent-selected-pressed: "{colors.static-black-alpha-300}"
+  bg-warning-solid: "{colors.yellow-300}"
+  bg-warning-solid-pressed: "{colors.yellow-400}"
+  bg-warning-weak: "{colors.yellow-100}"
+  bg-warning-weak-pressed: "{colors.yellow-200}"
+  fg-brand: "{colors.carrot-600}"
+  fg-brand-contrast: "{colors.carrot-700}"
+  fg-critical: "{colors.red-700}"
+  fg-critical-contrast: "{colors.red-900}"
+  fg-disabled: "{colors.gray-500}"
+  fg-informative: "{colors.blue-700}"
+  fg-informative-contrast: "{colors.blue-900}"
+  fg-neutral: "{colors.gray-1000}"
+  fg-neutral-inverted: "{colors.gray-00}"
+  fg-neutral-muted: "{colors.gray-800}"
+  fg-neutral-subtle: "{colors.gray-700}"
+  fg-placeholder: "{colors.gray-600}"
+  fg-positive: "{colors.green-700}"
+  fg-positive-contrast: "{colors.green-900}"
+  fg-warning: "{colors.yellow-700}"
+  fg-warning-contrast: "{colors.yellow-900}"
+  stroke-brand-solid: "{colors.carrot-700}"
+  stroke-brand-weak: "{colors.carrot-300}"
+  stroke-critical-solid: "{colors.red-700}"
+  stroke-critical-weak: "{colors.red-300}"
+  stroke-focus-ring: "{colors.blue-600}"
+  stroke-informative-solid: "{colors.blue-700}"
+  stroke-informative-weak: "{colors.blue-300}"
+  stroke-neutral-contrast: "{colors.gray-1000}"
+  stroke-neutral-muted: "{colors.static-black-alpha-300}"
+  stroke-neutral-solid: "{colors.gray-800}"
+  stroke-neutral-subtle: "{colors.static-black-alpha-200}"
+  stroke-neutral-weak: "{colors.gray-400}"
+  stroke-positive-solid: "{colors.green-700}"
+  stroke-positive-weak: "{colors.green-300}"
+  stroke-warning-solid: "{colors.yellow-700}"
+  stroke-warning-weak: "{colors.yellow-300}"
+  # ── palette (71) ──
+  dark-gray-00: oklch(0.000 0.000 0)   # #000000
+  dark-gray-100: oklch(0.205 0.008 275)   # #16171b
+  dark-gray-200: oklch(0.243 0.011 261)   # #1d2025
+  dark-gray-300: oklch(0.301 0.013 267)   # #2b2e35
+  dark-gray-400: oklch(0.360 0.016 266)   # #393d46
+  dark-gray-500: oklch(0.488 0.017 264)   # #5b606a
+  dark-gray-600: oklch(0.636 0.015 262)   # #868b94
+  dark-gray-700: oklch(0.766 0.010 267)   # #b0b3ba
+  dark-gray-800: oklch(0.901 0.007 269)   # #dcdee3
+  dark-gray-900: oklch(0.937 0.003 265)   # #e9eaec
+  dark-gray-1000: oklch(0.967 0.002 248)   # #f3f4f5
+  dark-carrot-100: oklch(0.274 0.022 42)   # #31241f
+  dark-carrot-200: oklch(0.322 0.056 41)   # #4b291c
+  dark-carrot-300: oklch(0.387 0.089 40)   # #6b311c
+  dark-carrot-400: oklch(0.458 0.136 43)   # #923600
+  dark-carrot-500: oklch(0.546 0.169 40)   # #bd4201
+  dark-carrot-600: oklch(0.632 0.196 41)   # #e65200
+  dark-carrot-700: oklch(0.696 0.204 43)   # #ff6600
+  dark-carrot-800: oklch(0.787 0.137 50)   # #ff9e65
+  dark-carrot-900: oklch(0.874 0.044 51)   # #eecebc
+  dark-carrot-1000: oklch(0.953 0.008 56)   # #f4eeea
+  dark-blue-100: oklch(0.280 0.051 272)   # #202742
+  dark-blue-200: oklch(0.320 0.062 258)   # #1e3352
+  dark-blue-300: oklch(0.379 0.098 256)   # #1a4275
+  dark-blue-400: oklch(0.451 0.135 254)   # #0f559e
+  dark-blue-500: oklch(0.530 0.192 260)   # #1964d8
+  dark-blue-600: oklch(0.609 0.181 254)   # #1e82eb
+  dark-blue-700: oklch(0.695 0.157 249)   # #41a2f9
+  dark-blue-800: oklch(0.779 0.106 251)   # #83bcf9
+  dark-blue-900: oklch(0.869 0.060 253)   # #b9d7fb
+  dark-blue-1000: oklch(0.951 0.022 254)   # #e5f0fe
+  dark-red-100: oklch(0.274 0.023 19)   # #322323
+  dark-red-200: oklch(0.324 0.062 24)   # #4f2624
+  dark-red-300: oklch(0.390 0.108 25)   # #742826
+  dark-red-400: oklch(0.468 0.160 28)   # #a12621
+  dark-red-500: oklch(0.541 0.202 29)   # #ca2319
+  dark-red-600: oklch(0.635 0.230 30)   # #f73526
+  dark-red-700: oklch(0.714 0.180 28)   # #ff6e60
+  dark-red-800: oklch(0.803 0.112 26)   # #ffa299
+  dark-red-900: oklch(0.868 0.059 21)   # #f8c5c3
+  dark-red-1000: oklch(0.970 0.012 17)   # #fdf2f2
+  dark-green-100: oklch(0.271 0.014 173)   # #202926
+  dark-green-200: oklch(0.312 0.032 169)   # #20362e
+  dark-green-300: oklch(0.371 0.053 169)   # #20493b
+  dark-green-400: oklch(0.440 0.077 170)   # #19604c
+  dark-green-500: oklch(0.512 0.105 164)   # #117956
+  dark-green-600: oklch(0.594 0.118 165)   # #1b946d
+  dark-green-700: oklch(0.679 0.139 163)   # #22b27f
+  dark-green-800: oklch(0.761 0.146 165)   # #35ce9a
+  dark-green-900: oklch(0.859 0.096 164)   # #93e5c0
+  dark-green-1000: oklch(0.947 0.036 182)   # #d4f6ef
+  dark-yellow-100: oklch(0.281 0.028 83)   # #302819
+  dark-yellow-200: oklch(0.327 0.046 80)   # #413218
+  dark-yellow-300: oklch(0.379 0.064 80)   # #543e15
+  dark-yellow-400: oklch(0.452 0.085 75)   # #714e15
+  dark-yellow-500: oklch(0.530 0.103 70)   # #91601b
+  dark-yellow-600: oklch(0.611 0.131 68)   # #b6720d
+  dark-yellow-700: oklch(0.693 0.137 78)   # #ca901c
+  dark-yellow-800: oklch(0.779 0.119 85)   # #dab156
+  dark-yellow-900: oklch(0.870 0.076 93)   # #e5d49b
+  dark-yellow-1000: oklch(0.952 0.046 98)   # #f7f0cd
+  dark-purple-100: oklch(0.269 0.048 295)   # #28213b
+  dark-purple-200: oklch(0.345 0.123 290)   # #3b2873
+  dark-purple-300: oklch(0.379 0.130 290)   # #443081
+  dark-purple-400: oklch(0.458 0.177 290)   # #5a3bb1
+  dark-purple-500: oklch(0.545 0.201 291)   # #764fd9
+  dark-purple-600: oklch(0.626 0.189 292)   # #8e6bee
+  dark-purple-700: oklch(0.707 0.143 295)   # #a78df0
+  dark-purple-800: oklch(0.787 0.098 295)   # #beadf2
+  dark-purple-900: oklch(0.874 0.061 297)   # #d9cefa
+  dark-purple-1000: oklch(0.953 0.020 295)   # #f0edfc
+  # ── bg (2) ──
+  dark-bg-magic-weak: oklch(0.240 0.002 17)   # #201f1f
+  dark-bg-transparent: oklch(1.000 0.000 0 / 0)   # #ffffff00
+  # ── banner (10) ──
+  dark-banner-blue: oklch(0.271 0.045 236)   # #0d2a3a
+  dark-banner-cool-gray: oklch(0.288 0.017 245)   # #242c33
+  dark-banner-green: oklch(0.305 0.054 142)   # #1e361c
+  dark-banner-orange: oklch(0.292 0.060 56)   # #42230a
+  dark-banner-pink: oklch(0.267 0.064 346)   # #3b172c
+  dark-banner-purple: oklch(0.276 0.071 301)   # #2e1e45
+  dark-banner-red: oklch(0.243 0.068 16)   # #3a0f15
+  dark-banner-teal: oklch(0.307 0.040 188)   # #143633
+  dark-banner-warm-gray: oklch(0.292 0.009 67)   # #2f2b27
+  dark-banner-yellow: oklch(0.304 0.062 82)   # #3e2b00
+  # ── manner-temp (20) ──
+  dark-manner-temp-l1-bg: oklch(0.281 0.000 0)   # #292929
+  dark-manner-temp-l1-text: oklch(0.783 0.001 286)   # #b8b8b9
+  dark-manner-temp-l10-bg: oklch(0.213 0.076 19)   # #34040a
+  dark-manner-temp-l10-text: oklch(0.716 0.171 14)   # #fb6f82
+  dark-manner-temp-l2-bg: oklch(0.277 0.051 87)   # #332605
+  dark-manner-temp-l2-text: oklch(0.898 0.091 89)   # #f5db97
+  dark-manner-temp-l3-bg: oklch(0.294 0.059 92)   # #372b01
+  dark-manner-temp-l3-text: oklch(0.896 0.140 93)   # #fdda65
+  dark-manner-temp-l4-bg: oklch(0.274 0.056 76)   # #372301
+  dark-manner-temp-l4-text: oklch(0.838 0.139 78)   # #fbbe55
+  dark-manner-temp-l5-bg: oklch(0.265 0.057 68)   # #371f01
+  dark-manner-temp-l5-text: oklch(0.803 0.143 69)   # #faac4b
+  dark-manner-temp-l6-bg: oklch(0.253 0.055 60)   # #351b03
+  dark-manner-temp-l6-text: oklch(0.771 0.145 53)   # #fc9855
+  dark-manner-temp-l7-bg: oklch(0.248 0.061 53)   # #371701
+  dark-manner-temp-l7-text: oklch(0.716 0.179 49)   # #f97a25
+  dark-manner-temp-l8-bg: oklch(0.235 0.071 42)   # #380f00
+  dark-manner-temp-l8-text: oklch(0.702 0.193 39)   # #fe6a34
+  dark-manner-temp-l9-bg: oklch(0.221 0.081 33)   # #380500
+  dark-manner-temp-l9-text: oklch(0.706 0.183 28)   # #fe6a5d
+  # ── role (73) — 팔레트 참조 ──
+  dark-bg-brand-solid: "{colors.dark-carrot-700}"
+  dark-bg-brand-solid-pressed: "{colors.dark-carrot-800}"
+  dark-bg-brand-weak: "{colors.dark-carrot-100}"
+  dark-bg-brand-weak-pressed: "{colors.dark-carrot-200}"
+  dark-bg-critical-solid: "{colors.dark-red-600}"
+  dark-bg-critical-solid-pressed: "{colors.dark-red-700}"
+  dark-bg-critical-weak: "{colors.dark-red-100}"
+  dark-bg-critical-weak-pressed: "{colors.dark-red-200}"
+  dark-bg-disabled: "{colors.dark-gray-300}"
+  dark-bg-informative-solid: "{colors.dark-blue-600}"
+  dark-bg-informative-solid-pressed: "{colors.dark-blue-700}"
+  dark-bg-informative-weak: "{colors.dark-blue-100}"
+  dark-bg-informative-weak-pressed: "{colors.dark-blue-200}"
+  dark-bg-layer-basement: "{colors.dark-gray-00}"
+  dark-bg-layer-default: "{colors.dark-gray-100}"
+  dark-bg-layer-default-pressed: "{colors.dark-gray-300}"
+  dark-bg-layer-fill: "{colors.dark-gray-200}"
+  dark-bg-layer-floating: "{colors.dark-gray-200}"
+  dark-bg-layer-floating-pressed: "{colors.dark-gray-300}"
+  dark-bg-neutral-inverted: "{colors.dark-gray-1000}"
+  dark-bg-neutral-inverted-pressed: "{colors.dark-gray-800}"
+  dark-bg-neutral-solid: "{colors.dark-gray-300}"
+  dark-bg-neutral-solid-muted: "{colors.dark-gray-400}"
+  dark-bg-neutral-solid-muted-pressed: "{colors.dark-gray-500}"
+  dark-bg-neutral-weak: "{colors.dark-gray-300}"
+  dark-bg-neutral-weak-alpha: "{colors.static-white-alpha-200}"
+  dark-bg-neutral-weak-alpha-pressed: "{colors.static-white-alpha-300}"
+  dark-bg-neutral-weak-pressed: "{colors.dark-gray-400}"
+  dark-bg-overlay: "{colors.static-black-alpha-700}"
+  dark-bg-overlay-muted: "{colors.static-black-alpha-500}"
+  dark-bg-positive-solid: "{colors.dark-green-500}"
+  dark-bg-positive-solid-pressed: "{colors.dark-green-600}"
+  dark-bg-positive-weak: "{colors.dark-green-100}"
+  dark-bg-positive-weak-pressed: "{colors.dark-green-200}"
+  dark-bg-transparent-pressed: "{colors.static-white-alpha-50}"
+  dark-bg-transparent-selected: "{colors.static-white-alpha-100}"
+  dark-bg-transparent-selected-pressed: "{colors.static-white-alpha-200}"
+  dark-bg-warning-solid: "{colors.dark-yellow-800}"
+  dark-bg-warning-solid-pressed: "{colors.dark-yellow-900}"
+  dark-bg-warning-weak: "{colors.dark-yellow-100}"
+  dark-bg-warning-weak-pressed: "{colors.dark-yellow-200}"
+  dark-fg-brand: "{colors.dark-carrot-700}"
+  dark-fg-brand-contrast: "{colors.dark-carrot-700}"
+  dark-fg-critical: "{colors.dark-red-700}"
+  dark-fg-critical-contrast: "{colors.dark-red-900}"
+  dark-fg-disabled: "{colors.dark-gray-500}"
+  dark-fg-informative: "{colors.dark-blue-700}"
+  dark-fg-informative-contrast: "{colors.dark-blue-900}"
+  dark-fg-neutral: "{colors.dark-gray-1000}"
+  dark-fg-neutral-inverted: "{colors.dark-gray-100}"
+  dark-fg-neutral-muted: "{colors.dark-gray-800}"
+  dark-fg-neutral-subtle: "{colors.dark-gray-700}"
+  dark-fg-placeholder: "{colors.dark-gray-600}"
+  dark-fg-positive: "{colors.dark-green-700}"
+  dark-fg-positive-contrast: "{colors.dark-green-900}"
+  dark-fg-warning: "{colors.dark-yellow-700}"
+  dark-fg-warning-contrast: "{colors.dark-yellow-900}"
+  dark-stroke-brand-solid: "{colors.dark-carrot-700}"
+  dark-stroke-brand-weak: "{colors.dark-carrot-300}"
+  dark-stroke-critical-solid: "{colors.dark-red-700}"
+  dark-stroke-critical-weak: "{colors.dark-red-300}"
+  dark-stroke-focus-ring: "{colors.dark-blue-600}"
+  dark-stroke-informative-solid: "{colors.dark-blue-700}"
+  dark-stroke-informative-weak: "{colors.dark-blue-300}"
+  dark-stroke-neutral-contrast: "{colors.dark-gray-1000}"
+  dark-stroke-neutral-muted: "{colors.static-white-alpha-100}"
+  dark-stroke-neutral-solid: "{colors.dark-gray-800}"
+  dark-stroke-neutral-subtle: "{colors.static-white-alpha-50}"
+  dark-stroke-neutral-weak: "{colors.dark-gray-400}"
+  dark-stroke-positive-solid: "{colors.dark-green-700}"
+  dark-stroke-positive-weak: "{colors.dark-green-300}"
+  dark-stroke-warning-solid: "{colors.dark-yellow-700}"
+  dark-stroke-warning-weak: "{colors.dark-yellow-300}"
+typography:
+  t1:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 11px
+    lineHeight: 15px
+  t2:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 12px
+    lineHeight: 16px
+  t3:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 13px
+    lineHeight: 18px
+  t4:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 14px
+    lineHeight: 19px
+  t5:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 16px
+    lineHeight: 22px
+  t6:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 18px
+    lineHeight: 24px
+  t7:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 20px
+    lineHeight: 27px
+  t8:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 22px
+    lineHeight: 30px
+  t9:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 24px
+    lineHeight: 32px
+  t10:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 26px
+    lineHeight: 35px
+  t11:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 28px
+    lineHeight: 38px
+  t12:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 32px
+    lineHeight: 42px
+  t13:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 40px
+    lineHeight: 52px
+  t14:
+    fontFamily: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    fontSize: 48px
+    lineHeight: 60px
+spacing:
+  spacing-x-between-chips: "{spacing.x2}"
+  spacing-x-global-gutter: "{spacing.x4}"
+  spacing-y-component-default: "{spacing.x3}"
+  spacing-y-nav-to-title: "{spacing.x5}"
+  spacing-y-screen-bottom: "{spacing.x14}"
+  spacing-y-between-text: "{spacing.x1_5}"
+  x0_5: 2px
+  x1: 4px
+  x1_5: 6px
+  x2: 8px
+  x2_5: 10px
+  x3: 12px
+  x3_5: 14px
+  x4: 16px
+  x4_5: 18px
+  x5: 20px
+  x6: 24px
+  x7: 28px
+  x8: 32px
+  x9: 36px
+  x10: 40px
+  x12: 48px
+  x13: 52px
+  x14: 56px
+  x16: 64px
+rounded:
+  r0_5: 2px
+  r1: 4px
+  r1_5: 6px
+  r2: 8px
+  r2_5: 10px
+  r3: 12px
+  r3_5: 14px
+  r4: 16px
+  r5: 20px
+  r6: 24px
+  full: 9999px
+elevation:
+  s1: 0px 1px 4px 0px oklch(0 0 0 / 0.078)   # #00000014
+  dark-s1: 0px 1px 4px 0px oklch(0 0 0 / 0.502)   # #00000080
+  s2: 0px 2px 10px 0px oklch(0 0 0 / 0.102)   # #0000001a
+  dark-s2: 0px 2px 10px 0px oklch(0 0 0 / 0.678)   # #000000ad
+  s3: 0px 4px 16px 0px oklch(0 0 0 / 0.122)   # #0000001f
+  dark-s3: 0px 4px 16px 0px oklch(0 0 0 / 0.8)   # #000000cc
+gradients:
+  ## 그라디언트 스톱 — 명세 Color 는 단색만이라 colors: 밖에 둔다
+  glow-magic: oklch(0.980 0.009 9) 0%, oklch(0.964 0.019 55) 80%, oklch(0.977 0.003 68) 100%   # #fef6f7 #fef0e7 #f9f7f5
+  dark-glow-magic: oklch(0.277 0.018 326) 0%, oklch(0.321 0.017 56) 80%, oklch(0.318 0.001 17) 100%   # #2d252d #3a312b #333232
+  glow-magic-pressed: oklch(0.964 0.012 5) 0%, oklch(0.946 0.031 52) 80%, oklch(0.963 0.005 68) 100%   # #fbf0f2 #ffe8db #f5f2ef
+  dark-glow-magic-pressed: oklch(0.337 0.024 326) 0%, oklch(0.400 0.020 52) 80%, oklch(0.380 0.001 17) 100%   # #3e333e #51453e #434242
+  highlight-magic: oklch(0.696 0.204 43) 20%, oklch(0.658 0.200 330) 100%   # #ff6600 #d25aca
+  dark-highlight-magic: oklch(0.696 0.204 43) 20%, oklch(0.658 0.200 330) 100%   # #ff6600 #d25aca
+  highlight-magic-pressed: oklch(0.621 0.194 40) 20%, oklch(0.603 0.173 321) 100%   # #e14f00 #ae58bf
+  dark-highlight-magic-pressed: oklch(0.787 0.137 50) 20%, oklch(0.793 0.141 324) 100%   # #ff9e65 #e89bee
+  shimmer-magic: oklch(0.986 0.008 56 / 0) 0%, oklch(0.986 0.008 56 / 0.8) 46%, oklch(0.986 0.008 56 / 0.8) 54%, oklch(0.986 0.008 56 / 0) 100%   # #fff9f500 #fff9f5cc #fff9f5cc #fff9f500
+  dark-shimmer-magic: oklch(0.986 0.008 56 / 0) 0%, oklch(0.986 0.008 56 / 0.102) 46%, oklch(0.986 0.008 56 / 0.102) 54%, oklch(0.986 0.008 56 / 0) 100%   # #fff9f500 #fff9f51a #fff9f51a #fff9f500
+  shimmer-neutral: oklch(1.000 0.000 90 / 0) 0%, oklch(1.000 0.000 90 / 0.671) 46%, oklch(1.000 0.000 90 / 0.671) 54%, oklch(1.000 0.000 90 / 0) 100%   # #ffffff00 #ffffffab #ffffffab #ffffff00
+  dark-shimmer-neutral: oklch(1.000 0.000 90 / 0) 0%, oklch(1.000 0.000 90 / 0.102) 46%, oklch(1.000 0.000 90 / 0.102) 54%, oklch(1.000 0.000 90 / 0) 100%   # #ffffff00 #ffffff1a #ffffff1a #ffffff00
+---
 
-`src/styles.css` 한 파일과 `src/components/`의 공통 조각으로 화면을 그릴 때 지키는 규칙이다. 모양의 기준은 **클레이모피즘(Claymorphism)** 이다. 점토 인형처럼 동글동글하고 푹신한 면이 화면 바닥 위에 올라앉아 있고, 누르면 점토가 눌리듯 안으로 들어간다. 배치의 기준은 "화면 골격(Figma 기준)" 절이다. 여기에 없는 모양을 새로 그릴 때는 이 문서를 먼저 고친다. 무엇을 보여 주는지는 `README.md`, 코드 규칙은 `CLAUDE.md`가 정한다.
+# SEED Design — design.md
 
-## 두 영역의 원칙
+## Brand & Style
 
-| 영역 | 경로 | 기준 | 원칙 |
-|---|---|---|---|
-| 근로자 | `/` ~ `/my`, `/guide` | 모바일 우선. 360px 폭에서 설계하고 `.w-shell`은 480px까지만 넓어진다 | **한 손으로, 큰 글씨로, 글을 다 읽지 못해도 누를 수 있게.** 화면 하나에 묻는 것은 하나다. 119는 언제나 한 번 누르면 걸린다 |
-| 센터 | `/center*` | PC 우선. `.c-main`은 1280px, 900px 이하에서 한 열로 접힌다 | **밀도와 한눈에 보이는 상태.** 표·칩·KPI로 많은 사례를 비교한다. 담당자는 한국어를 읽는다 |
-| 응급 | `/emergency` | 근로자 영역이지만 따로 취급 | 빨간 전면 히어로 하나와 전화 버튼 하나. 다른 정보는 그 아래로 내린다. 하단 119 띠는 이 화면에서만 숨긴다(버튼이 중복되므로) |
+당근은 주황 하나를 브랜드 축으로 붙들고, 사용자 신뢰를 10단계 온도 램프로 색칠해 UI 안에 박아 넣은 디자인 언어를 쓴다. SEED는 그 언어를 "당근 제품을 위한 통합 디자인 언어"로 정의하며, 디자인과 코드가 하나의 소스를 바라보게 만들어 누가 만들어도 같은 품질의 경험이 나오도록 하는 것을 목표로 삼는다 [src:2].
 
-근로자 화면의 공통 틀은 `WorkerLayout`(헤더 + 언어 선택 + 하단 119 띠), 센터 화면은 `CenterLayout`(상단 브랜드 + 탭 메뉴)이다. 화면 컴포넌트는 틀을 다시 그리지 않는다.
+문서 체계는 Get Started · Foundations · Components · Patterns · Design Guidelines · React Library · Breeze Utilities · Lynx · AI Integration · Updates · Changelog로 나뉘며, 각 섹션은 `/{section}/llms.txt` 색인과 `/llms/{section}/{path}.txt` 본문이라는 두 단계 규약으로 노출된다 [src:1]. 공개 저장소는 `@seed-design/css`, `@seed-design/react`, `@seed-design/stackflow`, `@seed-design/figma`, `@seed-design/mcp` 등의 패키지로 구성된다 [src:27].
+
+시스템의 중심 철학은 색을 역할로 다루는 것이다. 역할이 부여된 색상은 주요 액션·오류·정보 같은 기능적 역할을 색에 할당해 인터페이스 전반의 일관성·명확성·접근성을 보장한다 [src:4]. 브랜딩 기록은 **주황을 당근을 상징하는 색으로 그대로 지키고, 코드 에디터 하이라이트에서 따온 라임을 SEED 자체의 포인트 컬러로 더했다**고 밝힌다 — 주황이 '당근다움'을, 라임이 '디자인 시스템다운 전문성'을 맡는 분담이다 [src:26].
+
+브랜드 일관성은 색에서 멈추지 않는다. 아이콘도 **당근 로고의 형태적 특징을 바탕으로** 친근하고 부드러운 인상을 전달하도록 만들어졌고, 명확한 메타포와 간결한 형태, 굵은 선을 써서 글로벌 사용자가 공감할 수 있는 디자인을 목표로 한다 [src:15]. 이 문서가 옮기는 것은 그 **형태 원리**(둥근 실루엣, 굵은 선, 간결한 메타포)이지 로고 자산 자체가 아니다 — 아래 `## Do's and Don'ts`의 브랜드 자산 항을 볼 것.
+
+## Colors
+
+> **역할 표 보완(2026-09-27).** 아래 역할 표의 기존 71행을 배포 패키지 `@seed-design/css` 2.8.3 의 `base.css` light-only · dark-only 블록과 맞춰, 라이트·다크 142개 대응에서 불일치 0건이었다 [src:77]. 같은 두 블록이 선언하지만 표에 없던 `bg-neutral-solid-muted` · `bg-neutral-solid-muted-pressed` 두 역할은 그 블록의 대응 그대로 표와 frontmatter 참조 행에 보태, 표는 73행 · 146개 대응이 됐다 [src:77] — 이 둘은 공식 reference 표 [src:7]에는 없고 패키지에만 있다. 이 문서의 리터럴 색 정의 229줄도 같은 `base.css` 와 값 불일치 0건이다. 색 밖의 축도 같은 파일과 맞춰 불일치 0건이다 — `spacing:` 의 dimension 19개와 그것을 가리키는 시맨틱 spacing 6개, `rounded:` 11개, `typography:` 14단계의 px `fontSize`(패키지의 `-static` 값). 색 값은 공식이 `/foundations/design-token/reference` 에 light/dark 병기 마크다운 표로 발행하는 hex에서 OKLCH를 역산한 것이다 [src:7].
+
+SEED의 색상 체계는 라이트와 다크 모드에 적응하도록 설계되며, 역할 기반 색상은 여러 테마에서도 대비와 시각적 계층을 유지하도록 정의된다 [src:3]. 팔레트는 Gray 한 계열과 Chromatic 6계열(Carrot · Blue · Green · Yellow · Red · Purple), 그리고 테마를 타지 않는 static 계열로 구성된다 [src:5][src:7].
+
+테마 전환의 기전을 오해하지 않는 것이 중요하다. **역할 토큰이 값을 바꾸는 게 아니라 팔레트가 뒤집힌다.** `fg-neutral`은 두 테마 모두 `gray-1000`을 가리키고, 뒤집히는 쪽은 `gray-1000` 자신이다 — 라이트에서 램프의 가장 어두운 끝이던 값이 다크에서는 가장 밝은 끝이 된다 [src:7]. 그래서 `static-*` 계열이 따로 존재한다 — 스크림이나 오버레이처럼 배경이 뒤집혀도 같이 뒤집히면 안 되는 자리에 쓰라고, 두 테마에서 값이 동일하게 고정돼 있다 [src:7].
+
+라이트 모드 팔레트 · 배너 · 매너온도 램프:
+
+다크 모드에서 값이 달라지는 토큰(`static-*`은 동일하므로 제외):
+
+대비 기준은 WCAG 비율이 아니라 **APCA(Advanced Perceptual Contrast Algorithm)**다. 가독성 텍스트는 **최소 Lc 75**를 넘겨야 하고 **Lc 90 이상을 권장**한다 [src:18]. 그리고 색상만으로 정보를 전달하지 않고 텍스트나 아이콘 같은 다른 시각 요소를 함께 제공한다 [src:18].
+
+토큰 체계 자체는 raw value 위에 이름을 얹는 층위로 설계된다 — 색상 리터럴이나 `1px` 같은 실제 값에 고유한 이름을 부여해 일관성과 재사용성을 얻되, 그만큼 유연성이 제한된다는 교환을 공식이 명시한다 [src:6]. 제품 UI에서는 raw 팔레트보다 역할 토큰을 우선 호출한다 [src:4]. 아래 표의 역할 토큰은 팔레트 단계를 가리키는 별칭이라 그 자체로 렌더되는 색이 아니며, 두 테마가 같은 램프 단계를 가리키는 경우가 다수다:
+
+| 역할 토큰 | light | dark |
+| --- | --- | --- |
+| `bg-brand-solid` | `carrot-600` | `carrot-700` |
+| `bg-brand-solid-pressed` | `carrot-700` | `carrot-800` |
+| `bg-brand-weak` | `carrot-100` | `carrot-100` |
+| `bg-brand-weak-pressed` | `carrot-200` | `carrot-200` |
+| `bg-critical-solid` | `red-700` | `red-600` |
+| `bg-critical-solid-pressed` | `red-800` | `red-700` |
+| `bg-critical-weak` | `red-100` | `red-100` |
+| `bg-critical-weak-pressed` | `red-200` | `red-200` |
+| `bg-disabled` | `gray-200` | `gray-300` |
+| `bg-informative-solid` | `blue-700` | `blue-600` |
+| `bg-informative-solid-pressed` | `blue-800` | `blue-700` |
+| `bg-informative-weak` | `blue-100` | `blue-100` |
+| `bg-informative-weak-pressed` | `blue-200` | `blue-200` |
+| `bg-layer-basement` | `gray-200` | `gray-00` |
+| `bg-layer-default` | `gray-00` | `gray-100` |
+| `bg-layer-default-pressed` | `gray-100` | `gray-300` |
+| `bg-layer-fill` | `gray-100` | `gray-200` |
+| `bg-layer-floating` | `gray-00` | `gray-200` |
+| `bg-layer-floating-pressed` | `gray-100` | `gray-300` |
+| `bg-neutral-inverted` | `gray-900` | `gray-1000` |
+| `bg-neutral-inverted-pressed` | `gray-800` | `gray-800` |
+| `bg-neutral-solid` | `gray-1000` | `gray-300` |
+| `bg-neutral-solid-muted` | `gray-800` | `gray-400` |
+| `bg-neutral-solid-muted-pressed` | `gray-900` | `gray-500` |
+| `bg-neutral-weak` | `gray-200` | `gray-300` |
+| `bg-neutral-weak-alpha` | `static-black-alpha-200` | `static-white-alpha-200` |
+| `bg-neutral-weak-alpha-pressed` | `static-black-alpha-300` | `static-white-alpha-300` |
+| `bg-neutral-weak-pressed` | `gray-300` | `gray-400` |
+| `bg-overlay` | `static-black-alpha-700` | `static-black-alpha-700` |
+| `bg-overlay-muted` | `static-black-alpha-500` | `static-black-alpha-500` |
+| `bg-positive-solid` | `green-700` | `green-500` |
+| `bg-positive-solid-pressed` | `green-800` | `green-600` |
+| `bg-positive-weak` | `green-100` | `green-100` |
+| `bg-positive-weak-pressed` | `green-200` | `green-200` |
+| `bg-transparent-pressed` | `static-black-alpha-100` | `static-white-alpha-50` |
+| `bg-transparent-selected` | `static-black-alpha-200` | `static-white-alpha-100` |
+| `bg-transparent-selected-pressed` | `static-black-alpha-300` | `static-white-alpha-200` |
+| `bg-warning-solid` | `yellow-300` | `yellow-800` |
+| `bg-warning-solid-pressed` | `yellow-400` | `yellow-900` |
+| `bg-warning-weak` | `yellow-100` | `yellow-100` |
+| `bg-warning-weak-pressed` | `yellow-200` | `yellow-200` |
+| `fg-brand` | `carrot-600` | `carrot-700` |
+| `fg-brand-contrast` | `carrot-700` | `carrot-700` |
+| `fg-critical` | `red-700` | `red-700` |
+| `fg-critical-contrast` | `red-900` | `red-900` |
+| `fg-disabled` | `gray-500` | `gray-500` |
+| `fg-informative` | `blue-700` | `blue-700` |
+| `fg-informative-contrast` | `blue-900` | `blue-900` |
+| `fg-neutral` | `gray-1000` | `gray-1000` |
+| `fg-neutral-inverted` | `gray-00` | `gray-100` |
+| `fg-neutral-muted` | `gray-800` | `gray-800` |
+| `fg-neutral-subtle` | `gray-700` | `gray-700` |
+| `fg-placeholder` | `gray-600` | `gray-600` |
+| `fg-positive` | `green-700` | `green-700` |
+| `fg-positive-contrast` | `green-900` | `green-900` |
+| `fg-warning` | `yellow-700` | `yellow-700` |
+| `fg-warning-contrast` | `yellow-900` | `yellow-900` |
+| `stroke-brand-solid` | `carrot-700` | `carrot-700` |
+| `stroke-brand-weak` | `carrot-300` | `carrot-300` |
+| `stroke-critical-solid` | `red-700` | `red-700` |
+| `stroke-critical-weak` | `red-300` | `red-300` |
+| `stroke-focus-ring` | `blue-600` | `blue-600` |
+| `stroke-informative-solid` | `blue-700` | `blue-700` |
+| `stroke-informative-weak` | `blue-300` | `blue-300` |
+| `stroke-neutral-contrast` | `gray-1000` | `gray-1000` |
+| `stroke-neutral-muted` | `static-black-alpha-300` | `static-white-alpha-100` |
+| `stroke-neutral-solid` | `gray-800` | `gray-800` |
+| `stroke-neutral-subtle` | `static-black-alpha-200` | `static-white-alpha-50` |
+| `stroke-neutral-weak` | `gray-400` | `gray-400` |
+| `stroke-positive-solid` | `green-700` | `green-700` |
+| `stroke-positive-weak` | `green-300` | `green-300` |
+| `stroke-warning-solid` | `yellow-700` | `yellow-700` |
+| `stroke-warning-weak` | `yellow-300` | `yellow-300` |
+
+같은 대응이 frontmatter `colors:` 에 참조 행으로 실려 있다. 라이트는 `bg-brand-solid: "{colors.carrot-600}"`, 다크는 `dark-` 접두 짝 `dark-bg-brand-solid: "{colors.dark-carrot-700}"` 이다. `static-*` 는 두 테마 공통이라 다크 짝도 접두 없는 `static-*` 를 가리킨다 [src:7]. 표의 `bg-neutral-solid-muted` · `bg-neutral-solid-muted-pressed` 두 행만은 [src:7] 이 아니라 배포 패키지 `base.css` 에서 왔다 [src:77].
+
+**매너온도 램프**는 당근 고유의 자산이다. 매너온도는 구간에 따라 10단계 레벨로 표시되며, 각 레벨마다 텍스트 색상과 그래픽이 달라진다. `temperature`는 실제 숫자 값을 받고 레벨과 시각 스타일은 그 값에서 자동 계산된다 [src:53]. 램프는 낮은 단계의 중립 회색(`manner-temp-l1-text`)에서 시작해 브랜드 주황을 지나 높은 단계의 적색(`manner-temp-l10-text`)으로 이동한다 [src:7].
+
+그라디언트는 입체감과 AI(magic) 기능 표현에 쓰는 별도 축이다 [src:14]. 발행값은 색상 스톱 목록이고, 라이트·다크 짝 12개가 frontmatter `gradients:` 맵에 있다 — 명세의 Color 는 단색만 받으므로 `colors:` 에 두지 않는다.
+
+## Typography
+
+SEED는 자체 서체를 배포하지 않는다. **사용자의 디바이스 환경을 고려해 시스템 폰트를 쓰며**, 이는 다양한 국가와 문화권의 여러 기기·운영체제에서 일관된 경험과 가독성을 보장하기 위한 선택이다 [src:8]. 이 결정은 다국가 대응 설계 원칙과 같은 방향이다 [src:19].
+
+타이포그래피 시스템은 폰트 크기·줄 높이·폰트 두께를 각각 토큰으로 정의하고, 이를 두 갈래로 조합한다 — `t5Regular`·`t1Bold` 같은 **스케일 텍스트 스타일**과 `screenTitle`·`articleBody` 같은 **시맨틱 텍스트 스타일**이다 [src:8]. 아래는 크기·줄 높이 사다리 14단계와 두께 3종이다. 공식은 각 단계를 rem(스케일 대응)과 `-static` px(고정) 두 벌로 발행하며, 아래 값은 px 기준이다 [src:7].
+
+- `weight-regular`: 400
+- `weight-medium`: 500
+- `weight-bold`: 700
+
+## Spacing
+
+Spacing은 컴포넌트와 콘텐츠 사이의 간격을 표현하며, 2px을 최소 단위로 하는 `x` 사다리로 토큰화된다 [src:9][src:7]. 이름의 숫자는 4px 배수를 뜻해 `x1`이 4px, `x2`가 8px이고, 반 단계는 `x0_5`처럼 언더스코어로 적는다.
+
+사다리 아래쪽 6줄은 raw 단계를 가리키는 시맨틱 별칭이다 — 화면 좌우 여백(`spacing-x-global-gutter`), 컴포넌트 기본 세로 간격(`spacing-y-component-default`), 내비게이션과 타이틀 사이(`spacing-y-nav-to-title`), 화면 하단 여백(`spacing-y-screen-bottom`), 칩 사이(`spacing-x-between-chips`), 텍스트 줄 사이(`spacing-y-between-text`)라는 사용 맥락을 제공한다 [src:7]. 별칭이므로 토큰 카드에는 실리지 않고 이 산문에만 남는다.
+
+레이아웃 층위의 여백은 이 사다리와 별개로 중단점마다 정의된다 — 아래 `## Responsive Behavior`의 gutter·margin 표를 함께 볼 것 [src:12].
+
+## Rounded
+
+Radius는 컴포넌트나 콘텐츠 모서리의 둥글기를 표현하며, 2px에서 24px까지 10단계와 완전 원형용 `full`을 더해 11개 토큰으로 구성된다 [src:10][src:7]. spacing 사다리에 있는 반 단계 하나(`4_5`)는 radius 축에는 없다. 이름 규칙은 spacing과 같아 `r1`이 4px, `r2`가 8px이다.
+
+중첩된 표면에서는 바깥과 안쪽 radius를 따로 잡아 동심(concentric) 관계를 유지한다 — List Item이 이 규칙을 명시적으로 다룬다 [src:52].
+
+## Elevation & Depth
+
+> **수치 확보(2026-08-05).** 종전 판본은 "shadow의 구체적 수치는 `<TokenReference groups="shadow">`가 렌더 단계에서 주입하므로 텍스트 출처에 없다"고 적었다. 지금은 `$shadow.s1~s3`이 오프셋·블러·스프레드·색까지 평문 표로 발행되므로 그 서술을 철회하고 실제 값을 싣는다 [src:7].
+
+Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적 깊이와 계층을 표현하는 원칙이다 [src:11]. 관리의 핵심은 레벨을 **Global**과 **Local** 두 스태킹 컨텍스트로 나누는 것이다 — Global은 뷰포트 전체나 컨테이너 역할의 층위이고, Local은 특정 맥락 안의 시각적 깊이로 항상 Global 위에 놓인다 [src:11].
+
+깊이를 표현하는 수단은 Surface color · Shadow · Stroke 세 가지이며, 그중 색 층위가 1차 수단이다. 표면은 `bg-layer-basement` → `bg-layer-default` → `bg-layer-fill` → `bg-layer-floating` 순으로 쌓이고, 이 별칭들이 두 테마에서 서로 다른 gray 단계를 가리켜 깊이감을 만든다 [src:11][src:7].
+
+다크 모드에서 shadow의 알파가 크게 올라가는 것(`s1` 8% → 50%)에 주목할 것 — 어두운 배경에서 같은 농도로는 층이 보이지 않기 때문이다 [src:7]. 그럼에도 shadow는 주목도가 가장 높은 소수 요소에만 쓰고, 대부분의 층 분리는 surface color와 stroke로 해결한다 [src:11].
+
+> **이 프로젝트의 예외.** 화면의 깊이는 아래 `## 클레이모피즘`으로 그린다. SEED의 `s1`~`s3` 그림자와 surface color 층위는 참고값으로만 싣고, 화면의 면은 전부 `--clay*` 토큰 중 하나를 쓴다.
 
 ## 클레이모피즘
 
@@ -38,36 +683,15 @@
 
 `disabled`는 떠 있음을 유지한 채 `opacity: 0.45`로 흐리게만 한다. 그림자를 평평하게 만들지 않는다(서버 응답을 기다리는 동안 버튼이 사라진 것처럼 보이면 안 된다).
 
-## 토큰
+### 바탕
 
-색·둥글기·그림자·글자 크기는 `:root`의 CSS 변수로만 정한다. 새 색이 필요하면 **토큰을 먼저 더하고** 그 토큰을 쓴다. 클래스 안에 16진수 색이나 `box-shadow` 값을 직접 쓰지 않는다.
-
-### 색
+점토가 놓이는 바닥과 점토 표면은 한 단계 차이가 나야 한다. 표면이 순백이면 왼쪽 위 흰 하이라이트가 보이지 않는다.
 
 | 토큰 | 값 | 의미 |
 |---|---|---|
-| `--ink` | `#12232e` | 본문 글자 |
-| `--ink-2` | `#4a5a66` | 보조 글자(설명, 레이블) |
-| `--ink-3` | `#74838e` | 흐린 글자(각주, 비활성) |
-| `--line` | `#d9e1e6` | 표의 줄, 구분선. 면의 테두리로는 쓰지 않는다 |
 | `--bg` | `#e6edf2` | 화면 바닥. 점토가 놓이는 면이라 카드보다 한 단계 어둡다 |
 | `--card` | `#f8fafc` | 점토 표면(카드·버튼·칩의 바탕). 순백이 아니어야 왼쪽 위 흰 하이라이트가 보인다 |
-| `--brand` | `#0f5b78` | 주 동작, 선택됨, 링크 |
-| `--brand-2` | `#dcebf2` | 선택된 칩 배경, 정보 안내 배경 |
-| `--ok` / `--ok-bg` | `#1f7a4d` / `#e2f3ea` | 완료, 해당됨 |
-| `--warn` / `--warn-bg` | `#9a5b00` / `#fff1d6` | 주의, 제도·운영 시간 안내, 보통 긴급도, 진행 중 |
-| `--danger` / `--danger-2` / `--danger-bg` | `#c4231b` / `#a11a13` / `#fbe3e1` | 119·응급(근로자), 높은 긴급도(센터) |
-| `--on-brand` | `#ffffff` | 브랜드·위험색처럼 진한 바탕 위의 글자. 흰 배경에는 쓰지 않는다(배경은 `--card`) |
-| `--accent` | `#f0a500` | 포커스 윤곽, 실제 전송 칩(`pill.live`), 실제 전송 행의 왼쪽 띠. 이 셋에만 쓴다 |
-| `--info` / `--info-bg` | `#0b4f8a` / `#dceeff` | 신규 상태 칩(`pill.new`) |
-| `--warn-ink` / `--brand-ink` / `--ok-ink` | `#5c3700` / `#0b3e52` / `#134d31` | 안내 상자(`notice.warn`·`info`·`ok`)의 글자. 파스텔 배경 위에서 본문처럼 읽히도록 각 색보다 진하다 |
 | `--bg-2` | `#eef3f6` | 들어간 홈의 바탕(모국어 원문 상자, 막대 트랙), 낮음 칩(`pill.low`, 홈의 회원 링크 포함). `--bg`와 `--card` 사이 |
-| `--bg-3` | `#f2f6f9` | 표 머리, 표 행 강조(호버). `--card`보다 한 단계 어둡다 |
-| `--live-bg` | `#fff8e1` | 실제 전송 행 배경 |
-| `--on-brand-soft` | 흰색 20% | 진한 바탕 위의 옅은 칸(홈 첫 메뉴 아이콘 칸) |
-| `--chart-1` / `--chart-2` / `--chart-3` | `--brand` / `#e08a00` / `#9aa8b2` | 통계 도넛 계열색. `.series-1`~`.series-3`으로 받는다. `--chart-2`는 `--accent`와 비슷하지만 뜻(포커스·실제 전송)을 빌리지 않도록 따로 둔다 |
-
-파스텔 배경(`*-bg`, `--brand-2`)은 평평한 면과 들어간 면의 바탕이다. 그 위 글자는 각각의 진한 색(`--ok`, `--warn`, `--danger-2`, `--brand`)이고 대비 4.5:1을 지킨다.
 
 ### 둥글기
 
@@ -79,13 +703,7 @@
 | `999px` | 토큰 없음 | 긴급도·상태 칩(`pill`), 단계 숫자 원, 앱 바 ←, 사진 ✕, 슬라이더 트랙·손잡이, 막대 트랙·채움, 도넛 범례 점 |
 | `12px` | 토큰 없음 | 높이 36~38px로 낮은 것: 헤더 언어 선택, 센터 탭, 센터 필터 버튼·select |
 
-면의 높이가 둥글기의 2배보다 작으면 알약 모양이 된다. 48px 버튼에 16px은 괜찮고, 36px 센터 필터에는 `--radius-sm` 대신 12px을 쓴다(아래 센터 표).
-
-### 크기
-
-| 토큰 | 값 | 쓰는 곳 |
-|---|---|---|
-| `--bar-119` | `72px` | 하단 119 띠의 높이(위아래 10px + 버튼 52px). `.w-main`의 아래 여백과 `.w-footer`가 붙는 자리가 이 값으로 맞는다. 띠 높이를 바꾸면 토큰만 바꾼다 |
+SEED `rounded` 사다리로는 `--radius`가 `r5`(20px), `--radius-sm`이 `r4`(16px)이고, `--radius-lg` 28px은 사다리 밖 값이다. 면의 높이가 둥글기의 2배보다 작으면 알약 모양이 된다. 48px 버튼에 16px은 괜찮고, 36px 센터 필터에는 `--radius-sm` 대신 12px을 쓴다.
 
 ### 그림자
 
@@ -153,271 +771,372 @@
 input[type='text'], textarea, select.input { background: var(--card); border: 0; border-radius: var(--radius-sm); box-shadow: var(--clay-in); }
 ```
 
-눌림은 `:active`에서 즉시 바뀌고 되돌아온다. `transition`을 달지 않는다("하지 않는 것"). `:hover`에는 아무것도 하지 않는다. 근로자는 손가락으로 누르므로 호버가 없고, 센터 표의 행 강조만 예외다.
+눌림은 `:active`에서 즉시 바뀌고 되돌아온다. `transition`을 달지 않는다. `:hover`에는 아무것도 하지 않는다. 근로자는 손가락으로 누르므로 호버가 없고, 센터 표의 행 강조만 예외다.
 
-### 색의 의미
+## Shapes
 
-- **근로자 화면에서 빨강은 119와 응급에만 쓴다.** "심해지면 119" 안내(`Worse119`), 응급 히어로, 하단 띠, 위험 버튼(삭제)만 빨강이다. 오류 문구는 빨강 안내(`notice.danger`)를 쓰되 119 안내보다 눈에 띄게 만들지 않는다.
-- 센터 화면에서는 긴급도 "높음" 칩이 빨강이다. 담당자에게는 자연스러운 신호이고, 센터 화면에는 119 버튼이 없어 혼동이 없다.
-- 브랜드색은 선택됨과 주 동작이다. 장식으로 쓰지 않는다.
-- `warn`은 "확인이 필요하다"는 뜻이다. 제도 안내, 운영 시간 외, 진행 중 상태가 여기에 속한다.
-- `ok`는 끝났거나 해당된다는 뜻이다.
-- **그림자는 뜻을 전하지 않는다.** 떠 있음과 들어감은 "누를 수 있다"와 "눌렸다·값을 받는다"의 느낌일 뿐이고, 선택됨은 ✓와 굵기, 상태는 글자가 전한다.
+형태 언어는 둥글고 부드러운 쪽이다. 아이콘이 당근 로고의 형태적 특징에서 출발해 친근하고 부드러운 인상을 목표로 하고, 굵은 선과 간결한 형태로 정리된다는 서술이 그 기조를 드러낸다 [src:15]. 아이콘은 Monochrome과 Multicolor 두 범주로 나뉘고, 이름은 확장성을 위해 의미가 아니라 형상만으로 명명한다 [src:15].
 
-## 글자
+표면은 직각을 거의 쓰지 않는다. radius 사다리가 2px부터 촘촘히 시작해 `full`까지 이어지고 [src:10], Action Button처럼 브랜드를 실어 나르는 컨트롤은 `{rounded.full}` 쪽으로 간다. 이미지 표면은 Corner Radius를 별도 속성으로 다루며 중첩 시 동심 관계를 유지한다 [src:50].
 
-- 글꼴은 **시스템 글꼴**이다. `font-family`에 적힌 Pretendard·Noto Sans KR은 기기에 있을 때만 쓰이고, 웹폰트를 내려받지 않는다. 발표장 네트워크에 기대지 않고, 베트남어 성조 글리프도 시스템 글꼴이 안전하다. 클레이모피즘 예시에 흔한 둥근 전용 글꼴(Nunito 등)도 들이지 않는다. 둥근 느낌은 면이 내고 글자는 읽히는 쪽을 택한다.
-- 기본 크기 1rem(16px), 줄 간격 1.5. 아래 단계만 쓴다.
+## Components
 
-| 단계 | 크기 | 쓰는 곳 |
-|---|---|---|
-| 한국어 크게 | 1.6rem / 1.45rem / 1.2rem | 진료과 이름(`.dept .ko`), 접수 창구 문장(`.ko-big`), 3언어 줄의 한국어(`.line .ko`). 창구 직원이 휴대폰 화면을 건너 읽는 크기다 |
-| 응급 | 1.7rem / 1.5rem | 응급 전화 버튼, 응급 히어로 제목 |
-| 제목 | 1.45rem / 1.15rem / 1rem | h1 / h2 / h3. 화면에 h1은 하나다 |
-| 본문 | 1rem | 본문, 버튼, 칩(0.98rem) |
-| 보조 | 0.92rem / 0.85rem | 안내 상자, 발음·모국어 줄, 작은 설명 |
-| 최소 | 0.82rem | 각주(`.footer-note`), 센터 칩. 이보다 작게 쓰지 않는다 |
-| 센터 숫자 | 1.8rem | KPI 수치 |
+공식 컴포넌트 카탈로그는 47개의 활성 컴포넌트와 9개의 Deprecated 항목으로 구성되며, 각 문서는 Anatomy · Properties · Guidelines · Specification 구조를 따른다 [src:22]. 대부분의 컴포넌트가 Figma · React · iOS · Android 네 플랫폼에 걸쳐 제공된다 [src:22].
 
-- 한국어로 고정된 글(접수 창구 문장, 전화 스크립트, 센터 화면)에는 `lang="ko"`를 단다. 근로자가 고른 언어의 글에는 문서 언어를 따르게 둔다.
-- 버튼·칩·메뉴 제목은 굵게(700 이상)다. 푹신한 면 위에 가는 글자는 떠 보인다.
+상태 표현은 전 컴포넌트 공통 규약을 따른다. UI 상태는 **상호작용 상태**(사용자 조작에 따라 변함)와 **옵션 상태**(적용된 옵션에 따름) 두 유형이며, 정의된 상태는 Enabled · Pressed · Selected · Disabled다 [src:17]. 두 유형은 한쪽이 다른 쪽을 덮어쓸 수도, 함께 적용될 수도 있다 [src:17].
 
-## 크기
+### accordion
 
-누르는 것은 손가락 기준이다. 클레이모피즘으로 바꿔도 아래 최소 높이는 그대로다.
+세부 정보를 점진적으로 공개하는 수직 목록이다 [src:30]. Trigger(Prefix · Title · Description · Chevron Icon)와 확장 시 나타나는 Custom Content로 구성되며, Trigger 전체가 열고 닫는 터치 영역이다 [src:30]. Content Panel 안에 별도 스크롤을 두는 것은 지양하고, 확장 시 자동 스크롤과 포커스 이동을 함께 설계한다 [src:30].
 
-| 요소 | 최소 높이 |
-|---|---|
-| 응급 전화 버튼(`.em-call`) | 76px |
-| 홈 메뉴 항목(`.menu a`) | 72px |
-| 큰 버튼(`.btn.big`) | 60px |
-| 칩(`.chip`), 하단 119 띠 | 52px |
-| 버튼(`.btn`), 입력란, 세그먼트 칩 | 48px |
-| 토글(`.toggle button`) | 44px |
-| 센터 필터·헤더 선택 | 36~38px(PC, 마우스 기준) |
+### action-button
 
-- 근로자 화면에서 누르는 것은 48px 아래로 내리지 않는다.
-- 간격은 8px 단위다. 카드 안 여백 16px, 카드 사이 **16px**(바깥 그림자가 8px 아래로 떨어지므로 12px이면 다음 카드에 닿는다), 요소 사이 8px, 칩 사이 8px.
-- 면의 안쪽 여백은 가로 12px 아래로 내리지 않는다(안쪽 그림자 위에 글자가 놓이지 않게).
-- 하단 119 띠가 내용을 가리지 않도록 `.w-main`은 아래 여백을 띠 높이만큼 둔다. 안전 영역(`env(safe-area-inset-bottom)`)은 띠가 처리한다.
+명확한 액션을 쉽게 수행하도록 돕는 기본 인터랙션 컴포넌트다 [src:31]. Label을 감싸는 Container로 구성되며 Prefix Icon과 Suffix Icon을 가질 수 있다 [src:31]. Size · Layout · Variant · State · Width · Hierarchy 속성을 가지고, **Brand 컬러는 꼭 필요한 곳에만 사용**하라는 지침이 명시돼 있다 [src:31]. CTA에서는 `{colors.bg-brand-solid}`와 `{colors.fg-neutral-inverted}`를 짝지어 쓰고 `{rounded.full}`을 적용한다. 가로로 꽉 채울 때는 `fill` 같은 속성이 아니라 **`flexGrow`** 를 쓴다 — 공식 React API에 `fill` 속성은 없다 [src:25].
 
-## 컴포넌트
+### alert-dialog
 
-공통 조각은 `styles.css`의 클래스와 `components/common.tsx`의 React 조각이다. 아래 표에 없는 것을 새로 만들기 전에 표의 것으로 그릴 수 없는지 먼저 본다. "면" 열은 위 "세 가지 면"의 어느 것인지다.
+사용자의 확인이 반드시 필요할 때 쓰는 강한 경고 수단이다 [src:32]. Backdrop(Overlay)과 Dialog Content가 결합된 하나의 컴포넌트로 제공된다 [src:32]. 임의로 다양한 콘텐츠를 조합하지 말고, 알림·확인·경고라는 좁은 용도에 묶어 둔다 [src:32].
 
-### 근로자 화면
+### attachment-input
 
-| 클래스·조각 | 무엇 | 면 | 언제 쓴다 | 쓰지 않는 때 |
-|---|---|---|---|---|
-| `.card` | `--card` 바탕, `--radius`, `--clay`, 여백 16 | 떠 있음 | 화면의 내용 묶음 하나 | 카드 안에 카드를 넣지 않는다(점토 위에 점토가 올라가면 그림자가 겹친다) |
-| `.card.band` (`.ok`) | 결과 카드. 위쪽 6px 표시 띠(안쪽 그림자, 기본 `--brand`, `.ok`는 `--ok`)와 위쪽 여백 22px | 떠 있음 | 화면의 핵심 결과 카드 하나: S-08 제도 경로(`.ok`), S-09 창구 문장, S-11 리포트, S-12 센터 요약 미리보기 | 한 화면에 하나만. `border-top`으로 그리지 않는다 |
-| `.btn` + `secondary` / `ghost` / `danger` / `block` / `big` | 버튼. 기본은 브랜드색 채움 + `--clay-color-sm`, `:active`에 `--clay-color-in`. `secondary`는 `--card` 바탕 + `--clay-sm`. `ghost`는 평평(그림자·배경 없음). `danger`는 빨강 채움 | 떠 있음(ghost는 평평) | 주 동작은 화면에 하나(`.block`으로 가로 꽉). 되돌아가기는 `ghost`, 보조는 `secondary`, 삭제는 `danger` | 링크처럼 보이는 글자 버튼을 만들지 않는다. 테두리 버튼(outline)을 만들지 않는다 |
-| `Chip` (`.chip[aria-pressed]`) | 고르는 버튼. 안 눌리면 `--card` + `--clay-sm`. 눌리면 ✓ 접두 + `--brand-2` 바탕 + `--clay-in` + 굵게 | 떠 있음 → 들어감 | 부위·증상·항목처럼 여러 개 고르기. `.chips`는 내용 너비로 줄바꿈(칩 사이 8px), `.chip-group`(h2 제목 + `.chips`, 묶음 사이 24px)으로 묶는다 | 하나만 고를 때는 `SingleSelect`. 2열 격자·가로 스크롤 행으로 두지 않는다 |
-| `YesNoSeg`, `SingleSelect` (`.options`) | 선택지 목록. 가로 꽉 찬 행 하나에 선택지 하나, 글자 왼쪽 정렬, 높이 56px, 행 사이 16px. 고른 행은 칩과 같이 ✓ + 들어감 + 굵게 | 떠 있음 → 들어감 | 추가 질문, 성별·음주·흡연, 보험·업무 관련 여부. 둘뿐인 예/아니요는 `.w-footer` 안 버튼 바로 위에 | 선택지가 6개를 넘으면 `select`. 가운데 정렬 칩 한 줄(`.seg`)은 S-09 첫 방문/재방문 전환처럼 질문이 아닌 화면 전환에만 |
-| `.field` + `input` / `textarea` / `select.input` | 입력란. `--card` 바탕 + `--clay-in`, 테두리 없음. 레이블은 항상 위에 | 들어감 | 자유 입력, 생년월일, 연락처 | placeholder만으로 레이블을 대신하지 않는다 |
-| `.check` | 체크박스 한 줄(48px). `--clay-sm`, 체크되면 `--clay-in`. 전체 동의 줄은 `strong` 제목 + 아래 설명 문단 | 떠 있음 → 들어감 | 동의 항목(3개 분리), 리포트 항목 선택 | 기본 체크 상태로 두지 않는다 |
-| `.check-row` | 동의 항목 줄 **한 면**: 안의 `.check`(평평) + 오른쪽 › `btn ghost`(48px, `aria-expanded`). 줄이 `--clay-sm`로 떠 있고 체크되면 줄 전체가 `--clay-in` + `--brand-2`로 들어간다. 누르면 같은 화면 안 그 줄 아래에 전문이 `p.small.muted`로 펼쳐진다 | 떠 있음 → 들어감 | S-02 세 항목 | 체크와 › 를 따로 떠 있는 두 조각으로 그리지 않는다. 전문을 모달·시트로 띄우지 않는다 |
-| `hr.divider` | 구분선 1px `--line`, 위아래 16px | 평평 | 전체 동의 줄과 항목 줄 사이, 사진 제목과 타일 사이 | 면의 테두리로 쓰지 않는다 |
-| `.notice` + `warn` / `info` / `danger` / `ok` | 안내 상자. 파스텔 배경 + `--radius-sm`, 그림자 없음 | 평평 | warn: 제도·운영 시간, info: 조용한 대체 알림·보조 정보, danger: 119 안내·전송 실패, ok: 완료 | 안내 상자를 두 개 연달아 쌓지 않는다. 안내 상자를 띄우지 않는다(카드와 구분되어야 한다) |
-| `Steps` (`ol.steps > li`) | 단계 숫자 원 32px, 왼쪽부터 8px 간격, 아래 16px. 현재 `.on`은 브랜드색 + 흰 숫자 + `--clay-color-sm`, 지난·남은 단계는 `--card` + `--clay-in` + 흐린 숫자 | 들어감(현재는 떠 있음) | 증상 입력 묶음 4개(부위·증상·자유 입력·추가 질문), 온보딩 4단계(언어·동의·로그인·프로필: S-02에 2, 프로필에 4) | 장식용. `aria-hidden`. 트랙 선을 긋지 않는다 |
-| `.menu` (+ `.primary`) | 홈 메뉴. `--radius-lg` + `--clay`. 아이콘 칸(`.ico`)은 `--brand-2` 바탕 + `--clay-in`(점토에 찍힌 도장). `.primary`는 브랜드색 + `--clay-color` | 떠 있음 | 홈 화면만 | 다른 화면에서 메뉴처럼 쓰지 않는다 |
-| `.dept` / `.dept.alt` | 진료과 이름 크게(한국어 + 발음 + 모국어). 1순위는 `--brand-2` 바탕 + `--clay`, 2순위(`alt`)는 `--card` 바탕 + `--clay-sm`. 테두리 없음 | 떠 있음 | 결과 화면의 1순위·2순위 | — |
-| `.ko-big`, `.line` (`.ko` + `.pron` + `.native`) | 3언어 줄. 한국어 크게, 아래 발음, 그 아래 모국어. 줄 사이는 `--line` 구분선. `.line.top`은 선을 위에 긋는다 | 평평(카드 안) | 접수 창구 문장, 전화 스크립트. `.line.top`은 S-10 자주 묻는 질문 | 한국어 사용자에게는 `.pron`·`.native`를 그리지 않는다(`pron()`이 빈 문자열) |
-| `.kv` | 정의 목록(항목: 값) | 평평(카드 안) | 접수 창구 요약 | 표 대신 쓰지 않는다 |
-| `.toggle` | 한국어/모국어 전환. 전체가 `--clay-in` 홈이고, 눌린 쪽이 브랜드색으로 떠오른다(`--clay-color-sm`) | 들어감 안의 떠 있음 | 리포트 | 한국어 사용자에게는 숨긴다 |
-| `.report-row` | 리포트 한 행(레이블 작게 + 값 크게) | 평평(카드 안) | 의료진 리포트, S-13 프로필 카드 | — |
-| `.stack` (+ `.wide`) | 세로로 쌓기. 기본 간격 10px, `.wide`는 16px(카드 간격과 같다) | — | 버튼 쌓기, S-04 홈의 줄·메뉴 묶음 | — |
-| `.em-hero`, `.em-call` | 응급 히어로(빨강 + `--clay-color`, `--radius`)와 전화 버튼(`--card` 바탕 + `--clay`, `--radius-lg`, `:active`에 `--clay-in`) | 떠 있음 | `/emergency`만 | — |
-| `.bar-119` | 하단 고정 119 띠. 버튼은 빨강 + `--clay-color-sm` + `--radius-lg` | 떠 있음 | `WorkerLayout`이 그린다 | 화면이 다시 그리지 않는다 |
-| `Worse119` | "심해지면 119" 빨간 안내(`notice.danger`) | 평평 | 비응급 결과·리포트·센터 요청 화면 전부(S-07~S-12) | — |
-| `PolicyDisclaimer` | "기관이 최종 결정" + 정보 기준일 각주 | 평평 | 제도·기관 정보가 있는 화면 전부 | 빼지 않는다 |
-| `.w-header` (+ `.back`, `.title`) | 앱 바 48px. 바닥색 위에 평평(띠가 아니다). `/home`은 앱 이름(홈 링크), 그 밖은 ←(`.back`, 아이콘 24px, 누르는 영역 48px) 하나. **화면 이름은 본문 h1 하나이고 앱 바에 다시 쓰지 않는다.** 오른쪽에 언어 선택(`select`, 떠 있음 작게). 로고 화면(S-01·S-03 로그인)과 분석 중 화면은 앱 바가 없다 | 평평 | `WorkerLayout`이 그린다. 화면은 `useScreenBar({ title, onBack, hidden })`로 등록한다. `title`은 브라우저 탭 제목에만 쓰고, 등록하지 않으면 ← `/home` | 앱 바에 화면 이름·그림자·브랜드색 채움을 넣지 않는다. 바닥에 되돌아가기 버튼을 두지 않는다 |
-| `.w-screen` + `.w-footer` | 바닥 버튼을 쓰는 화면의 뿌리와 바닥. `.w-footer`는 `.btn.block` 하나(필요하면 그 위에 둘뿐인 예/아니요 `.options`)를 담고 `sticky`로 119 띠(`--bar-119`) 바로 위에 붙는다. 본문이 짧으면 `.w-screen`이 바닥으로 민다 | 떠 있음(버튼) | S-02, S-03 프로필, S-05 | 바닥에 버튼을 둘 두지 않는다. 조건이 안 되면 `disabled`, 사라지지 않는다 |
-| `.w-logo` (+ `.mark`) | 로고 화면의 본문. 위를 비우고 세로 가운데에 로고(이모지)·이름·한 줄. 버튼은 그 아래 `.stack`으로 바닥에 쌓인다 | 평평 | S-01 언어 선택, S-03 로그인 | — |
-| `.w-langs` | 언어 버튼 2열 격자(간격 10px). 안의 `.btn.secondary`는 높이 60px, 모국어 이름 + 아래 `.small.muted` 영어 이름 두 줄 | 떠 있음(버튼) | S-01 언어 선택 | 한 열로 20개를 쌓지 않는다(화면 세 장 길이). 국기 이모지를 넣지 않는다 |
-| `.w-wait` (+ `.pic`) | 분석 중 화면. 세로 가운데에 멈춘 그림(이모지, `aria-hidden`) + h1 + 부제. 앱 바(`hidden`)·바닥 버튼 없음, 119 띠만 | 평평 | S-05 결과 보기 → 서버 판정 대기 | 스피너·애니메이션을 넣지 않는다 |
-| `PhotoPicker` (`.photos-head`, `.photos`, `.photo-add`, `.photo`) | 사진 올리기. 제목 `사진` + 개수 `n/3` → `hr.divider` → 타일 한 줄. `.photo-add`는 116px 정사각 들어간 홈(`+` + `사진 추가`, 타일을 덮는 숨긴 `input[type=file][accept=image/*]`), `.photo`는 같은 크기 썸네일(`--clay-sm`) + 오른쪽 위 ✕(`.rm`, 44px 원). 최대 3장. 아래 각주로 보내거나 저장하지 않음을 알린다 | 들어감(추가) / 떠 있음(썸네일) | S-05 자유 입력 | 사진을 서버·저장소에 보내지 않는다(보낼 API가 없다). 점선 테두리 타일을 그리지 않는다 |
-| `PainRange` (`.range`) | 통증 점수 슬라이더. 얼굴 이모지 → 단계 이름(약함·보통·심함) → 숫자 크게(움직이기 전 `–`) → `input[type=range]`(트랙 12px `--bg-2` + `--clay-in`, 손잡이 28px 브랜드색 + `--clay-color-sm`) → 양 끝 레이블 | 들어감(트랙) 안의 떠 있음(손잡이) | S-05 통증 점수 | `select`로 되돌리지 않는다 |
-| `.btn .mark` | 버튼 왼쪽의 글자 아이콘 28px 원(`--brand-2` 바탕 + 브랜드색 굵은 글자) | 평평(버튼 안) | S-03 데모 Google 로그인의 G | 외부 아이콘·로고 이미지를 내려받지 않는다 |
-| `.footer-note`, `.muted`, `.small` | 각주, 흐린 글, 작은 글 | 평평 | — | 본문을 `.small`로 쓰지 않는다 |
-| `.row.link` | 줄 전체가 링크인 목록 한 줄. 본문색 글자, 양 끝 정렬, 높이 44px | 평평 | S-13 내 메모 목록. backlog 12부터 S-04 나 한 줄·최근 메모 줄 | — |
+사진·영상·파일 첨부를 다루는 입력으로 선택·업로드·진행률·실패·삭제 상태를 관리한다 [src:33]. Trigger와 Preview로 구성되며 Preview에는 항목별 액션(삭제·재시도)과 업로드 진행 상태를 표시한다 [src:33]. Dropzone과 Reorder를 속성으로 제공한다 [src:33].
 
-### 센터 화면
+### avatar
 
-PC 화면은 밀도가 우선이라 클레이를 **묶음 단위**에만 쓴다. KPI·패널·표 상자가 떠 있고, 그 안의 행·칩·글자는 평평하다. 작은 요소까지 푹신하게 만들면 표가 읽히지 않는다.
+사용자 프로필 이미지를 표시한다 [src:34]. Image Area와 Border로 구성되고 필요에 따라 Badge를 얹을 수 있으며, 여러 명을 겹쳐 보이는 Avatar Stack을 별도로 제공한다 [src:34].
 
-| 클래스·조각 | 무엇 | 면 | 언제 쓴다 |
-|---|---|---|---|
-| `.c-header` + `nav` (`.active`) | 상단 브랜드와 탭(접수함·통계). 탭 `.active`는 `--brand-2` 바탕 + `--clay-in` | 평평(active는 들어감) | `CenterLayout`이 그린다 |
-| `.kpi` (`.n` + `.l`) | 숫자 하나 + 레이블. `--radius` + `--clay`. 주의가 필요한 숫자는 `.n.danger`(빨강) | 떠 있음 | 접수함·통계 상단 4개. 5건 미만은 `<5` |
-| `.table-wrap` + `table` | 사례 표 상자(`--radius` + `--clay`, 안쪽은 `overflow-x: auto`가 둥글기대로 잘라 주고 900px 아래에서 가로 스크롤을 만든다). 행은 평평, 실제 전송 행은 왼쪽 띠 + 노란 배경 | 떠 있음(행은 평평) | 접수함. 행 클릭으로 상세 |
-| `.pill` + `high` / `medium` / `low` / `new` / `progress` / `done` / `live` | 긴급도·상태·실제 전송 칩. 999px, 그림자 없음 | 평평 | 표와 상세. 색만으로 구분하지 않고 글자(`URGENCY_KO`, `STATUS_KO`)를 같이 쓴다 |
-| `.filters` | 상태 필터 버튼(`aria-pressed`)과 select. 12px 둥글기 + `--clay-sm`, 눌리면 브랜드색 + `--clay-color-in` | 떠 있음 → 들어감 | 접수함 |
-| `.detail`, `.panel` | 상세 2열(900px 아래 1열), 패널(`--radius` + `--clay`) | 떠 있음 | 사례 상세 |
-| `.native-box` | 모국어 원문 상자. `--clay-in` | 들어감 | 상세의 자유 입력 원문 |
-| `.c-offline` | 서버와 끊겼을 때 `.c-header` 아래 가로 띠. `--warn-bg` 바탕 + `--warn` 굵은 글자, 흐름 안에 있어 표를 덮지 않는다 | 평평 | API 모드에서 접수함 다시 읽기가 실패했을 때. C-01~C-03 공통(`CenterLayout`) |
-| `.notice.danger.with-retry` | 실패 문구 + 오른쪽 "다시 시도" `btn secondary`. 좁으면 버튼이 아래 줄로 내려간다. `.panel` 안에서는 위 간격 12px | 평평 | 접수함 초기화·상태 변경·통계 실패. 근로자 S-12 전송 실패도 같은 클래스 |
-| `.bars`, `.donut-wrap`, `.legend`, `.series-1`~`3` | 막대·도넛 집계. 막대 트랙은 `--clay-in`, 채움은 브랜드색 평평. 도넛 조각과 범례 점은 `.series-N`이 주는 `--series`(`--chart-N`)로 칠한다(SVG `stroke` 속성에는 `var()`가 먹지 않는다) | 들어감(트랙) | 통계. 라이브러리 없이 div와 SVG로 그린다. 5건 미만 칸은 막대를 그리지 않고 `<5` |
+### badge
 
-## 화면 골격(Figma 기준)
+객체의 속성이나 상태를 표현하는 작은 텍스트 라벨이다 [src:35]. Size · Tone · Variant를 가지며, 여기서도 **Brand 컬러는 꼭 필요한 곳에만** 쓴다 [src:35]. 너무 많은 Badge를 나열하지 않고, 긴 라벨을 넣지 않으며, **버튼처럼 클릭 가능한 요소로 쓰지 않는다** [src:35].
 
-근로자 화면의 **배치**는 Figma 파일 [conceptamin](https://www.figma.com/design/E9bmCSamU31GYUysYRtt35/conceptamin?node-id=0-1)의 "Simtomi Onboarding" 페이지(온보딩 3화면, 증상 평가 20화면)를 따른다. 거기서 가져오는 것은 **무엇이 어디에 놓이는지**뿐이다. 모양(색·둥글기·그림자·테두리)은 위 "클레이모피즘" 절이 정하고, Figma의 평면 스타일(테두리 버튼, 밑줄 입력란, 파란 외곽선 선택)은 옮기지 않는다. Figma에 없는 화면(S-06~S-13, 센터)은 아래 "화면 유형별 규칙"대로 그린다. 홈(S-04)과 내 화면(S-13)은 아래 "홈과 내 화면" 표가 배치를 정한다(backlog 12). 이 절은 `backlog/08`·`09`·`10`으로 S-01~S-03·S-05에 적용됐다. S-11 항목 선택·S-12 센터 요청은 아직 카드 안에 있다(backlog에 별도 항목).
+### bottom-navigation
 
-### 세로 네 층
+앱 루트 페이지 하단에 고정되어 다섯 개 상위 탭 간 이동을 제공한다 [src:36]. 아이콘과 라벨로 된 탭 아이템과 이를 감싸는 Container로 구성되고, 각 탭에 Notification Badge를 표시할 수 있다 [src:36]. **북미와 일본의 글로벌 앱에서는 중앙에 브랜드 컬러의 글쓰기 버튼이 놓이며, 이 버튼은 탭 이동이 아니라 글쓰기 화면으로 바로 진입한다** [src:36]. 상단 Divider는 iOS에서 1px로 구현되고 Figma에서는 @3x 기준 0.33px로 그려져 있다 [src:36].
 
-한 화면은 위에서 아래로 네 층이다. 층의 순서와 높이는 어느 입력 화면에서도 같아서, 근로자는 글을 읽지 않아도 "위에 질문, 가운데 고르는 것, 아래 다음"을 안다.
+### bottom-sheet
 
-| 층 | 무엇 | 높이 | 면 |
-|---|---|---|---|
-| 앱 바 | 왼쪽에 ← 되돌아가기(아이콘 24px, 누르는 영역 48px) 하나. 화면 이름은 여기 쓰지 않고 본문 h1이 말한다. 오른쪽에 언어 선택. 홈에는 ← 대신 앱 이름, 로고 화면(S-01·S-03 로그인)에는 앱 바가 없다 | 48px | 평평(바닥색) |
-| 단계 | 질문이 여러 화면으로 이어질 때만(S-05). 온보딩(동의·프로필)에는 없다. 숫자 원 1·2·3·4가 왼쪽부터, 현재 단계는 브랜드색 채움 + 흰 숫자, 지난·남은 단계는 들어간 홈 + 흐린 숫자 | 32px + 아래 16px | 들어감(원) |
-| 본문 | **질문 h1 하나** → 그 아래 입력 도구 하나(칩 묶음, 선택지 목록, 입력란, 슬라이더). 가로 여백 16px. 내용이 길면 이 층만 스크롤되고 앱 바와 바닥은 그대로 | 남는 높이 전부 | — |
-| 바닥 | **주 동작 버튼 하나**(`다음`·`적용`·`결과 보기`) 가로 꽉, 양옆 16px, 위 16px. 그 아래 하단 119 띠 | 48px(버튼) + 16px | 떠 있음 |
+화면 하단에서 올라오는 모달로, 현재 맥락을 유지한 채 추가 정보나 액션 목록을 제공한다 [src:37]. Backdrop · Container · Header · Close button · Footer의 조합이며 Handle 노출 여부를 속성으로 고른다 [src:37]. 최대 너비·최대 높이·Snap Point·키보드 등장 시 동작이 각각 규정돼 있다 [src:37].
 
-- 바닥 버튼은 본문 끝이 아니라 **화면 바닥에 붙는다**(`position: sticky; bottom`). 119 띠 바로 위에 놓이고 둘 다 항상 보인다. 본문이 짧아도 버튼이 올라오지 않는다.
-- 되돌아가기는 앱 바의 ← 하나다. 바닥에 `secondary`·`ghost` 되돌아가기 버튼을 두지 않는다. 바닥에 버튼이 둘이면 어느 쪽이 "다음"인지 읽어야 한다.
-- 질문은 카드 밖 h1이다. 입력 화면에서는 `.card`를 쓰지 않는다. 점토로 떠 있는 것은 고르는 것(칩·선택지·입력란)과 바닥 버튼이고, 질문·단계·안내는 바닥 위에 평평하게 놓인다.
-- 다음 조건이 안 되면(필수 동의 전, 아무것도 고르기 전) 바닥 버튼은 `disabled`(떠 있음 + 흐리게)다. 사라지지 않는다.
-- 응급(S-06)과 결과(S-07~S-10)는 이 골격을 쓰지 않는다. 바닥에 주 동작이 하나로 정해지지 않고(지도·전화·접수), 핵심 결과가 첫 화면에 보여야 하기 때문이다. 분석 중(S-05 → S-07 사이)도 쓰지 않는다. 누를 것이 없는 화면이라 앱 바와 바닥 버튼이 없고 119 띠만 남는다.
+### callout
 
-### 본문의 여섯 가지
+중요한 정보나 팁을 강조해 전달하는 인라인 메시지다 [src:38]. Container에 Prefix Icon · Title · Link Text · Suffix Icon을 선택적으로 얹으며, 상황에 맞는 Tone을 고른다 [src:38]. **Link Text를 Nudge 용도로 쓰지 않는다** [src:38]. 페이지 전체 상태를 알릴 때는 Callout이 아니라 Page Banner를 쓴다 [src:57].
 
-본문에 들어가는 입력 도구는 Figma의 20화면을 묶으면 여섯 가지다. 새 질문을 더할 때 이 중 하나를 고른다.
+### checkbox
 
-| 도구 | 배치 | Figma 화면 | 앱 화면 |
-|---|---|---|---|
-| 칩 묶음 | 묶음 제목(`흔한 증상`, `자주 찾는 질환`처럼 h2) → 칩이 **내용 너비로 줄바꿈**(2열 격자가 아니다) → 다음 묶음. 묶음 사이 24px, 칩 사이 8px. 맨 위에 검색 입력란(들어감)과 안내 한 줄(`notice.info`)을 둘 수 있다 | 01 홈, 02 검색 결과, 04 동반 증상, 05 과거력·가족력·복용약 | S-05 부위·증상 |
-| 선택지 목록 | 가로 꽉 찬 행 하나에 선택지 하나, 글자는 왼쪽 정렬, 높이 56px, 행 사이 16px. 고른 행은 ✓ 접두 + 들어감 + 굵게. 마지막 행은 `해당없음`·`잘모르겠음`. 선택지가 둘뿐이면(예/아니요) 질문 아래가 아니라 바닥 버튼 바로 위에 붙여 엄지 범위에 둔다. 글자가 짧은 둘셋(성별·음주·흡연)은 `.options.inline`으로 가로 칸, 가운데 정렬 | 06·07·13·15·16·17·18, 사진 "흡연" | S-05 추가 질문(발생 시점·다침·업무 관련·업종·구군), S-03 성별 |
-| 입력란 | 레이블 위, 입력란 아래. 생년월일은 `YYYY`·`MM`·`DD` 세 칸을 한 줄에, 휴대폰 키패드가 뜨는 `inputmode="numeric"` | 03 발생 시점(휠), 사진 "생년월일" | S-03 생년월일, S-05 자유 입력(`textarea` 137px) |
-| 사진 올리기 | 작은 제목 `사진`과 그 아래 개수(`0/3`) → 구분선 → 타일 한 줄. 첫 타일은 `+` 아이콘과 `사진 추가` 글자가 있는 들어간 홈(116px 정사각, `label` + 숨긴 `input[type=file][accept=image/*]`), 고른 사진은 같은 크기 썸네일(떠 있음)과 오른쪽 위 ✕ 지우기(44px). 최대 3장. 그 아래 자유 입력 `textarea` | 19 추가 정보 | S-05 자유 입력 |
-| 그림 고르기 | 질문 → 앞/뒤 세그먼트 → 가운데 그림(부위) + 양옆 `왼쪽`·`오른쪽` 레이블 → 왼/오른 세그먼트. 고른 자리는 그림 아래 글 한 줄로 알려 준다(토스트가 아니다) | 09~12 무릎 위치 | 아직 없음. 부위 그림을 들일 때 이 배치 |
-| 슬라이더 | 질문 → 얼굴 아이콘 + 단계 이름(`약함`·`보통`·`심함`) → 숫자 크게 → `input[type=range]` → 양 끝 레이블 | 14 통증 강도 | S-05 통증 점수 |
+하나 이상의 옵션을 선택하게 하는 컨트롤로, 목록 다중 선택이나 약관 동의에 쓴다 [src:39]. Checkmark와 Label로 구성되며 Checkmark는 개별 컴포넌트로도 제공돼 자유롭게 조합할 수 있다 [src:39]. 터치 타깃을 별도로 규정하고, 즉시 적용되는 설정에는 Checkbox 대신 Switch를 쓴다 [src:39][src:72].
 
-### 온보딩 세 화면
+### chip
 
-| Figma | 앱 | 배치 |
-|---|---|---|
-| 02 로그인 | S-01 언어 선택 | 앱 바 없음. 위는 비우고 가운데에 로고(워드마크)만. 언어 버튼 20개는 바닥에 **2열 격자**(`.w-langs` 안의 `.btn.secondary`)로 쌓는다. 버튼 안은 모국어 이름 위, 작은 영어 이름 아래 두 줄이고 국기는 넣지 않는다(언어와 나라가 1:1이 아니다). 순서는 `LANGUAGE_OPTIONS` |
-| 02 로그인 | S-03 로그인 | S-01과 같은 골격(앱 바 없음). 가운데 로고, 바닥에 `Google 계정으로 로그인`(`.btn.secondary.block`, 왼쪽에 G 아이콘, 52px 이상) 하나와 그 아래 `비회원으로 계속`(`ghost`). **데모 로그인**이다. 서버에 인증이 없으므로 버튼을 누르면 회원 모드로 들어가 프로필(앱 바 ←, h1 `간단 프로필`, 생년월일 입력란, 성별·음주·흡연은 가로 칸 `.options.inline`, 단계 원 없음)로 간다. 실제 OAuth는 붙이지 않고, 버튼 아래 각주로 Google에 연결하지 않음을 알린다. 화면에 "데모"라는 말은 쓰지 않는다(backlog 11). 순서는 언어 → 동의 → 로그인 → 프로필 → 홈 |
-| 03 약관 동의 | S-02 동의 | 앱 바(← 만) → h1 `약관 동의`(단계 원 없음) → **전체 동의 한 줄**(체크 + 굵은 제목 + 아래 설명 문단, 떠 있음 → 체크되면 들어감) → 구분선 → 항목 줄(체크 + `[필수]`/`[선택]` 레이블 + 오른쪽 › 전문 보기가 **한 면** `.check-row`, 체크되면 줄 전체가 들어감), 줄 높이 48px → 바닥 `다음`(필수 셋 전 `disabled`). 우리 항목은 이용약관·민감정보·외부 AI 고지 셋이다 |
-| 01 알림 권한 요청 | 없음 | OS 권한 대화상자다. 웹 데모에는 알림이 없고, 바닥 시트 대화상자도 만들지 않는다("하지 않는 것") |
+사용자가 선택하거나 입력하는 값을 표시한다 [src:40]. Container와 Label에 Prefix/Suffix Item을 붙이는 구조이며, Selection · Suggestion · Input 세 용법과 Filter Bar 배치를 문서가 나눠 다룬다 [src:40].
 
-### 홈과 내 화면
+### content-placeholder
 
-Figma "Simtomi Onboarding" 페이지의 01 홈은 증상 검색 화면(S-05)이라 이 앱의 홈·내 화면과 다르다. 그래서 둘의 배치는 이 표가 정한다. Figma에 홈·마이 화면이 생기면 이 표를 그 배치로 바꾼다(backlog 12). 두 화면은 "세로 네 층"의 **바닥 버튼이 없다.** 홈은 메뉴 자체가 동작이고, 내 화면의 삭제는 주 동작이 아니다. 앱 바 → 본문(스크롤) → 119 띠 세 층이다.
+이미지나 콘텐츠가 로드되지 않았을 때 그 영역의 성격을 전달하는 대체 시각 요소다 [src:41]. Root 컨테이너와 Asset으로 구성되고, **Asset의 최소 너비 16px · 최대 너비 160px에 정방형 비율을 고정**한다 [src:41].
 
-**홈 S-04** `/home` — "지금 나"가 맨 위에 있고, 가장 급한 동작이 그 바로 아래다.
+### contextual-floating-button
 
-| 순서 | 무엇 | 면 | 높이·간격 |
-|---|---|---|---|
-| 앱 바 | 앱 이름(홈 링크, 뒤에 로고가 들어올 자리) + 오른쪽 언어 선택. ← 없음 | 평평 | 48px |
-| 인사 | h1 `무엇을 도와드릴까요?`(`homeHello`) | — | 아래 16px(`.stack.wide`) |
-| 나 한 줄 | `.row.link` 한 줄. 회원이면 `👤 남성 · 1990 ›` → `/my`, 비회원이면 `👤 비회원 · 프로필 만들기 ›` → `/signup`. 성별은 `SEXES` 어휘 표, 연도는 숫자. 지금의 `pill.low` 회원/비회원 링크를 이 줄이 대신한다 | 평평 | 44px, 아래 16px |
-| 주 동작 | `.menu .primary` `아파요 / 다쳤어요` 하나 | 떠 있음(브랜드색) | 72px, 아래 16px |
-| 최근 메모 | `.row.link` 한 줄 `🩺 최근 메모 · 10/28 · 손 부기 ›` → `/report/:id`. `reports[0]`이 있을 때만. 증상 글자(`valueNative`)만 보이고 판정은 보이지 않는다 | 평평 | 44px, 아래 16px |
-| 메뉴 | `.menu` 세로 4개: `병원 이용 방법`, `보험과 지원`, `지원센터에 문의`, `내 정보`(부제 `프로필, 설정, 내 메모`) | 떠 있음 | 각 72px, 사이 16px |
-| 119 띠 | `WorkerLayout` | 떠 있음 | — |
+화면 위에 떠 있으면서 특정 상황에서만 나타나는 보조 동작 버튼이다 [src:42]. Icon과 Label을 Container가 감싸며 Tone · Layout · State를 가진다 [src:42]. 상시 노출되는 주요 액션은 Floating Action Button 쪽이다 [src:46].
 
-**내 화면 S-13** `/my` — 제목 `내 정보`. 프로필 → 설정 → 내 기록 → 지우기 순서다. 회원과 비회원은 프로필 카드만 다르다.
+### dialog
 
-| 순서 | 무엇 | 면 | 높이·간격 |
-|---|---|---|---|
-| 앱 바 | ← `/home` 하나. 화면 이름 `내 정보`는 본문 h1 | 평평 | 48px |
-| 비회원 안내 | 비회원일 때만 `notice.warn` 한 줄(브라우저를 닫으면 사라진다는 지금 문구 `repSavedGuest`) | 평평 | 아래 16px |
-| 프로필 카드 | `.card` + h2 `프로필`. **회원:** `.report-row`(레이블 작게 + 값 크게) 목록 — 생년월일, 성별, 그리고 값이 있는 것만 키·몸무게·음주·흡연(`null`은 줄을 만들지 않는다) → 아래 `프로필 수정`(`btn secondary block`) → `/signup?next=/my`. **비회원:** 문단 `프로필을 만들면 지원센터에 요청을 보내고 메모를 이 휴대폰에 남길 수 있습니다.` → `프로필 만들기`(`btn block`) → `/signup?next=/my` | 떠 있음 | 줄 44px, 아래 16px |
-| 설정 카드 | `.card` + h2 `설정`. 언어 `.field`(레이블 `언어` 위, `select.input` 아래, 앱 바와 같은 `LANGUAGE_OPTIONS`). 다른 설정은 없다 | 떠 있음 | 아래 16px |
-| 내 메모 | `.card` + h2 `내 메모`. `.row.link` 목록(지금 그대로) 또는 `아직 메모가 없습니다.` | 떠 있음 | 줄 44px, 아래 16px |
-| 센터로 보낸 요청 | `.card` + h2. 사례 id 목록(지금 그대로). `myCaseIds`가 있을 때만 | 떠 있음 | 아래 16px |
-| 지우기 | `이 휴대폰에 있는 내 정보 모두 지우기`(`btn secondary block`, `window.confirm`). 지우면 그 위에 `notice.ok` `지웠습니다.`가 뜨고 프로필 카드가 비회원 모양으로 바뀐다 | 떠 있음 | 48px |
-| 119 띠 | `WorkerLayout` | 떠 있음 | — |
+흐름을 일시 중지시키고 중요한 정보를 전달하거나 작업 완료를 강제하는 모달이다 [src:43]. Backdrop 위에 Header · Content · Footer 세 영역으로 구성되며 Backdrop이 뒤 화면을 어둡게 처리해 시선을 모은다 [src:43]. Size · Height · Elevation · Scroll Behavior와 함께 Responsive Behavior를 속성으로 다룬다 [src:43].
 
-- 홈의 나 한 줄에는 출생 연도만 쓰고 생년월일 전체는 쓰지 않는다. 홈은 남이 어깨 너머로 보기 쉬운 화면이다. 전체는 `/my` 프로필 카드에만 보인다.
-- 두 화면 다 떠 있는 면은 세로로 쌓인 몇 덩어리까지다("화면 유형별 규칙"). 홈은 메뉴 5개가 전부이고, 나 한 줄과 최근 메모 줄은 평평하게 둬서 메뉴가 눈에 띄게 한다.
-- `/signup?next=/my`로 들어간 프로필 화면은 지금 S-03 프로필 단계 그대로다(저장하면 `next`로 돌아온다). 프로필 수정 화면을 따로 만들지 않는다.
-- 하지 않는 것: 하단 탭 바, 메뉴 격자, 알림·배지 수, 서버 계정·프로필 서버 저장, 메모 편집·개별 삭제, 센터 요청 처리 상태 보기(근로자가 센터 사례를 읽는 API가 없다).
+### divider
 
-### Figma와 다르게 그리는 것
+콘텐츠 구획을 나누는 시각적 구분자다 [src:44]. `{colors.stroke-neutral-muted}` 또는 `{colors.stroke-neutral-subtle}`로 채워진 **1px 레이어**로 구성되며 필요 시 inset 레이아웃을 쓴다 [src:44]. 불필요한 Divider를 넣지 않고 **마지막 항목 뒤에는 표시하지 않는다** [src:44].
 
-Figma는 iOS·Android 네이티브 앱 기준이라 이 문서의 규칙과 부딪히는 곳이 있다. 아래는 배치를 가져오되 모양·동작을 바꾸는 곳이다.
+### field
 
-| Figma | 이 앱 | 이유 |
-|---|---|---|
-| 파란 외곽선 + 파란 글자로 선택 표시 | ✓ 접두 + 들어감 + 굵게 | 면에 테두리를 쓰지 않는다. 색만으로 뜻을 전하지 않는다 |
-| 밑줄 입력란(`Input/Search` underline) | 들어간 입력란(`--clay-in`) | 세 가지 면 중 하나여야 한다 |
-| 2px 진행 막대(iOS), 숫자 원(사진) | 숫자 원 | 2px 선은 360px 화면에서 보이지 않는다. 지금의 `.steps` 트랙 대신 숫자 원으로 바꾼다 |
-| 선택지 행 54px, 행 사이 20px, 칩 38~42px | 행 56px, 행 사이 16px, 칩 52px | 8px 단위. 근로자가 누르는 것은 48px 아래로 내리지 않고 칩은 52px이다("크기" 표) |
-| 칩 가로 스크롤 행(04 동반 증상) | 줄바꿈 | 근로자 화면에 가로 스크롤을 두지 않는다 |
-| 휠 피커 바닥 시트(03, 사진 "생년월일") | 숫자 입력란 세 칸, `select` | 모달·시트를 만들지 않는다. 기기 키패드가 피커다 |
-| 고른 자리 토스트(10 무릎 위치) | 그림 아래 글 한 줄 | 토스트를 만들지 않는다 |
-| 알림 권한(01) | 없음 | OS 권한 대화상자. 웹 데모에는 알림이 없다 |
-| 점선 테두리 사진 타일(19) | 들어간 홈 | 면에 테두리를 쓰지 않는다. 점토에 사진이 들어갈 자리를 눌러 둔 모양이다 |
-| 분석 중 화면(20)의 움직이는 그림 | 멈춘 그림 + 글 두 줄 | 애니메이션·스피너를 만들지 않는다. 화면 자체가 "기다리는 중"을 말한다 |
-| 실제 Google 로그인(02) | 데모 로그인 버튼 | 서버에 인증이 없다. 모양과 자리만 같다 |
+값을 입력받는 컨테이너로, 일관된 레이블·도움말·오류 표기와 상태 피드백을 제공한다 [src:45]. Header(Label · Requirement Mark · Sub Action) · Input · Footer(Helper Text · Error Message · Character Count) 세 영역이며, Input 슬롯에 Text Input · Textarea · Input Button이 들어온다 [src:45]. 제출과 검증, 이탈 시 안내, 필수 입력 표시가 각각 규정돼 있다 [src:45]. 오류 상태는 `{colors.fg-critical}` 역할로만 표시한다 [src:4].
 
-## 화면 유형별 규칙
+### floating-action-button
 
-| 유형 | 화면 | 구성 순서 |
-|---|---|---|
-| 입력 | S-02, S-03, S-05, S-11 항목 선택, S-12 | 앱 바(←) → (단계 숫자 원, S-05만) → 질문 h1 하나 → 입력 도구 하나(칩 묶음·선택지 목록·입력란·슬라이더) → 안내 상자 → 바닥에 붙은 다음(block) 하나. 자세한 것은 위 "화면 골격(Figma 기준)" |
-| 결과 | S-07, S-08, S-09, S-10 | h1 → 핵심 결과를 크게(진료과·경로·한국어 문장) → 다음 행동 버튼(지도·전화·접수) → `Worse119` → `PolicyDisclaimer`(제도 정보가 있을 때) |
-| 응급 | S-06 | `.em-hero`(제목·이유) + `.em-call` → 응급실 지도 → 그 아래 홈으로 돌아가는 ghost 버튼 |
-| 분석 중 | S-05 → S-07 사이 | 세로 가운데에 그림 + 제목 + 부제 하나씩. 누를 것이 없다. 119 띠만 남긴다 |
-| 리포트 | S-11 | 언어 토글 → `.report-row` 목록 → 저장·삭제 |
-| 홈 | S-04 | 앱 바(앱 이름) → 인사 h1 → 나 한 줄(`.row.link`) → 주 동작 메뉴 → 최근 메모 한 줄(있을 때) → 메뉴 4개. 바닥 버튼 없음. 자세한 것은 위 "홈과 내 화면" |
-| 내 화면 | S-13 | 앱 바(←) → (비회원 안내) → 프로필 카드 → 설정 카드 → 내 메모 → 센터 요청(있을 때) → 전체 지우기. 자세한 것은 위 "홈과 내 화면" |
-| 센터 목록 | C-01 | KPI 4개 → 필터 → 표. 새 사례는 맨 위 |
-| 센터 상세 | C-02 | 긴급도·상태 칩 → 2열(요약·연락 / 원문·상태 변경) |
-| 센터 통계 | C-03 | 기간·구군 필터 → KPI → 막대·도넛 |
+화면 위에 떠서 주요 액션을 실행하는 버튼이다 [src:46]. Icon과 Label을 Container가 감싸고 Extended 속성으로 라벨을 펼친다 [src:46]. 위치 규칙과 함께 **Snackbar와의 위치 관계**를 명시적으로 다룬다 [src:46].
 
-- 응급으로 가는 길은 어느 화면에서도 두 번 이상 누르지 않는다. 하단 띠 한 번, 응급 화면에서는 전화 버튼 한 번.
-- 결과 화면은 스크롤 없이 첫 화면에 핵심 결과와 첫 행동 버튼이 보여야 한다(360×640 기준). 둥글기와 그림자 때문에 카드 간격이 16px로 늘었으므로 적용 후 다시 확인한다.
-- 입력 화면에서 화면이 바뀌면 맨 위로 올린다(`WorkerLayout`이 처리). 앱 바와 바닥 버튼은 스크롤과 무관하게 자리를 지킨다.
-- 한 화면에 떠 있는 면은 **세로로 쌓인 몇 덩어리**까지다. 화면 전체가 푹신하면 아무것도 눈에 띄지 않는다. 핵심 결과 카드 하나, 행동 버튼, 그 아래 평평한 안내가 기본 리듬이다.
+### footer
 
-## 로딩과 실패를 그리는 법
+사이트 하단에서 법적 정보·정책 링크·서비스 탐색·연락처를 모으는 영역이다 [src:47]. **필수 블록이 없는 building block의 수직 조합**이라는 점이 특징으로, 제품에 필요한 블록만 골라 쌓는다 [src:47]. 탐색 영역(브랜드 로고 · 국가 선택 · 사이트맵 컬럼)과 안내 영역(정책 링크 · 사업자 정보 · 연락처 · 저작권 · 소셜 링크)으로 나뉘며 둘을 함께 쓸 때는 구분선으로 나눈다 [src:47].
 
-`README.md` "비동기 UX 규칙"의 시각 표현이다.
+### help-bubble
 
-| 상황 | 그리는 법 |
-|---|---|
-| 서버 응답을 기다린다 | 누른 버튼을 `disabled`로(떠 있음 유지 + 흐리게). 스피너·스켈레톤·진행 막대를 만들지 않는다. 예외는 S-05 "결과 보기" 하나다. 판정을 기다리는 동안 분석 중 화면(멈춘 그림 + 글)으로 바뀐다 |
-| 조용히 대체했다 | 결과 아래 `notice.info` 한 줄(평평). 결과를 가리거나 색을 바꾸지 않는다 |
-| 센터 전송·상태 변경이 실패했다 | `notice.danger` 문구 + 바로 옆 "다시 시도" `btn secondary`. 입력값은 그대로 |
-| 센터가 서버와 끊겼다 | `.c-header` 아래 가로 띠(`warn` 배경, 평평) "서버 연결 안 됨 · 마지막 갱신 HH:MM". 표는 마지막 목록 그대로 |
-| 비어 있다 | 카드 안 `.muted` 한 줄("아직 접수된 사례가 없습니다"). 그림·일러스트를 넣지 않는다 |
+컴포넌트의 상태나 기능에 대한 추가 정보를 띄우는 말풍선이다 [src:48]. Title · Description · Close Button을 제공하고 Placement 속성으로 위치를 잡는다 [src:48]. Arrow 위치 조정, 넓이, Trigger와의 간격, 화면 밖으로 넘칠 때의 처리가 규정돼 있다 [src:48].
 
-## 접근성
+### identity-placeholder
 
-- **색만으로 뜻을 전하지 않는다.** 선택됨은 ✓ + 들어감 + 굵기, 긴급도·상태는 칩 글자, 응급은 글과 전화 아이콘. 그림자(떠 있음·들어감)만으로도 뜻을 전하지 않는다. 그림자는 고대비 모드나 저화질 화면에서 사라질 수 있다.
-- 고르는 버튼은 `button` + `aria-pressed`. `div`에 클릭을 달지 않는다.
-- 아이콘은 이모지이고 전부 `aria-hidden`이다. **뜻은 항상 옆 글자가 전한다.** 기기마다 모양이 다른 것은 감수한다. SVG 아이콘 세트로 바꾸는 것은 별도 항목이다.
-- 입력란에는 보이는 `label`을 둔다. 헤더의 언어 선택처럼 레이블을 보일 자리가 없을 때만 `aria-label`.
-- 포커스 윤곽(`:focus-visible`, 3px)은 끄지 않는다. `outline-offset: 2px`로 면 바깥에 그려 둥글기·그림자와 겹치지 않게 한다. 입력란은 테두리가 없으므로 포커스 윤곽이 유일한 "지금 여기" 표시다.
-- 장식용 요소(단계 점, 막대 트랙)는 `aria-hidden`이고 같은 정보를 글로 둔다.
-- 한국어 고정 글에 `lang="ko"`, 집계 그림에 `role="img"` + `aria-label`.
-- 대비는 본문 `--ink`/`--card` 기준으로 WCAG AA 이상을 지킨다. 새 토큰을 더할 때 글자색은 배경 위 4.5:1을 확인한다. 안쪽 음영이 깔린 가장자리에는 글자를 두지 않으므로 대비는 바탕색 기준으로 잰다.
-- 입력란(들어감)과 그 바탕 카드(떠 있음)는 둘 다 `--card`색이다. 입력란의 경계는 안쪽 그림자뿐이므로, 카드 안에서 입력란 위에는 보이는 `label`을 반드시 둔다(위 규칙과 같다).
+인물을 표현하는 이미지가 로드되지 않았을 때의 대체 시각 요소다 [src:49]. 라이트/다크 모드 대응이 어려운 경우를 위한 대안을 별도로 제공한다 [src:49].
 
-## 하지 않는 것
+### image-frame
 
-- UI 라이브러리, CSS 모듈, CSS-in-JS, Tailwind. `styles.css` 한 파일과 클래스 이름으로 끝낸다.
-- 다크 모드. `prefers-color-scheme`을 보지 않는다.
-- 애니메이션·전환 효과. 상태 변화는 즉시 바뀐다. 눌림(`:active`)도 `transition` 없이 그림자만 바뀐다. `transform: scale()`로 눌림을 흉내 내지 않는다.
-- 토큰 밖 색상 하드코딩, 임의 글자 크기, 8px 단위 밖 간격, 토큰 밖 `box-shadow`·`border-radius` 값.
-- 면의 테두리(`border`). 모양은 그림자가 만든다. 예외는 포커스 윤곽, 표의 줄, 구분선.
-- 그라데이션 채움, 블러(`backdrop-filter`), 반투명 유리(글래스모피즘), 바탕과 같은 색의 면(뉴모피즘). 점토는 불투명하고 바닥보다 밝다.
-- 3D 변형(`perspective`, `rotate`), 여러 방향의 빛. 빛은 왼쪽 위 하나다.
-- 둥근 전용 글꼴, 두꺼운 외곽선 글자, 그림자 글자(`text-shadow`).
-- 인라인 `style`의 색·배경·테두리. 남아 있는 인라인 `style`은 간격·너비·정렬·글자 크기(그리고 막대 너비 같은 계산값)뿐이다. 새로 더하지 않고, 반복되면 수식 클래스로 옮긴다.
-- 웹폰트 내려받기, 외부 아이콘 CDN.
-- 스피너·스켈레톤·토스트·모달. 확인이 필요하면 `window.confirm`(센터 접수함 초기화처럼) 하나로 끝낸다. 분석 중 화면은 스피너가 아니라 멈춘 그림이 있는 화면 하나다.
-- 근로자 화면에서 가로 스크롤, 고정 폭 표, 호버에만 나타나는 정보.
+사용자가 업로드한 이미지를 표시한다 [src:50]. Image Area · Corner Radius · Border로 구성되며 Ratio · Size · Fallback Image · Overlay 표시를 속성으로 가진다 [src:50]. 중첩 시 Corner Radius 적용 규칙과 Rounded 속성의 사용을 따로 다루고, Floater · Indicator · Reaction Button을 하위 요소로 얹을 수 있다 [src:50].
 
-## 새 스타일을 더하는 절차
+### input-button
 
-1. 위 컴포넌트 표의 것으로 그릴 수 있는지 먼저 본다. 변형이 필요하면 기존 클래스에 수식 클래스(`.btn.big`처럼)를 더한다.
-2. 세 가지 면 중 어느 것인지 정한다(떠 있음 / 들어감 / 평평). 떠 있음이면 카드 크기인지(`--clay`) 버튼 크기인지(`--clay-sm`), 색이 있는지(`--clay-color*`)를 정한다. 눌리는 것이면 눌린 모양(`--clay-in`)도 같이 정한다.
-3. 새 색·크기가 필요하면 `:root` 토큰을 먼저 더하고 이 문서의 토큰 표에 적는다. 그림자는 새 토큰을 만들지 않고 위 여섯 가지 중에서 고른다. 일곱 번째가 필요하면 이 문서의 "세 가지 면"부터 고친다.
-4. 클래스는 `styles.css`의 해당 섹션 주석(`/* ---------- 공통 요소 ---------- */` 같은) 아래에 둔다. 근로자 전용은 `w-`, 센터 전용은 `c-` 접두, 양쪽 공통은 접두 없이.
-5. 이 문서의 컴포넌트 표나 화면 유형 표에 한 줄을 더하고 "면" 열을 채운다. 문서에 없는 모양은 다음 사람이 다시 만들게 된다.
-6. 360px 폭(근로자) 또는 1280px·900px 아래(센터)에서 직접 보고, en·vi·ko 세 언어로 글이 넘치지 않는지 확인한다. 베트남어가 가장 길다. 근로자 화면은 ar(RTL)·my(글자 높이가 크다)·ru(낱말이 길다)도 본다. 둥글기가 크므로 긴 베트남어가 모서리 안쪽 음영에 걸리지 않는지도 본다.
+선택창이나 피커를 여는 입력 필드 형태의 버튼으로, 선택이 끝나면 라벨에 선택값이 표시된다 [src:51]. Value와 Container, 선택적 Clear Button, Prefix/Suffix Slot으로 구성된다 [src:51].
+
+### list
+
+가로 행으로 구성된 콘텐츠를 표현한다 [src:52]. List Item은 Prefix · Title · Detail · Suffix로 구성되며 **컴포넌트 자체에는 배경색이 지정돼 있지 않다** — 문서의 배경색은 가이드용 표기다 [src:52]. List Header로 묶는 방법, 내부 간격 조정, Switch/Checkmark/Radiomark를 얹을 때의 처리, 그리고 중첩 표면의 **Concentric Radius**를 다룬다 [src:52].
+
+### manner-temp
+
+사용자의 매너온도를 시각화해 신뢰도를 직관적으로 보여준다 [src:53]. Manner Temp는 프로필이나 게시글 상세처럼 매너온도가 중요한 자리에서 강조용으로 쓰고, Manner Temp Badge는 공간이 제한적이거나 다른 요약 정보와 함께 놓일 때 쓴다 [src:53]. 온도는 구간에 따라 10단계 레벨로 표시되고 레벨마다 텍스트 색과 그래픽이 달라지며, `temperature`가 받은 숫자에서 레벨과 시각 스타일이 자동 계산된다 [src:53]. 색은 `{colors.manner-temp-l1-bg}`~`{colors.manner-temp-l10-text}` 20개 토큰이 담당한다 [src:7].
+
+### menu
+
+사용자가 취할 수 있는 선택지나 액션 목록을 제공한다 [src:54]. Container · Menu Group · Menu Group Label · Menu Item · Divider로 구성되며, **Divider는 Menu Group 사이에만 표시하고 Menu Item 사이에는 쓰지 않는다** [src:54]. Placement와 Smart Positioning, Elevation을 속성으로 다룬다 [src:54].
+
+### menu-sheet
+
+작업과 관련된 선택지를 시트 형태로 제공한다 [src:55]. Backdrop · Header · Menu Group · Close Button의 조합이며 Menu Item에 Tone을 부여할 수 있다 [src:55]. Critical Tone의 사용과 Header·Item Description의 사용 조건이 규정돼 있다 [src:55].
+
+### notification-badge
+
+새로운 알림이나 읽지 않은 메시지 수를 나타낸다 [src:56]. Large Size와 Small Size 두 가지로 구성되며, Large Size는 숫자를 표기하는 Label과 이를 감싸는 Container로 이뤄진다 [src:56]. 위치·동작·라벨 표시 규칙과 함께 **남용하지 말 것**이 명시돼 있다 [src:56]. Bottom Navigation의 탭, Segmented Control의 세그먼트, Tabs의 탭 아이템에 얹어 쓴다 [src:36][src:64][src:73].
+
+### page-banner
+
+페이지 상단에서 전체 상태나 중요 메시지를 전달하는 상위 레벨 메시지 컴포넌트다 [src:57]. 메시지 텍스트 컨테이너에 Prefix Icon · Title · Link Text · Chevron · Dismiss 버튼을 선택적으로 얹는다 [src:57]. 문서는 Page Banner와 Callout을 명시적으로 비교하며 층위를 나눈다 [src:57].
+
+### progress-circle
+
+작업 진행 중임을 알리거나 작업 시간을 시각적으로 나타낸다 [src:58]. Circle track과 Progress Indicator로 구성되고 Behavior · Size · Tone · Overlay 표시를 속성으로 가진다 [src:58]. 이후 나타날 요소의 윤곽을 미리 보여줘야 하는 상황이라면 Skeleton 쪽이다 [src:69].
+
+### quantity-picker
+
+버튼으로 수치를 한 단계씩 늘리거나 줄이는 입력이다 [src:59]. Increment Button · Decrement Button · Value Display로 구성된다 [src:59]. Removable 옵션을 켜면 **입력값이 최소값에 도달했을 때 Decrement 버튼이 Remove 버튼으로 교체된다** [src:59]. 터치 영역을 별도로 규정한다 [src:59].
+
+### radio
+
+여러 옵션 중 하나만 고르게 할 때 쓴다 [src:60]. Radiomark와 Label로 구성되고 Radiomark는 개별 컴포넌트로도 제공된다 [src:60]. **가로로 나열하지 않고** 기본 선택을 제공하며, 옵션 개수에 따라 다른 컴포넌트를 고려한다 [src:60].
+
+### reaction-button
+
+콘텐츠에 대한 반응을 표현하게 해주는 버튼으로, 좋아요·관심있어요 같은 감정적 피드백을 간편하게 제공한다 [src:61].
+
+### result-section
+
+로딩 결과나 액션 완료 여부처럼 결과를 알리는 템플릿이다 [src:62]. Asset과 Title을 중심으로 Description과 Button을 선택적으로 조합하며, 모든 구성 요소가 선택적이다 [src:62]. Success/Complete · Error/Failure · Empty/First-time use 세 상황을 나눠 다루고, 실패 시에는 화면 맥락에 맞는 액션을 제공한다 [src:62].
+
+### scroll-fog
+
+스크롤 가능한 영역에서 추가 콘텐츠가 있음을 알리는 시각 힌트다 [src:63]. Placement와 Layer를 속성으로 가지며, 적절한 크기 산정과 Padding과의 관계를 문서가 다룬다 [src:63].
+
+### segmented-control
+
+여러 옵션 중 하나를 골라 관련 콘텐츠를 즉시 필터링하거나 전환한다 [src:64]. Container 안에 Segment들이 놓이고 각 Segment는 Label을 포함하며, 새 내용이 있을 때 Notification Badge를 얹을 수 있다 [src:64]. **4개 이하로 쓰고 한 화면에 하나 이상 두지 않는다** [src:64].
+
+### select
+
+옵션 목록에서 값을 골라 Form에 제출할 때 쓴다 [src:65]. Trigger와 Content로 나뉘고 Content 안에 Item이, 관련 Item은 Group으로 묶이며 Group 사이에만 Divider가 표시된다 [src:65]. **Content 너비는 Trigger에 맞춰진다** [src:65]. 단일 선택에서 "없음"을 답으로 받는 방법, 다중 선택 시 선택값 표시, 옵션 순서 정하기가 규정돼 있다 [src:65].
+
+### select-box
+
+명확한 테두리를 가진 컨테이너로 정의된 목록 중 하나 이상을 선택하는 요소다 [src:66]. Container · Prefix · Title · Description · Control · Custom Content로 구성된다 [src:66]. Multiple Columns 높이 규칙, 최대 선택 개수 안내와 도달 시 피드백 원칙을 다루며, Chip과의 차이를 명시적으로 비교한다 [src:66].
+
+### side-navigation
+
+서비스 최상위 메뉴 간 이동을 돕고 앱 전체 구조를 탐색하게 한다 [src:67]. Header · Trigger · Content · Footer로 구성되고 Content 안에 Group · Menu Item · Menu Sub Item 2단계가 놓인다 [src:67]. Collapsed State와 Responsive Design을 다루며, 사이드바는 md(768px) 이상에서 기본 노출되고 그 미만에서는 Header 메뉴로 통합된다 [src:12].
+
+### side-panel
+
+측면에서 슬라이드되어 나타나 맥락을 유지한 채 상세 정보를 확인하거나 부수 작업을 수행하는 레이아웃 컴포넌트다 [src:68]. Header · Body · Footer와 Backdrop으로 구성되며 **Type에 따라 배경 상호작용을 차단하거나 허용한다** [src:68]. 모바일에서의 사용과 Responsive Side Panel을 따로 규정한다 [src:68].
+
+### skeleton
+
+콘텐츠 로딩 동안 이후 나타날 요소의 윤곽을 미리 보여줘 대기 시간을 짧게 느끼게 한다 [src:69]. background와 Corner radius로 구성되며 로딩 시작 시 shimmer 애니메이션이 나타난다 [src:69]. Progress Circle과의 선택 기준을 문서가 비교한다 [src:69]. 로딩 상황 전반의 조합 규칙은 별도 패턴 문서가 다룬다 [src:23].
+
+### slider
+
+지정된 범위에서 하나 또는 두 개의 값을 골라 입력한다 [src:70]. Track(Active · Inactive) · Handle · Steps · Marker로 구성된다 [src:70]. Drag와 Tap jump 두 조작을 지원하고, 현재 값을 명확히 표시하되 Value Indicator가 넘치지 않게 한다 [src:70].
+
+### snackbar
+
+화면 하단에 일시적으로 나타나 상태나 결과를 안내한다 [src:71]. 텍스트와 컨테이너로 구성되며 Prefix Icon과 Action을 선택적으로 표시한다 [src:71]. 위치·레이아웃과 동작이 규정돼 있고 Floating Action Button과의 위치 관계를 함께 본다 [src:71][src:46].
+
+### switch
+
+설정이나 상태를 즉시 켜고 끈다 [src:72]. Switch Mark와 Label로 구성되고 Switch Mark는 Thumb과 Track으로 이뤄진다 [src:72]. **독립적인 기능에서만 쓰고** 상태가 즉시 활성화될 때 쓰며, Checkbox와의 차이를 문서가 비교한다 [src:72].
+
+### tabs
+
+한 화면 안에서 콘텐츠를 탭 단위로 구분해 전환한다 [src:73]. Label을 가진 Tab Item의 모음이며 필요 시 Notification Badge를 얹는다 [src:73]. Line 스타일에서 Fill과 Hug 레이아웃을 나눠 쓰고 2 Depth 구조까지 다룬다 [src:73].
+
+### tag-group
+
+아이콘과 텍스트 태그를 수평으로 나열해 여러 속성·상태·메타데이터를 한눈에 보여주는 정보 요약 컴포넌트다 [src:74]. Tag와 이를 구분하는 Separator로 구성된다 [src:74]. 우선순위 설정과 줄바꿈 처리를 규정한다 [src:74].
+
+### text-input
+
+사용자로부터 텍스트를 입력받는다 [src:75]. Textarea를 같은 문서에서 함께 다루며 Custom Input과 2열 구성을 별도로 규정한다 [src:75]. 레이블·도움말·오류 표기는 Field가 감싸서 제공한다 [src:45].
+
+### top-navigation
+
+화면 상단에서 탐색 인터페이스를 제공한다 [src:76]. **Root 타입과 Standard 타입 두 가지로 나뉘고 각각 별도의 구현체와 Figma 컴포넌트로 제공된다** [src:76]. Title Type · Left Slot · Right Slot · Notification Badge를 속성으로 가지며, 뒤로가기를 **History Back과 Hierarchy Back 두 동작으로 구분**해 다룬다 [src:76].
+
+## Do's and Don'ts
+
+**Do** 색은 팔레트가 아니라 역할로 호출한다. 브랜드 CTA는 `{colors.bg-brand-solid}`와 `{colors.fg-neutral-inverted}`의 관계로 읽고, 상태 피드백은 `{colors.fg-positive}`·`{colors.fg-critical}`·`{colors.fg-informative}`처럼 기능색 역할로 분리한다 [src:4].
+
+**Do** 테마 전환은 역할 토큰이 아니라 팔레트를 뒤집어 구현한다. 역할 별칭은 대체로 두 테마에서 같은 램프 단계를 가리키므로, 다크 모드 대응은 별칭을 바꾸는 게 아니라 팔레트 값을 교체하는 일이다 [src:7].
+
+**Do** 뒤집히면 안 되는 표면에는 `static-*` 계열을 쓴다. 스크림·오버레이처럼 배경과 함께 반전되면 의미가 깨지는 자리를 위해 두 테마 동일 값으로 고정된 계열이다 [src:7].
+
+**Do** 깊이는 색으로 먼저 해결한다. `bg-layer-basement` → `bg-layer-default` → `bg-layer-fill` → `bg-layer-floating` 순의 표면 층위를 쓰고, shadow는 주목도가 가장 높은 소수 요소에만 얹는다 [src:11]. 이 프로젝트는 예외다 — 깊이는 `## 클레이모피즘`의 세 면(떠 있음·들어감·평평)으로 그리고, 표면 층위는 바닥(`--bg`)과 점토 표면(`--card`)의 한 단계 차이로만 빌린다.
+
+**Do** 서체는 시스템 폰트 스택을 그대로 쓴다. 특정 서체를 지정하는 것이 아니라 디바이스 기본값에 기대는 것이 이 시스템의 선택이다 [src:8].
+
+**Do** 대비는 APCA로 잰다. 가독성 텍스트는 Lc 75를 하한으로 두고 Lc 90 이상을 겨냥하며, 상태를 색 하나로만 알리지 않고 텍스트나 아이콘을 함께 붙인다 [src:18].
+
+**Do** 문구는 익숙한 단어로 쓰고 한자어와 기술 용어를 피한다. 오류 메시지는 무엇이 잘못됐는지만 알리지 말고 사용자가 직접 취할 수 있는 해결 방법을 함께 준다 [src:20]. 이 톤은 "사용자의 행동을 이끌어 목적 달성을 돕고, 언어·문화와 무관하게 누구나 쉽게 쓸 수 있게 한다"는 보이스 원칙에서 나온다 [src:21].
+
+**Don't** 브랜드 색을 넓게 칠하지 않는다. Action Button과 Badge 문서가 모두 "Brand 컬러는 꼭 필요한 곳에만 사용하기"를 별도 지침으로 두고 있다 [src:31][src:35].
+
+**Don't** 임의의 elevation 수치를 지어내지 않는다. `{elevation.s1}`~`{elevation.s3}` 세 단계가 오프셋·블러·색까지 정의돼 있고, 다크 모드 알파가 라이트와 크게 다르므로 한 벌만 쓰면 어두운 배경에서 층이 사라진다 [src:7]. 이 프로젝트에서 그림자 값은 `## 클레이모피즘`의 `--clay*` 토큰이 전부이고, `:root` 밖에서 `box-shadow` 값을 직접 쓰지 않는다. `{elevation.s1}`~`{elevation.s3}`은 쓰지 않는다.
+
+**Don't** Badge를 클릭 가능한 요소로 쓰지 않고, Divider를 마지막 항목 뒤에 넣지 않으며, Menu Item 사이에 Divider를 두지 않는다 — 셋 다 공식 문서가 명시한 금지다 [src:35][src:44][src:54].
+
+**Don't** (도메인 경계) 당근의 **제품 개념**을 가져다 쓰지 않는다. 매너온도, 동네 기반 중고거래, 동네생활, 비즈프로필, 당근알바 같은 것은 당근이라는 서비스의 기능이지 시각 언어가 아니다. 신뢰 지표가 필요하면 그 서비스 자신의 지표를 정의하고, 매너온도의 **색 램프 구조**(낮음→중립, 높음→따뜻함)만 시각적 참고로 빌린다. 온도라는 은유와 "매너온도"라는 이름까지 옮기면 당근 서비스를 흉내 내는 것이 된다.
+
+**Do** 라이선스 경계를 그대로 옮긴다. 이 시스템은 **소프트웨어와 브랜드 자산을 갈라 둔다** — 저장소는 Apache License 2.0이고 [src:28], 그 위에 얹힌 고지가 "브랜드 리소스"(로고·상호명·캐릭터 등 당근으로 식별될 수 있는 모든 요소)는 대한민국 상표법의 보호를 받으며 **사전 협의가 없으면 비상업적 목적으로만** 허가되고, 당근을 사칭하거나 제휴·후원 관계가 있는 것처럼 오인하게 하는 사용은 금지된다고 못 박는다 [src:29]. 즉 **토큰과 컴포넌트 구조는 자유롭게 쓰되 브랜드 자산은 아니다** — 이 문서가 옮기는 것도 앞쪽이다.
+
+**Don't** (브랜드 자산) 당근의 **자산 파일**을 가져다 쓰지 않는다. 로고·심볼·워드마크·서비스 앱아이콘·favicon은 상표이지 디자인 토큰이 아니며, 이 문서는 그 사용 규칙을 담고 있지도 않다(공개 출처가 없어 철회 상태다 — `## Known Gaps` 참고). 이 문서로 만드는 UI의 로고 자리에는 **그 제품 자신의 마크**가 들어가야 한다. 빌릴 수 있는 것은 아이콘의 형태 원리(둥근 실루엣, 굵은 선, 간결한 메타포)까지이고 [src:15], 그 원리로 **새로 그린** 아이콘이지 당근 아이콘 파일이 아니다. 이 항은 frontmatter의 `logo` 필드에도 적용된다 — 그 값은 카탈로그 그리드와 OG 카드가 쓰는 **카탈로그 메타데이터**이지, 이 디자인 언어를 적용한 결과물이 표시할 로고가 아니다.
+
+**Don't** (벤더 중립성) 이 시스템의 이름과 식별자를 소비자 UI에 노출하지 않는다. `SEED`·`SEED Design`이라는 이름, `@seed-design/css`·`@seed-design/react`·`@seed-design/stackflow` 같은 패키지명, `seed-` 클래스 접두사가 생성물의 화면 문구·제목·라벨·클래스명에 나타나서는 안 된다. 빌리는 것은 시각 언어이지 시스템의 이름이 아니다.
+
+## Responsive Behavior
+
+레이아웃은 목적에 따라 두 유형으로 갈린다 — 판매자 센터·광고주 센터처럼 복잡한 데이터를 다루는 **Dashboard Layout**과, 정보 전달이 목적인 서비스 페이지용 **Contents Layout**이다 [src:12]. Dashboard Layout은 화면 복잡도에 따라 Low · Middle(base) · High 세 밀도로 나뉜다 [src:12].
+
+Contents Layout의 max-width는 몰입감을 위해 기본 **1040px**을 권장하고, 커머스 검색 결과처럼 넓은 탐색이 필요하면 **1280px**까지 확장한다 [src:12].
+
+### Breakpoints (공식)
+
+| Breakpoint | Viewport | Gutters | Margins |
+| --- | --- | --- | --- |
+| `base` | 0 – 479px | 16px | 12px |
+| `sm` | 480 – 767px | 16px | 12px |
+| `md` | 768 – 1279px | 32px | 24px |
+| `lg` | 1280 – 1439px | 32px | 24px |
+| `xl` | 1440px + | 32px | 24px |
+
+사이드바는 `md`(768px) 이상에서 기본 노출되고, 768px 미만에서는 Header 안의 메뉴로 통합된다 [src:12]. Dashboard 레이아웃의 컬럼 간격은 24px, 콘텐츠와 화면 끝 사이 여백은 32px을 기본으로 유지한다 [src:12].
+
+## Motion
+
+모션은 규모로 나뉜다. 페이지 전환·모달 팝업·슬라이드 메뉴 같은 **매크로 모션**은 0.2초를 초과하고, 버튼 클릭·입력창 포커스·스크롤 같은 **마이크로 모션**은 0.2초 이하다 [src:13]. duration 사다리와 timing function은 이 구분에 맞춰 쓴다 — `easing`은 기능적인 마이크로 모션에, `enter`는 등장에 쓴다 [src:13].
+
+```text
+duration-d1: 50ms
+duration-d2: 100ms
+duration-d3: 150ms
+duration-d4: 200ms
+duration-d5: 250ms
+duration-d6: 300ms
+duration-color-transition: $duration.d3
+duration-pressed-scale: $duration.d3
+
+easing-linear: cubic-bezier(0, 0, 1, 1)
+easing-easing: cubic-bezier(0.35, 0, 0.35, 1)
+easing-enter: cubic-bezier(0, 0, 0.15, 1)
+easing-exit: cubic-bezier(0.35, 0, 1, 1)
+easing-enter-expressive: cubic-bezier(0.03, 0.4, 0.1, 1)
+easing-exit-expressive: cubic-bezier(0.35, 0, 0.95, 0.55)
+easing-pressed-scale: cubic-bezier(0, 0, 0.15, 1)
+
+s95: 0.95
+s97: 0.97
+s98: 0.98
+```
+
+`scale` 축은 `s95`·`s97`·`s98` 세 값을 가지며, **라이트에서 각각 0.95·0.97·0.98이고 다크에서는 셋 다 1이다** [src:7]. 즉 이 배율은 라이트 모드에서만 걸린다. 어떤 상호작용에 쓰라는 용도 서술은 공식이 텍스트로 발행하지 않아 이 문서도 값만 싣는다.
+
+## Known Gaps
+
+- **철회된 부재 주장 3건 (2026-08-05)** — 종전 판본은 (a) "shadow의 구체적 수치는 텍스트 출처에 없다", (b) "정량 토큰 값은 텍스트 출처만으로 대조가 불가능하다", (c) "static alpha 계열은 공개 출처 어디에서도 확인되지 않는다"를 각각 적어 두었다. **셋 다 지금은 거짓이다** — `/foundations/design-token/reference`가 11개 축 319행을 light/dark 병기 표로 발행하고, 그 안에 `$shadow.s1~s3`과 `$color.palette.static-black-alpha-*`·`static-white-alpha-*`가 모두 들어 있다 [src:7]. 부재를 주장하기 전에 색인을 끝까지 확인할 것.
+- **Deprecated 9건은 본문에서 제외했다** — **Action Chip** · **Action Sheet** · **Control Chip** · **Error State** · **Extended Action Sheet** · **Extended FAB** · **FAB** · **Inline Banner** · **Link Content**. 카탈로그 색인이 Deprecated로 표시하므로 `### ` 섹션으로 싣지 않았다 [src:22]. 이 이름들을 새 UI에 복사하지 말 것이며, 마이그레이션 대상을 찾는 경우에만 공식 문서를 참고한다.
+- **시맨틱 텍스트 스타일 — 이름은 발행되고 값은 안 된다 (2026-08-05)** — 배포 패키지 `@seed-design/design-token`이 38개 이름을 발행한다: `h1`~`h4`, `title1~3`, `subtitle1~2`, `body(L·M)1~2`, `label1~6`, `caption1~2` 각각의 `Bold`/`Regular` 짝이다 [src:27]. 문서가 예로 든 `screenTitle`·`articleBody`와는 다른 이름 체계다 [src:8]. **다만 값은 어디에도 없다** — 패키지는 `var(--seed-semantic-typography-*)` 참조만 담고 그 정의를 함께 배포하지 않으므로, 이 문서는 스케일 사다리(`t1`~`t14`)와 두께 3종까지만 싣는다.
+- 아이콘 라이브러리의 개별 아이콘 목록과 그리드 규격은 이미지로만 제공돼 텍스트 대조가 불가능하다 [src:15][src:16].
+- `scale` 축(`s95`·`s97`·`s98`)은 레퍼런스 표에만 존재하고 이를 설명하는 파운데이션 문서가 없다 [src:7]. 값의 모양(라이트 0.95~0.98, 다크 1)은 눌림 피드백을 시사하지만 공식 서술이 없어 용도를 단정하지 않았다.
+- Purple 계열은 공식 팔레트에 포함되지만 구체적 사용처가 확인된 brand role로 채택된 자리가 없어, 이 문서도 램프만 싣고 역할을 부여하지 않았다 [src:7].
+- **철회 정정 — 브랜드 자산 규칙은 있다, 다만 다른 종류다 (2026-08-05)** — 종전 판본은 "로고 사용 규칙 출처가 없다"고 적었으나 그건 **디자인 사이트만 본 결론**이었다. 저장소 고지가 브랜드 리소스의 상표 조건과 금지 사용을 명시하고 별도 가이드라인 문서까지 연결한다 [src:29]. 즉 "출처가 없다"는 서술을 철회한다. **다만 종전에 철회된 Signature/Symbol/App Icon 3분류와 clear space 수치는 여전히 되살릴 근거가 없다** — 그 고지는 상표 사용 조건을 다루지 제작 규격을 다루지 않고, 사이트의 `/llms/docs/foundation/logo.txt`는 제거된 채 현행 색인에도 logo·brand 페이지가 없다 [src:1]. 브랜딩 아티클 [src:26]도 **SEED 자체 로고**를 다룬다.
+- Breeze Utilities · Lynx · AI Integration 섹션은 이 문서의 범위 밖이다 [src:1]. React 라이브러리도 API 레퍼런스 전체가 아니라 Action Button의 `flexGrow` 같은 구현 제약만 인용했다 [src:24][src:25].
+
+## References
+
+1. https://seed-design.io/llms.txt — SEED 문서 전체의 LLM 진입점. 섹션 구성과 `/llms/{section}/{path}.txt` 접근 규약을 정의한다.
+2. https://seed-design.io/get-started/llms.txt — SEED의 정체성과 시스템 구성 개요.
+3. https://seed-design.io/llms/foundations/color.txt — 색상 시스템 개요 — 접근성·계층·상태·브랜드 표현 원칙.
+4. https://seed-design.io/llms/foundations/color/color-role.txt — 역할 기반 색상(bg·fg·stroke)의 정의와 사용 규칙.
+5. https://seed-design.io/llms/foundations/color/palette.txt — 팔레트 램프 정의. 하단 `## Tokens` 표에 light/dark hex가 실려 있다.
+6. https://seed-design.io/llms/foundations/design-token.txt — 디자인 토큰의 개념과 계층 구조.
+7. https://seed-design.io/llms/foundations/design-token/reference.txt — 전체 토큰 목록. 11개 축의 값을 light/dark 병기 마크다운 표로 발행한다 — 이 문서의 정량값 출처.
+8. https://seed-design.io/llms/foundations/typography.txt — 타이포그래피 원칙과 스케일 구성.
+9. https://seed-design.io/llms/foundations/spacing.txt — 간격 토큰 체계.
+10. https://seed-design.io/llms/foundations/radius.txt — 모서리 둥글기 토큰 체계.
+11. https://seed-design.io/llms/foundations/elevation.txt — 깊이 표현 원칙 — Surface color·Shadow·Stroke 세 수단과 다크 모드 한계.
+12. https://seed-design.io/llms/foundations/layout.txt — 그리드와 중단점(Breakpoint) 체계.
+13. https://seed-design.io/llms/foundations/motion.txt — 모션 원칙과 duration·easing 사용 지침.
+14. https://seed-design.io/llms/foundations/gradient.txt — 그라디언트 토큰 — 입체감과 AI 기능 표현.
+15. https://seed-design.io/llms/foundations/iconography.txt — 아이콘 체계 개요.
+16. https://seed-design.io/llms/foundations/iconography/usage.txt — 아이콘과 다른 요소 간 상호작용 및 사용 방법.
+17. https://seed-design.io/llms/foundations/state.txt — 컴포넌트 상태 표현 규칙.
+18. https://seed-design.io/llms/foundations/inclusive-design.txt — 접근성과 포용적 설계 지침.
+19. https://seed-design.io/llms/foundations/international-design.txt — 다국가 대응 설계 지침.
+20. https://seed-design.io/llms/foundations/writing.txt — 글쓰기 원칙.
+21. https://seed-design.io/llms/foundations/voice-and-tone.txt — 보이스·톤 원칙.
+22. https://seed-design.io/components/llms.txt — 컴포넌트 카탈로그 색인. 각 컴포넌트의 한 줄 설명과 Deprecated 표기를 담는다.
+23. https://seed-design.io/llms/patterns/loading.txt — 로딩 패턴 가이드.
+24. https://seed-design.io/react/llms.txt — React 라이브러리 문서 진입점 — 설치·스타일링·API·마이그레이션.
+25. https://seed-design.io/llms/react/components/action-button.txt — Action Button의 React API 레퍼런스.
+26. https://seed-design.io/updates/why-design-system-needs-branding — SEED 자체 브랜딩 기록 — 주황과 라임의 역할 분담을 설명한다.
+27. https://github.com/daangn/seed-design — 공식 저장소. 패키지 구성과 토큰 소스.
+28. https://github.com/daangn/seed-design/blob/main/LICENSE — 저장소 라이선스 — Apache License 2.0.
+29. https://github.com/daangn/seed-design/blob/main/NOTICE — 브랜드 리소스 상표 고지. 소프트웨어 라이선스와 브랜드 자산 사용 조건을 분리해 서술한다.
+30. https://seed-design.io/llms/components/accordion.txt — Accordion 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+31. https://seed-design.io/llms/components/action-button.txt — Action Button 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+32. https://seed-design.io/llms/components/alert-dialog.txt — Alert Dialog 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+33. https://seed-design.io/llms/components/attachment-input.txt — Attachment Input 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+34. https://seed-design.io/llms/components/avatar.txt — Avatar 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+35. https://seed-design.io/llms/components/badge.txt — Badge 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+36. https://seed-design.io/llms/components/bottom-navigation.txt — Bottom Navigation 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+37. https://seed-design.io/llms/components/bottom-sheet.txt — Bottom Sheet 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+38. https://seed-design.io/llms/components/callout.txt — Callout 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+39. https://seed-design.io/llms/components/checkbox.txt — Checkbox 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+40. https://seed-design.io/llms/components/chip.txt — Chip 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+41. https://seed-design.io/llms/components/content-placeholder.txt — Content Placeholder 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+42. https://seed-design.io/llms/components/contextual-floating-button.txt — Contextual Floating Button 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+43. https://seed-design.io/llms/components/dialog.txt — Dialog 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+44. https://seed-design.io/llms/components/divider.txt — Divider 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+45. https://seed-design.io/llms/components/field.txt — Field 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+46. https://seed-design.io/llms/components/floating-action-button.txt — Floating Action Button 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+47. https://seed-design.io/llms/components/footer.txt — Footer 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+48. https://seed-design.io/llms/components/help-bubble.txt — Help Bubble 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+49. https://seed-design.io/llms/components/identity-placeholder.txt — Identity Placeholder 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+50. https://seed-design.io/llms/components/image-frame.txt — Image Frame 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+51. https://seed-design.io/llms/components/input-button.txt — Input Button 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+52. https://seed-design.io/llms/components/list.txt — List 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+53. https://seed-design.io/llms/components/manner-temp.txt — Manner Temp & Manner Temp Badge 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+54. https://seed-design.io/llms/components/menu.txt — Menu 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+55. https://seed-design.io/llms/components/menu-sheet.txt — Menu Sheet 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+56. https://seed-design.io/llms/components/notification-badge.txt — Notification Badge 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+57. https://seed-design.io/llms/components/page-banner.txt — Page Banner 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+58. https://seed-design.io/llms/components/progress-circle.txt — Progress Circle 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+59. https://seed-design.io/llms/components/quantity-picker.txt — Quantity Picker 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+60. https://seed-design.io/llms/components/radio.txt — Radio 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+61. https://seed-design.io/llms/components/reaction-button.txt — Reaction Button 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+62. https://seed-design.io/llms/components/result-section.txt — Result Section 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+63. https://seed-design.io/llms/components/scroll-fog.txt — Scroll Fog 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+64. https://seed-design.io/llms/components/segmented-control.txt — Segmented Control 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+65. https://seed-design.io/llms/components/select.txt — Select 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+66. https://seed-design.io/llms/components/select-box.txt — Select Box 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+67. https://seed-design.io/llms/components/side-navigation.txt — Side Navigation 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+68. https://seed-design.io/llms/components/side-panel.txt — Side Panel 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+69. https://seed-design.io/llms/components/skeleton.txt — Skeleton 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+70. https://seed-design.io/llms/components/slider.txt — Slider 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+71. https://seed-design.io/llms/components/snackbar.txt — Snackbar 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+72. https://seed-design.io/llms/components/switch.txt — Switch 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+73. https://seed-design.io/llms/components/tabs.txt — Tabs 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+74. https://seed-design.io/llms/components/tag-group.txt — Tag Group 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+75. https://seed-design.io/llms/components/text-input.txt — Text Input & Textarea 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+76. https://seed-design.io/llms/components/top-navigation.txt — Top Navigation 컴포넌트 스펙 — Anatomy·Properties·Guidelines.
+77. https://registry.npmjs.org/@seed-design/css/-/css-2.8.3.tgz — npm 배포 tarball(v2.8.3). `base.css` 의 light-only · dark-only 블록이 역할 토큰을 팔레트 참조(`--seed-color-bg-brand-solid: var(--seed-color-palette-carrot-600)` 꼴)로 싣는다
