@@ -240,18 +240,84 @@ p {
   unicode-bidi: isolate;
 }
 
-/* S-01 언어 버튼 2열 격자. 버튼 안은 모국어 이름 위, 영어 이름 아래 두 줄 */
-.w-langs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* S-01 대화형 언어 선택(backlog 20). 안내원 말풍선(떠 있음) → 대답 말풍선(누르는 면, 끝쪽 정렬) → 다른 언어 칩.
+   좌우는 글 방향을 따른다(아랍어 폰이면 뒤집힌다). 말풍선 꼬리 쪽 한 모서리만 6px */
+.w-chat {
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.w-chat .ask {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.w-chat .ask .mark {
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+
+.w-chat .ask .bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  border-end-start-radius: 6px;
+  background: var(--card);
+  box-shadow: var(--clay);
+}
+
+.w-chat .ask h1 {
+  font-size: var(--t7);
+  margin: 0;
+}
+
+.w-chat .ask p {
+  margin: 4px 0 0;
+}
+
+.w-chat .replies {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 10px;
 }
 
-.w-langs .btn {
+.w-chat .reply {
+  display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 2px;
-  min-height: 60px;
-  padding: 8px;
+  max-width: 85%;
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  border-end-end-radius: 6px;
+  background: var(--brand-2);
+  color: var(--brand-ink);
+  box-shadow: var(--clay-sm);
+  font: inherit;
+  text-align: end;
+  cursor: pointer;
+}
+
+.w-chat .reply:active {
+  box-shadow: var(--clay-in);
+}
+
+.w-chat .reply strong {
+  font-size: var(--t6);
+}
+
+.w-chat .reply span {
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+.w-chat .chip-group {
+  margin: 8px 0 0;
 }
 
 /* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */

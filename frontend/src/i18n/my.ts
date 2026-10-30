@@ -22,6 +22,9 @@ export const my: Record<MessageKey, string> = {
   // S-01
   langTitle: 'သင့်ဘာသာစကားကို ရွေးပါ',
   langHint: 'နောက်မှ မျက်နှာပြင် အပေါ်ဘက်မှာ ပြောင်းလို့ရပါတယ်။',
+  langAsk: 'ဘယ်ဘာသာစကားနဲ့ ပြောကြမလဲ။',
+  langReply: 'မြန်မာလို ပြောမယ်',
+  langOther: 'အခြားဘာသာစကားများ',
 
   // S-02
   consentTitle: 'မစခင်',

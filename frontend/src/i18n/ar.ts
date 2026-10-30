@@ -21,6 +21,9 @@ export const ar: Record<MessageKey, string> = {
 
   langTitle: 'اختر لغتك',
   langHint: 'يمكنك تغييرها لاحقا من أعلى الشاشة.',
+  langAsk: 'بأي لغة نتحدث؟',
+  langReply: 'لنتحدث بالعربية',
+  langOther: 'لغات أخرى',
 
   consentTitle: 'قبل أن تبدأ',
   consentIntro: 'يرجى القراءة والموافقة. نستخدم معلوماتك فقط لإرشادك.',

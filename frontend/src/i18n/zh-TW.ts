@@ -22,6 +22,9 @@ export const zhTW: Record<MessageKey, string> = {
   // S-01
   langTitle: '請選擇語言',
   langHint: '之後可以在畫面上方更改。',
+  langAsk: '我們用哪種語言溝通？',
+  langReply: '用繁體中文',
+  langOther: '其他語言',
 
   // S-02
   consentTitle: '開始之前',
