@@ -84,11 +84,14 @@ def onset_line(intake: Intake, lang: Lang) -> Line | None:
 DESK_DOCS_KO = {"arc": "외국인등록증", "insurance": "건강보험증(있는 경우)", "meds": "복용 중인 약(있는 경우)"}
 
 
-def build_desk_sheet(intake: Intake, dept: Department, first_visit: bool, lang: Lang) -> DeskSheet:
+def build_desk_sheet(intake: Intake, dept: Department, first_visit: bool, lang: Lang, situation: Line | None = None) -> DeskSheet:
+    """`situation`은 LLM 슬롯(templates/llm_slots.py)이 채운 상황 줄이다. 없으면 프론트 템플릿과 같다."""
     lines = [phrase_line("firstVisit" if first_visit else "revisit", lang)]
     sym = symptom_line(intake, lang)
     if sym:
         lines.append(sym)
+    if situation:
+        lines.append(situation)
     lines.append(department_line(dept, lang))
     onset = onset_line(intake, lang)
     if onset:
@@ -149,11 +152,13 @@ def faq_q(faq_id: str, lang: Lang) -> KoNative:
     return KoNative(ko=ko, native=ko if lang == "ko" else tpl(lang)["faq"][faq_id])
 
 
-def build_call_script(intake: Intake, dept: Department, lang: Lang) -> CallScript:
+def build_call_script(intake: Intake, dept: Department, lang: Lang, situation: Line | None = None) -> CallScript:
     lines = [phrase_line("hello", lang), department_line(dept, lang)]
     sym = symptom_line(intake, lang)
     if sym:
         lines.append(sym)
+    if situation:
+        lines.append(situation)
     if lang != "ko":
         lines.append(phrase_line("korean", lang))
     lines.append(phrase_line("arc", lang))

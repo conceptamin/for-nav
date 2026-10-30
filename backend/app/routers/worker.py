@@ -23,8 +23,8 @@ from app.schemas import (
     VisitHelperResponse,
 )
 from app.settings import settings
+from app.templates.llm_slots import build_visit_helper
 from app.templates.reports import build_center_summary, build_clinician_report
-from app.templates.visit import build_call_script, build_desk_sheet
 
 router = APIRouter()
 
@@ -55,18 +55,19 @@ def route(i: CoverageInput) -> CoverageResult:
 
 
 @router.post("/visit-helper")
-def visit_helper(req: VisitHelperRequest) -> VisitHelperResponse:
-    """S-09·S-10: 접수 창구 화면과 전화 스크립트."""
-    return VisitHelperResponse(
-        desk=build_desk_sheet(req.intake, req.department, req.first_visit, req.lang),
-        call=build_call_script(req.intake, req.department, req.lang),
+async def visit_helper(req: VisitHelperRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> VisitHelperResponse:
+    """S-09·S-10: 접수 창구 화면과 전화 스크립트. LLM이 있으면 자유 입력 요약으로 상황 줄 슬롯을 채운다."""
+    return await build_visit_helper(
+        req.intake, req.department, req.first_visit, req.lang, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts
     )
 
 
 @router.post("/report/clinician")
 def report_clinician(req: ClinicianReportRequest) -> ClinicianReport:
-    """S-11: 의료진용 리포트."""
-    return build_clinician_report(req.intake, req.included, req.profile, req.meds)
+    """S-11: 의료진용 리포트. note 번역 슬롯은 backlog 05에서 채우므로 아직 LLM 슬롯이 없다."""
+    report = build_clinician_report(req.intake, req.included, req.profile, req.meds)
+    report.llm_slots = []
+    return report
 
 
 @router.post("/report/center")
