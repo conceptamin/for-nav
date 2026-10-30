@@ -391,3 +391,27 @@ class CenterStats(CamelModel):
     by_language: list[StatCell]
     by_insurance: list[StatCell]
     by_after_hours: list[StatCell]
+
+
+# ---------------------------------------------------------------------------
+# 센터 직원 로그인(backlog 17). 이메일은 앞뒤 공백을 지우고 소문자로 맞춘다. 검증 오류 메시지에는 필드 위치만 나간다(errors.py).
+# ---------------------------------------------------------------------------
+EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+EMAIL_MAX_LEN = 254
+StaffEmail = Annotated[str, StringConstraints(strip_whitespace=True, to_lower=True, max_length=EMAIL_MAX_LEN, pattern=EMAIL_PATTERN)]
+
+
+class AuthCodeIn(CamelModel):
+    email: StaffEmail
+
+
+class AuthVerifyIn(CamelModel):
+    email: StaffEmail
+    code: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\d{6}$")]
+
+
+class AuthMe(CamelModel):
+    # 서버가 센터 로그인을 쓰는지(CENTER_AUTH=email). false면 센터 화면은 로그인 없이 열린다
+    required: bool
+    # 로그인한 직원 이메일. 세션이 없으면 null
+    email: str | None

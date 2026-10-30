@@ -13,8 +13,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import errors
 from app.chat import CallHub, ChatHub
+from app.mail import make_mailer
 from app.model import load_model
-from app.routers import center, worker
+from app.routers import auth, center, worker
 from app.schemas import Meta
 from app.settings import get_llm_client, settings
 
@@ -37,6 +38,8 @@ app = FastAPI(title="Ulsan Medical Navigator mock API", version="0.1.0", lifespa
 app.state.chat = ChatHub()
 # 통화의 열린 연결(backlog 16). 채팅과 같은 이유로 여기서 만든다.
 app.state.call = CallHub()
+# 센터 직원 로그인 코드 메일(backlog 17). CENTER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
+app.state.mail = make_mailer(settings)
 
 errors.install(app)
 # 프론트는 Vite 프록시로 같은 출처에서 부른다. 개발 중 직접 호출에 대비해 허용 출처(CORS_ORIGINS, 기본 프론트 개발 서버)만 연다.
@@ -62,6 +65,7 @@ def meta() -> Meta:
 
 app.include_router(worker.router, prefix="/api", tags=["worker"])
 app.include_router(center.router, prefix="/api", tags=["center"])
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 
 
 def mount_frontend(app: FastAPI, static_dir: str) -> None:

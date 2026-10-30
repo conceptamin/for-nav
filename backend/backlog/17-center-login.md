@@ -1,6 +1,6 @@
 # 17. 센터 직원 로그인(이메일 코드)
 
-상태: 대기
+상태: 진행 중(맥미니 실제 메일 확인 남음)
 의존: 07 (SQLite 저장소), 14 (상담 채팅 WebSocket)
 
 ## 목표
@@ -8,11 +8,11 @@
 
 ## 결정이 필요한 것
 
-1. **메일 발송 서비스.** 권장: **Resend**(HTTP API 하나, 무료 하루 100통). `for-nav.com`이 Cloudflare DNS에 있어 발신 도메인 인증(SPF·DKIM 레코드)을 바로 넣을 수 있다. SDK 없이 `httpx`로 부른다(`fastapi[standard]`에 이미 들어 있어 새 의존성이 없다). 다른 후보: AWS SES(설정이 길다), Gmail SMTP(앱 비밀번호, 발신 주소가 개인 메일).
-2. **로컬 개발에서 코드를 받는 방법.** 권장: `MAIL_PROVIDER=console`이면 코드를 메일 대신 서버 표준 출력에 한 줄 찍는다(로거가 아니라 `print`, 접근 로그·파일 로그에는 남지 않는다). 운영에서 실수로 켜지지 않도록 `CENTER_COOKIE_SECURE=false`(로컬 http 개발)일 때만 허용하고, 아니면 서버가 뜨지 않는다. 다른 안: 로컬에서도 Resend 키로 진짜 메일을 받는다.
-3. **기본값.** 권장: `CENTER_AUTH` 기본 `off`(지금 동작 그대로, 기존 테스트·동기화 테스트·단독 개발이 바뀌지 않는다). 맥미니 `backend/.env`에서만 `email`로 켠다.
-4. **직원 등록 방법.** 권장: 맥미니에서 `uv run python scripts/staff.py add <이메일>`로 SQLite 표에 넣고 빼는 명령줄 도구. 관리 화면(직원 추가·삭제 UI)은 이 항목에서 만들지 않는다.
-5. **세션 길이.** 권장: 30일 고정(`CENTER_SESSION_DAYS`). 쓸 때마다 늘리지 않는다. 로그아웃하면 바로 끝난다.
+1. **메일 발송 서비스.** → **권장대로 결정(2026-10-31).** 권장: **Resend**(HTTP API 하나, 무료 하루 100통). `for-nav.com`이 Cloudflare DNS에 있어 발신 도메인 인증(SPF·DKIM 레코드)을 바로 넣을 수 있다. SDK 없이 `httpx`로 부른다(`fastapi[standard]`에 이미 들어 있어 새 의존성이 없다). 다른 후보: AWS SES(설정이 길다), Gmail SMTP(앱 비밀번호, 발신 주소가 개인 메일).
+2. **로컬 개발에서 코드를 받는 방법.** → **권장대로 결정(2026-10-31).** 권장: `MAIL_PROVIDER=console`이면 코드를 메일 대신 서버 표준 출력에 한 줄 찍는다(로거가 아니라 `print`, 접근 로그·파일 로그에는 남지 않는다). 운영에서 실수로 켜지지 않도록 `CENTER_COOKIE_SECURE=false`(로컬 http 개발)일 때만 허용하고, 아니면 서버가 뜨지 않는다. 다른 안: 로컬에서도 Resend 키로 진짜 메일을 받는다.
+3. **기본값.** → **권장대로 결정(2026-10-31).** 권장: `CENTER_AUTH` 기본 `off`(지금 동작 그대로, 기존 테스트·동기화 테스트·단독 개발이 바뀌지 않는다). 맥미니 `backend/.env`에서만 `email`로 켠다.
+4. **직원 등록 방법.** → **권장대로 결정(2026-10-31).** 권장: 맥미니에서 `uv run python scripts/staff.py add <이메일>`로 SQLite 표에 넣고 빼는 명령줄 도구. 관리 화면(직원 추가·삭제 UI)은 이 항목에서 만들지 않는다.
+5. **세션 길이.** → **권장대로 결정(2026-10-31).** 권장: 30일 고정(`CENTER_SESSION_DAYS`). 쓸 때마다 늘리지 않는다. 로그아웃하면 바로 끝난다.
 
 ## 범위
 - 하는 것
@@ -45,7 +45,7 @@
 |---|---|---|---|
 | `GET /api/auth/me` | — | `{ required, email }` | `required`는 `CENTER_AUTH=email`인지. 세션이 없으면 `email: null`(401이 아니다) |
 | `POST /api/auth/code` | `{ email }` | `202` | 등록 여부와 관계없이 같은 응답. 제한을 넘으면 `429` |
-| `POST /api/auth/verify` | `{ email, code }` | `{ email }` + `Set-Cookie` | 코드가 틀리거나 만료·없음이면 `401`(이유를 나누지 않는다) |
+| `POST /api/auth/verify` | `{ email, code }` | `{ required, email }` + `Set-Cookie` | 코드가 틀리거나 만료·없음이면 `401`(이유를 나누지 않는다) |
 | `POST /api/auth/logout` | — | `204` + 쿠키 지우기 | 세션이 없어도 204 |
 
 `CENTER_AUTH=off`이면 `/api/auth/me`는 `{ "required": false, "email": null }`이고, `code`·`verify`는 `404`다. 센터 경로는 지금처럼 열린다.
@@ -54,7 +54,7 @@
 // POST /api/auth/verify
 { "email": "staff@example.org", "code": "042917" }
 // 200
-{ "email": "staff@example.org" }
+{ "required": true, "email": "staff@example.org" }
 // 401
 { "error": { "code": "UNAUTHORIZED", "message": "코드가 맞지 않거나 만료되었다", "requestId": "…" } }
 ```
@@ -72,22 +72,47 @@
 - 수정: `app/settings.py`, `app/store.py`, `app/store_sqlite.py`(표 3개), `app/errors.py`, `app/routers/center.py`(의존성, `_chat_denied`에 세션·Origin 확인), `app/main.py`(라우터·메일러), `app/schemas.py`(`AuthCodeIn`, `AuthVerifyIn`, `AuthMe`), `tests/fakes.py`, `tests/test_api.py`, `tests/test_chat.py`, `tests/test_call.py`, `tests/test_store.py`, `.env.example`, `README.md`
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. `CENTER_AUTH`를 주지 않은 기존 테스트는 그대로 통과한다
-- [ ] `test_auth.py`가 메모리·SQLite 두 구현에서 다음을 확인한다(`FakeMailer`, `clock` 고정)
+- [x] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. `CENTER_AUTH`를 주지 않은 기존 테스트는 그대로 통과한다
+- [x] `test_auth.py`가 메모리·SQLite 두 구현에서 다음을 확인한다(`FakeMailer`, `clock` 고정)
   - 등록되지 않은 이메일 → 202, 메일 0통. 등록된 이메일(대소문자·공백이 달라도) → 202, 6자리 코드 메일 1통
   - 맞는 코드 → 200, 쿠키에 `HttpOnly`·`SameSite=Lax`·`Max-Age`가 있고 `CENTER_COOKIE_SECURE`면 `Secure`. `/api/auth/me` → 그 이메일
   - 틀린 코드 5번 → 맞는 코드도 401. 10분 지난 코드 → 401. 새 코드를 보내면 이전 코드 → 401
   - 60초 안에 다시 요청, 1시간 6번째, 서버 전체 10분 31번째 → 429
   - 로그아웃 → 204, 같은 쿠키로 `/api/auth/me` → `email: null`. 30일 지난 세션 → 센터 경로 401
   - `scripts/staff.py remove` 뒤 그 직원의 쿠키 → 401
-- [ ] `CENTER_AUTH=email`: 쿠키 없이 센터 읽기·쓰기 5개 경로 → 401, 쿠키가 있으면 지금과 같은 응답. `POST /api/center/cases`는 쿠키 없이 201
-- [ ] 채팅·통화: `role=center` 쿠키 없음 → `4401`, 쿠키 있음 → 연결, 다른 `Origin` → `4403`. `role=worker`는 토큰으로만 확인한다(지금 테스트 그대로)
-- [ ] `CENTER_AUTH=off`: `/api/auth/me` → `{ required: false }`, `code`·`verify` → 404, 센터 경로는 쿠키 없이 지금처럼 응답한다
-- [ ] 설정: `email`인데 `DB_PATH` 없음, `resend`인데 키 없음, `console`인데 `CENTER_COOKIE_SECURE=true`면 서버가 뜨지 않는다(`test_settings`)
-- [ ] 접근 로그·앱 로그에 이메일·코드·토큰이 없다(`caplog`)
+- [x] `CENTER_AUTH=email`: 쿠키 없이 센터 읽기·쓰기 5개 경로 → 401, 쿠키가 있으면 지금과 같은 응답. `POST /api/center/cases`는 쿠키 없이 201
+- [x] 채팅·통화: `role=center` 쿠키 없음 → `4401`, 쿠키 있음 → 연결, 다른 `Origin` → `4403`. `role=worker`는 토큰으로만 확인한다(지금 테스트 그대로)
+- [x] `CENTER_AUTH=off`: `/api/auth/me` → `{ required: false }`, `code`·`verify` → 404, 센터 경로는 쿠키 없이 지금처럼 응답한다
+- [x] 설정: `email`인데 `DB_PATH` 없음, `resend`인데 키 없음, `console`인데 `CENTER_COOKIE_SECURE=true`면 서버가 뜨지 않는다(`test_settings`)
+- [x] 접근 로그·앱 로그에 이메일·코드·토큰이 없다(`caplog`)
 - [ ] 맥미니: Resend 도메인 인증 후 `CENTER_AUTH=email`로 배포하고, 등록한 직원 메일로 코드를 받아 `https://www.for-nav.com`(프론트 27 이후)이나 `curl`로 로그인한 결과를 `## 결과`에 적는다
 
 ## 결과
+
+```sh
+cd backend
+uv run ruff check . && uv run ruff format --check .   # All checks passed, 74 files already formatted
+uv run pytest                                          # 3015 passed (이전 2923, 새 테스트 92)
+```
+
+- 새 테스트: `test_auth.py` 70개(메모리·SQLite 두 저장소에 같은 경우를 돌린다), `test_store.py` 11개, `test_settings.py` 10개, `test_api.py` 1개. `CENTER_AUTH`를 주지 않은 기존 테스트(동기화 테스트 포함)는 그대로 통과한다
+- 로컬 실제 서버 확인(`CENTER_AUTH=email MAIL_PROVIDER=console CENTER_COOKIE_SECURE=false DB_PATH=<임시 파일> uv run fastapi run app/main.py --port 8765`, `scripts/staff.py add demo@example.org`로 등록):
+  - `GET /api/auth/me` → `{"required":true,"email":null}`, 쿠키 없이 `GET /api/center/cases` → 401
+  - `POST /api/auth/code` → 202, 서버 표준 출력에 `[console mail]`과 6자리 코드. 60초 안에 다시 → 429
+  - `POST /api/auth/verify` → `{"required":true,"email":"demo@example.org"}`, 쿠키 `fornav_center`(HttpOnly, Secure 꺼짐)
+  - 쿠키로 `GET /api/center/cases` → 200, 쿠키 없이 근로자 `POST /api/center/cases` → 201
+  - `POST /api/auth/logout` → 204, 같은 쿠키로 센터 목록 → 401
+  - 서버 로그(`app.access` 등)에 이메일·코드가 0번 나온다
+- 바뀐 API: `GET /api/auth/me`, `POST /api/auth/code`(202·429), `POST /api/auth/verify`(200·401), `POST /api/auth/logout`(204). `CENTER_AUTH=email`일 때 센터 읽기·쓰기 5개 경로가 401, 채팅·통화 `role=center`가 `4401`(세션 없음)·`4403`(다른 사이트 `Origin`). 오류 코드 `UNAUTHORIZED`(401), `RATE_LIMITED`(429). 기본값 `off`에서는 API가 지금과 같다(`/api/auth/me`만 더해지고 `code`·`verify`는 404)
+- 결정
+  - `verify` 응답을 문서 초안의 `{ email }` 대신 `/me`와 같은 `{ required, email }`로 했다. 프론트가 한 타입(`AuthMe`)으로 받는다
+  - 이메일별 보내기 제한(60초, 1시간 5번)은 등록되지 않은 이메일에도 똑같이 건다. 등록된 이메일만 429가 나면 등록 여부가 드러난다. 서버 전체 제한(10분 30통)은 실제 발송만 센다. 모든 요청을 세면 등록되지 않은 이메일 요청만으로 직원 로그인을 막을 수 있다
+  - 메일 발송이 실패해도 202를 준다(실패를 알리면 등록 여부가 드러난다). 로그에는 실패 종류(`HTTP 500` 등)와 request id만 남긴다
+  - 코드 요청 기록(`auth_code_requests`)은 제한이 보는 가장 긴 구간(1시간)만큼만 남기고 다음 요청 때 지운다
+  - 맞는 코드를 확인했어도 그 사이 직원 목록에서 빠졌으면 세션을 주지 않는다
+  - `Origin` 확인은 요청 `Host`와 같거나 `CORS_ORIGINS`에 있으면 통과다. `Origin`이 없으면(브라우저가 아님) 쿠키 확인에만 맡긴다
+  - 새 의존성은 없다. Resend는 `fastapi[standard]`에 든 `httpx`로 부른다
+- 남은 것: 맥미니에서 Resend 도메인 인증·`.env` 설정·직원 등록 뒤 실제 메일로 로그인(위 완료 기준 마지막 줄). Cloudflare 터널 뒤에서 `Host`가 `www.for-nav.com`으로 들어와 채팅 `Origin` 확인을 통과하는지도 그때 본다
 
 ## 메모
 - "서버는 회원 정보를 저장하지 않는다"(`CLAUDE.md`)는 근로자 이야기다. 이 항목이 저장하는 것은 센터 직원 이메일과 세션 해시뿐이고, 근로자 정보는 지금처럼 브라우저에 둔다

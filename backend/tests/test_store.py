@@ -1,7 +1,7 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
 # 상담 채팅의 토큰·메시지(backlog 14)도 같은 방식으로 본다.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -170,3 +170,77 @@ def test_db_path_folder_must_exist(tmp_path: Path):
     assert load_settings({"DB_PATH": str(tmp_path / "center.db")}).db_path == str(tmp_path / "center.db")
     with pytest.raises(ValueError, match="DB_PATH"):
         load_settings({"DB_PATH": str(tmp_path / "nope" / "center.db")})
+
+
+# ---------------------------------------------------------------------------
+# 센터 직원 로그인(backlog 17): 직원 목록, 코드, 요청 기록, 세션
+# ---------------------------------------------------------------------------
+STAFF = "staff@example.org"
+
+
+def test_staff_add_remove_list(store: CenterStore):
+    assert store.add_staff(STAFF, AT) is True
+    assert store.add_staff(STAFF, AT) is False
+    assert store.add_staff("a@example.org", AT) is True
+    assert store.list_staff() == ["a@example.org", STAFF]
+    assert store.is_staff(STAFF) and not store.is_staff("who@example.org")
+    assert store.remove_staff(STAFF) is True
+    assert store.remove_staff(STAFF) is False
+    assert store.list_staff() == ["a@example.org"]
+
+
+def test_code_attempts_and_replace(store: CenterStore):
+    store.set_code(STAFF, "h1", AT)
+    assert store.add_code_attempt(STAFF) == 1
+    assert store.add_code_attempt(STAFF) == 2
+    store.set_code(STAFF, "h2", AT)
+    code = store.get_code(STAFF)
+    assert code is not None and (code.code_hash, code.attempts, code.expires_at) == ("h2", 0, clock.iso_utc(AT))
+    store.delete_code(STAFF)
+    assert store.get_code(STAFF) is None
+    assert store.add_code_attempt(STAFF) == 0
+
+
+def test_code_requests_window_and_prune(store: CenterStore):
+    store.add_code_request(STAFF, AT, sent=True)
+    store.add_code_request("who@example.org", AT, sent=False)
+    assert store.code_requests(STAFF, AT - timedelta(seconds=1)) == 1
+    assert store.code_requests(STAFF, AT) == 0
+    assert store.sent_codes(AT - timedelta(seconds=1)) == 1
+    # 1시간이 지난 기록은 다음 요청 때 지운다.
+    store.add_code_request(STAFF, AT + timedelta(hours=1), sent=True)
+    assert store.code_requests(STAFF, AT - timedelta(days=1)) == 1
+
+
+def test_sessions_expire_and_end_with_staff(store: CenterStore):
+    store.add_staff(STAFF, AT)
+    store.add_session("t1", STAFF, AT, AT + timedelta(days=30))
+    assert store.session_email("t1", AT + timedelta(days=29)) == STAFF
+    assert store.session_email("t1", AT + timedelta(days=30)) is None
+    store.delete_session("t1")
+    assert store.session_email("t1", AT) is None
+    store.add_session("t2", STAFF, AT, AT + timedelta(days=30))
+    store.set_code(STAFF, "h", AT + timedelta(minutes=10))
+    store.remove_staff(STAFF)
+    assert store.session_email("t2", AT) is None
+    assert store.get_code(STAFF) is None
+
+
+def test_reset_keeps_login_data(store: CenterStore):
+    store.add_staff(STAFF, AT)
+    store.add_session("t1", STAFF, AT, AT + timedelta(days=30))
+    store.reset()
+    assert store.is_staff(STAFF)
+    assert store.session_email("t1", AT) == STAFF
+
+
+def test_sqlite_keeps_login_data_after_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    s = SqliteStore(path, STARTED)
+    s.add_staff(STAFF, AT)
+    s.add_session("t1", STAFF, AT, AT + timedelta(days=30))
+    s.close()
+    s = SqliteStore(path, STARTED)
+    assert s.list_staff() == [STAFF]
+    assert s.session_email("t1", AT) == STAFF
+    s.close()

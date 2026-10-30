@@ -20,7 +20,7 @@ REQUEST_ID_HEADER = "X-Request-Id"
 # 클라이언트가 보낸 id는 로그에 그대로 남으므로 짧은 안전 문자만 받는다. 그 밖이면 새로 만든다.
 _SAFE_ID = re.compile(r"[A-Za-z0-9._-]{1,128}")
 
-CODES = {404: "NOT_FOUND", 422: "VALIDATION", 500: "INTERNAL"}
+CODES = {401: "UNAUTHORIZED", 404: "NOT_FOUND", 422: "VALIDATION", 429: "RATE_LIMITED", 500: "INTERNAL"}
 
 
 def _code(status: int) -> str:

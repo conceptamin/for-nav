@@ -1,10 +1,12 @@
-"""테스트용 가짜 LLM. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마를 기록한다."""
+"""테스트용 가짜 LLM·메일. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일을 기록한다."""
 
 import asyncio
+import re
 from collections.abc import Iterable
 from typing import Any
 
 from app.llm import LLMError, LLMPrompt
+from app.mail import MailError
 
 # 차례마다 돌려줄 값. 문자열은 응답 본문, 예외는 그대로 올리고, None이면 시간 초과까지 기다린다.
 Reply = str | Exception | None
@@ -35,3 +37,21 @@ class FakeLLMClient:
 
 def provider_error(kind: str = "APIConnectionError") -> LLMError:
     return LLMError(kind)
+
+
+class FakeMailer:
+    """테스트용 가짜 메일(backlog 17). 보낸 메일을 모으고, `fail`이면 공급자 실패처럼 MailError를 올린다."""
+
+    def __init__(self, fail: bool = False) -> None:
+        self.fail = fail
+        self.sent: list[tuple[str, str, str]] = []
+
+    async def send(self, to: str, subject: str, text: str) -> None:
+        if self.fail:
+            raise MailError("HTTP 500")
+        self.sent.append((to, subject, text))
+
+    def last_code(self) -> str:
+        m = re.search(r"\d{6}", self.sent[-1][2])
+        assert m, "메일에 6자리 코드가 없다"
+        return m.group()

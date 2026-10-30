@@ -1,9 +1,11 @@
 # 센터 사례 저장소. DB_PATH가 비면 메모리(재시작하면 mock 시드 상태로 돌아간다), 있으면 SQLite 파일(store_sqlite.py)이다.
 # 어느 쪽이든 mock 사례·통계 레코드는 서버 시작 시 한 번 메모리에서 만들고, 근로자가 실제로 보낸 사례(live)와 상태 변경만 따로 둔다.
-# 상담 채팅(backlog 14)의 근로자 토큰과 메시지도 같은 저장소에 둔다.
+# 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션도 같은 저장소에 둔다.
+# 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
 from collections.abc import Callable, Iterable
-from datetime import datetime
+from dataclasses import dataclass, replace
+from datetime import datetime, timedelta
 from threading import Lock
 from typing import Protocol
 
@@ -11,6 +13,18 @@ from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
 from app.schemas import CaseStatus, CenterCase, ChatMessage, ChatRole
 from app.settings import settings
+
+# 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
+CODE_REQUEST_KEEP = timedelta(hours=1)
+
+
+@dataclass(frozen=True)
+class AuthCode:
+    """직원 이메일 하나에 하나뿐인 로그인 코드. 새 코드를 넣으면 이전 코드를 덮는다."""
+
+    code_hash: str
+    expires_at: str
+    attempts: int = 0
 
 
 class CenterStore(Protocol):
@@ -42,8 +56,54 @@ class CenterStore(Protocol):
         """보낸 순서대로."""
         ...
 
+    # 센터 직원 로그인(backlog 17). 이메일은 app/auth.py가 소문자로 맞춰 넘긴다.
+    def is_staff(self, email: str) -> bool: ...
+
+    def add_staff(self, email: str, at: datetime) -> bool:
+        """새로 더했으면 True, 이미 있으면 False."""
+        ...
+
+    def remove_staff(self, email: str) -> bool:
+        """그 직원의 코드와 세션도 지운다. 없던 이메일이면 False."""
+        ...
+
+    def list_staff(self) -> list[str]:
+        """이메일 순."""
+        ...
+
+    def add_code_request(self, email: str, at: datetime, sent: bool) -> None:
+        """코드 요청 한 번(등록되지 않은 이메일 포함)을 남긴다. `sent`는 실제로 메일을 보냈는지. CODE_REQUEST_KEEP보다 오래된 기록은 지운다."""
+        ...
+
+    def code_requests(self, email: str, since: datetime) -> int:
+        """그 이메일로 `since` 뒤에 받은 코드 요청 수."""
+        ...
+
+    def sent_codes(self, since: datetime) -> int:
+        """서버 전체에서 `since` 뒤에 실제로 보낸 메일 수."""
+        ...
+
+    def set_code(self, email: str, code_hash: str, expires_at: datetime) -> None: ...
+
+    def get_code(self, email: str) -> AuthCode | None: ...
+
+    def add_code_attempt(self, email: str) -> int:
+        """틀린 시도를 하나 올리고 지금까지의 수를 돌려준다. 코드가 없으면 0."""
+        ...
+
+    def delete_code(self, email: str) -> None: ...
+
+    def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None: ...
+
+    def session_email(self, token_hash: str, now: datetime) -> str | None:
+        """만료되지 않은 세션의 직원 이메일."""
+        ...
+
+    def delete_session(self, token_hash: str) -> None: ...
+
     def reset(self) -> None:
-        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지를 지운다. mock은 처음 상태로 돌아간다."""
+        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지를 지운다. mock은 처음 상태로 돌아간다.
+        직원 목록·로그인 코드·세션은 그대로 둔다(초기화한 직원이 로그아웃되지 않게)."""
         ...
 
     def close(self) -> None: ...
@@ -83,6 +143,10 @@ class MemoryStore:
         self._status: dict[str, CaseStatus] = {}
         self._tokens: dict[str, str] = {}
         self._messages: dict[str, list[ChatMessage]] = {}
+        self._staff: set[str] = set()
+        self._code_requests: list[tuple[str, str, bool]] = []
+        self._codes: dict[str, AuthCode] = {}
+        self._sessions: dict[str, tuple[str, str]] = {}
 
     def all(self) -> list[CenterCase]:
         with self._lock:
@@ -127,6 +191,78 @@ class MemoryStore:
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             return list(self._messages.get(case_id, []))
+
+    def is_staff(self, email: str) -> bool:
+        with self._lock:
+            return email in self._staff
+
+    def add_staff(self, email: str, at: datetime) -> bool:
+        with self._lock:
+            added = email not in self._staff
+            self._staff.add(email)
+        return added
+
+    def remove_staff(self, email: str) -> bool:
+        with self._lock:
+            if email not in self._staff:
+                return False
+            self._staff.discard(email)
+            self._codes.pop(email, None)
+            self._sessions = {h: s for h, s in self._sessions.items() if s[0] != email}
+        return True
+
+    def list_staff(self) -> list[str]:
+        with self._lock:
+            return sorted(self._staff)
+
+    def add_code_request(self, email: str, at: datetime, sent: bool) -> None:
+        keep_after = clock.iso_utc(at - CODE_REQUEST_KEEP)
+        with self._lock:
+            self._code_requests = [r for r in self._code_requests if r[1] > keep_after]
+            self._code_requests.append((email, clock.iso_utc(at), sent))
+
+    def code_requests(self, email: str, since: datetime) -> int:
+        after = clock.iso_utc(since)
+        with self._lock:
+            return sum(1 for e, at, _ in self._code_requests if e == email and at > after)
+
+    def sent_codes(self, since: datetime) -> int:
+        after = clock.iso_utc(since)
+        with self._lock:
+            return sum(1 for _, at, sent in self._code_requests if sent and at > after)
+
+    def set_code(self, email: str, code_hash: str, expires_at: datetime) -> None:
+        with self._lock:
+            self._codes[email] = AuthCode(code_hash, clock.iso_utc(expires_at))
+
+    def get_code(self, email: str) -> AuthCode | None:
+        with self._lock:
+            return self._codes.get(email)
+
+    def add_code_attempt(self, email: str) -> int:
+        with self._lock:
+            code = self._codes.get(email)
+            if code is None:
+                return 0
+            self._codes[email] = replace(code, attempts=code.attempts + 1)
+            return code.attempts + 1
+
+    def delete_code(self, email: str) -> None:
+        with self._lock:
+            self._codes.pop(email, None)
+
+    def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None:
+        with self._lock:
+            self._sessions[token_hash] = (email, clock.iso_utc(expires_at))
+
+    def session_email(self, token_hash: str, now: datetime) -> str | None:
+        with self._lock:
+            s = self._sessions.get(token_hash)
+        return s[0] if s and s[1] > clock.iso_utc(now) else None
+
+    def delete_session(self, token_hash: str) -> None:
+        with self._lock:
+            self._sessions.pop(token_hash, None)
 
     def reset(self) -> None:
         with self._lock:
