@@ -1,5 +1,5 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
-# 상담 채팅의 토큰·메시지(backlog 14)도 같은 방식으로 본다.
+# 상담 채팅의 토큰·메시지(backlog 14)와 통화 자막(backlog 18)도 같은 방식으로 본다.
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -170,6 +170,74 @@ def test_db_path_folder_must_exist(tmp_path: Path):
     assert load_settings({"DB_PATH": str(tmp_path / "center.db")}).db_path == str(tmp_path / "center.db")
     with pytest.raises(ValueError, match="DB_PATH"):
         load_settings({"DB_PATH": str(tmp_path / "nope" / "center.db")})
+
+
+# ---------------------------------------------------------------------------
+# 통화 자막(backlog 18): 사례별 번호, 번역 전 자막 빼기, 초기화, SQLite 재시작
+# ---------------------------------------------------------------------------
+def add_caption(store: CenterStore, case_id: str = "C-1001", text: str = "Tay tôi") -> str:
+    return store.add_caption(case_id, "worker", text, "vi", "ko", AT)
+
+
+def test_caption_ids_per_case_and_pending_is_hidden(store: CenterStore):
+    assert [add_caption(store), add_caption(store), add_caption(store, "C-1002")] == ["c-1", "c-2", "c-1"]
+    assert store.captions("C-1001") == []
+
+    second = store.set_caption_translation("C-1001", "c-2", "ok", "손")
+    assert second.model_dump(by_alias=True) == {
+        "id": "c-2",
+        "from": "worker",
+        "text": "Tay tôi",
+        "lang": "vi",
+        "translated": "손",
+        "translatedLang": "ko",
+        "translation": "ok",
+        "at": clock.iso_utc(AT),
+    }
+    assert store.captions("C-1001") == [second]
+    first = store.set_caption_translation("C-1001", "c-1", "skipped", None)
+    # 번역이 거꾸로 끝나도 번호 순서다.
+    assert [c.id for c in store.captions("C-1001")] == ["c-1", "c-2"]
+    assert (first.translated, first.translation) == (None, "skipped")
+    assert store.captions("C-1002") == []
+
+
+def test_caption_translation_fills_only_pending(store: CenterStore):
+    add_caption(store)
+    assert store.set_caption_translation("C-1001", "c-1", "ok", "손") is not None
+    # 이미 채운 자막·없는 자막·잘못된 번호는 None이고 바뀌지 않는다.
+    assert store.set_caption_translation("C-1001", "c-1", "skipped", None) is None
+    assert store.set_caption_translation("C-1001", "c-9", "ok", "x") is None
+    assert store.set_caption_translation("C-1001", "m-1", "ok", "x") is None
+    assert store.set_caption_translation("C-0", "c-1", "ok", "x") is None
+    assert [(c.translated, c.translation) for c in store.captions("C-1001")] == [("손", "ok")]
+
+
+def test_reset_clears_captions(store: CenterStore):
+    add_caption(store)
+    store.set_caption_translation("C-1001", "c-1", "ok", "손")
+    add_caption(store)
+    store.reset()
+
+    assert store.captions("C-1001") == []
+    assert store.set_caption_translation("C-1001", "c-2", "ok", "x") is None
+    assert add_caption(store) == "c-1"
+
+
+def test_sqlite_captions_survive_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    add_caption(first)
+    add_caption(first)
+    sent = [first.set_caption_translation("C-1001", i, "ok", "손") for i in ("c-1", "c-2")]
+    first.close()
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert second.captions("C-1001") == sent
+        assert add_caption(second) == "c-3"
+    finally:
+        second.close()
 
 
 # ---------------------------------------------------------------------------

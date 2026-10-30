@@ -1,6 +1,6 @@
 # 센터 사례 저장소. DB_PATH가 비면 메모리(재시작하면 mock 시드 상태로 돌아간다), 있으면 SQLite 파일(store_sqlite.py)이다.
 # 어느 쪽이든 mock 사례·통계 레코드는 서버 시작 시 한 번 메모리에서 만들고, 근로자가 실제로 보낸 사례(live)와 상태 변경만 따로 둔다.
-# 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션도 같은 저장소에 둔다.
+# 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 통화 자막(backlog 18), 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션도 같은 저장소에 둔다.
 # 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
 from collections.abc import Callable, Iterable
@@ -11,8 +11,9 @@ from typing import Protocol
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
-from app.schemas import CaseStatus, CenterCase, ChatMessage, ChatRole
+from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
 from app.settings import settings
+from app.vocab import Lang
 
 # 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
 CODE_REQUEST_KEEP = timedelta(hours=1)
@@ -54,6 +55,21 @@ class CenterStore(Protocol):
 
     def messages(self, case_id: str) -> list[ChatMessage]:
         """보낸 순서대로."""
+        ...
+
+    # 통화 자막(backlog 18). 받자마자 번역 전 상태로 넣고, 번역이 끝나면 채운다.
+    def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
+        """받은 순서대로 사례 안 번호를 정해 `c-<n>`을 돌려준다."""
+        ...
+
+    def set_caption_translation(
+        self, case_id: str, caption_id: str, translation: TranslationStatus, translated: str | None
+    ) -> Caption | None:
+        """번역 전 자막을 채운다. 그런 자막이 없으면(데모 초기화로 지워졌거나 이미 채웠으면) None."""
+        ...
+
+    def captions(self, case_id: str) -> list[Caption]:
+        """번역이 끝난 자막만 번호 순서대로."""
         ...
 
     # 센터 직원 로그인(backlog 17). 이메일은 app/auth.py가 소문자로 맞춰 넘긴다.
@@ -102,7 +118,7 @@ class CenterStore(Protocol):
     def delete_session(self, token_hash: str) -> None: ...
 
     def reset(self) -> None:
-        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지를 지운다. mock은 처음 상태로 돌아간다.
+        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지, 통화 자막을 지운다. mock은 처음 상태로 돌아간다.
         직원 목록·로그인 코드·세션은 그대로 둔다(초기화한 직원이 로그아웃되지 않게)."""
         ...
 
@@ -133,6 +149,12 @@ def make_message(case_id: str, count: int, sender: ChatRole, text: str, at: date
     return ChatMessage(id=f"m-{count + 1}", case_id=case_id, from_=sender, text=text, at=clock.iso_utc(at))
 
 
+def caption_number(caption_id: str) -> int | None:
+    """`c-<n>`의 n. 형식이 다르면 None."""
+    prefix, _, n = caption_id.partition("-")
+    return int(n) if prefix == "c" and n.isdecimal() else None
+
+
 class MemoryStore:
     def __init__(self, now: datetime | None = None) -> None:
         started = now or clock.now()
@@ -143,6 +165,8 @@ class MemoryStore:
         self._status: dict[str, CaseStatus] = {}
         self._tokens: dict[str, str] = {}
         self._messages: dict[str, list[ChatMessage]] = {}
+        # 사례별 자막과 번역이 끝났는지. 번역 전 자막의 translation 값은 자리만 채운 것이다.
+        self._captions: dict[str, list[tuple[Caption, bool]]] = {}
         self._staff: set[str] = set()
         self._code_requests: list[tuple[str, str, bool]] = []
         self._codes: dict[str, AuthCode] = {}
@@ -191,6 +215,38 @@ class MemoryStore:
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             return list(self._messages.get(case_id, []))
+
+    def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
+        with self._lock:
+            rows = self._captions.setdefault(case_id, [])
+            c = Caption(
+                id=f"c-{len(rows) + 1}",
+                from_=sender,
+                text=text,
+                lang=lang,
+                translated=None,
+                translated_lang=translated_lang,
+                translation="skipped",
+                at=clock.iso_utc(at),
+            )
+            rows.append((c, False))
+        return c.id
+
+    def set_caption_translation(
+        self, case_id: str, caption_id: str, translation: TranslationStatus, translated: str | None
+    ) -> Caption | None:
+        n = caption_number(caption_id)
+        with self._lock:
+            rows = self._captions.get(case_id, [])
+            if n is None or not 0 < n <= len(rows) or rows[n - 1][1]:
+                return None
+            c = rows[n - 1][0].model_copy(update={"translation": translation, "translated": translated})
+            rows[n - 1] = (c, True)
+        return c
+
+    def captions(self, case_id: str) -> list[Caption]:
+        with self._lock:
+            return [c for c, done in self._captions.get(case_id, []) if done]
 
     def is_staff(self, email: str) -> bool:
         with self._lock:
@@ -270,6 +326,7 @@ class MemoryStore:
             self._status.clear()
             self._tokens.clear()
             self._messages.clear()
+            self._captions.clear()
 
     def close(self) -> None:
         pass

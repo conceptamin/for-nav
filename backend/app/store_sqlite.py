@@ -1,10 +1,10 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
-# 사례 표는 넷이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
-# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지.
+# 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
-# 연락처·자유 입력·채팅 메시지가 평문으로 남는다(데모 범위, README "센터 저장소").
+# 연락처·자유 입력·채팅 메시지·자막이 평문으로 남는다(데모 범위, README "센터 저장소").
 
 import sqlite3
 from collections.abc import Callable
@@ -13,8 +13,9 @@ from threading import Lock
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
-from app.schemas import CaseStatus, CenterCase, ChatMessage, ChatRole
-from app.store import CODE_REQUEST_KEEP, AuthCode, latest_first, make_message, next_case_id, with_status
+from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
+from app.store import CODE_REQUEST_KEEP, AuthCode, caption_number, latest_first, make_message, next_case_id, with_status
+from app.vocab import Lang
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS live_cases (
@@ -38,6 +39,18 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     at TEXT NOT NULL,
     PRIMARY KEY (case_id, id)
 );
+CREATE TABLE IF NOT EXISTS call_captions (
+    case_id TEXT NOT NULL,
+    n INTEGER NOT NULL,
+    sender TEXT NOT NULL,
+    text TEXT NOT NULL,
+    lang TEXT NOT NULL,
+    translated TEXT,
+    translated_lang TEXT NOT NULL,
+    translation TEXT,
+    at TEXT NOT NULL,
+    PRIMARY KEY (case_id, n)
+);
 CREATE TABLE IF NOT EXISTS center_staff (
     email TEXT PRIMARY KEY,
     added_at TEXT NOT NULL
@@ -60,6 +73,22 @@ CREATE TABLE IF NOT EXISTS center_sessions (
     expires_at TEXT NOT NULL
 );
 """
+
+CAPTION_SELECT = "SELECT n, sender, text, lang, translated, translated_lang, translation, at FROM call_captions"
+
+
+def caption_row(row: tuple) -> Caption:
+    n, sender, text, lang, translated, translated_lang, translation, at = row
+    return Caption(
+        id=f"c-{n}",
+        from_=sender,
+        text=text,
+        lang=lang,
+        translated=translated,
+        translated_lang=translated_lang,
+        translation=translation,
+        at=at,
+    )
 
 
 class SqliteStore:
@@ -147,6 +176,37 @@ class SqliteStore:
             ).fetchall()
         return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
 
+    def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
+        with self._lock, self._db:
+            (n,) = self._db.execute("SELECT COALESCE(MAX(n), 0) + 1 FROM call_captions WHERE case_id = ?", (case_id,)).fetchone()
+            self._db.execute(
+                "INSERT INTO call_captions (case_id, n, sender, text, lang, translated_lang, at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (case_id, n, sender, text, lang, translated_lang, clock.iso_utc(at)),
+            )
+        return f"c-{n}"
+
+    def set_caption_translation(
+        self, case_id: str, caption_id: str, translation: TranslationStatus, translated: str | None
+    ) -> Caption | None:
+        n = caption_number(caption_id)
+        if n is None:
+            return None
+        with self._lock:
+            with self._db:
+                cur = self._db.execute(
+                    "UPDATE call_captions SET translation = ?, translated = ? WHERE case_id = ? AND n = ? AND translation IS NULL",
+                    (translation, translated, case_id, n),
+                )
+            if cur.rowcount != 1:
+                return None
+            row = self._db.execute(f"{CAPTION_SELECT} WHERE case_id = ? AND n = ?", (case_id, n)).fetchone()
+        return caption_row(row)
+
+    def captions(self, case_id: str) -> list[Caption]:
+        with self._lock:
+            rows = self._db.execute(f"{CAPTION_SELECT} WHERE case_id = ? AND translation IS NOT NULL ORDER BY n", (case_id,)).fetchall()
+        return [caption_row(r) for r in rows]
+
     def is_staff(self, email: str) -> bool:
         with self._lock:
             return self._db.execute("SELECT 1 FROM center_staff WHERE email = ?", (email,)).fetchone() is not None
@@ -226,9 +286,9 @@ class SqliteStore:
             self._db.execute("DELETE FROM center_sessions WHERE token_hash = ?", (token_hash,))
 
     def reset(self) -> None:
-        """사례 표 넷을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
+        """사례 표 다섯을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
         with self._lock, self._db:
-            for table in ("live_cases", "case_status", "chat_tokens", "chat_messages"):
+            for table in ("live_cases", "case_status", "chat_tokens", "chat_messages", "call_captions"):
                 self._db.execute(f"DELETE FROM {table}")
 
     def close(self) -> None:

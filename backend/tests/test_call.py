@@ -1,4 +1,5 @@
 # 통화와 자막 번역(backlog 16): 있음 알림, 시그널링 중계, 자막 번역·대체, 권한·닫힘 코드, 로그에 원문 없음.
+# 자막 저장과 다시 보기(backlog 18): 연결 직후 history, 번역 전 자막 빼기, 끊긴 쪽 자막 skipped, 말한 순서, 데모 초기화.
 # LLM은 FakeLLMClient로 바꾸고 외부 네트워크를 쓰지 않는다. 채팅과 같은 검사·토큰을 쓰므로 저장소는 메모리 하나로 돌린다.
 
 import dataclasses
@@ -20,6 +21,7 @@ from app.store import MemoryStore
 from app.templates.translate import LineOutput
 
 MARKER = "MARKER-call-do-not-log"
+INVALID = {"type": "error", "code": "invalid"}
 AT = datetime(2026, 10, 30, 14, 12, 0, tzinfo=clock.SEOUL)
 VI = "Tay tôi vẫn còn chảy máu"
 KO = "손에서 아직 피가 납니다"
@@ -50,7 +52,6 @@ def open_client(monkeypatch):
     """LLM(가짜 또는 None)과 시간 제한을 골라 서버를 연다. `with`로 열어 두 연결이 같은 이벤트 루프에서 돈다."""
     monkeypatch.setattr(center, "store", MemoryStore())
     monkeypatch.setattr(clock, "now", lambda: AT)
-    # 시각을 고정해 사례 id가 테스트마다 같으므로 자막 번호가 이어지지 않게 연결 목록을 새로 둔다.
     monkeypatch.setattr(app.state, "call", CallHub())
 
     @contextmanager
@@ -83,13 +84,27 @@ def url(case_id: str, role: str = "worker", token: str = "") -> str:
     return f"/api/center/cases/{case_id}/call?{q}"
 
 
+def greet(ws, role: str, peers: list[str]) -> list[dict]:
+    """연결 직후 두 프레임(joined, history)을 확인하고 이전 자막 목록을 돌려준다."""
+    assert ws.receive_json() == {"type": "joined", "role": role, "peers": peers}
+    frame = ws.receive_json()
+    assert frame["type"] == "history"
+    return frame["captions"]
+
+
+def wait_processed(ws) -> None:
+    """앞서 보낸 프레임을 서버가 처리했을 때까지 기다린다. 프레임은 차례대로 처리되므로 잘못된 프레임의 응답이 오면 앞의 것도 끝났다."""
+    ws.send_text("not json")
+    assert ws.receive_json() == INVALID
+
+
 @contextmanager
 def pair(client: TestClient, case_id: str, token: str):
     """근로자가 먼저, 센터가 다음에 붙고 있음 알림까지 받은 두 연결."""
     with client.websocket_connect(url(case_id, token=token)) as worker:
-        assert worker.receive_json() == {"type": "joined", "role": "worker", "peers": []}
+        greet(worker, "worker", [])
         with client.websocket_connect(url(case_id, "center")) as staff:
-            assert staff.receive_json() == {"type": "joined", "role": "center", "peers": ["worker"]}
+            greet(staff, "center", ["worker"])
             assert worker.receive_json() == {"type": "peer", "role": "center", "present": True}
             yield worker, staff
 
@@ -104,9 +119,9 @@ def test_peer_presence(open_client):
     with open_client() as client:
         case_id, token = send_case(client)
         with client.websocket_connect(url(case_id, token=token)) as worker:
-            worker.receive_json()
+            greet(worker, "worker", [])
             with client.websocket_connect(url(case_id, "center")) as staff:
-                staff.receive_json()
+                greet(staff, "center", ["worker"])
                 worker.receive_json()
             assert worker.receive_json() == {"type": "peer", "role": "center", "present": False}
 
@@ -140,7 +155,7 @@ def test_invalid_frame_keeps_connection(open_client, frame):
         case_id, token = send_case(client)
         with pair(client, case_id, token) as (worker, staff):
             worker.send_text(frame)
-            assert worker.receive_json() == {"type": "error", "code": "invalid"}
+            assert worker.receive_json() == INVALID
             worker.send_json({"type": "signal", "data": {"ok": True}})
             assert staff.receive_json() == {"type": "signal", "from": "worker", "data": {"ok": True}}
 
@@ -242,11 +257,11 @@ def test_close_codes(open_client):
         assert close_code(client, url(case_id, token="wrong")) == 4403
         assert close_code(client, url(case_id, role="admin", token=token)) == 4403
         with client.websocket_connect(url(case_id, "center")) as staff:
-            staff.receive_json()
+            greet(staff, "center", [])
             assert close_code(client, url(case_id, "center")) == 4409
             # 같은 역할 두 번째 연결이 거절돼도 첫 연결은 그대로다.
             with client.websocket_connect(url(case_id, token=token)) as worker:
-                assert worker.receive_json() == {"type": "joined", "role": "worker", "peers": ["center"]}
+                greet(worker, "worker", ["center"])
 
 
 def test_reset_closes_calls(open_client):
@@ -258,6 +273,96 @@ def test_reset_closes_calls(open_client):
                 with pytest.raises(WebSocketDisconnect) as exc:
                     ws.receive_json()
                 assert exc.value.code == 4000
+
+
+# ---------------------------------------------------------------------------
+# 자막 저장과 다시 보기(backlog 18)
+# ---------------------------------------------------------------------------
+def test_history_is_empty_at_first(open_client):
+    with open_client() as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, token=token)) as worker:
+            assert greet(worker, "worker", []) == []
+
+
+def test_translated_caption_is_in_history_of_new_connection(open_client):
+    with open_client(FakeLLMClient([line(KO)])) as client:
+        case_id, token = send_case(client)
+        with pair(client, case_id, token) as (worker, staff):
+            worker.send_json({"type": "caption", "text": VI})
+            sent = staff.receive_json()["caption"]
+            worker.receive_json()
+        # 센터가 화면을 나갔다가(또는 새로고침) 다시 붙는다.
+        with client.websocket_connect(url(case_id, "center")) as staff:
+            history = greet(staff, "center", [])
+    assert history == [sent]
+    assert (sent["id"], sent["text"], sent["translated"], sent["translation"]) == ("c-1", VI, KO, "ok")
+
+
+def test_caption_in_translation_is_sent_once_not_in_history(open_client):
+    # 번역이 시간 제한까지 멈춘 동안 센터가 붙는다. history에는 없고, 번역이 끝나면 caption으로 한 번 받는다.
+    with open_client(FakeLLMClient([None]), timeout_s=0.5) as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, token=token)) as worker:
+            greet(worker, "worker", [])
+            worker.send_json({"type": "caption", "text": VI})
+            wait_processed(worker)
+            with client.websocket_connect(url(case_id, "center")) as staff:
+                assert greet(staff, "center", ["worker"]) == []
+                c = staff.receive_json()["caption"]
+                assert (c["id"], c["text"], c["translation"]) == ("c-1", VI, "skipped")
+                worker.send_json({"type": "signal", "data": {"next": True}})
+                assert staff.receive_json() == {"type": "signal", "from": "worker", "data": {"next": True}}
+
+
+def test_speaker_leaving_mid_translation_keeps_caption_as_skipped(open_client):
+    with open_client(FakeLLMClient([None])) as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, "center")) as staff:
+            greet(staff, "center", [])
+            with client.websocket_connect(url(case_id, token=token)) as worker:
+                greet(worker, "worker", ["center"])
+                staff.receive_json()
+                worker.send_json({"type": "caption", "text": VI})
+                wait_processed(worker)
+            c = staff.receive_json()["caption"]
+            assert (c["id"], c["from"], c["text"], c["translated"], c["translation"]) == ("c-1", "worker", VI, None, "skipped")
+            assert staff.receive_json() == {"type": "peer", "role": "worker", "present": False}
+        with client.websocket_connect(url(case_id, token=token)) as worker:
+            assert greet(worker, "worker", []) == [c]
+
+
+def test_history_keeps_spoken_order_when_translations_finish_reversed(open_client):
+    # 첫 자막은 시간 제한까지 멈추고 둘째 자막이 먼저 번역된다.
+    with open_client(FakeLLMClient([None, line(KO)]), timeout_s=0.5) as client:
+        case_id, token = send_case(client)
+        with pair(client, case_id, token) as (worker, staff):
+            worker.send_json({"type": "caption", "text": VI})
+            worker.send_json({"type": "caption", "text": "Đau quá"})
+            assert [staff.receive_json()["caption"]["id"] for _ in range(2)] == ["c-2", "c-1"]
+            for _ in range(2):
+                worker.receive_json()
+        with client.websocket_connect(url(case_id, "center")) as staff:
+            history = greet(staff, "center", [])
+    assert [(c["id"], c["text"], c["translation"]) for c in history] == [("c-1", VI, "skipped"), ("c-2", "Đau quá", "ok")]
+
+
+def test_reset_clears_captions_and_numbering(open_client):
+    with open_client() as client:
+        case_id, token = send_case(client)
+        with pair(client, case_id, token) as (worker, staff):
+            worker.send_json({"type": "caption", "text": VI})
+            assert staff.receive_json()["caption"]["id"] == "c-1"
+            worker.receive_json()
+        assert client.post("/api/center/reset").status_code == 204
+        # 데모 초기화는 live 사례도 지우므로 새로 보낸 사례에서 본다. mock 사례로도 자막이 비었는지 본다.
+        with client.websocket_connect(url("C-1001", "center")) as staff:
+            assert greet(staff, "center", []) == []
+        assert center.store.captions(case_id) == []
+        case_id, token = send_case(client)
+        with pair(client, case_id, token) as (worker, staff):
+            worker.send_json({"type": "caption", "text": VI})
+            assert staff.receive_json()["caption"]["id"] == "c-1"
 
 
 def test_log_has_no_token_sdp_or_caption(open_client, caplog):

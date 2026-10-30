@@ -363,7 +363,7 @@ CallIn = Annotated[CallSignalIn | CallCaptionIn, Field(discriminator="type")]
 
 
 class Caption(CamelModel):
-    # 사례 안에서 c-1, c-2…(저장하지 않는다)
+    # 사례 안에서 c-1, c-2…(저장소가 받은 순서대로 정한다, backlog 18)
     id: str
     from_: ChatRole = Field(alias="from")
     # 원문과 그 언어. 근로자는 사례 언어, 센터는 한국어

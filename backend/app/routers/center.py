@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Annotated
 from urllib.parse import urlsplit
 
+import anyio
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, WebSocket, status
 from pydantic import TypeAdapter, ValidationError
 from starlette.websockets import WebSocketDisconnect
@@ -138,7 +139,7 @@ def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
 
 @router.post("/reset", status_code=status.HTTP_204_NO_CONTENT, dependencies=staff_only)
 async def reset(request: Request) -> Response:
-    """C-01 데모 초기화: live 사례, 상태 변경, 채팅을 지우고 열린 채팅·통화 연결을 닫는다."""
+    """C-01 데모 초기화: live 사례, 상태 변경, 채팅, 통화 자막을 지우고 열린 채팅·통화 연결을 닫는다."""
     store.reset()
     hub: ChatHub = request.app.state.chat
     await hub.close_all()
@@ -218,7 +219,7 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
 
 # ---------------------------------------------------------------------------
 # 통화(backlog 16): 음성은 브라우저끼리 WebRTC로 오가고, 서버는 시그널링을 상대에게 중계하고 받아쓴 문장을 번역한다.
-# 권한·닫힘 코드는 채팅과 같다. 로그에는 SDP·ICE(IP 주소)와 자막 원문·번역을 남기지 않는다.
+# 자막은 사례별로 저장하고(backlog 18) 연결 직후 history로 다시 준다. 권한·닫힘 코드는 채팅과 같다. 로그에는 SDP·ICE(IP 주소)와 자막 원문·번역을 남기지 않는다.
 # ---------------------------------------------------------------------------
 CLOSE_BUSY = 4409
 # 프레임 하나의 최대 크기(UTF-8 바이트). SDP 한 개가 수 KB다.
@@ -226,28 +227,24 @@ MAX_CALL_FRAME = 16 * 1024
 _CALL_IN: TypeAdapter[CallIn] = TypeAdapter(CallIn)
 
 
-async def _send_caption(hub: CallHub, case_id: str, sender: ChatRole, text: str, case_lang: Lang, llm: LLMClient | None) -> None:
-    """근로자 말은 한국어로, 센터 말은 사례 언어로 옮겨 양쪽에 보낸다. 번호·시각은 받은 순서대로 먼저 정한다."""
-    caption_id, at = hub.next_caption_id(case_id), clock.now()
-    source, target = (case_lang, "ko") if sender == "worker" else ("ko", case_lang)
+def _caption_frame(caption: Caption) -> dict:
+    return {"type": "caption", "caption": caption.model_dump(by_alias=True)}
+
+
+async def _send_caption(hub: CallHub, case_id: str, caption_id: str, text: str, source: Lang, target: Lang, llm: LLMClient | None) -> None:
+    """저장해 둔 번역 전 자막을 옮겨 채우고 양쪽에 보낸다. 근로자 말은 한국어로, 센터 말은 사례 언어로 옮긴다."""
     tr = await translate_line(text, source, target, llm, timeout_s=settings.llm_timeout_s)
     logger.info("call caption translation=%s", tr.status)
-    caption = Caption(
-        id=caption_id,
-        from_=sender,
-        text=text,
-        lang=source,
-        translated=tr.text,
-        translated_lang=target,
-        translation=tr.status,
-        at=clock.iso_utc(at),
-    )
-    await hub.send(case_id, {"type": "caption", "caption": caption.model_dump(by_alias=True)})
+    caption = store.set_caption_translation(case_id, caption_id, tr.status, tr.text)
+    # 그사이 데모 초기화로 자막이 지워졌으면 보내지 않는다.
+    if caption is not None:
+        await hub.send(case_id, _caption_frame(caption))
 
 
 @router.websocket("/cases/{case_id}/call")
 async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
-    """근로자·센터 통화. 연결 직후 방에 있는 상대(joined)를 알리고, signal은 상대에게만, caption은 번역해 양쪽에 보낸다."""
+    """근로자·센터 통화. 연결 직후 방에 있는 상대(joined)와 이전 자막(history)을 알리고,
+    signal은 상대에게만, caption은 저장한 뒤 번역해 양쪽에 보낸다."""
     await ws.accept()
     denied = _chat_denied(ws, case_id, role, token)
     if denied:
@@ -258,13 +255,17 @@ async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
     if not hub.join(case_id, me, ws):
         await ws.close(CLOSE_BUSY)
         return
+    # join과 이전 자막 읽기 사이에 await가 없어야 그 사이 번역된 자막을 놓치거나 두 번 받지 않는다(채팅과 같다).
+    history = [c.model_dump(by_alias=True) for c in store.captions(case_id)]
     # 근로자 언어는 클라이언트 값이 아니라 사례의 언어다.
     case_lang = store.get(case_id).language
+    source, target = (case_lang, "ko") if me == "worker" else ("ko", case_lang)
     llm: LLMClient | None = getattr(ws.app.state, "llm", None)
-    # 번역을 기다리는 동안에도 시그널링을 계속 중계하도록 자막은 따로 돌린다.
-    tasks: set[asyncio.Task] = set()
+    # 번역을 기다리는 동안에도 시그널링을 계속 중계하도록 자막은 따로 돌린다. 값은 그 작업이 채울 자막 번호다.
+    tasks: dict[asyncio.Task, str] = {}
     try:
         await ws.send_json({"type": "joined", "role": me, "peers": hub.peers(case_id, me)})
+        await ws.send_json({"type": "history", "captions": history})
         await hub.send(case_id, {"type": "peer", "role": me, "present": True}, exclude=me)
         while True:
             message = await ws.receive()
@@ -279,18 +280,28 @@ async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
                 await ws.send_json(INVALID_FRAME)
                 continue
             if isinstance(frame, CallCaptionIn):
-                task = asyncio.create_task(_send_caption(hub, case_id, me, frame.text, case_lang, llm))
-                tasks.add(task)
-                task.add_done_callback(tasks.discard)
+                # 번호·시각은 받은 순서대로 먼저 정한다. 번역이 거꾸로 끝나도 history는 말한 순서다.
+                caption_id = store.add_caption(case_id, me, frame.text, source, target, clock.now())
+                task = asyncio.create_task(_send_caption(hub, case_id, caption_id, frame.text, source, target, llm))
+                tasks[task] = caption_id
+                task.add_done_callback(lambda t: tasks.pop(t, None))
             else:
                 await hub.send(case_id, {"type": "signal", "from": me, "data": frame.data}, exclude=me)
     except WebSocketDisconnect:
         pass
     finally:
-        for task in tasks:
+        unfinished = list(tasks.values())
+        for task in list(tasks):
             task.cancel()
-        if hub.leave(case_id, me, ws):
-            await hub.send(case_id, {"type": "peer", "role": me, "present": False})
+        left = hub.leave(case_id, me, ws)
+        # 번역 중에 끊긴 자막은 원문만 남기고(skipped) 남은 쪽에 보낸다. 그사이 번역을 채운 자막은 None이라 두 번 보내지 않는다.
+        caption_frames = [_caption_frame(c) for i in unfinished if (c := store.set_caption_translation(case_id, i, "skipped", None))]
+        # 연결이 취소로 끝나도(서버 쪽 정리) 남은 쪽에 알리도록 보내기는 취소에서 막는다.
+        with anyio.CancelScope(shield=True):
+            for frame in caption_frames:
+                await hub.send(case_id, frame)
+            if left:
+                await hub.send(case_id, {"type": "peer", "role": me, "present": False})
 
 
 # ---------------------------------------------------------------------------
