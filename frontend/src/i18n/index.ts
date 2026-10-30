@@ -48,28 +48,29 @@ const MESSAGES: Record<Lang, Record<MessageKey, string>> = {
 };
 
 // 언어 선택 화면의 순서. 요청받은 국기 목록(backlog 16)의 순서를 따른다.
-// flag는 S-01 "다른 언어" 알약의 국기(backlog 22). 국기는 나라 표시라 언어와 1:1이 아니다. 그 목록 이미지의 국기를 그대로 쓴다(번체도 🇨🇳)
-export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string; flag: string }[] = [
-  { lang: 'ko', native: '한국어', english: 'Korean', flag: '🇰🇷' },
-  { lang: 'ne', native: 'नेपाली', english: 'Nepali', flag: '🇳🇵' },
-  { lang: 'ru', native: 'Русский', english: 'Russian', flag: '🇷🇺' },
-  { lang: 'mn', native: 'Монгол', english: 'Mongolian', flag: '🇲🇳' },
-  { lang: 'my', native: 'မြန်မာ', english: 'Burmese', flag: '🇲🇲' },
-  { lang: 'vi', native: 'Tiếng Việt', english: 'Vietnamese', flag: '🇻🇳' },
-  { lang: 'si', native: 'සිංහල', english: 'Sinhala', flag: '🇱🇰' },
-  { lang: 'ar', native: 'العربية', english: 'Arabic', flag: '🇦🇪' },
-  { lang: 'en', native: 'English', english: 'English', flag: '🇺🇸' },
-  { lang: 'uz', native: 'Oʻzbekcha', english: 'Uzbek', flag: '🇺🇿' },
-  { lang: 'ja', native: '日本語', english: 'Japanese', flag: '🇯🇵' },
-  { lang: 'zh-CN', native: '简体中文', english: 'Chinese (Simplified)', flag: '🇨🇳' },
-  { lang: 'zh-TW', native: '繁體中文', english: 'Chinese (Traditional)', flag: '🇨🇳' },
-  { lang: 'kk', native: 'Қазақша', english: 'Kazakh', flag: '🇰🇿' },
-  { lang: 'km', native: 'ខ្មែរ', english: 'Khmer', flag: '🇰🇭' },
-  { lang: 'ky', native: 'Кыргызча', english: 'Kyrgyz', flag: '🇰🇬' },
-  { lang: 'th', native: 'ไทย', english: 'Thai', flag: '🇹🇭' },
-  { lang: 'fr', native: 'Français', english: 'French', flag: '🇫🇷' },
-  { lang: 'tl', native: 'Filipino', english: 'Filipino', flag: '🇵🇭' },
-  { lang: 'id', native: 'Bahasa Indonesia', english: 'Indonesian', flag: '🇮🇩' },
+// country는 S-01 언어 칸의 국기 그림 public/flags/<country>.svg(flag-icons, MIT, backlog 24). 국기 이모지는 Windows가 그리지 못해 그림 파일을 쓴다.
+// 국기는 나라 표시라 언어와 1:1이 아니다. 요청 목록 이미지의 국기를 그대로 쓴다(번체도 cn)
+export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string; country: string }[] = [
+  { lang: 'ko', native: '한국어', english: 'Korean', country: 'kr' },
+  { lang: 'ne', native: 'नेपाली', english: 'Nepali', country: 'np' },
+  { lang: 'ru', native: 'Русский', english: 'Russian', country: 'ru' },
+  { lang: 'mn', native: 'Монгол', english: 'Mongolian', country: 'mn' },
+  { lang: 'my', native: 'မြန်မာ', english: 'Burmese', country: 'mm' },
+  { lang: 'vi', native: 'Tiếng Việt', english: 'Vietnamese', country: 'vn' },
+  { lang: 'si', native: 'සිංහල', english: 'Sinhala', country: 'lk' },
+  { lang: 'ar', native: 'العربية', english: 'Arabic', country: 'ae' },
+  { lang: 'en', native: 'English', english: 'English', country: 'us' },
+  { lang: 'uz', native: 'Oʻzbekcha', english: 'Uzbek', country: 'uz' },
+  { lang: 'ja', native: '日本語', english: 'Japanese', country: 'jp' },
+  { lang: 'zh-CN', native: '简体中文', english: 'Chinese (Simplified)', country: 'cn' },
+  { lang: 'zh-TW', native: '繁體中文', english: 'Chinese (Traditional)', country: 'cn' },
+  { lang: 'kk', native: 'Қазақша', english: 'Kazakh', country: 'kz' },
+  { lang: 'km', native: 'ខ្មែរ', english: 'Khmer', country: 'kh' },
+  { lang: 'ky', native: 'Кыргызча', english: 'Kyrgyz', country: 'kg' },
+  { lang: 'th', native: 'ไทย', english: 'Thai', country: 'th' },
+  { lang: 'fr', native: 'Français', english: 'French', country: 'fr' },
+  { lang: 'tl', native: 'Filipino', english: 'Filipino', country: 'ph' },
+  { lang: 'id', native: 'Bahasa Indonesia', english: 'Indonesian', country: 'id' },
 ];
 
 export type { MessageKey };

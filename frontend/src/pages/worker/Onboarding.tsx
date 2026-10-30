@@ -38,9 +38,7 @@ export function LanguagePage() {
     const o = LANG_OPTION.get(l);
     return (
       <button key={l} type="button" className={suggest ? 'tile suggest' : 'tile'} lang={l} onClick={() => choose(l)}>
-        <span className="flag" aria-hidden="true">
-          {o?.flag}
-        </span>
+        <img className="flag" src={`/flags/${o?.country}.svg`} width="32" height="24" alt="" />
         <span className="name">
           <strong>{o?.native}</strong>
           {l !== 'en' && (

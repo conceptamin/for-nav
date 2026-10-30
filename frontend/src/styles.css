@@ -327,10 +327,16 @@ p {
   color: var(--brand-ink);
 }
 
+/* 국기 그림(public/flags, 4:3). 흰 바탕 국기(일본·한국)가 칸 바탕에 묻히지 않게 안쪽 1px 선을 겹친다 */
 .lang-grid .tile .flag {
   flex: none;
-  font-size: var(--t9);
-  line-height: 1;
+  display: block;
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+  object-fit: cover;
 }
 
 .lang-grid .tile .name {

@@ -94,7 +94,7 @@ src/
   styles.css        스타일 한 파일. 그리는 규칙은 design.md
 scripts/
   dump-fixtures.ts  백엔드 동기화 테스트 입력. 프론트 규칙·템플릿 출력을 backend/tests/fixtures/parity.json으로 내보낸다
-public/             빌드 없이 그대로 서빙되는 정적 파일(Vite 기본 publicDir). logo.png = 팀 로고 마크(파비콘·로고 화면·앱 바)
+public/             빌드 없이 그대로 서빙되는 정적 파일(Vite 기본 publicDir). logo.png = 팀 로고 마크(파비콘·로고 화면·앱 바), flags/ = S-01 언어 칸의 국기 그림 19개(flag-icons 7.6.0 4x3, MIT, LICENSE.txt 함께)
 backlog/            작업 항목(NN-short-name.md)
 ```
 
