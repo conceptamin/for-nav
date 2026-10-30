@@ -240,7 +240,7 @@ p {
   unicode-bidi: isolate;
 }
 
-/* S-01 대화형 언어 선택(backlog 20). 안내원 말풍선(떠 있음) → 대답 말풍선(누르는 면, 끝쪽 정렬) → 다른 언어 칩.
+/* S-01 대화형 언어 선택(backlog 20·22). 안내원 말풍선(떠 있음) → 대답 말풍선(누르는 면, 끝쪽 정렬) → 바닥의 다른 언어 알약.
    좌우는 글 방향을 따른다(아랍어 폰이면 뒤집힌다). 말풍선 꼬리 쪽 한 모서리만 6px */
 .w-chat {
   gap: 16px;
@@ -253,10 +253,21 @@ p {
   gap: 8px;
 }
 
-.w-chat .ask .mark {
+/* 안내원: 사람 모양을 담은 동그라미. 떠 있는 작은 면 */
+.w-chat .ask .avatar {
   flex: none;
+  display: grid;
+  place-items: center;
   width: 40px;
   height: 40px;
+  border-radius: 999px;
+  background: var(--brand-2);
+  color: var(--brand);
+  box-shadow: var(--clay-sm);
+}
+
+.w-chat .ask .avatar svg {
+  fill: currentColor;
 }
 
 .w-chat .ask .bubble {
@@ -316,8 +327,22 @@ p {
   color: var(--ink-2);
 }
 
+/* 다른 언어 묶음은 바닥(119 띠 위)에 붙는다. 그 아래 안내·센터 링크도 함께 내려간다 */
 .w-chat .chip-group {
-  margin: 8px 0 0;
+  margin: auto 0 0;
+  padding-top: 8px;
+}
+
+/* 다른 언어는 알약: 국기 + 모국어 이름. 칩의 면·눌림은 그대로 두고 모양만 둥글게 */
+.w-chat .chips .chip {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+
+.w-chat .chip .flag {
+  font-size: var(--t6);
+  line-height: 1;
 }
 
 /* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */
