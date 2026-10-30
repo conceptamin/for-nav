@@ -1,28 +1,27 @@
 /* 근로자 영역: 모바일 우선(360px 기준), 큰 글씨·큰 버튼. 센터 영역: PC 우선. */
 
 :root {
-  --ink: #12232e;
-  --ink-2: #4a5a66;
-  --ink-3: #74838e;
-  --line: #d9e1e6;
+  /* 글자·선·상태색은 SEED 역할 값(design.md "Colors" › "이 프로젝트의 역할 색"). 옅은 바탕 위 글자는 *-ink(contrast 단계) */
+  --ink: #1a1c20; /* fg-neutral, gray-1000 */
+  --ink-2: #555d6d; /* fg-neutral-muted, gray-800. fg-neutral-subtle(gray-700)은 Lc 75에 못 미쳐 쓰지 않는다 */
+  --line: #dcdee3; /* stroke-neutral-weak, gray-400 */
   --bg: #e6edf2; /* 화면 바닥. 점토가 놓이는 면 */
   --card: #f8fafc; /* 점토 표면. 순백이 아니어야 흰 하이라이트가 보인다 */
   --brand: #085e60; /* 화면용 진한 틸. 로고 키 컬러 #12979a는 흰 글자 대비가 모자라 글자·버튼에 쓰지 않는다(design.md "Colors") */
   --brand-2: #d9f0ef;
-  --ok: #1f7a4d;
-  --ok-bg: #e2f3ea;
-  --warn: #9a5b00;
-  --warn-bg: #fff1d6;
-  --danger: #c4231b;
-  --danger-2: #a11a13;
-  --danger-bg: #fbe3e1;
+  --ok: #079171; /* bg-positive-solid, green-700. 띠(그래픽)에만 쓴다 */
+  --ok-bg: #edfaf6; /* green-100 */
+  --warn-bg: #fff7de; /* yellow-100 */
+  --danger: #ca1d13; /* red-800. 역할 값 red-700은 흰 글자 대비가 모자라 한 단계 진하게 쓴다 */
+  --danger-2: #921708; /* fg-critical-contrast, red-900 */
+  --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #ffffff; /* 브랜드·위험색 같은 진한 바탕 위 글자 */
   --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
-  --info: #0b4f8a;
-  --info-bg: #dceeff; /* 신규 상태 칩 */
-  --warn-ink: #5c3700; /* 파스텔 안내 상자 글자(진한 변형) */
+  --info: #0b4596; /* fg-informative-contrast, blue-900. 신규 상태 칩 글자 */
+  --info-bg: #eff6ff; /* blue-100 */
+  --warn-ink: #4f3e1f; /* fg-warning-contrast, yellow-900 */
   --brand-ink: #074547;
-  --ok-ink: #134d31;
+  --ok-ink: #075445; /* fg-positive-contrast, green-900 */
   --bg-2: #eef3f6; /* 들어간 홈의 바탕(원문 상자, 막대 트랙), 낮음 칩. --bg와 --card 사이 */
   --bg-3: #f2f6f9; /* 표 머리, 행 강조. --card보다 한 단계 어둡다 */
   --live-bg: #fff8e1; /* 실제 전송 행 */
@@ -49,7 +48,27 @@
   --clay-color: 0 8px 16px var(--clay-drop), inset 4px 4px 10px rgb(255 255 255 / 35%), inset -4px -4px 10px rgb(0 0 0 / 20%);
   --clay-color-sm: 0 4px 8px var(--clay-drop), inset 3px 3px 6px rgb(255 255 255 / 35%), inset -3px -3px 6px rgb(0 0 0 / 20%);
   --clay-color-in: inset 4px 4px 8px rgb(0 0 0 / 22%), inset -3px -3px 6px rgb(255 255 255 / 25%);
-  font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* 글자 크기 사다리 t1~t14(design.md "Typography"). rem이라 기기 글자 크기 설정을 따른다. --t5 = 16px */
+  --t1: 0.6875rem; /* 11px */
+  --t2: 0.75rem; /* 12px */
+  --t3: 0.8125rem; /* 13px */
+  --t4: 0.875rem; /* 14px */
+  --t5: 1rem; /* 16px */
+  --t6: 1.125rem; /* 18px */
+  --t7: 1.25rem; /* 20px */
+  --t8: 1.375rem; /* 22px */
+  --t9: 1.5rem; /* 24px */
+  --t10: 1.625rem; /* 26px */
+  --t11: 1.75rem; /* 28px */
+  --t12: 2rem; /* 32px */
+  --t13: 2.5rem; /* 40px */
+  --t14: 3rem; /* 48px */
+
+  /* 시스템 폰트 스택. 웹폰트를 불러오지 않는다 */
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   color: var(--ink);
   background: var(--bg);
   line-height: 1.5;
@@ -77,15 +96,15 @@ h3 {
 }
 
 h1 {
-  font-size: 1.45rem;
+  font-size: var(--t9);
 }
 
 h2 {
-  font-size: 1.15rem;
+  font-size: var(--t6);
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: var(--t5);
 }
 
 p {
@@ -129,7 +148,7 @@ p {
 .w-header .title {
   flex: 1;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: var(--t5);
   color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
@@ -147,7 +166,7 @@ p {
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 1.5rem;
+  font-size: var(--t9);
   line-height: 1;
   cursor: pointer;
   flex: none;
@@ -159,7 +178,7 @@ p {
   border: 0;
   padding: 0 8px;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--t4);
   background: var(--card);
   color: var(--ink);
   box-shadow: var(--clay-sm);
@@ -247,7 +266,7 @@ p {
 }
 
 .w-wait .pic {
-  font-size: 4rem;
+  font-size: var(--t14);
   line-height: 1;
   margin-bottom: 16px;
 }
@@ -273,8 +292,8 @@ p {
   border-radius: var(--radius-lg);
   background: var(--danger);
   color: var(--on-brand);
-  font-weight: 800;
-  font-size: 1.1rem;
+  font-weight: 700;
+  font-size: var(--t6);
   text-decoration: none;
   box-shadow: var(--clay-color-sm);
 }
@@ -309,7 +328,7 @@ p {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: var(--t4);
 }
 
 .stack {
@@ -352,7 +371,7 @@ p {
   box-shadow: var(--clay-color-sm);
   font: inherit;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: var(--t5);
   text-decoration: none;
   cursor: pointer;
   text-align: center;
@@ -396,7 +415,7 @@ p {
 
 .btn.big {
   min-height: 60px;
-  font-size: 1.15rem;
+  font-size: var(--t6);
 }
 
 /* 칩은 내용 너비로 줄바꿈한다(2열 격자가 아니다) */
@@ -412,7 +431,7 @@ p {
 }
 
 .chip-group h2 {
-  font-size: 1rem;
+  font-size: var(--t5);
   color: var(--ink-2);
 }
 
@@ -424,7 +443,7 @@ p {
   background: var(--card);
   box-shadow: var(--clay-sm);
   font: inherit;
-  font-size: 0.98rem;
+  font-size: var(--t5);
   color: var(--ink);
   cursor: pointer;
   text-align: start;
@@ -447,7 +466,7 @@ p {
 .chip[aria-pressed='true']::before {
   content: '✓';
   color: var(--brand);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .seg {
@@ -580,7 +599,7 @@ textarea {
 .check-row .btn {
   min-width: 48px;
   padding: 0;
-  font-size: 1.5rem;
+  font-size: var(--t9);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
@@ -594,7 +613,7 @@ hr.divider {
 .notice {
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  font-size: 0.92rem;
+  font-size: var(--t4);
   margin-bottom: 12px;
 }
 
@@ -647,9 +666,9 @@ hr.divider {
   border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: 0.9rem;
+  font-size: var(--t4);
   font-weight: 700;
-  color: var(--ink-3);
+  color: var(--ink-2);
   background: var(--card);
   box-shadow: var(--clay-in);
 }
@@ -689,7 +708,7 @@ hr.divider {
   border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  font-size: 1.4rem;
+  font-size: var(--t8);
   background: var(--brand-2);
   box-shadow: var(--clay-in);
   flex: none;
@@ -712,7 +731,7 @@ hr.divider {
 
 .menu a strong {
   display: block;
-  font-size: 1.05rem;
+  font-size: var(--t5);
 }
 
 .menu a small {
@@ -728,8 +747,8 @@ hr.divider {
 }
 
 .dept .ko {
-  font-size: 1.6rem;
-  font-weight: 800;
+  font-size: var(--t10);
+  font-weight: 700;
 }
 
 .dept.alt {
@@ -738,12 +757,12 @@ hr.divider {
 }
 
 .dept.alt .ko {
-  font-size: 1.2rem;
+  font-size: var(--t7);
 }
 
 .ko-big {
-  font-size: 1.45rem;
-  font-weight: 800;
+  font-size: var(--t9);
+  font-weight: 700;
   line-height: 1.45;
   word-break: keep-all;
 }
@@ -764,19 +783,19 @@ hr.divider {
 }
 
 .line .ko {
-  font-size: 1.2rem;
+  font-size: var(--t7);
   font-weight: 700;
   word-break: keep-all;
 }
 
 .line .pron {
   color: var(--brand);
-  font-size: 0.92rem;
+  font-size: var(--t4);
 }
 
 .line .native {
   color: var(--ink-2);
-  font-size: 0.92rem;
+  font-size: var(--t4);
 }
 
 .kv {
@@ -788,12 +807,12 @@ hr.divider {
 
 .kv dt {
   color: var(--ink-2);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .kv dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   word-break: keep-all;
 }
 
@@ -838,13 +857,13 @@ hr.divider {
 }
 
 .report-row .lbl {
-  font-size: 0.85rem;
+  font-size: var(--t4);
   color: var(--ink-2);
   font-weight: 700;
 }
 
 .report-row .val {
-  font-size: 1.15rem;
+  font-size: var(--t6);
   font-weight: 700;
   white-space: pre-wrap;
   word-break: keep-all;
@@ -860,7 +879,7 @@ hr.divider {
 }
 
 .em-hero h1 {
-  font-size: 1.5rem;
+  font-size: var(--t9);
 }
 
 .em-call {
@@ -872,8 +891,8 @@ hr.divider {
   background: var(--card);
   box-shadow: var(--clay);
   color: var(--danger);
-  font-size: 1.7rem;
-  font-weight: 900;
+  font-size: var(--t11);
+  font-weight: 700;
   text-decoration: none;
   margin-top: 12px;
 }
@@ -883,8 +902,8 @@ hr.divider {
 }
 
 .footer-note {
-  font-size: 0.82rem;
-  color: var(--ink-3);
+  font-size: var(--t3);
+  color: var(--ink-2);
   margin-top: 8px;
 }
 
@@ -897,7 +916,7 @@ hr.divider {
   place-items: center;
   background: var(--brand-2);
   color: var(--brand);
-  font-weight: 800;
+  font-weight: 700;
   flex: none;
 }
 
@@ -929,7 +948,7 @@ hr.divider {
   display: grid;
   place-items: center;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--t4);
   font-weight: 700;
   color: var(--ink-2);
   box-shadow: var(--clay-in);
@@ -938,7 +957,7 @@ hr.divider {
 
 .photo-add .plus {
   display: block;
-  font-size: 1.6rem;
+  font-size: var(--t10);
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -982,8 +1001,8 @@ hr.divider {
   color: var(--ink);
   box-shadow: var(--clay-sm);
   font: inherit;
-  font-size: 1.2rem;
-  font-weight: 800;
+  font-size: var(--t7);
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -997,7 +1016,7 @@ hr.divider {
 }
 
 .range .face {
-  font-size: 2.6rem;
+  font-size: var(--t13);
   line-height: 1;
 }
 
@@ -1008,8 +1027,8 @@ hr.divider {
 }
 
 .range .num {
-  font-size: 2.6rem;
-  font-weight: 800;
+  font-size: var(--t13);
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -1060,7 +1079,7 @@ hr.divider {
 .range .ends {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: var(--t4);
   color: var(--ink-2);
 }
 
@@ -1084,7 +1103,7 @@ hr.divider {
 }
 
 .c-header .brand {
-  font-weight: 800;
+  font-weight: 700;
   color: var(--brand);
   white-space: nowrap;
 }
@@ -1100,7 +1119,7 @@ hr.divider {
   border-radius: 12px;
   text-decoration: none;
   color: var(--ink-2);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .c-header nav a.active {
@@ -1113,9 +1132,9 @@ hr.divider {
 .c-offline {
   padding: 8px 24px;
   background: var(--warn-bg);
-  color: var(--warn);
+  color: var(--warn-ink);
   font-weight: 700;
-  font-size: 0.92rem;
+  font-size: var(--t4);
 }
 
 .c-main {
@@ -1139,8 +1158,8 @@ hr.divider {
 }
 
 .kpi .n {
-  font-size: 1.8rem;
-  font-weight: 800;
+  font-size: var(--t11);
+  font-weight: 700;
 }
 
 /* 주의가 필요한 숫자(긴급도 높음 미완료) */
@@ -1150,7 +1169,7 @@ hr.divider {
 
 .kpi .l {
   color: var(--ink-2);
-  font-size: 0.88rem;
+  font-size: var(--t4);
 }
 
 /* overflow-x: auto가 둥근 모서리로 행을 잘라 주고, 900px 아래에서 가로 스크롤을 만든다 */
@@ -1164,12 +1183,12 @@ hr.divider {
 table.cases {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.92rem;
+  font-size: var(--t4);
 }
 
 table.cases th,
 table.cases td {
-  padding: 11px 14px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
@@ -1202,7 +1221,7 @@ table.cases tr.fresh {
   gap: 4px;
   padding: 2px 10px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: var(--t3);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1214,7 +1233,7 @@ table.cases tr.fresh {
 
 .pill.medium {
   background: var(--warn-bg);
-  color: var(--warn);
+  color: var(--warn-ink);
 }
 
 .pill.low {
@@ -1229,12 +1248,12 @@ table.cases tr.fresh {
 
 .pill.progress {
   background: var(--warn-bg);
-  color: var(--warn);
+  color: var(--warn-ink);
 }
 
 .pill.done {
   background: var(--ok-bg);
-  color: var(--ok);
+  color: var(--ok-ink);
 }
 
 .pill.live {
@@ -1259,7 +1278,7 @@ table.cases tr.fresh {
   background: var(--card);
   box-shadow: var(--clay-sm);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--t4);
   cursor: pointer;
 }
 
@@ -1293,7 +1312,7 @@ table.cases tr.fresh {
 }
 
 .panel h2 {
-  font-size: 1rem;
+  font-size: var(--t5);
   color: var(--ink-2);
   margin-bottom: 10px;
 }
@@ -1304,7 +1323,7 @@ table.cases tr.fresh {
   border-radius: var(--radius-sm);
   box-shadow: var(--clay-in);
   padding: 12px;
-  font-size: 0.95rem;
+  font-size: var(--t5);
 }
 
 .bars {
@@ -1318,7 +1337,7 @@ table.cases tr.fresh {
   grid-template-columns: 110px 1fr 56px;
   gap: 10px;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: var(--t4);
 }
 
 .bar-track {
@@ -1357,7 +1376,7 @@ table.cases tr.fresh {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.9rem;
+  font-size: var(--t4);
 }
 
 .legend i {
