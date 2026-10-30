@@ -22,6 +22,9 @@ export const zhCN: Record<MessageKey, string> = {
   // S-01
   langTitle: '请选择语言',
   langHint: '以后可以在屏幕上方更改。',
+  langAsk: '我们用哪种语言交流？',
+  langReply: '用简体中文',
+  langOther: '其他语言',
 
   // S-02
   consentTitle: '开始之前',
