@@ -1,11 +1,14 @@
 # predict()의 출력이 TriageResult.model 자리에 넣을 형태인지, 커밋된 서빙 묶음(predict.VERSION)만으로 동작하는지(backlog 08, 10).
 # 학습 코드를 import하지 않는지, 아티팩트를 읽을 때 pickle을 쓰지 않는지, "모름" 처리와 앙상블이 정한 대로인지도 본다.
 
+import ast
 import json
 import pickle
+import re
 import shutil
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import numpy as np
@@ -93,6 +96,26 @@ def test_predict_does_not_import_training_code():
         "fornav_modeling.features.buttons",
         "fornav_modeling.schema",
     }
+
+
+def test_serving_imports_only_declared_dependencies():
+    # 백엔드는 [project] dependencies만 설치한다(backlog 11). predict가 따라 들어가는 모듈의 외부 import가 거기에 다 있어야 한다
+    declared = {
+        re.split(r"[=<>~!\[ ]", d)[0].replace("-", "_")
+        for d in tomllib.loads((MODELING / "pyproject.toml").read_text())["project"]["dependencies"]
+    }
+    src = MODELING / "src" / "fornav_modeling"
+    files = [src / "predict.py", src / "explain.py", src / "features" / "buttons.py", src / "schema.py"]
+    imported = set()
+    for path in files:
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Import):
+                imported |= {a.name.split(".")[0] for a in node.names}
+            elif isinstance(node, ast.ImportFrom) and node.level == 0:
+                imported.add(node.module.split(".")[0])
+    third_party = imported - set(sys.stdlib_module_names) - {"fornav_modeling"}
+    assert third_party <= declared, third_party - declared
+    assert declared == {"lightgbm", "numpy"}  # 학습 의존성(pandas, scikit-learn, shap …)은 train 그룹에 둔다
 
 
 def test_tampered_artifact_is_refused(tmp_path):

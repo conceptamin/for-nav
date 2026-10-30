@@ -3,17 +3,21 @@ name = "for-nav-modeling"
 version = "0.1.0"
 description = "울산 외국인 의료 내비게이터 응급도·진료과 모델과 학습 데이터"
 requires-python = ">=3.12"
+# 백엔드가 경로 의존성으로 설치할 때 받는 것은 predict가 import하는 것뿐이다(backlog 11).
+# 학습·평가 의존성은 train 그룹에 둔다. 의존성 그룹은 이 폴더에서 uv sync할 때만 설치된다
 dependencies = [
     "lightgbm==4.7.0",
     "numpy==2.5.4",
+]
+
+[dependency-groups]
+train = [
     "openpyxl==3.1.5",
     "pandas==3.1.0",
     "pyarrow==26.0.0",
     "scikit-learn==1.9.1",
     "shap==0.54.1",
 ]
-
-[dependency-groups]
 dev = [
     "pytest==9.1.1",
     "ruff==0.17.2",
@@ -24,10 +28,18 @@ notebook = [
     "nbconvert==7.17.2",
 ]
 
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14"]
+build-backend = "uv_build"
+
 [tool.uv]
-package = false
-# 노트북을 Jupyter 커널(.venv)로 바로 열 수 있게 notebook 그룹도 기본으로 설치한다
-default-groups = ["dev", "notebook"]
+# 백엔드가 ../modeling을 editable 경로 의존성으로 설치한다(backlog 11). predict는 이 폴더의 models/를 읽으므로 editable로만 쓴다
+package = true
+# 학습 명령과 노트북을 바로 돌릴 수 있게 train·notebook 그룹도 기본으로 설치한다
+default-groups = ["dev", "notebook", "train"]
+
+[tool.uv.build-backend]
+module-name = "fornav_modeling"
 
 [tool.ruff]
 line-length = 140

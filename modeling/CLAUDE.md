@@ -53,7 +53,7 @@
 - Python 3.12 + uv(backend와 같음). LightGBM, scikit-learn, pandas, SHAP를 기준으로 하고, 버전은 `pyproject.toml`에 고정해 `uv.lock`을 커밋한다.
 - 검사 도구는 backend와 같은 ruff·pytest를 쓴다. ruff 설정은 `backend/pyproject.toml`을 따른다.
 - 노트북(`.ipynb`)은 탐색용이다. 재현해야 하는 것(전처리, 학습, 평가, 내보내기)은 모두 `.py` 모듈과 명령으로 옮긴다. 노트북을 커밋할 때는 출력을 지운다.
-- `pyproject.toml`은 backend처럼 `[tool.uv] package = false`로 두고, pytest `pythonpath = ["src"]`로 패키지를 찾게 한다.
+- `pyproject.toml`은 `package = true`(빌드 백엔드 `uv_build`)다. 백엔드가 `../modeling`을 editable 경로 의존성으로 설치한다(backlog 11). **`[project] dependencies`에는 `predict`가 import하는 것(`lightgbm`, `numpy`)만 두고**, 학습·평가 의존성은 `train` 의존성 그룹에 둔다. 서빙 경로에 새 import를 넣으면 `test_predict_contract.py`가 막는다. pytest는 `pythonpath = ["src"]`로 같은 `src`를 찾는다.
 - 지금 `main.py`는 빈 자리표시자다. 첫 구현 항목에서 지운다.
 - 폴더 구조는 아래를 따른다. 새 폴더가 필요하면 backlog 문서에 이유를 적고 여기와 `README.md`를 함께 고친다.
 
