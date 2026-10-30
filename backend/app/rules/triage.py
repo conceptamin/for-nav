@@ -140,10 +140,13 @@ def rule_department(body_parts: list[BodyPart], symptoms: list[Symptom]) -> tupl
     return DepartmentPair(primary="family", alt="internal"), True
 
 
-def department_for(intake: Intake, model: ModelPrediction | None) -> DepartmentPair:
-    """규칙표가 명시적으로 정한 조합은 규칙표, 막연한 분기만 모델 앙상블 상위 2개다."""
+def department_for(intake: Intake, model: ModelPrediction | None, emergency: bool) -> DepartmentPair:
+    """규칙표가 명시적으로 정한 조합은 규칙표, 막연한 분기만 모델 앙상블 상위 2개다.
+
+    응급이면 분기와 관계없이 규칙표다. 모델은 가슴 통증 같은 응급 조합에 정형외과를 먼저 내기도 한다(backlog 06 결과).
+    """
     pair, generic = rule_department(intake.body_parts, intake.symptoms)
-    if model is None or not generic:
+    if model is None or not generic or emergency:
         return pair
     primary, alt = model.department_top2
     return DepartmentPair(primary=primary, alt=alt)
@@ -172,7 +175,7 @@ def triage(intake: Intake, model: ModelPrediction | None = None) -> TriageResult
         by_rule=by_rule,
         by_model=by_model,
         model_score=score,
-        department=department_for(intake, model) if not missing else None,
+        department=department_for(intake, model, emergency=len(reasons) > 0) if not missing else None,
         missing=missing,
         model=model,
     )

@@ -156,14 +156,14 @@ backend/
              "acuityProba": { "emergency": 0.017, "today": 0.115, "outpatient": 0.869 },
              "departmentProba": { "ortho": 0.292, "surgery": 0.476, "family": 0.166, "...": 0.066 },
              "shap": [{ "feature": "symptom_cut", "value": 1.0, "contribution": 1.1125 }, "..."] } }
-// 가슴·통증 — 규칙이 응급이면 모델과 관계없이 응급(byRule: true). 이 입력은 모델도 응급이다
+// 가슴·통증 — 규칙이 응급이면 모델과 관계없이 응급(byRule: true). 응급이라 진료과도 규칙표 그대로
 { "emergency": true, "reasons": ["chest"], "byRule": true, "byModel": true, "modelScore": 0,
-  "department": { "primary": "ortho", "alt": "internal" }, "missing": [], "model": { "acuity": "emergency", "...": "..." } }
+  "department": { "primary": "internal", "alt": "family" }, "missing": [], "model": { "acuity": "emergency", "...": "..." } }
 ```
 
 - `byModel`: 모델이 있으면 `model.acuity == "emergency"`, 없으면 보조 점수 ≥ 3. `emergency = byRule || byModel`이고, 모델만 응급이면 `reasons`는 `["riskScore"]`다.
 - `modelScore`는 모델 유무와 관계없이 보조 점수 그대로다.
-- `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)만 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다.
+- `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)이면서 **응급이 아닐 때만** 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다. 응급(규칙이든 모델이든)이면 규칙표다.
 - `model.shap`: 판정한 응급도 클래스에 기여가 큰 피처 3개(`feature`, `value`, `contribution`). 값을 모르면 `value: null`.
 - 예측 중 오류가 나면 `model` 없이 규칙·보조 점수 결과를 돌려준다(로그에는 예외 종류만).
 
@@ -425,7 +425,7 @@ backend:
 | 자리 | 목업 동작 | 실서비스 |
 |---|---|---|
 | `TriageResult.modelScore`, `byModel` | `MODEL_DIR`이 있으면 응급도 모델(`byModel`, `model`), 없으면 위험 신호 가산 점수(임계값 3) — 붙임(backlog 06). `modelScore`는 계속 가산 점수 | 같음 |
-| `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 막연한 분기만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
+| `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 비응급의 막연한 분기만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
 | `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |

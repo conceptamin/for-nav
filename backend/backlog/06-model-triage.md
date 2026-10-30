@@ -35,6 +35,7 @@
 - 모델링 코드 부르기: (b) `PYTHONPATH`에 `modeling/src`(사용자와 정함). `modeling/`은 고치지 않았다. 서버 의존성에 `lightgbm==4.7.0`, `numpy==2.5.4`를 modeling과 같은 버전으로 더했다(`predict.py`가 이 둘만 import한다). `MODEL_DIR`이 비면 `fornav_modeling`을 import하지 않아 CI·기본 실행은 그대로다.
 - 버전: 문서는 `v1`이라 했지만 `predict.py`가 `VERSION = "v2"`로 고정하고 그 폴더만 읽는다(modeling backlog 10, 결측 학습). 서버는 버전을 다시 적지 않으므로 v2로 확인했다.
 - `MODEL_DIR`은 `modeling/models` 폴더(`predict(models_dir=)`)다. 없는 폴더면 설정 단계에서, 아티팩트가 깨졌거나 import가 안 되면 lifespan에서 서버가 뜨지 않는다.
+- 응급이면 진료과는 규칙표다(사용자와 정함). 실제 아티팩트로 처음 띄웠을 때 가슴·통증(규칙 응급)이 내과 묶음 분기라 모델 값 ortho/internal이 됐다. 모델 앙상블이 가슴 통증에서 정형외과(0.35)를 내과(0.25)보다 높게 보기 때문이다. 응급(규칙·모델 어느 쪽이든)이면 분기와 관계없이 규칙표를 쓰도록 바꿨다.
 - 진료과 기본값 분기: `rules/triage.py`의 마지막 `family/internal`은 **부위가 하나라도 있으면 닿지 않는다**(13개 부위가 모두 앞 분기에 있고, 진료과는 부위·증상이 모두 있을 때만 계산한다). 문서대로면 모델 진료과가 한 번도 쓰이지 않으므로, 사용자와 정해 **내과 묶음 분기**(배·가슴·온몸 부위 또는 발열·구토·어지러움 → internal/family)**와 기본값**을 막연한 분기로 보고 그때만 모델 앙상블 상위 2개(`departmentTop2`, 모델 쪽 폴백 포함)를 쓴다. `rule_department()`가 `(결과, 막연한지)`를 돌려준다.
 - `byModel`: 모델이 있으면 `model.acuity == "emergency"`, 없으면 지금 보조 점수. 모델만 응급이면 `reasons`는 기존 열거값 `riskScore`(위험 신호 점수 높음)를 쓴다. 새 열거값을 만들지 않았다.
 - `vocab.py`에 `Acuity = Literal["emergency", "today", "outpatient"]`. `predict.py`의 `ACUITIES`와 같다.
@@ -44,14 +45,14 @@
 
 ### 실행
 - `uv run ruff check . && uv run ruff format --check .` → 통과
-- `uv run pytest` → 2811 passed(새 테스트 `tests/test_model_triage.py` 58개, 그중 44개는 `MODEL_DIR` 없는 `/api/triage`가 parity 픽스처와 같은지). `test_parity.py`의 triage 케이스 그대로 통과
+- `uv run pytest` → 2829 passed(main의 04·05 병합 후, 새 테스트 `tests/test_model_triage.py` 60개, 그중 44개는 `MODEL_DIR` 없는 `/api/triage`가 parity 픽스처와 같은지). `test_parity.py`의 triage 케이스 그대로 통과
 - `grep -rn "pickle\|joblib" app/` → 출력 없음
 - `PYTHONPATH=../modeling/src MODEL_DIR=../modeling/models uv run fastapi run app/main.py` 뒤 `curl -XPOST /api/triage`
 
 | 입력 | emergency | byRule | byModel | model.acuity | department | 비고 |
 |---|---|---|---|---|---|---|
 | 손·베인 상처·출혈 | false | false | false | outpatient(0.87) | surgery/ortho | 규칙표 그대로(명시적 분기) |
-| 가슴·통증 | **true** | **true** | true | emergency(0.70) | **ortho/internal** | 규칙 응급. 진료과는 내과 묶음이라 모델 값 |
+| 가슴·통증 | **true** | **true** | true | emergency(0.70) | internal/family | 규칙 응급이라 진료과도 규칙표(바꾸기 전에는 모델 값 ortho/internal) |
 | 배·통증·구토 | false | false | false | outpatient(0.57) | internal/family | 모델 상위 2개가 규칙표와 같음 |
 
   응답 전문(손·베인 상처·출혈): `{"emergency":false,"reasons":[],"byRule":false,"byModel":false,"modelScore":2,"department":{"primary":"surgery","alt":"ortho"},"missing":[],"model":{"acuity":"outpatient","acuityProba":{"emergency":0.0166,"today":0.1145,"outpatient":0.8689},"departmentProba":{"ortho":0.2924,"surgery":0.4758,"internal":0.0531,"ophth":0.0002,"ent":0.0009,"derm":0.0110,"dental":0.0010,"neuro":0.0001,"family":0.1655,"occ":0.0000},"shap":[{"feature":"symptom_cut","value":1.0,"contribution":1.1125},{"feature":"body_hand","value":1.0,"contribution":1.0225},{"feature":"body_chest","value":0.0,"contribution":0.2988}]}}`(확률은 소수 넷째 자리로 줄임)
@@ -59,10 +60,10 @@
 
 ### 바뀐 API
 - `POST /api/triage` 응답에 선택 필드 `model: { acuity, acuityProba, departmentProba, shap }`(모델이 없으면 키 없음)
-- 모델이 있으면 `byModel`·`emergency`·`reasons`(`riskScore`)·`department`(내과 묶음·기본값 분기만) 값이 달라질 수 있다
+- 모델이 있으면 `byModel`·`emergency`·`reasons`(`riskScore`)·`department`(비응급의 내과 묶음·기본값 분기만) 값이 달라질 수 있다
 
 ### 남은 문제
-- **가슴·통증의 진료과가 모델 값 ortho/internal이 된다.** 가슴은 내과 묶음 분기라 모델이 정하는데, 모델 앙상블은 가슴 통증에서 정형외과(0.35)를 내과(0.25)보다 높게 본다. 응급이라 화면은 119 안내가 먼저지만, 응급일 때 규칙표 진료과를 유지할지·가슴을 막연한 분기에서 뺄지 정해야 한다
+- 진료과 앙상블이 가슴 통증에서 정형외과를 먼저 내는 것은 모델 쪽 문제로 남는다. 실제 아티팩트에서 가슴·통증, 가슴·저림은 모두 응급(규칙 또는 모델)이라 규칙표 internal/family가 나온다. 응급이 아닌 내과 묶음 조합에서는 여전히 모델 값을 쓴다. modeling 쪽에 알린다
 - 프론트 화면은 응급/비응급 둘뿐이라 `today`/`outpatient`와 SHAP 표시는 frontend 항목이다
 
 ## 메모

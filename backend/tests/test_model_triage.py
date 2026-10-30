@@ -104,6 +104,18 @@ def test_generic_branch_uses_model_department():
     assert out["department"] == {"primary": "family", "alt": "occ"}
 
 
+def test_rule_emergency_keeps_rule_department():
+    # 가슴·통증은 내과 묶음 분기지만 규칙이 응급이라 규칙표다(모델은 실제로 ortho를 먼저 낸다).
+    out = post(lambda i: prediction("outpatient", top2=("ortho", "internal")), CHEST_PAIN)
+    assert out["department"] == {"primary": "internal", "alt": "family"}
+
+
+def test_model_only_emergency_keeps_rule_department():
+    out = post(lambda i: prediction("emergency", top2=("ortho", "internal")), ABDOMEN_PAIN)
+    assert (out["emergency"], out["byRule"], out["byModel"]) == (True, False, True)
+    assert out["department"] == {"primary": "internal", "alt": "family"}
+
+
 def test_generic_branch_without_model_is_rule_table():
     assert post(None, ABDOMEN_PAIN)["department"] == {"primary": "internal", "alt": "family"}
 
