@@ -241,10 +241,15 @@ def test_send_case_flow():
     assert case["id"].startswith("C-")
     assert len(out["nextOpenDate"]) == 10
 
+    # 채팅 토큰(backlog 14)은 전송 응답에만 있고 센터 목록·상세에는 없다.
+    assert len(out["chatToken"]) >= 32
+    assert "chatToken" not in case
+
     listed = client.get("/api/center/cases").json()
     assert len(listed) == 25
     assert listed[0]["id"] == case["id"]
     assert client.get(f"/api/center/cases/{case['id']}").json() == case
+    assert out["chatToken"] not in client.get("/api/center/cases").text
 
 
 @both_stores
