@@ -44,4 +44,4 @@
 ## 메모
 - 경로 의존성이라 서버는 저장소 체크아웃 안에서만 설치된다. `backend/`만 따로 배포하면 `../modeling`이 없다(08 같은 출처 서빙은 체크아웃 안에서 띄우므로 해당 없음)
 - modeling의 `[project] dependencies`를 바꾸면 서버 `uv.lock`도 다시 만들어야 한다(`uv lock`). CI는 `uv sync`(잠금 확인 없이)라 실패하지 않고 그 자리에서 다시 푼다
-- 열린 PR #84(07)·#85(08)도 `.env.example`·`README.md`의 `MODEL_DIR` 줄 옆을 고쳐서, 이 PR 뒤에 병합하면 그 줄에서 다시 충돌할 수 있다
+- #84(07)·#85(08)가 먼저 병합됐다. main을 받아 `README.md` 환경 변수 표의 `STATIC_DIR` 행을 살리고 `MODEL_DIR` 행에서 PYTHONPATH 안내를 뺐다. 병합 뒤 `uv run pytest` → `2864 passed`
