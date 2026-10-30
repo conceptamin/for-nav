@@ -19,7 +19,7 @@
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경이 재시작 뒤에도 남는다 |
-| 모델 | `lightgbm`, `numpy`(modeling과 같은 버전) + `modeling/src`의 `predict()` | 응급도·진료과 모델(backlog 06). `MODEL_DIR`이 없으면 import하지 않는다 |
+| 모델 | `for-nav-modeling`(`../modeling` editable 경로 의존성)의 `predict()`, 따라오는 의존성은 `lightgbm`·`numpy`뿐 | 응급도·진료과 모델(backlog 06). `uv sync`가 설치하고, `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
 
@@ -353,7 +353,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
-| `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다. 쓰려면 `PYTHONPATH`에 `../modeling/src`를 넣는다 |
+| `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -376,10 +376,12 @@ uv run --env-file .env python scripts/translate_check.py   # 픽스처 자유 �
 
 ### 모델
 
+모델링 코드는 `pyproject.toml`의 경로 의존성(`for-nav-modeling = { path = "../modeling", editable = true }`)으로 `uv sync`가 설치한다. 학습 의존성(pandas, scikit-learn 등)은 modeling의 `train` 그룹이라 따라오지 않는다.
+
 `MODEL_DIR`이 있으면 시작 시 `modeling/models`의 아티팩트(LightGBM 텍스트·JSON, `metadata.json`의 sha256 확인)를 한 번 읽어 `app.state.model`에 둔다. 아티팩트가 없거나 깨졌거나 `fornav_modeling`을 import할 수 없으면 서버가 뜨지 않는다. 모델 버전·피처·임계값은 `modeling/src/fornav_modeling/predict.py`와 `metadata.json`이 정하고 서버에 다시 적지 않는다.
 
 ```sh
-PYTHONPATH=../modeling/src MODEL_DIR=../modeling/models uv run fastapi dev app/main.py
+MODEL_DIR=../modeling/models uv run fastapi dev app/main.py
 ```
 
 테스트는 가짜 `predict`로 돌고 `modeling` 코드를 import하지 않는다.

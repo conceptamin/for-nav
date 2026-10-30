@@ -32,7 +32,7 @@
 ## 결과
 
 ### 정한 것
-- 모델링 코드 부르기: (b) `PYTHONPATH`에 `modeling/src`(사용자와 정함). `modeling/`은 고치지 않았다. 서버 의존성에 `lightgbm==4.7.0`, `numpy==2.5.4`를 modeling과 같은 버전으로 더했다(`predict.py`가 이 둘만 import한다). `MODEL_DIR`이 비면 `fornav_modeling`을 import하지 않아 CI·기본 실행은 그대로다.
+- 모델링 코드 부르기: **(a) 경로 의존성으로 바꿨다**(사용자와 정함, 2026-10-30, 06 병합 뒤 `backend/modeling-path-dep`). `pyproject.toml`에 `for-nav-modeling = { path = "../modeling", editable = true }`이고, modeling backlog 11(#82)로 modeling이 패키지가 되어 `predict` 의존성(lightgbm, numpy)만 따라온다. 아래는 처음 병합할 때의 기록이다. 처음에는 (b) `PYTHONPATH`에 `modeling/src`(사용자와 정함)였다. `modeling/`은 고치지 않았다. 서버 의존성에 `lightgbm==4.7.0`, `numpy==2.5.4`를 modeling과 같은 버전으로 더했다(`predict.py`가 이 둘만 import한다). `MODEL_DIR`이 비면 `fornav_modeling`을 import하지 않아 CI·기본 실행은 그대로다.
 - 버전: 문서는 `v1`이라 했지만 `predict.py`가 `VERSION = "v2"`로 고정하고 그 폴더만 읽는다(modeling backlog 10, 결측 학습). 서버는 버전을 다시 적지 않으므로 v2로 확인했다.
 - `MODEL_DIR`은 `modeling/models` 폴더(`predict(models_dir=)`)다. 없는 폴더면 설정 단계에서, 아티팩트가 깨졌거나 import가 안 되면 lifespan에서 서버가 뜨지 않는다.
 - 응급이면 진료과는 규칙표다(사용자와 정함). 실제 아티팩트로 처음 띄웠을 때 가슴·통증(규칙 응급)이 내과 묶음 분기라 모델 값 ortho/internal이 됐다. 모델 앙상블이 가슴 통증에서 정형외과(0.35)를 내과(0.25)보다 높게 보기 때문이다. 응급(규칙·모델 어느 쪽이든)이면 분기와 관계없이 규칙표를 쓰도록 바꿨다.
