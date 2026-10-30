@@ -42,6 +42,9 @@ class Settings:
     llm_attempts: int = DEFAULT_ATTEMPTS
     # 센터 사례 SQLite 파일. 빈 문자열이면 메모리 저장소(재시작하면 mock 시드 상태)
     db_path: str = ""
+
+    # 프론트 빌드 폴더(frontend/dist). 빈 문자열이면 정적 파일을 서빙하지 않는다(API만)
+    static_dir: str = ""
     # 모델 아티팩트 폴더(modeling/models). 빈 문자열이면 모델 없이 규칙·보조 점수로 동작한다
     model_dir: str = ""
 
@@ -108,6 +111,13 @@ def _db_path(raw: str) -> str:
     return path
 
 
+def _static_dir(raw: str) -> str:
+    path = raw.strip()
+    if path and not (Path(path) / "index.html").is_file():
+        raise ValueError(f"STATIC_DIR에 index.html이 없다(프론트를 먼저 빌드한다): {raw!r}")
+    return path
+
+
 def _model_dir(raw: str) -> str:
     path = raw.strip()
     if path and not Path(path).is_dir():
@@ -126,6 +136,7 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
         llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
         llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
         db_path=_db_path(env.get("DB_PATH", "")),
+        static_dir=_static_dir(env.get("STATIC_DIR", "")),
         model_dir=_model_dir(env.get("MODEL_DIR", "")),
     )
 
