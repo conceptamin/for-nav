@@ -129,7 +129,7 @@ uv run python scripts/experiment_vitals.py               # 발표용 비교: 버
 `metadata.json`에는 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 임계값·가중치·폴백 기준, 피처·라벨 순서, 검증·최종(test) 측정값, 생성 시각이 있다.
 
 ```python
-from fornav_modeling.predict import predict  # 패키지를 설치하지 않으므로 PYTHONPATH=src로 실행한다
+from fornav_modeling.predict import predict  # uv sync가 이 패키지를 editable로 설치한다
 
 predict(
     {
@@ -153,6 +153,7 @@ predict(
 - 응급도 "모름": 의식 상태를 모르면 alert, 성별·나이대·손상 여부·통증 점수는 결측 그대로 넘긴다. 응급도 v2가 이 값들이 빈 행으로 학습했고, 임계값은 "다 앎"과 "이 값들 모름" 두 입력 모양 모두 응급 재현율 95%를 넘게 정했다(backlog 10). 이 값들을 받으면 응급 판단이 더 정확해진다
 - 레드플래그·명확 케이스 규칙은 백엔드가 `predict` 앞에서 실행한다. `predict`에는 규칙이 없다
 - `predict`는 학습 코드(`fornav_modeling.models`)를 import하지 않는다(`tests/test_predict_contract.py`)
+- 백엔드는 이 폴더를 editable 경로 의존성으로 설치한다: `for-nav-modeling = { path = "../modeling", editable = true }`(`[tool.uv.sources]`). 설치되는 것은 `[project] dependencies`(`lightgbm`, `numpy`)뿐이고 학습 의존성은 `train` 그룹이라 따라가지 않는다(backlog 11). 아티팩트 위치는 `predict(..., models_dir=)`로 넘길 수 있다
 
 ## 폴더 구조
 
