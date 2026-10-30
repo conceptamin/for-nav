@@ -64,6 +64,27 @@ export interface ChatMessage {
 /** 서버가 받는 글 길이(앞뒤 공백을 지운 뒤). 넘으면 서버가 error 프레임을 보낸다 */
 export const CHAT_MAX_LEN = 1000;
 
+/** 통화 자막 번역 상태(backend 05·16). ok가 아니면 translated는 null이고 원문만 있다 */
+export type CaptionTranslation = 'ok' | 'skipped' | 'rejected';
+
+/** 통화 자막 한 줄. 받아쓴 확정 문장을 서버가 번역해 양쪽에 보낸다(backend 16). 서버는 저장하지 않는다 */
+export interface Caption {
+  /** 사례 안에서 c-1, c-2…(말한 순서) */
+  id: string;
+  from: ChatRole;
+  text: string;
+  /** 원문 언어. 근로자 말은 사례 언어, 센터 말은 ko */
+  lang: Lang;
+  translated: string | null;
+  translatedLang: Lang;
+  translation: CaptionTranslation;
+  /** ISO(UTC) */
+  at: string;
+}
+
+/** 서버가 받는 자막 한 줄 길이. 넘는 부분은 보내기 전에 자른다 */
+export const CAPTION_MAX_LEN = 500;
+
 /** 통계 칸. 이보다 적은 칸은 숫자를 내보내지 않는다(개인 단위 기록 보호) */
 export const MIN_CELL = 5;
 

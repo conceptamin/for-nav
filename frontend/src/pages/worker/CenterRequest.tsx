@@ -1,17 +1,19 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기는 api/worker.ts의 useCenterSummary가 만든다. 브라우저 요약을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
 // 전송은 api/center.ts의 sendCase가 한다. API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
-// 전송 완료 화면에는 상담 채팅(backlog 25)을 붙인다. 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 보이지 않는다.
+// 전송 완료 화면에는 상담 채팅(backlog 25)과 그 위에 센터와 통화(backlog 26)를 붙인다. 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 보이지 않는다.
 
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/common';
+import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { sendCase } from '../../api/center';
+import { isCallAvailable } from '../../api/call';
 import { isChatAvailable } from '../../api/chat';
 import type { NewCaseResponse } from '../../domain/centerCase';
 import { useCenterSummary } from '../../api/worker';
@@ -86,6 +88,37 @@ export function CenterRequestPage() {
       stopped: { denied: t('chatStopped'), missing: t('chatStopped'), reset: t('chatStopped') },
       rejected: t('chatRejected'),
     };
+    const callLabels: CallLabels = {
+      start: t('liveCallStart'),
+      accept: t('liveCallAccept'),
+      decline: t('liveCallDecline'),
+      hangup: t('liveCallHangup'),
+      mute: t('liveCallMute'),
+      unmute: t('liveCallUnmute'),
+      calling: t('liveCallCalling'),
+      ringing: t('liveCallRinging'),
+      connecting: t('liveCallConnecting'),
+      inCall: t('liveCallInCall'),
+      ended: {
+        self: t('liveCallEnded'),
+        peer: t('liveCallEnded'),
+        'peer-left': t('liveCallEnded'),
+        declined: t('liveCallDeclined'),
+        'no-answer': t('liveCallNoAnswer'),
+        failed: t('liveCallFailed'),
+      },
+      peerAway: t('liveCallCenterAway'),
+      micDenied: t('liveCallMicDenied'),
+      noCaption: t('liveCallNoCaption'),
+      unsupported: t('liveCallUnsupported'),
+      me: t('liveCallMe'),
+      other: t('liveCallCenter'),
+      translating: t('liveCallTranslating'),
+      machineTranslated: t('liveCallMachineTranslated'),
+      socketConnecting: t('chatConnecting'),
+      socketReconnecting: t('chatReconnecting'),
+      stopped: { denied: t('chatStopped'), missing: t('chatStopped'), reset: t('chatStopped'), busy: t('chatReconnecting') },
+    };
     return (
       <div>
         <section className="card" style={{ textAlign: 'center' }}>
@@ -107,6 +140,13 @@ export function CenterRequestPage() {
           <div className="notice ok">{t('cenInHours')}</div>
         )}
         <p className="footer-note">{t('cenHoursNote')}</p>
+        {chatToken && isCallAvailable() && (
+          <section className="card">
+            <h2>{t('liveCallTitle')}</h2>
+            <p className="small muted">{t('liveCallIntro')}</p>
+            <CallPanel caseId={sent.case.id} auth={{ role: 'worker', token: chatToken }} lang={lang} labels={callLabels} locale={LOCALES[lang]} />
+          </section>
+        )}
         {chatToken && isChatAvailable() && (
           <section className="card">
             <h2>{t('chatTitle')}</h2>
