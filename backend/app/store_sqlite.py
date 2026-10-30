@@ -1,7 +1,8 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
-# 표는 둘이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태.
+# 표는 넷이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
-# 연락처·자유 입력이 사례 본문에 평문으로 남는다(데모 범위, README "센터 저장소").
+# 연락처·자유 입력·채팅 메시지가 평문으로 남는다(데모 범위, README "센터 저장소").
 
 import sqlite3
 from collections.abc import Callable
@@ -10,8 +11,8 @@ from threading import Lock
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
-from app.schemas import CaseStatus, CenterCase
-from app.store import latest_first, next_case_id, with_status
+from app.schemas import CaseStatus, CenterCase, ChatMessage, ChatRole
+from app.store import latest_first, make_message, next_case_id, with_status
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS live_cases (
@@ -22,6 +23,18 @@ CREATE TABLE IF NOT EXISTS live_cases (
 CREATE TABLE IF NOT EXISTS case_status (
     id TEXT PRIMARY KEY,
     status TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS chat_tokens (
+    case_id TEXT PRIMARY KEY,
+    token TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id TEXT NOT NULL,
+    case_id TEXT NOT NULL,
+    sender TEXT NOT NULL,
+    text TEXT NOT NULL,
+    at TEXT NOT NULL,
+    PRIMARY KEY (case_id, id)
 );
 """
 
@@ -81,11 +94,41 @@ class SqliteStore:
             )
         return self.get(case_id)
 
-    def reset(self) -> None:
-        """두 표를 비운다. 파일은 지우지 않는다."""
+    def set_chat_token(self, case_id: str, token: str) -> None:
         with self._lock, self._db:
-            self._db.execute("DELETE FROM live_cases")
-            self._db.execute("DELETE FROM case_status")
+            self._db.execute(
+                "INSERT INTO chat_tokens (case_id, token) VALUES (?, ?) ON CONFLICT(case_id) DO UPDATE SET token = excluded.token",
+                (case_id, token),
+            )
+
+    def chat_token(self, case_id: str) -> str | None:
+        with self._lock:
+            row = self._db.execute("SELECT token FROM chat_tokens WHERE case_id = ?", (case_id,)).fetchone()
+        return row[0] if row else None
+
+    def add_message(self, case_id: str, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
+        with self._lock:
+            (count,) = self._db.execute("SELECT COUNT(*) FROM chat_messages WHERE case_id = ?", (case_id,)).fetchone()
+            m = make_message(case_id, count, sender, text, at)
+            with self._db:
+                self._db.execute(
+                    "INSERT INTO chat_messages (id, case_id, sender, text, at) VALUES (?, ?, ?, ?, ?)",
+                    (m.id, m.case_id, m.from_, m.text, m.at),
+                )
+        return m
+
+    def messages(self, case_id: str) -> list[ChatMessage]:
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT id, sender, text, at FROM chat_messages WHERE case_id = ? ORDER BY rowid", (case_id,)
+            ).fetchall()
+        return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
+
+    def reset(self) -> None:
+        """네 표를 비운다. 파일은 지우지 않는다."""
+        with self._lock, self._db:
+            for table in ("live_cases", "case_status", "chat_tokens", "chat_messages"):
+                self._db.execute(f"DELETE FROM {table}")
 
     def close(self) -> None:
         self._db.close()

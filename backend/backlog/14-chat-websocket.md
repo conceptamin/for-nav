@@ -1,6 +1,6 @@
-# 13. 근로자·센터 상담 채팅(WebSocket)
+# 14. 근로자·센터 상담 채팅(WebSocket)
 
-상태: 대기
+상태: 완료
 의존: 07
 
 ## 목표
@@ -67,20 +67,47 @@ WS /api/center/cases/{id}/chat?role=center
 - 수정: `app/schemas.py`(`ChatMessage`, `ChatIn`, `NewCaseResponse.chat_token`), `app/vocab.py`(`ChatRole = Literal["worker", "center"]`), `app/store.py`, `app/store_sqlite.py`, `app/routers/center.py`(WS 경로, 토큰 발급, reset 때 연결 닫기), `app/main.py`(lifespan), `app/errors.py`(WS 접근 로그), `tests/test_store.py`, `tests/test_api.py`, `README.md`(API 표, 요청·응답 예시, 폴더 구조 표, "나중에 붙일 자리", 발표용 실행의 단일 프로세스 안내)
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. 기존 테스트는 그대로 통과한다
-- [ ] `test_chat.py`가 다음을 메모리·SQLite 두 구현에서 확인한다
+- [x] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. 기존 테스트는 그대로 통과한다
+- [x] `test_chat.py`가 다음을 메모리·SQLite 두 구현에서 확인한다
   - 근로자·센터 두 연결이 한 방에 붙어 한쪽이 보낸 메시지를 양쪽이 받는다. `from`·`at`·`id`는 서버 값이다
   - 다시 연결하면 `history`에 이전 메시지가 순서대로 있다
   - 없는 사례 → 4404, 토큰 없음·틀림·`role` 틀림 → 4403
   - 빈 문자열, 1001자, JSON 아님 → `error` 프레임을 받고 연결은 유지된다
   - `POST /api/center/reset` → 열린 연결이 4000으로 닫히고, 다시 연결하면 `history`가 비어 있다
   - SQLite: 저장소를 두 번 만들어도(재시작 흉내) 메시지와 토큰이 남는다
-- [ ] `test_api.py`: `POST /api/center/cases` 응답에 `chatToken`이 있고, `GET /api/center/cases`·`/cases/{id}` 응답에는 없다
-- [ ] 접근 로그에 WS 연결이 한 줄씩 남고, 그 줄에 토큰·메시지 본문이 없다(테스트에서 `caplog`로 확인)
-- [ ] `uv run fastapi dev app/main.py`로 띄워 브라우저 콘솔 두 개(근로자·센터)에서 `new WebSocket(...)`으로 주고받은 결과를 `## 결과`에 적는다
+- [x] `test_api.py`: `POST /api/center/cases` 응답에 `chatToken`이 있고, `GET /api/center/cases`·`/cases/{id}` 응답에는 없다
+- [x] 접근 로그에 WS 연결이 한 줄씩 남고, 그 줄에 토큰·메시지 본문이 없다(테스트에서 `caplog`로 확인)
+- [x] `uv run fastapi dev app/main.py`로 띄워 브라우저 콘솔 두 개(근로자·센터)에서 `new WebSocket(...)`으로 주고받은 결과를 `## 결과`에 적는다
 
 ## 결과
-(구현 후 작성)
+
+### 결정
+- `ChatRole`은 `vocab.py`가 아니라 `schemas.py`의 `CaseStatus` 옆에 두었다. 센터 사례의 다른 열거값(`CaseStatus`, `Urgency`)이 거기에 있고, 프론트·모델링과 나누는 어휘가 아니기 때문이다
+- `ChatHub`는 lifespan이 아니라 앱을 만든 직후 `app.state.chat`에 둔다. 닫을 자원이 없고, 테스트 대부분이 `TestClient(app)`를 `with` 없이 써서 lifespan이 돌지 않기 때문이다. 모듈 변수는 아니다
+- 경로는 `routers/center.py`에 더했다. 검사(`_chat_denied`)와 프레임 처리만 두고 방 관리는 `app/chat.py`, 저장은 `store`에 있다
+- `hub.join()`과 `store.messages()` 사이에 await가 없게 해, 연결 직후 들어온 메시지를 놓치거나 `history`와 `message`로 두 번 받지 않게 했다
+- 저장소 호출은 비동기 경로 안에서 동기로 부른다. 메모리·SQLite 모두 한 번에 1ms 안쪽이라 스레드 풀로 넘기지 않았다
+- 근로자 토큰 비교는 `secrets.compare_digest`다. `POST /api/center/cases` 응답의 `chatToken`은 `absent_if_none` 선택 필드다
+- 수동 확인 중 uvicorn이 WebSocket 연결마다 `uvicorn.error`에 `"WebSocket <경로?쿼리>" [accepted]`(클라이언트 주소, 토큰 포함)를 남기는 것을 찾았다. `errors.py`에서 이 줄을 버리는 필터를 달고 테스트를 더했다(`test_uvicorn_websocket_line_is_dropped`)
+
+### 실행
+- `uv run ruff check . && uv run ruff format --check .` → All checks passed
+- `uv run pytest` → 2900 passed(전 2864, +36). `tests/test_chat.py` 29개(14개 × 메모리·SQLite + uvicorn 로그 필터 1개), `tests/test_store.py` +7(채팅 3개 × 두 구현 + SQLite 재시작 1개), `tests/test_api.py`의 기존 전송 테스트에 `chatToken` 검사 추가
+- 실제 서버 확인(완료 기준의 "브라우저 콘솔 두 개" 대신, 같은 프로토콜인 Python `websockets` 클라이언트 두 개로 했다): `DB_PATH=<임시>/chat.db uv run fastapi run app/main.py --port 8766`
+  - 근로자·센터 연결 → 둘 다 `{"type":"history","messages":[]}` → 근로자가 보낸 메시지를 양쪽이 `m-1`로, 센터가 보낸 메시지를 근로자가 `m-2`로 받음 → `"oops"` → `{"type":"error","code":"invalid"}`
+  - 틀린 토큰 → 4403, `C-0` → 4404, 재접속 → history 2건, `POST /api/center/reset` → 4000
+  - 서버 로그: `app.access WS /api/center/cases/C-47625/chat 1000 1.4ms request_id=…` 등 5줄, `WebSocket`·`token=`이 든 줄 0개(필터 전에는 5줄이 토큰과 함께 남았다)
+  - 메시지를 보낸 뒤 서버를 껐다 같은 `DB_PATH`로 다시 띄움 → 같은 토큰으로 붙고 history에 `["재시작 전"]`
+
+- 번호: 처음 13으로 병합됐지만(#95) 같은 날 `13-mac-mini-deploy.md`가 main에 함께 들어와 14로 옮겼다
+
+### 바뀐 API
+- 추가: `WS /api/center/cases/{id}/chat`(프레임·닫힘 코드는 README)
+- 변경: `POST /api/center/cases` 응답에 선택 필드 `chatToken`. `POST /api/center/reset`이 열린 채팅 연결을 4000으로 닫는다
+
+### 남은 문제
+- 프론트 연결(아래 메모의 프론트 작업)
+- 센터 인증·번역·다중 프로세스 중계는 README "나중에 붙일 자리"에 적었다
 
 ## 메모
 - socket.io를 쓰지 않는 이유: 서버가 Python이라 `python-socketio`를 더해야 하고, 클라이언트도 `socket.io-client`로 묶인다. 이 데모에서 필요한 것(사례별 방, 재접속 후 이전 메시지)은 기본 WebSocket과 연결 직후 `history` 프레임으로 충분하다. 다중 프로세스·다중 서버로 늘릴 때(Redis 중계가 필요할 때) 다시 검토한다
@@ -88,3 +115,4 @@ WS /api/center/cases/{id}/chat?role=center
 - 센터 인증이 없으므로 사례 id만 알면 누구나 `role=center`로 붙을 수 있다. 데모 한정이고 README "나중에 붙일 자리"에 적는다
 - 프론트 작업(별도 `frontend/` backlog): `vite.config.ts` 프록시를 `{ '/api': { target: 'http://localhost:8000', ws: true } }`로 바꾸기, `chatToken`을 근로자 세션 상태(브라우저 저장)에 두기, 끊기면 몇 초 뒤 다시 연결하기, 단독 모드(`VITE_API_BASE` 없음)에서는 채팅을 숨기기
 - 보존 기간: 메시지는 자유 입력이라 개인 정보가 들어갈 수 있다. 07과 같이 보존 기간·자동 삭제·암호화는 미결로 둔다
+- 이 작업 밖에서 찾은 것: `fastapi run`으로 띄우면 uvicorn HTTP 접근 로그(`INFO: 127.0.0.1:50854 - "POST /api/center/cases HTTP/1.1" 201`)가 여전히 찍힌다. `_setup_logging()`의 `uvicorn.access` 끄기가 서버 시작 때 다시 켜지는 것으로 보인다. 클라이언트 주소와, `GET /api/center/cases?since=`처럼 쿼리가 있으면 쿼리 문자열까지 남으므로 README "공통 규칙"의 로그 규칙과 어긋난다. backlog 15에서 고쳤다(`uvicorn.access` 필터)
