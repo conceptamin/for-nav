@@ -249,6 +249,20 @@ export const uz: Record<MessageKey, string> = {
   cenSend: 'Yuborish',
   sendFailed: 'Markazga yuborib boʻlmadi. Javoblaringiz saqlangan. Qaytadan urinib koʻring.',
   retry: 'Qayta urinish',
+
+  // S-12 상담 채팅
+  chatTitle: 'Markaz bilan suhbat',
+  chatIntro: 'Maslahatchi soʻrovingizni koʻrib chiqqach, shu yerda javob beradi. Xabarlar tarjimasiz, yozilganidek yuboriladi.',
+  chatEmpty: 'Hali xabar yoʻq. Birinchi boʻlib yozishingiz mumkin.',
+  chatPlaceholder: 'Xabar yozing',
+  chatSend: 'Yuborish',
+  chatMe: 'Men',
+  chatCenter: 'Markaz',
+  chatConnecting: 'Ulanmoqda…',
+  chatReconnecting: 'Aloqa uzildi. Qayta ulanmoqda…',
+  chatStopped: 'Bu suhbat tugadi. Iltimos, markaz bilan boshqa yoʻl bilan bogʻlaning.',
+  chatRejected: 'Xabarni yuborib boʻlmadi. Tekshirib, qayta urinib koʻring.',
+
   cenSentTitle: 'Markazga yuborildi',
   cenSentBody: 'Maslahatchi soʻrovingizni koʻrib chiqib, siz bilan bogʻlanadi.',
   cenAfterHours: 'Markaz hozir yopiq. Keyingi ish kunida siz bilan bogʻlanamiz:',

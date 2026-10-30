@@ -1,15 +1,18 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기는 api/worker.ts의 useCenterSummary가 만든다. 브라우저 요약을 먼저 그리고, API 모드면 서버 결과로 바꾼다.
 // 전송은 api/center.ts의 sendCase가 한다. API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
+// 전송 완료 화면에는 상담 채팅(backlog 25)을 붙인다. 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 보이지 않는다.
 
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/common';
+import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { sendCase } from '../../api/center';
+import { isChatAvailable } from '../../api/chat';
 import type { NewCaseResponse } from '../../domain/centerCase';
 import { useCenterSummary } from '../../api/worker';
 import type { CenterSummaryInput, ContactMethod, RequestType } from '../../domain/templates';
@@ -71,6 +74,18 @@ export function CenterRequestPage() {
   if (sent) {
     // 다음 운영일은 센터 날짜(YYYY-MM-DD)다. 그날 정오(한국 시각)로 읽어 요일이 시간대에 따라 밀리지 않게 한다.
     const next = new Date(`${sent.nextOpenDate}T12:00:00+09:00`);
+    const chatToken = app.chatTokens[sent.case.id];
+    const chatLabels: ChatLabels = {
+      empty: t('chatEmpty'),
+      placeholder: t('chatPlaceholder'),
+      send: t('chatSend'),
+      me: t('chatMe'),
+      other: t('chatCenter'),
+      connecting: t('chatConnecting'),
+      reconnecting: t('chatReconnecting'),
+      stopped: { denied: t('chatStopped'), missing: t('chatStopped'), reset: t('chatStopped') },
+      rejected: t('chatRejected'),
+    };
     return (
       <div>
         <section className="card" style={{ textAlign: 'center' }}>
@@ -92,6 +107,13 @@ export function CenterRequestPage() {
           <div className="notice ok">{t('cenInHours')}</div>
         )}
         <p className="footer-note">{t('cenHoursNote')}</p>
+        {chatToken && isChatAvailable() && (
+          <section className="card">
+            <h2>{t('chatTitle')}</h2>
+            <p className="small muted">{t('chatIntro')}</p>
+            <ChatPanel caseId={sent.case.id} auth={{ role: 'worker', token: chatToken }} me="worker" labels={chatLabels} locale={LOCALES[lang]} />
+          </section>
+        )}
         <Worse119 />
         <Link className="btn secondary block" to="/home">
           {t('home')}
@@ -130,7 +152,7 @@ export function CenterRequestPage() {
         },
         app.meta.centerHours,
       );
-      app.addMyCase(r.case.id);
+      app.addMyCase(r.case.id, r.chatToken);
       setSent(r);
     } catch {
       // 입력값은 그대로 둔다. 다시 시도는 같은 입력으로 보낸다.

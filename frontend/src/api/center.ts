@@ -34,6 +34,8 @@ export async function sendCase(req: NewCaseRequest, hours: CenterHours): Promise
   if (!isApiMode()) return sendCaseLocal(req, hours);
   const r = await call<Partial<NewCaseResponse>>('/center/cases', { body: req });
   if (!isCase(r.case) || typeof r.nextOpenDate !== 'string') throw bad();
+  // chatToken은 선택 필드다(backend 14). 문자열이 아니면 채팅 없이 전송 완료로 둔다
+  if (typeof r.chatToken !== 'string') delete r.chatToken;
   return r as NewCaseResponse;
 }
 

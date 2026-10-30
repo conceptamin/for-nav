@@ -249,6 +249,20 @@ export const ja: Record<MessageKey, string> = {
   cenSend: '送る',
   sendFailed: 'センターに送れませんでした。答えは残っています。もう一度試してください。',
   retry: 'もう一度試す',
+
+  // S-12 상담 채팅
+  chatTitle: 'センターとチャット',
+  chatIntro: '相談員が依頼を確認したあと、ここで返信します。メッセージは翻訳されず、そのまま届きます。',
+  chatEmpty: 'まだメッセージはありません。先に書いても大丈夫です。',
+  chatPlaceholder: 'メッセージを入力',
+  chatSend: '送信',
+  chatMe: '自分',
+  chatCenter: 'センター',
+  chatConnecting: '接続中…',
+  chatReconnecting: '接続が切れました。再接続中…',
+  chatStopped: 'このチャットは終了しました。別の方法でセンターに連絡してください。',
+  chatRejected: 'メッセージを送信できませんでした。内容を確認してもう一度お試しください。',
+
   cenSentTitle: 'センターに送りました',
   cenSentBody: '相談員が依頼を確認して連絡します。',
   cenAfterHours: '今センターは閉まっています。次の営業日に連絡します：',

@@ -249,6 +249,20 @@ export const tl: Record<MessageKey, string> = {
   cenSend: 'Ipadala',
   sendFailed: 'Hindi naipadala sa centre. Naka-save pa ang mga sagot mo. Pakisubukan ulit.',
   retry: 'Subukan ulit',
+
+  // S-12 상담 채팅
+  chatTitle: 'Makipag-chat sa center',
+  chatIntro: 'Sasagot dito ang counselor pagkatapos suriin ang iyong kahilingan. Ipinapadala ang mga mensahe kung paano isinulat, nang walang pagsasalin.',
+  chatEmpty: 'Wala pang mensahe. Maaari kang maunang sumulat.',
+  chatPlaceholder: 'Sumulat ng mensahe',
+  chatSend: 'Ipadala',
+  chatMe: 'Ako',
+  chatCenter: 'Center',
+  chatConnecting: 'Kumokonekta…',
+  chatReconnecting: 'Naputol ang koneksyon. Muling kumokonekta…',
+  chatStopped: 'Natapos na ang chat na ito. Pakikontak ang center sa ibang paraan.',
+  chatRejected: 'Hindi maipadala ang mensahe. Pakisuri at subukang muli.',
+
   cenSentTitle: 'Naipadala na sa centre',
   cenSentBody: 'Susuriin ng counsellor ang request mo at kokontakin ka.',
   cenAfterHours: 'Sarado na ang centre ngayon. Kokontakin ka namin sa susunod na araw ng trabaho:',

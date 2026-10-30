@@ -1,10 +1,13 @@
 // 센터 영역(PC 우선, 한국어): C-01 사례 접수함, C-02 사례 상세, C-03 통계
 // 데모에서는 로그인을 생략한다(PRD 5-2).
 // 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
+// C-02 상담 채팅은 src/api/chat.ts(WebSocket)를 거친다. 단독 모드에는 없다(backlog 25).
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router';
 import { getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
+import { isChatAvailable } from '../../api/chat';
+import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
 import { STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
 import { PATH_KO } from '../../domain/coverage';
@@ -24,7 +27,26 @@ const TEXT = {
   resetFailed: '접수함을 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
   statsFailed: '통계를 불러오지 못했습니다. 서버 연결을 확인해 주세요.',
   statsLoading: '통계를 불러오는 중입니다.',
+  chatTitle: '상담 채팅',
+  chatMock: '예시 사례라 근로자 채팅 토큰이 없습니다. 근로자는 이 채팅에 들어올 수 없습니다.',
+  chatNote: '근로자가 쓴 글은 번역 없이 원문 그대로 보입니다.',
 } as const;
+
+const CHAT_LABELS: ChatLabels = {
+  empty: '아직 메시지가 없습니다.',
+  placeholder: '근로자에게 보낼 메시지',
+  send: '보내기',
+  me: '센터',
+  other: '근로자',
+  connecting: '채팅 연결 중…',
+  reconnecting: '채팅 연결이 끊겼습니다. 다시 연결하는 중…',
+  stopped: {
+    denied: '채팅에 연결할 권한이 없습니다.',
+    missing: '서버에 이 사례가 없어 채팅을 열 수 없습니다.',
+    reset: '데모 초기화로 채팅이 끝났습니다.',
+  },
+  rejected: '메시지를 보내지 못했습니다. 1~1000자로 써 주세요.',
+};
 
 const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
 
@@ -308,6 +330,13 @@ function CaseDetail({ c }: { c: CenterCase }) {
           </section>
         </div>
         <div>
+          {isChatAvailable() && (
+            <section className="panel">
+              <h2>{TEXT.chatTitle}</h2>
+              <p className="footer-note">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
+              <ChatPanel caseId={c.id} auth={{ role: 'center' }} me="center" labels={CHAT_LABELS} locale="ko-KR" />
+            </section>
+          )}
           <section className="panel">
             <h2>상태 변경</h2>
             <div className="row">

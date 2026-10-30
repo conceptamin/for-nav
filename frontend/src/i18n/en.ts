@@ -248,6 +248,20 @@ export const en = {
   cenSend: 'Send',
   sendFailed: 'Could not send to the centre. Your answers are kept. Please try again.',
   retry: 'Try again',
+
+  // S-12 상담 채팅(backlog 25)
+  chatTitle: 'Chat with the centre',
+  chatIntro: 'A counsellor will reply here after checking your request. Messages are sent as written, without translation.',
+  chatEmpty: 'No messages yet. You can write first.',
+  chatPlaceholder: 'Write a message',
+  chatSend: 'Send',
+  chatMe: 'Me',
+  chatCenter: 'Centre',
+  chatConnecting: 'Connecting…',
+  chatReconnecting: 'Connection lost. Reconnecting…',
+  chatStopped: 'This chat has ended. Please contact the centre another way.',
+  chatRejected: 'Could not send this message. Please check it and try again.',
+
   cenSentTitle: 'Sent to the centre',
   cenSentBody: 'A counsellor will check your request and contact you.',
   cenAfterHours: 'The centre is closed now. We will contact you on the next working day:',
