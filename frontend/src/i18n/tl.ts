@@ -23,8 +23,6 @@ export const tl: Record<MessageKey, string> = {
   langTitle: 'Piliin ang iyong wika',
   langHint: 'Puwede mo itong palitan mamaya sa itaas ng screen.',
   langAsk: 'Anong wika ang gagamitin natin?',
-  langReply: 'Mag-Filipino tayo',
-  langOther: 'Iba pang wika',
 
   // S-02
   consentTitle: 'Bago magsimula',
