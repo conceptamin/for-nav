@@ -538,6 +538,29 @@ gradients:
 >
 > **키 컬러와 화면용 틸을 나눈다.** 키 컬러 `#12979A`는 흰 글자를 올리면 WCAG 3.55:1 · APCA Lc 68로 본문 기준에 못 미친다. 그래서 글자·버튼·링크에는 같은 색상(hue 181°)에서 명도를 낮춘 `--brand` `#085e60`을 쓴다. 흰 글자 7.55:1 · Lc 90.7, `--card` 위 7.22:1 · Lc 82.7, `--bg` 위 6.39:1 · Lc 74.5, `--brand-2` 위 6.35:1 · Lc 74.1이다(바닥 위·옅은 바탕 위는 Lc 75에 조금 못 미치며, 바꾸기 전 `#0f5b78`도 같은 수준이었다). 로고는 키 컬러 한 색과 투명만 쓰고, 화살표는 바탕이 비치는 빈 자리다. 빨간 십자(적십자 표장)·초록 십자(약국)로 바꾸지 않는다.
 
+> **이 프로젝트의 역할 색(2026-10-30, backlog 19).** 글자·선·상태색은 아래 SEED 역할 값을 `styles.css` `:root` 토큰으로 읽는다. 바탕·점토 표면(`--bg`·`--card`·`--bg-2`·`--bg-3`)은 `## 클레이모피즘` › `### 바탕`이 정하고, `--accent`(포커스 윤곽·실제 전송 띠)·`--live-bg`·`--chart-2`·`--chart-3`은 역할 대응 밖이다.
+>
+> | SEED 역할 | 이 앱의 토큰 | 값 | 쓰는 곳 |
+> |---|---|---|---|
+> | `fg-neutral` | `--ink` | gray-1000 `#1a1c20` | 본문 글자 |
+> | `fg-neutral-muted` | `--ink-2` | gray-800 `#555d6d` | 라벨, 설명, 각주, 남은 단계 숫자 |
+> | `stroke-neutral-weak` | `--line` | gray-400 `#dcdee3` | 구분선, 표의 줄 |
+> | `bg-critical-solid` | `--danger` | **red-800 `#ca1d13`** | 응급 히어로, 119 띠·버튼, 위험 숫자 |
+> | `fg-critical-contrast` | `--danger-2` | red-900 `#921708` | `--danger-bg` 위 글자 |
+> | `bg-critical-weak` | `--danger-bg` | red-100 `#fdf0f0` | 위험 안내 상자, 높음 칩 |
+> | `bg-positive-solid` | `--ok` | green-700 `#079171` | 결과 카드 띠(그래픽만) |
+> | `fg-positive-contrast` | `--ok-ink` | green-900 `#075445` | `--ok-bg` 위 글자 |
+> | `bg-positive-weak` | `--ok-bg` | green-100 `#edfaf6` | 확인 안내 상자, 완료 칩 |
+> | `fg-warning-contrast` | `--warn-ink` | yellow-900 `#4f3e1f` | `--warn-bg` 위 글자 |
+> | `bg-warning-weak` | `--warn-bg` | yellow-100 `#fff7de` | 주의 안내 상자, 보통·진행 칩, 오프라인 띠 |
+> | `fg-informative-contrast` | `--info` | blue-900 `#0b4596` | 신규 칩 글자 |
+> | `bg-informative-weak` | `--info-bg` | blue-100 `#eff6ff` | 신규 칩 |
+>
+> **역할 값이 글자 기준에 못 미치는 곳은 같은 램프의 진한 단계를 쓴다**(브랜드 틸과 같은 원칙).
+> - `bg-critical-solid` red-700 `#fa342c`는 흰 글자 3.76:1 · Lc 68.7이라 119 버튼에 쓸 수 없다. 한 단계 진한 red-800을 쓴다(흰 글자 5.68:1 · Lc 81.7).
+> - 옅은 바탕 위 글자는 `fg-*`가 아니라 `fg-*-contrast`(900 단계)를 쓴다. `fg-warning` yellow-700은 `--warn-bg` 위 Lc 63.4, `fg-informative` blue-700은 `--info-bg` 위 Lc 60.4, `fg-positive` green-700은 `--ok-bg` 위 Lc 61.7이다. contrast 단계는 각각 Lc 89.1 · 84.5 · 85.2다.
+> - `fg-neutral-subtle` gray-700은 `--card` 위 Lc 58.6이라 글자에 쓰지 않는다. 흐린 글자는 `--ink-2` 하나다.
+
 > **역할 표 보완(2026-09-27).** 아래 역할 표의 기존 71행을 배포 패키지 `@seed-design/css` 2.8.3 의 `base.css` light-only · dark-only 블록과 맞춰, 라이트·다크 142개 대응에서 불일치 0건이었다 [src:77]. 같은 두 블록이 선언하지만 표에 없던 `bg-neutral-solid-muted` · `bg-neutral-solid-muted-pressed` 두 역할은 그 블록의 대응 그대로 표와 frontmatter 참조 행에 보태, 표는 73행 · 146개 대응이 됐다 [src:77] — 이 둘은 공식 reference 표 [src:7]에는 없고 패키지에만 있다. 이 문서의 리터럴 색 정의 229줄도 같은 `base.css` 와 값 불일치 0건이다. 색 밖의 축도 같은 파일과 맞춰 불일치 0건이다 — `spacing:` 의 dimension 19개와 그것을 가리키는 시맨틱 spacing 6개, `rounded:` 11개, `typography:` 14단계의 px `fontSize`(패키지의 `-static` 값). 색 값은 공식이 `/foundations/design-token/reference` 에 light/dark 병기 마크다운 표로 발행하는 hex에서 OKLCH를 역산한 것이다 [src:7].
 
 SEED의 색상 체계는 라이트와 다크 모드에 적응하도록 설계되며, 역할 기반 색상은 여러 테마에서도 대비와 시각적 계층을 유지하도록 정의된다 [src:3]. 팔레트는 Gray 한 계열과 Chromatic 6계열(Carrot · Blue · Green · Yellow · Red · Purple), 그리고 테마를 타지 않는 static 계열로 구성된다 [src:5][src:7].
@@ -643,6 +666,25 @@ SEED는 자체 서체를 배포하지 않는다. **사용자의 디바이스 환
 - `weight-regular`: 400
 - `weight-medium`: 500
 - `weight-bold`: 700
+
+> **이 프로젝트의 글자(2026-10-30, backlog 19).**
+> - **글꼴**은 frontmatter `typography`의 `fontFamily` 스택 그대로다. 웹폰트를 불러오지 않는다.
+> - **크기**는 `styles.css` `:root`의 `--t1`~`--t14`만 쓴다. 값은 위 사다리의 rem 판이라(`--t5` = 1rem = 16px) 기기 글자 크기 설정을 따른다. `:root` 밖에서 `font-size`에 숫자를 쓰지 않는다.
+> - **두께**는 400 · 500 · 700 세 가지다. 흐린 라벨은 500, 제목·값·버튼은 700이다. 600 · 800 · 900을 쓰지 않는다.
+> - **줄 높이**는 SEED 사다리를 따르지 않고 본문 1.5, 제목(`h1`~`h3`) 1.3이다. SEED 값(t5 22px ≈ 1.375)은 한국어 기준이고, 이 앱은 미얀마어·태국어·아랍어처럼 위아래로 긴 글자를 쓰는 20개 언어를 보인다.
+>
+> | 자리 | 단계 |
+> |---|---|
+> | 칩·각주 | `--t3` 13px |
+> | 작은 글자, 안내 상자, 표, 센터 필터 | `--t4` 14px |
+> | 본문, 버튼, `h3` | `--t5` 16px |
+> | `h2`, 큰 버튼, 리포트 값, 119 띠 | `--t6` 18px |
+> | 3언어 줄의 한국어, 대안 진료과 | `--t7` 20px |
+> | `h1`, 응급 히어로 제목, 한국어 큰 줄 | `--t9` 24px |
+> | 진료과 이름 | `--t10` 26px |
+> | 응급 전화 번호, KPI 숫자 | `--t11` 28px |
+> | 통증 얼굴·숫자 | `--t13` 40px |
+> | 분석 중 그림 | `--t14` 48px |
 
 ## Spacing
 
