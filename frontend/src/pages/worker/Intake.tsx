@@ -2,7 +2,7 @@
 // 묶음(부위·증상·자유 입력·추가 질문) 네 개가 숫자 원 1~4이고, 추가 질문 묶음은 화면 하나에 질문 하나다.
 // 단계마다 응급 감지를 돌려, 응급이면 남은 질문 없이 바로 119 화면으로 보낸다.
 // 추출과 최종 판정은 src/api/worker.ts를 거친다(단독/API 모드와 대체는 그 안에만 있다).
-// 서버를 기다리는 동안 추출은 버튼만 비활성이고, 최종 판정은 분석 중 화면을 보인다(design.md "로딩과 실패를 그리는 법").
+// 서버를 기다리는 동안 추출은 버튼만 비활성이고, 최종 판정은 분석 중 화면을 보인다 (README.md "비동기 UX 규칙").
 
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
@@ -234,7 +234,7 @@ export function IntakePage() {
 
       {group === 3 && (
         <>
-          {/* 대체 알림은 같은 안내 상자 안의 한 줄로 둔다(design.md: 안내 상자를 두 개 연달아 쌓지 않는다) */}
+          {/* 대체 알림은 같은 안내 상자 안의 한 줄로 둔다(안내 상자를 두 개 연달아 쌓지 않는다) */}
           {extracted && q === 0 && (
             <div className="notice info">
               ✨ {t('extractedNote')}

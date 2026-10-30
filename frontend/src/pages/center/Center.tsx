@@ -28,7 +28,7 @@ const TEXT = {
 
 const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-/** 실패 문구 + 바로 옆 다시 시도(design.md "로딩과 실패를 그리는 법") */
+/** 실패 문구 + 바로 옆 다시 시도. 입력값은 그대로 둔다 (README.md "비동기 UX 규칙") */
 function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; busy: boolean }) {
   return (
     <div className="notice danger with-retry" role="alert">
