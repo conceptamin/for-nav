@@ -18,7 +18,8 @@
 | 언어·런타임 | Python 3.12+ | 모델링 코드(LightGBM·SHAP)와 같은 언어 |
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
-| 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경이 재시작 뒤에도 남는다 |
+| 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경, 채팅 토큰·메시지가 재시작 뒤에도 남는다 |
+| 상담 채팅 | FastAPI 기본 WebSocket(`uvicorn[standard]`에 든 `websockets`) | 새 의존성이 없다. 사례별 방과 재접속 뒤 이전 메시지면 충분해 socket.io는 쓰지 않는다(backlog 13). 열린 연결은 프로세스 메모리에 있으므로 `--workers 1`(기본)로만 띄운다 |
 | 모델 | `../modeling` 경로 의존성(editable)의 `predict()`. `lightgbm`·`numpy`가 따라 설치된다 | 응급도·진료과 모델(backlog 06, 12). 버전은 `modeling/pyproject.toml` 한 곳에서 고정한다. `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
@@ -35,7 +36,8 @@ backend/
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
-    errors.py          공통 오류 형식, X-Request-Id, 접근 로그
+    errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
+    chat.py            상담 채팅의 열린 연결(ChatHub) — 사례별 방, 방송, 데모 초기화 때 닫기
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (20개 언어 Lang, 부위·증상·진료과·업종·구군 어휘, josa, 언어 묶음 PACKS 읽기)
@@ -53,11 +55,11 @@ backend/
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status 표)
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
-      center.py        /api/center/*
+      center.py        /api/center/*, WS /api/center/cases/{id}/chat
   scripts/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
@@ -67,6 +69,7 @@ backend/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_store.py      센터 저장소 메모리·SQLite 같은 테스트, SQLite 재시작 뒤 유지
+    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 데모 초기화, 로그에 토큰·본문 없음)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
@@ -119,11 +122,12 @@ backend/
 | `POST /api/visit-helper` | `buildDeskSheet`, `buildCallScript` | S-09, S-10 | `{ intake, department, firstVisit, lang }` | `{ desk: DeskSheet, call: { lines, faq }, llmSlots }` |
 | `POST /api/report/clinician` | `buildClinicianReport` | S-11 | `{ intake, included, profile, meds }` | `ClinicianReport` + `llmSlots`, `translation` |
 | `POST /api/report/center` | `buildCenterSummary` | S-12 미리보기 | `CenterSummaryInput` | `{ ko, native, translation }` |
-| `POST /api/center/cases` | `addLiveCase` (+ `rateUrgency`, `isAfterHours`, `nextOpenDay`) | S-12 전송 | 아래 참고 | `{ case: CenterCase, nextOpenDate }` |
+| `POST /api/center/cases` | `addLiveCase` (+ `rateUrgency`, `isAfterHours`, `nextOpenDay`) | S-12 전송 | 아래 참고 | `{ case: CenterCase, nextOpenDate, chatToken }` |
 | `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
 | `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
-| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` |
+| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅 연결은 4000으로 닫힌다) |
+| `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `GET /api/center/stats` | `StatsPage`의 집계 | C-03 | `?days=30\|90\|180&district=` | 아래 참고 |
 
 ### 요청·응답 예시
@@ -251,10 +255,36 @@ backend/
   "consentedItems": ["증상", "부위", "시작 시점"]
 }
 // 응답 201
-{ "case": { /* CenterCase, live: true, status: "new" */ }, "nextOpenDate": "2026-10-27" }
+{ "case": { /* CenterCase, live: true, status: "new" */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
 ```
 
+`chatToken`은 서버 전용 선택 필드다(backlog 13). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
+
 긴급도는 `rateUrgency`와 같다. 예: 응급 이력 없음 + 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
+
+**`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 13)
+
+사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(센터 로그인은 아직 없다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
+
+| 닫힘 코드 | 언제 |
+|---|---|
+| `4404` | 사례가 없다 |
+| `4403` | `role`이 없거나 틀렸다, 근로자 토큰이 없거나 맞지 않는다(mock 사례에는 근로자 토큰이 없다) |
+| `4000` | 데모 초기화(`POST /api/center/reset`)로 방이 비었다 |
+
+```jsonc
+// 클라이언트 → 서버. text는 앞뒤 공백을 지운 뒤 1~1000자
+{ "type": "message", "text": "Tay tôi vẫn còn chảy máu" }
+
+// 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다)
+{ "type": "history", "messages": [ /* ChatMessage, 보낸 순서 */ ] }
+// 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다
+{ "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu", "at": "2026-10-30T11:50:47.646Z" } }
+// 서버 → 클라이언트: 잘못된 프레임(빈 글, 1000자 초과, JSON 아님, 다른 type, 바이너리). 연결은 끊지 않는다
+{ "type": "error", "code": "invalid" }
+```
+
+`id`·`from`·`at`은 **서버가 정한다**. `id`는 사례 안에서 `m-1`, `m-2`…로 늘어나고, `from`은 연결 때 확인한 역할이다. 접근 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`만 남고 쿼리 문자열(토큰)과 메시지 본문은 남지 않는다. uvicorn이 따로 남기는 `"WebSocket <경로?쿼리>" [accepted]` 줄은 앱에서 버린다.
 
 **`GET /api/center/stats`** — 익명 집계
 
@@ -407,6 +437,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 - 프론트를 API 모드(`VITE_API_BASE=/api`)로 빌드해야 같은 출처의 `/api`를 부른다. 단독 모드로 빌드하면 서버가 떠 있어도 브라우저 안 mock만 쓴다.
 - 시연 전에 휴대폰에서 응급 판정 실패 시 브라우저 규칙 대체가 동작하는지(서버를 잠깐 끄고 증상 입력) 확인한다.
 - 필요하면 `DB_PATH`, `MODEL_DIR`, `LLM_API_KEY`를 같은 명령에 더한다.
+- 상담 채팅의 열린 연결은 프로세스 메모리에 있으므로 `--workers`를 더하지 않는다(2 이상이면 같은 사례의 근로자·센터가 다른 프로세스에 붙어 서로 받지 못한다).
 
 ## CI
 
@@ -452,6 +483,9 @@ backend:
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
+| 상담 채팅 센터 인증 | `role=center`만으로 붙는다. 사례 id를 알면 누구나 센터로 붙을 수 있다(backlog 13) | 상담자 로그인·상담자별 권한 |
+| 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 13) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
+| 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 13) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
 

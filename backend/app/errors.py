@@ -61,13 +61,14 @@ class RequestContextMiddleware:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "websocket":
+            await self._websocket(scope, receive, send)
+            return
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
-        sent = dict(scope["headers"]).get(REQUEST_ID_HEADER.lower().encode(), b"").decode("latin-1")
-        request_id = sent if _SAFE_ID.fullmatch(sent) else uuid.uuid4().hex
-        scope.setdefault("state", {})["request_id"] = request_id
+        request_id = _assign_request_id(scope)
         started = time.perf_counter()
         status = 500
         response_started = False
@@ -90,10 +91,58 @@ class RequestContextMiddleware:
             ms = (time.perf_counter() - started) * 1000
             log.info("%s %s %d %.1fms request_id=%s", scope["method"], scope["path"], status, ms, request_id)
 
+    async def _websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """WebSocket(상담 채팅, backlog 13)은 연결이 끝날 때 한 줄: WS, 경로, 닫힘 코드, 연결 시간, request id.
+        쿼리 문자열(채팅 토큰)과 메시지 본문은 남기지 않는다."""
+        request_id = _assign_request_id(scope)
+        started = time.perf_counter()
+        # 서버가 닫으면 그 코드, 클라이언트가 끊으면 받은 코드. 둘 다 없으면 1006(비정상 종료)이다.
+        code = 1006
+
+        async def receive_with_code() -> Message:
+            nonlocal code
+            message = await receive()
+            if message["type"] == "websocket.disconnect":
+                code = message.get("code", 1005)
+            return message
+
+        async def send_with_code(message: Message) -> None:
+            nonlocal code
+            if message["type"] == "websocket.close":
+                code = message.get("code", 1000)
+            await send(message)
+
+        try:
+            await self.app(scope, receive_with_code, send_with_code)
+        except Exception as exc:
+            code = 1011
+            log.error("unhandled %s at %s request_id=%s", type(exc).__name__, _frames(exc), request_id)
+        finally:
+            ms = (time.perf_counter() - started) * 1000
+            log.info("WS %s %d %.1fms request_id=%s", scope["path"], code, ms, request_id)
+
+
+def _assign_request_id(scope: Scope) -> str:
+    sent = dict(scope["headers"]).get(REQUEST_ID_HEADER.lower().encode(), b"").decode("latin-1")
+    request_id = sent if _SAFE_ID.fullmatch(sent) else uuid.uuid4().hex
+    scope.setdefault("state", {})["request_id"] = request_id
+    return request_id
+
+
+class _DropWebSocketLines(logging.Filter):
+    """uvicorn은 WebSocket 연결마다 `"WebSocket <경로?쿼리>" [accepted]`를 uvicorn.error에 남긴다.
+    쿼리에 채팅 토큰이 들어가고 클라이언트 주소도 붙으므로 버리고, 미들웨어의 `WS …` 한 줄로 대신한다."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return '"WebSocket ' not in str(record.msg)
+
 
 def _setup_logging() -> None:
     # uvicorn 접근 로그는 쿼리 문자열과 클라이언트 주소를 남기므로 끄고 위 한 줄로 대신한다.
     logging.getLogger("uvicorn.access").disabled = True
+    uvicorn_error = logging.getLogger("uvicorn.error")
+    if not any(isinstance(f, _DropWebSocketLines) for f in uvicorn_error.filters):
+        uvicorn_error.addFilter(_DropWebSocketLines())
     app_log = logging.getLogger("app")
     app_log.setLevel(logging.INFO)
     if not app_log.handlers:

@@ -1,18 +1,23 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
+# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 13)을 연다.
 
+import secrets
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, WebSocket, status
+from pydantic import ValidationError
+from starlette.websockets import WebSocketDisconnect
 
 from app import clock
+from app.chat import ChatHub
 from app.data.mock import StatRecord
 from app.llm import LLMClient
 from app.routers.worker import llm_client
 from app.rules.coverage import is_after_hours, next_open_day
 from app.rules.urgency import rate_urgency
-from app.schemas import CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse, StatCell, StatusPatch
+from app.schemas import CaseStatus, CenterCase, CenterStats, ChatIn, ChatRole, NewCaseRequest, NewCaseResponse, StatCell, StatusPatch
 from app.settings import settings
 from app.store import store
 from app.templates.reports import build_center_summary
@@ -61,7 +66,10 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
         )
 
     c = store.add_live(now, make)
-    return NewCaseResponse(case=c, next_open_date=next_open_day(now).isoformat())
+    # 채팅 토큰은 이 응답으로 근로자에게만 간다. CenterCase에 넣지 않아 센터 목록·상세에는 나오지 않는다.
+    token = secrets.token_urlsafe(24)
+    store.set_chat_token(c.id, token)
+    return NewCaseResponse(case=c, next_open_date=next_open_day(now).isoformat(), chat_token=token)
 
 
 @router.get("/cases")
@@ -99,10 +107,65 @@ def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
 
 
 @router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
-def reset() -> Response:
-    """C-01 데모 초기화: live 사례와 상태 변경을 지운다."""
+async def reset(request: Request) -> Response:
+    """C-01 데모 초기화: live 사례, 상태 변경, 채팅을 지우고 열린 채팅 연결을 닫는다."""
     store.reset()
+    hub: ChatHub = request.app.state.chat
+    await hub.close_all()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# ---------------------------------------------------------------------------
+# 상담 채팅(backlog 13): 사례 하나가 방 하나다. 검사에 실패하면 accept한 뒤 이유 코드로 닫는다
+# (accept 전에 닫으면 클라이언트는 이유 없는 1006만 본다).
+# ---------------------------------------------------------------------------
+CLOSE_NOT_FOUND = 4404
+CLOSE_FORBIDDEN = 4403
+INVALID_FRAME = {"type": "error", "code": "invalid"}
+
+
+def _chat_denied(case_id: str, role: str, token: str) -> int | None:
+    if store.get(case_id) is None:
+        return CLOSE_NOT_FOUND
+    if role == "center":
+        # 센터 화면에 로그인이 없어 데모에서는 역할만으로 붙는다(README "나중에 붙일 자리").
+        return None
+    expected = store.chat_token(case_id)
+    if role == "worker" and expected and secrets.compare_digest(token.encode(), expected.encode()):
+        return None
+    return CLOSE_FORBIDDEN
+
+
+@router.websocket("/cases/{case_id}/chat")
+async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
+    """근로자·센터 상담 채팅. 연결 직후 이전 메시지(history)를 한 번 보내고, 이후 메시지를 같은 방의 모든 연결에 보낸다."""
+    await ws.accept()
+    denied = _chat_denied(case_id, role, token)
+    if denied:
+        await ws.close(denied)
+        return
+    sender: ChatRole = "center" if role == "center" else "worker"
+    hub: ChatHub = ws.app.state.chat
+    # join과 이전 메시지 읽기 사이에 await가 없어야 그 사이 메시지를 놓치거나 두 번 받지 않는다.
+    hub.join(case_id, ws)
+    history = [m.model_dump(by_alias=True) for m in store.messages(case_id)]
+    try:
+        await ws.send_json({"type": "history", "messages": history})
+        while True:
+            message = await ws.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            try:
+                frame = ChatIn.model_validate_json(message.get("text") or "")
+            except ValidationError:
+                await ws.send_json(INVALID_FRAME)
+                continue
+            m = store.add_message(case_id, sender, frame.text, clock.now())
+            await hub.broadcast(case_id, {"type": "message", "message": m.model_dump(by_alias=True)})
+    except WebSocketDisconnect:
+        pass
+    finally:
+        hub.leave(case_id, ws)
 
 
 # ---------------------------------------------------------------------------

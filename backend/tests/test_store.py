@@ -1,4 +1,5 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
+# 상담 채팅의 토큰·메시지(backlog 13)도 같은 방식으로 본다.
 
 from datetime import datetime
 from pathlib import Path
@@ -74,6 +75,53 @@ def test_reset_clears_live_and_status(store: CenterStore):
     cases = store.all()
     assert len(cases) == 24
     assert all(c.status == MemoryStore(STARTED).get(c.id).status for c in cases)
+
+
+def test_chat_messages_per_case_in_order(store: CenterStore):
+    first = store.add_message("C-1001", "worker", "하나", AT)
+    store.add_message("C-1002", "center", "다른 방", AT)
+    store.add_message("C-1001", "center", "둘", AT)
+
+    assert first.model_dump(by_alias=True) == {"id": "m-1", "caseId": "C-1001", "from": "worker", "text": "하나", "at": clock.iso_utc(AT)}
+    assert [(m.id, m.from_, m.text) for m in store.messages("C-1001")] == [("m-1", "worker", "하나"), ("m-2", "center", "둘")]
+    assert [m.id for m in store.messages("C-1002")] == ["m-1"]
+    assert store.messages("C-0") == []
+
+
+def test_chat_token(store: CenterStore):
+    c = live_case(store)
+    assert store.chat_token(c.id) is None
+    store.set_chat_token(c.id, "t-1")
+    assert store.chat_token(c.id) == "t-1"
+    assert store.chat_token("C-1001") is None
+
+
+def test_reset_clears_chat(store: CenterStore):
+    c = live_case(store)
+    store.set_chat_token(c.id, "t-1")
+    store.add_message("C-1001", "center", "x", AT)
+    store.reset()
+
+    assert store.chat_token(c.id) is None
+    assert store.messages("C-1001") == []
+    assert store.add_message("C-1001", "center", "y", AT).id == "m-1"
+
+
+def test_sqlite_chat_survives_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    c = live_case(first)
+    first.set_chat_token(c.id, "t-1")
+    sent = [first.add_message(c.id, "worker", "하나", AT), first.add_message(c.id, "center", "둘", AT)]
+    first.close()
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert second.chat_token(c.id) == "t-1"
+        assert second.messages(c.id) == sent
+        assert second.add_message(c.id, "worker", "셋", AT).id == "m-3"
+    finally:
+        second.close()
 
 
 def test_sqlite_survives_restart(tmp_path: Path):

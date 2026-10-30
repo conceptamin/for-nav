@@ -1,9 +1,9 @@
 # Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1.
 # JSON 필드명은 camelCase(프론트 타입 그대로), Python 코드 안에서는 snake_case를 쓴다.
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
 
 from app.vocab import Acuity, AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown
@@ -312,10 +312,34 @@ class NewCaseResponse(CamelModel):
     case: CenterCase
     # 다음 운영일(Asia/Seoul, YYYY-MM-DD)
     next_open_date: str
+    # 근로자가 이 사례의 상담 채팅에 붙을 때 쓰는 토큰(backlog 13). 프론트 타입에는 아직 없다
+    chat_token: str | None = absent_if_none()
 
 
 class StatusPatch(CamelModel):
     status: CaseStatus
+
+
+# ---------------------------------------------------------------------------
+# 상담 채팅(backlog 13). 프론트 타입은 아직 없다
+# ---------------------------------------------------------------------------
+ChatRole = Literal["worker", "center"]
+
+
+class ChatMessage(CamelModel):
+    # 사례 안에서 m-1, m-2…
+    id: str
+    case_id: str
+    from_: ChatRole = Field(alias="from")
+    text: str
+    at: str
+
+
+class ChatIn(CamelModel):
+    """클라이언트가 보내는 프레임. id·보낸 사람·시각은 서버가 정한다."""
+
+    type: Literal["message"]
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
 
 
 class StatCell(CamelModel):
