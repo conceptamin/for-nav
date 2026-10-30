@@ -86,6 +86,7 @@ modeling/
     export.py                   아티팩트 + metadata.json 쓰기
     predict.py                  입력 dict → TriageResult.model dict. 백엔드가 부를 순수 함수
     experiment_vitals.py        발표용 활력징후 비교 실험(backlog 09). 서빙과 무관, 모델을 내보내지 않는다
+    pipeline.py                 백엔드 규칙 + 응급도 모델을 합친 응급 판정 평가(backlog 12). 규칙은 backend 환경에서 부른다
 
   scripts/                      명령 하나 = 일 하나. 인자를 받아 패키지 함수를 부르기만 하는 얇은 파일
     download_data.py  build_tables.py  make_splits.py
