@@ -9,52 +9,44 @@ import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
 import { useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
-import { suggestLangs } from '../../i18n/suggest';
+import { orderLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 벤토 그리드(backlog 24). 폰 언어로 묻고, 20개 언어를 크기가 다른 타일로 한 격자에 모두 보인다.
-// 추천 첫째(폰 언어)는 한 줄 전체 큰 타일, 추천 나머지는 두 개씩 중간 타일, 나머지는 세 개씩 작은 타일. 앱 바가 없다.
+// S-01: 언어 격자(backlog 24). 폰 언어로 묻고, 20개 언어를 같은 크기·같은 모양 칸(국기 + 모국어 이름 + 영어 이름)의
+// 두 줄 격자 하나로 모두 보인다. 폰 언어 하나만 맨 앞에 오고 나머지는 정해진 순서다. 앱 바가 없다.
 // ---------------------------------------------------------------------------
 const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
-
-/** 줄 끝이 비지 않게 마지막 타일들의 폭을 늘린다. perRow개씩 놓이는 타일 목록에서 i번째의 폭 클래스 */
-function tileSpan(i: number, count: number, perRow: 2 | 3): string {
-  const left = count % perRow;
-  if (left === 0 || i < count - left) return '';
-  return left === 1 ? 'wide' : 'half';
-}
 
 export function LanguagePage() {
   const app = useApp();
   const navigate = useNavigate();
   useScreenBar({ hidden: true });
   const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
-  const { first, suggested, rest } = useMemo(
-    () => suggestLangs(navigator.languages ?? [navigator.language], LANGUAGE_OPTIONS.map((o) => o.lang)),
+  const { first, langs } = useMemo(
+    () => orderLangs(navigator.languages ?? [navigator.language], LANGUAGE_OPTIONS.map((o) => o.lang)),
     [],
   );
-  // 질문은 폰 언어로. 폰 언어를 모르면 영어로 묻고, 영어가 아니면 아래에 영어 한 줄을 붙인다(추천이 틀렸을 때를 위해)
+  // 질문은 폰 언어로. 폰 언어를 모르면 영어로 묻고, 영어가 아니면 아래에 영어 한 줄을 붙인다(폰 언어가 본인 언어가 아닐 때를 위해)
   const ask: Lang = first ?? 'en';
   const choose = (lang: Lang) => {
     app.setLang(lang);
     navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
   };
 
-  const [big, ...mid] = suggested;
-  const tile = (l: Lang, size: 'big' | 'mid' | 'small', span = '') => {
+  const tile = (l: Lang) => {
     const o = LANG_OPTION.get(l);
     return (
-      <button key={l} type="button" className={`tile ${size} ${span}`.trim()} lang={l} onClick={() => choose(l)}>
-        <span className="flag" aria-hidden="true">
-          {o?.flag}
+      <button key={l} type="button" className="tile" lang={l} onClick={() => choose(l)}>
+        <img className="flag" src={`/flags/${o?.country}.svg`} width="32" height="24" alt="" />
+        <span className="name">
+          <strong>{o?.native}</strong>
+          {l !== 'en' && (
+            <span className="en" lang="en">
+              {o?.english}
+            </span>
+          )}
         </span>
-        <strong>{size === 'big' ? translate(l, 'langReply') : o?.native}</strong>
-        {l !== 'en' && (
-          <span className="en" lang="en">
-            {o?.english}
-          </span>
-        )}
       </button>
     );
   };
@@ -69,12 +61,7 @@ export function LanguagePage() {
           </p>
         )}
       </div>
-      <div className="lang-bento">
-        {tile(big, 'big')}
-        {mid.map((l, i) => tile(l, 'mid', tileSpan(i, mid.length, 2)))}
-      </div>
-      <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
-      <div className="lang-bento">{rest.map((l, i) => tile(l, 'small', tileSpan(i, rest.length, 3)))}</div>
+      <div className="lang-grid">{langs.map(tile)}</div>
       <p className="footer-note" lang={ask}>
         {translate(ask, 'langHint')}
       </p>
