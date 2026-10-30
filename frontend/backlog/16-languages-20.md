@@ -1,6 +1,6 @@
 # 16. 근로자 화면 20개 언어 지원
 
-상태: 진행 중(프론트 완료, 백엔드 `vocab.py`·템플릿 이전 대기)
+상태: 완료
 의존: 없음
 
 ## 목표
@@ -46,7 +46,7 @@
   - 아랍어일 때 `<html dir="rtl" lang="ar">`, 그 밖에는 고른 언어로 `lang` 속성 바꾸기
   - S-01 2열 격자, `design.md` 갱신
 - 하지 않는 것
-  - 백엔드 코드(`vocab.py`, 템플릿). A면 `backend/` 브랜치로 따로
+  - 백엔드 코드는 처음에 따로 하려 했으나, 사용자 결정으로 같은 PR에서 옮겼다(`backend/backlog/11-languages-20.md`)
   - 웹폰트 추가. 시스템 글꼴(iOS·Android 기본)이 20개 문자를 모두 그린다
   - 센터 화면 문구(한국어 고정)
   - mock 데이터의 언어 분포(지금 vi·en). 센터 통계 데모는 그대로
@@ -54,7 +54,7 @@
 ## 화면·파일
 - 화면: S-01 `/`, 모든 근로자 화면(문구), S-09·S-10 접수 도우미, S-11 리포트(모국어 줄)
 - 새 폴더 `src/domain/lang/`: 근로자 모국어 하나의 내용(어휘 표기·문장 틀·응급 키워드)을 파일 하나에 모은다. 언어별 원어민 검수를 파일 단위로 맡길 수 있고, 새 언어가 파일 하나 추가로 끝난다. `README.md` 폴더 구조에 적었다
-- 수정: `src/domain/vocab.ts`, `src/domain/templates.ts`, `src/domain/triage.ts`, `src/data/mock.ts`(타입만), `src/i18n/index.ts`, `src/i18n/*.ts`(17개 새 파일), `src/domain/lang/*.ts`(19개 + types·index), `src/pages/worker/Onboarding.tsx`, `src/pages/worker/Visit.tsx`, `src/state/AppState.tsx`, `src/styles.css`, `scripts/dump-fixtures.ts`, `design.md`, `README.md`, `CLAUDE.md`, `backend/tests/fixtures/parity.json`
+- 수정: `src/domain/vocab.ts`, `src/domain/templates.ts`, `src/domain/triage.ts`, `src/data/mock.ts`(타입만), `src/i18n/index.ts`, `src/i18n/*.ts`(17개 새 파일), `src/domain/lang/*.ts`(19개 + types·index), `src/pages/worker/Onboarding.tsx`, `src/pages/worker/Visit.tsx`, `src/state/AppState.tsx`, `src/styles.css`, `scripts/dump-fixtures.ts`, `design.md`, `README.md`, `CLAUDE.md`, `backend/tests/fixtures/parity.json`, `scripts/dump-lang-packs.ts`(새로 만듦)
 - 새 문구 키: 없음
 
 ## 완료 기준
@@ -63,7 +63,7 @@
 - [x] 아랍어에서 문서 방향이 RTL이고 레이아웃이 깨지지 않는다
 - [x] 미얀마어·싱할라어·크메르어에서 글자가 네모(tofu)로 나오지 않는다(macOS Chromium)
 - [x] 한국어를 고르면 발음 표기·모국어 뜻 줄·리포트 언어 토글이 지금처럼 숨는다(한국어 분기 코드는 그대로)
-- [ ] (A) `parity.json` 재생성, 백엔드 변경 PR과 함께 `uv run pytest` 통과 — 재생성은 했고, 백엔드 이전 전이라 pytest는 실패한다
+- [x] (A) `parity.json` 재생성, 백엔드 변경과 함께 `uv run pytest` 통과
 
 ## 결과
 - `npm run build` → 통과. 번들 428KB → 870KB(gzip 258KB). 20개 언어 문구가 한 번들에 들어 있다
@@ -71,7 +71,7 @@
 - 20개 언어로 다시 만든 `parity.json`: en·vi·ko 사례(triage 252건, desk 120, call 15, clinician 45, center 60)는 출력이 그대로이고, 새 언어 사례가 뒤에 붙었다. 새 언어 응급 예문 187건(17개 언어 × 11 사유)이 모두 의도한 사유 하나로만 응급 판정된다
 - 응급 키워드 교차 검사: 한 언어의 키워드가 다른 19개 언어의 화면 문구·어휘·문장 틀에 걸리는지 봤다. 걸린 것은 같은 뜻 3건(ja·zh-TW `嘔吐`, fr `vomi`가 en `vomiting`)뿐이다
 - 브라우저(headless Chromium, 360×780): S-01 2열 격자, `/home`·`/consent`를 ar·my·si·km·ne·ru·th·ja로, `/visit/desk`·`/visit/call`을 fr·ar·ne·zh-CN으로 봤다. 가로 넘침 없음. 아랍어에서 한국어 줄의 마침표가 앞으로 넘어가 `[lang='ko']`에 `direction: ltr`을 줬다
-- `cd backend && uv run pytest` → 1562 실패, 1004 통과. 백엔드 `Lang`이 en·vi·ko만 받고 FAQ 질문 형태가 옛것이라서다
+- `cd backend && uv run pytest` → 2566 통과(백엔드 이전 전에는 1562 실패). 서버는 언어 묶음을 `scripts/dump-lang-packs.ts`로 내보낸 `backend/app/lang/packs.json`에서 읽는다
 
 ### 결정
 1. 언어 코드: `ko ne ru mn my vi si ar en uz ja zh-CN zh-TW kk km ky th fr tl id`. `LANGS` 순서는 en·vi·ko를 앞에 두어 기존 기대값 순서를 지키고, 화면 순서는 `LANGUAGE_OPTIONS`(국기 목록 순)가 정한다
@@ -87,7 +87,8 @@
   - 응급 키워드 중 넓을 수 있는 것: ja `ひどい`·`中毒`(食中毒), th `สลบ`·`พูดไม่ชัด`, ar `جانب واحد`, uz `qattiq`(심각도), ru `оторвало`·`отрезало`, zh `摔下来`
   - 우즈베크어는 라틴 문자 키워드만 있다. 키릴로 쓰는 사용자 키워드는 후속
   - 미얀마어는 표준 유니코드 입력만 잡는다(Zawgyi 인코딩은 못 잡는다)
-- 백엔드가 따라 바꿀 것(backend 항목으로 따로 쓴다): `vocab.py`의 `Lang`·`LANGS`·`LANGUAGE_NAMES_KO`·`Term`, 템플릿의 언어 묶음 구조와 `fill`, `Faq.q` 형태(`{ko, native}`), 응급 키워드 합치기. 그 전까지 이 PR의 CI `backend` 작업은 실패한다
+- 백엔드 이전은 `backend/backlog/11-languages-20.md`. 언어 묶음을 고치면 `dump-lang-packs.ts`로 `packs.json`을 다시 만들어야 서버와 맞는다
+- `modeling/src/fornav_modeling/schema.py`의 `Lang`은 en·vi·ko 그대로라 `modeling/tests/test_schema.py` 3건이 실패한다(CI 밖). `language`는 모델 피처가 아니다
 - 앱 바·센터 요청 화면의 `select`도 20개가 된다. 바꾸지 않았다
 - RTL에서 `›` 같은 방향 기호는 뒤집지 않았다. 아랍어 원어민 검수 때 함께 본다
 - 번들이 두 배가 됐다. 언어 파일을 고른 언어만 불러오게(dynamic import) 나누는 일은 후속

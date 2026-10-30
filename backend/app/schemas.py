@@ -144,12 +144,6 @@ class Line(CamelModel):
     pron: str
 
 
-class Tri(CamelModel):
-    ko: str
-    en: str
-    vi: str
-
-
 class KoNative(CamelModel):
     ko: str
     native: str
@@ -164,7 +158,8 @@ class DeskSheet(CamelModel):
 
 class Faq(CamelModel):
     id: str
-    q: Tri
+    # 질문. 한국어 사용자는 native가 ko와 같다
+    q: KoNative
     answers: list[Line]
 
 

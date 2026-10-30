@@ -71,7 +71,7 @@ def test_triage_readme_examples():
 
 def test_invalid_enum_is_422():
     assert client.post("/api/triage", json={**INTAKE, "bodyParts": ["tail"]}).status_code == 422
-    assert client.post("/api/triage", json={**INTAKE, "language": "fr"}).status_code == 422
+    assert client.post("/api/triage", json={**INTAKE, "language": "de"}).status_code == 422
 
 
 def test_extract_fills_empty_fields():
