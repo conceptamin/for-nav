@@ -22,11 +22,12 @@ const TEXT = {
   resendWait: (s: number) => `코드 다시 받기 (${s}초)`,
   changeEmail: '이메일 바꾸기',
   wrong: '코드가 맞지 않거나 만료되었습니다.',
+  invalid: '이메일 형식을 확인해 주세요.',
   rate: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.',
   network: '서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',
 } as const;
 
-type Problem = 'wrong' | 'rate' | 'network';
+type Problem = 'wrong' | 'invalid' | 'rate' | 'network';
 
 export function CenterLoginPage() {
   const navigate = useNavigate();
@@ -71,6 +72,8 @@ export function CenterLoginPage() {
     const status = e instanceof ApiError ? e.status : null;
     // 서버가 로그인을 쓰지 않는다(404). 센터 화면으로 돌아간다
     if (status === 404) navigate(target, { replace: true });
+    // 422는 서버가 형식을 거절했다(브라우저 email 검사는 통과한 "a@b" 등). 코드 단계에서는 틀린 코드와 같다
+    else if (status === 422) setProblem(step === 'email' ? 'invalid' : 'wrong');
     else setProblem(status === 401 ? 'wrong' : status === 429 ? 'rate' : 'network');
     // 너무 자주 요청했으면 조금 전에 받은 코드가 아직 쓸 만하다. 코드 칸을 열고 다시 받기는 잠시 막는다
     if (status === 429) {
