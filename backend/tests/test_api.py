@@ -8,7 +8,9 @@ from fastapi.testclient import TestClient
 from app import clock
 from app.data.mock import StatRecord
 from app.main import app
-from app.store import store
+from app.routers import center
+from app.store import CenterStore, MemoryStore, store
+from app.store_sqlite import SqliteStore
 
 client = TestClient(app)
 
@@ -32,6 +34,19 @@ def _reset_store():
     store.reset()
     yield
     store.reset()
+
+
+@pytest.fixture(params=["memory", "sqlite"])
+def center_store(request, tmp_path, monkeypatch):
+    """센터 경로 테스트를 메모리·SQLite 두 저장소에 돌린다(backlog 07)."""
+    s: CenterStore = MemoryStore() if request.param == "memory" else SqliteStore(str(tmp_path / "center.db"))
+    monkeypatch.setattr(center, "store", s)
+    yield s
+    s.close()
+
+
+# 센터 경로 테스트에 붙인다.
+both_stores = pytest.mark.usefixtures("center_store")
 
 
 def test_health():
@@ -187,6 +202,7 @@ def test_center_summary():
     assert "연락 희망: Zalo." in out["ko"]
 
 
+@both_stores
 def test_mock_cases_listed_latest_first():
     cases = client.get("/api/center/cases").json()
     assert len(cases) == 24
@@ -211,6 +227,7 @@ def _send(**over):
     return client.post("/api/center/cases", json=body)
 
 
+@both_stores
 def test_send_case_flow():
     r = _send()
     assert r.status_code == 201
@@ -230,11 +247,13 @@ def test_send_case_flow():
     assert client.get(f"/api/center/cases/{case['id']}").json() == case
 
 
+@both_stores
 def test_server_rebuilds_summary():
     case = _send(summaryKo="클라이언트가 보낸 요약").json()["case"]
     assert case["summaryKo"].startswith("베트남어 사용 근로자.")
 
 
+@both_stores
 def test_same_millisecond_ids_get_suffix(monkeypatch):
     fixed = datetime(2026, 10, 26, 10, 0, 0, 123000, tzinfo=clock.SEOUL)
     monkeypatch.setattr(clock, "now", lambda: fixed)
@@ -243,6 +262,7 @@ def test_same_millisecond_ids_get_suffix(monkeypatch):
     assert second == f"{first}-2"
 
 
+@both_stores
 def test_since_filter():
     case = _send().json()["case"]
     assert [c["id"] for c in client.get("/api/center/cases", params={"since": "2000-01-01T00:00:00Z", "status": "new"}).json()][0] == case[
@@ -251,6 +271,7 @@ def test_since_filter():
     assert client.get("/api/center/cases", params={"since": case["createdAt"]}).json() == []
 
 
+@both_stores
 def test_patch_status_and_reset():
     r = client.patch("/api/center/cases/C-1024", json={"status": "done"})
     assert r.status_code == 200
@@ -265,11 +286,13 @@ def test_patch_status_and_reset():
     assert next(c for c in cases if c["id"] == "C-1024")["status"] == "new"
 
 
+@both_stores
 def test_unknown_case_is_404():
     assert client.get("/api/center/cases/C-0").status_code == 404
     assert client.patch("/api/center/cases/C-0", json={"status": "done"}).status_code == 404
 
 
+@both_stores
 def test_stats_shape():
     out = client.get("/api/center/stats", params={"days": 180}).json()
     assert out["total"] == 420
@@ -281,7 +304,7 @@ def test_stats_shape():
     assert client.get("/api/center/stats", params={"days": 7}).status_code == 422
 
 
-def test_stats_hides_small_cells(monkeypatch):
+def test_stats_hides_small_cells(monkeypatch, center_store):
     now = clock.now()
     rec = StatRecord(
         date=now,
@@ -293,7 +316,7 @@ def test_stats_hides_small_cells(monkeypatch):
         request_type="booking",
         work_related="yes",
     )
-    monkeypatch.setattr(store, "stat_records", [rec] * 6 + [StatRecord(**{**rec.__dict__, "industry": "other"})])
+    monkeypatch.setattr(center_store, "stat_records", [rec] * 6 + [StatRecord(**{**rec.__dict__, "industry": "other"})])
     out = client.get("/api/center/stats", params={"days": 30}).json()
     assert out["total"] == 7
     assert {c["key"]: c["n"] for c in out["byIndustry"]} == {

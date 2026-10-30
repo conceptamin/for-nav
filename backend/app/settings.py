@@ -1,6 +1,6 @@
 # 서버 설정값. 발표 전에 코드를 고치지 않고 바꿀 수 있도록 환경 변수에서 시작 시 한 번 읽는다.
 # 불변 객체 하나만 두고, 값이 잘못되면 서버가 뜨지 않게 시작 시점에 거절한다.
-# 뒤 항목(DB)도 여기에 필드를 더해 같은 방식으로 받는다.
+# 뒤 항목도 여기에 필드를 더해 같은 방식으로 받는다.
 
 import os
 import re
@@ -40,6 +40,9 @@ class Settings:
     llm_api_key: str = field(default="", repr=False)
     llm_timeout_s: float = DEFAULT_TIMEOUT_S
     llm_attempts: int = DEFAULT_ATTEMPTS
+    # 센터 사례 SQLite 파일. 빈 문자열이면 메모리 저장소(재시작하면 mock 시드 상태)
+    db_path: str = ""
+
     # 프론트 빌드 폴더(frontend/dist). 빈 문자열이면 정적 파일을 서빙하지 않는다(API만)
     static_dir: str = ""
     # 모델 아티팩트 폴더(modeling/models). 빈 문자열이면 모델 없이 규칙·보조 점수로 동작한다
@@ -101,6 +104,13 @@ def _llm_attempts(raw: str) -> int:
     return value
 
 
+def _db_path(raw: str) -> str:
+    path = raw.strip()
+    if path and not Path(path).parent.is_dir():
+        raise ValueError(f"DB_PATH의 폴더가 없다: {raw!r}")
+    return path
+
+
 def _static_dir(raw: str) -> str:
     path = raw.strip()
     if path and not (Path(path) / "index.html").is_file():
@@ -125,6 +135,7 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
         llm_api_key=env.get("LLM_API_KEY", "").strip(),
         llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
         llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
+        db_path=_db_path(env.get("DB_PATH", "")),
         static_dir=_static_dir(env.get("STATIC_DIR", "")),
         model_dir=_model_dir(env.get("MODEL_DIR", "")),
     )

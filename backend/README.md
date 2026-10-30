@@ -18,7 +18,7 @@
 | 언어·런타임 | Python 3.12+ | 모델링 코드(LightGBM·SHAP)와 같은 언어 |
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
-| 저장소 | 프로세스 메모리(dict) | 목업이므로 재시작하면 mock 시드 상태로 돌아간다 |
+| 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경이 재시작 뒤에도 남는다 |
 | 모델 | `lightgbm`, `numpy`(modeling과 같은 버전) + `modeling/src`의 `predict()` | 응급도·진료과 모델(backlog 06). `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
@@ -53,7 +53,8 @@ backend/
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 메모리 저장소
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*
@@ -65,6 +66,7 @@ backend/
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
+    test_store.py      센터 저장소 메모리·SQLite 같은 테스트, SQLite 재시작 뒤 유지
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
@@ -279,6 +281,8 @@ backend/
   - `Math.imul`, `>>>`, `|0`은 32비트 정수 연산이다. Python에서는 매 연산 뒤 `& 0xFFFFFFFF`로 자르고, 부호가 필요한 곳(`|0`)은 부호 있는 32비트로 바꿔 계산한다. 첫 10개 난수값을 프론트와 비교하는 테스트를 둔다.
 - mock 사례의 `createdAt`은 "서버 시작 시각 기준 몇 시간 전"으로 만든다. 서버 시작 시 한 번만 만든다.
 - 근로자가 실제로 보낸 사례는 `live: true`로 같은 저장소에 넣는다. `POST /api/center/reset`은 live 사례와 상태 변경만 지우고 mock은 처음 상태로 되돌린다.
+- `DB_PATH`가 있으면 live 사례(`live_cases`: id, 접수 시각, 본문 JSON)와 상태 변경(`case_status`: id, 상태)만 SQLite 파일에 둔다. mock 사례·통계 레코드는 지금처럼 시작 시 메모리에서 만든다(시드 고정이라 재시작해도 id가 같다). `reset`은 두 표를 비우고 파일은 지우지 않는다.
+- SQLite 파일에는 연락처·자유 입력이 **평문으로** 남는다. 데모 범위에서만 쓰고, 보존 기간·삭제 규칙은 PRD 미결이다. `*.db`는 `.gitignore`에 있다.
 - 사례 id: mock은 `C-1001`~`C-1024`, live는 `C-` + 접수 시각 밀리초 끝 5자리(프론트와 같음). 겹치면 뒤에 `-2`를 붙인다.
 
 ## 프론트 동기화 테스트
@@ -349,6 +353,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
+| `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다. 쓰려면 `PYTHONPATH`에 `../modeling/src`를 넣는다 |
 
@@ -446,7 +451,7 @@ backend:
 | `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
-| 센터 저장소 | 프로세스 메모리 | 서버 DB |
+| 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
 
