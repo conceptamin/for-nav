@@ -1,4 +1,4 @@
-// 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드.
+// 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 로고 + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드, 스크롤 등장.
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
 // title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
@@ -8,6 +8,7 @@ import { LANGUAGE_OPTIONS, useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
 import type { Lang } from '../domain/vocab';
+import { useReveal } from './reveal';
 
 export interface ScreenBar {
   /** 화면 이름. 브라우저 탭 제목에 쓴다(앱 바에는 보이지 않는다) */
@@ -62,6 +63,10 @@ export function WorkerLayout() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  // 스크롤 등장(backlog 25). 응급 화면은 안내·전화 버튼이 늦게 보이면 안 되므로 끈다
+  const mainRef = useRef<HTMLElement>(null);
+  useReveal(mainRef, !splash && pathname !== '/emergency');
+
   const appName = app.lang ? t('appName') : 'for nav';
 
   // 화면 이름은 브라우저 탭 제목으로만 쓴다. 훅은 아래의 이른 return보다 먼저 불러야 한다
@@ -95,17 +100,21 @@ export function WorkerLayout() {
     return <Navigate to="/signup" replace />;
   }
 
-  // 홈은 ← 대신 앱 이름(홈 링크). 그 밖은 ← 하나. S-01은 앱 바를 숨긴다
+  // 홈은 로고 + 앱 이름(홈 링크). 그 밖은 ← + 로고(회원·비회원이 정해졌으면 홈 링크).
+  // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 하나를 둔다(backlog 25)
   const isRoot = pathname === '/' || pathname === '/home';
+  const logo = <img className="logo" src="/logo.png" width="28" height="28" alt="" />;
 
   return (
     <ScreenBarContext.Provider value={setBarStable}>
       <div className="w-shell">
-        {!bar.hidden && (
+        {bar.hidden ? (
+          <div className="w-corner-logo">{logo}</div>
+        ) : (
           <header className="w-header">
             {isRoot ? (
               <>
-                <img className="logo" src="/logo.png" width="24" height="24" alt="" />
+                {logo}
                 <Link to={app.mode ? '/home' : '/'} className="title">
                   {appName}
                 </Link>
@@ -115,6 +124,13 @@ export function WorkerLayout() {
                 <button type="button" className="back" aria-label={t('back')} onClick={bar.onBack ?? (() => navigate('/home'))}>
                   ←
                 </button>
+                {app.mode ? (
+                  <Link to="/home" className="logo-link" aria-label={appName}>
+                    {logo}
+                  </Link>
+                ) : (
+                  logo
+                )}
                 <span className="title" />
               </>
             )}
@@ -133,7 +149,7 @@ export function WorkerLayout() {
             )}
           </header>
         )}
-        <main className="w-main">
+        <main className="w-main" ref={mainRef}>
           <Outlet />
         </main>
         {bar119}
