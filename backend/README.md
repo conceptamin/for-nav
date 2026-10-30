@@ -444,19 +444,19 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 ### 맥미니 배포
 
-`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
+`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
 
 `deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에 빌드 → `uv sync --frozen --no-dev` → `static`으로 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 실패하면 떠 있는 서버와 `static`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
 
 처음 한 번 준비할 것:
 
 1. 맥미니에 도구를 둔다: Homebrew `uv`, nvm Node 22 이상(`nvm install 22`), `npm i -g pm2`(nvm Node 22에 설치), 재부팅 뒤 자동 시작이 필요하면 `pm2 startup`.
-2. 맥미니에 저장소를 클론한다. 이 폴더에서는 파일을 손으로 고치지 않는다(`git pull --ff-only`가 실패한다).
+2. 클론(`~/srv/for-nav`)은 없으면 워크플로가 첫 배포 때 만든다. 미리 받아 두려면 아래처럼 한다. 이 폴더에서는 파일을 손으로 고치지 않는다(`git pull --ff-only`가 실패한다).
    ```sh
    mkdir -p ~/srv && git clone https://github.com/conceptamin/for-nav.git ~/srv/for-nav
    ```
-3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. `STATIC_DIR`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
-4. 맥미니에서 한 번 직접 돌려 본다: `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
+3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. 첫 배포 뒤에 만들었으면 4번처럼 한 번 다시 돌린다. `STATIC_DIR`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
+4. 클론을 미리 받았으면 맥미니에서 한 번 직접 돌려 본다: `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
 5. GitHub 저장소 Settings → Secrets and variables → Actions에 secrets 3개를 넣는다.
 
 | secret | 값 |
