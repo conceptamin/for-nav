@@ -476,7 +476,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 처음 한 번 준비할 것:
 
-1. 맥미니에 도구를 둔다: Homebrew `uv`, nvm Node 22 이상(`nvm install 22`), `npm i -g pm2`(nvm Node 22에 설치), 재부팅 뒤 자동 시작이 필요하면 `pm2 startup`.
+1. 맥미니에 도구를 둔다: Homebrew `uv`·`libomp`(LightGBM 모델을 불러올 때 필요하다. 없으면 서버가 `Library not loaded: @rpath/libomp.dylib`로 뜨지 못한다), nvm Node 22 이상(`nvm install 22`), `npm i -g pm2`(nvm Node 22에 설치), 재부팅 뒤 자동 시작이 필요하면 `pm2 startup`.
 2. 클론(`~/srv/for-nav`)은 없으면 워크플로가 첫 배포 때 만든다. 미리 받아 두려면 아래처럼 한다. 이 폴더에서는 파일을 손으로 고치지 않는다(`git pull --ff-only`가 실패한다).
    ```sh
    mkdir -p ~/srv && git clone https://github.com/conceptamin/for-nav.git ~/srv/for-nav
