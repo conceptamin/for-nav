@@ -1,6 +1,6 @@
 # 응급도·진료과 모델 연결(backlog 06). modeling의 predict()를 부르는 얇은 층이다.
 # 피처 계산·임계값·버전은 modeling 쪽(predict.py, metadata.json)을 그대로 쓰고 여기에 다시 적지 않는다.
-# 모델링 코드는 PYTHONPATH에 modeling/src를 넣어 import한다. MODEL_DIR이 비면 import하지 않는다(CI·기본 실행은 모델 없음).
+# 모델링 코드는 ../modeling 경로 의존성(editable)으로 설치된다(backlog 12). MODEL_DIR이 비면 import하지 않는다(CI·기본 실행은 모델 없음).
 # 아티팩트는 LightGBM 텍스트 모델과 JSON만 읽는다(modeling read_verified가 sha256을 확인한다).
 
 import logging
@@ -18,10 +18,8 @@ def load_model(model_dir: str) -> Predictor | None:
     """서버 시작 시 한 번 부른다. 아티팩트를 미리 읽어 검증하고, 실패하면 서버가 뜨지 않는다."""
     if not model_dir:
         return None
-    try:
-        from fornav_modeling import predict as modeling
-    except ImportError as exc:
-        raise RuntimeError("MODEL_DIR를 쓰려면 PYTHONPATH에 modeling/src를 넣는다(README '실행')") from exc
+    from fornav_modeling import predict as modeling  # MODEL_DIR이 있을 때만 lightgbm을 불러온다
+
     root = Path(model_dir)
     modeling.load_artifacts(str(root))
 

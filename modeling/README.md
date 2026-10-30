@@ -112,6 +112,7 @@ uv run python scripts/train_dept_b.py                    # models/dept_b/v0
 uv run python scripts/tune_ensemble.py                   # models/ensemble/v1/ensemble.json
 uv run python scripts/evaluate.py --model <acuity|dept_a|dept_b|ensemble> --round <v0|v1>   # test 1회, "최종"
 uv run python scripts/export_models.py                   # models/{acuity,dept_a,dept_b,ensemble}/v2/
+uv run python scripts/evaluate.py --model pipeline --round v2   # 백엔드 규칙 + 서빙 모델의 응급 재현율, test 1회(backlog 12). backend 폴더의 uv 환경을 쓴다
 uv run python scripts/experiment_vitals.py               # 발표용 비교: 버튼 vs 버튼 + 활력징후(backlog 09). valid만, 서빙과 무관
 ```
 
