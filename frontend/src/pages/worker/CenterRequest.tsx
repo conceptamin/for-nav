@@ -49,6 +49,7 @@ export function CenterRequestPage() {
         }
       : null;
   const summary = useCenterSummary(summaryInput);
+  useScreenBar({ title: t('cenTitle') });
 
   // 센터 전송은 회원만 가능(FR-03)
   if (app.mode !== 'member') {
@@ -139,30 +140,30 @@ export function CenterRequestPage() {
     }
   };
 
+  // 입력 화면 골격(backlog 08·17): 고르는 것은 카드 밖, 보내기 버튼 하나가 바닥에 붙는다.
+  // 전송이 실패하면 동의 줄 아래에 실패 문구 + 다시 시도(README "비동기 UX 규칙")를 두고, 바닥 버튼도 그대로 남는다.
   return (
-    <div>
+    <div className="w-screen">
       <h1>{t('cenTitle')}</h1>
       <p className="muted">{t('cenIntro')}</p>
       {!app.intake && <div className="notice info">{t('cenNoIntake')}</div>}
-      <section className="card">
+      <div className="field">
+        <span className="label">{t('cenType')}</span>
+        <SingleSelect options={REQUEST_TYPES} value={type} onChange={setType} label={(k) => t(`req.${k}` as MessageKey)} />
+      </div>
+      <div className="field">
+        <span className="label">{t('cenContactMethod')}</span>
+        <SingleSelect options={CONTACT_METHODS} value={method} onChange={setMethod} label={(k) => t(`contact.${k}` as MessageKey)} />
+      </div>
+      {method && method !== 'visit' && (
         <div className="field">
-          <span className="label">{t('cenType')}</span>
-          <SingleSelect options={REQUEST_TYPES} value={type} onChange={setType} label={(k) => t(`req.${k}` as MessageKey)} />
+          <label htmlFor="contact">
+            {t('cenContact')} <span className="small muted">({t('optional')})</span>
+          </label>
+          <input id="contact" type="text" inputMode={method === 'phone' || method === 'sms' ? 'tel' : 'text'} value={contact} onChange={(e) => setContact(e.target.value)} maxLength={40} />
+          <span className="small muted">{t('cenContactHint')}</span>
         </div>
-        <div className="field">
-          <span className="label">{t('cenContactMethod')}</span>
-          <SingleSelect options={CONTACT_METHODS} value={method} onChange={setMethod} label={(k) => t(`contact.${k}` as MessageKey)} />
-        </div>
-        {method && method !== 'visit' && (
-          <div className="field">
-            <label htmlFor="contact">
-              {t('cenContact')} <span className="small muted">({t('optional')})</span>
-            </label>
-            <input id="contact" type="text" inputMode={method === 'phone' || method === 'sms' ? 'tel' : 'text'} value={contact} onChange={(e) => setContact(e.target.value)} maxLength={40} />
-            <span className="small muted">{t('cenContactHint')}</span>
-          </div>
-        )}
-      </section>
+      )}
 
       {summary && (
         <section className="card band">
@@ -173,24 +174,28 @@ export function CenterRequestPage() {
         </section>
       )}
 
-      <label className="check" style={{ marginBottom: 12 }}>
-        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-        <span>{t('cenConsent')}</span>
-      </label>
-      {sendFailed ? (
-        <div className="notice danger with-retry" role="alert">
-          <span>{t('sendFailed')}</span>
-          <button type="button" className="btn secondary" disabled={sending || !type || !agreed} onClick={() => void send()}>
-            {t('retry')}
-          </button>
-        </div>
-      ) : (
-        <button type="button" className="btn block big" disabled={!type || !agreed || sending} onClick={() => void send()}>
-          📨 {t('cenSend')}
-        </button>
-      )}
+      <hr className="divider" />
+      <div className="stack">
+        <label className="check">
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+          <span>{t('cenConsent')}</span>
+        </label>
+        {sendFailed && (
+          <div className="notice danger with-retry" role="alert">
+            <span>{t('sendFailed')}</span>
+            <button type="button" className="btn secondary" disabled={sending || !type || !agreed} onClick={() => void send()}>
+              {t('retry')}
+            </button>
+          </div>
+        )}
+      </div>
       <p className="footer-note">{t('cenHoursNote')}</p>
       <Worse119 />
+      <footer className="w-footer">
+        <button type="button" className="btn block" disabled={!type || !agreed || sending} onClick={() => void send()}>
+          📨 {t('cenSend')}
+        </button>
+      </footer>
     </div>
   );
 }

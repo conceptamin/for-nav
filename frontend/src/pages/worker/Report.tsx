@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { toggleIn, Worse119 } from '../../components/common';
+import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
@@ -22,6 +23,8 @@ export function ReportBuilderPage() {
   const [agreed, setAgreed] = useState(false);
   /** 서버 응답을 기다리는 중. 만들기 버튼을 막아 리포트가 두 번 만들어지지 않게 한다 */
   const [busy, setBusy] = useState(false);
+  // ← 는 리포트 보기의 되돌아가기와 같이 결과로 간다
+  useScreenBar({ title: t('repTitle'), onBack: () => navigate('/result') });
 
   if (!app.intake || !app.triage) return <Navigate to="/intake" replace />;
   const intake = app.intake;
@@ -47,37 +50,42 @@ export function ReportBuilderPage() {
     }
   };
 
+  // 입력 화면 골격(backlog 08·17): h1 → 항목 고르기 → 동의 → 바닥에 붙은 만들기 버튼 하나
   return (
-    <div>
+    <div className="w-screen">
       <h1>{t('repTitle')}</h1>
-      <section className="card">
-        <h2>{t('repChoose')}</h2>
-        <p className="small muted">{t('repChooseHint')}</p>
-        <div className="stack" style={{ gap: 8 }}>
-          {available.map((f) => (
-            <label key={f} className="check">
-              <input type="checkbox" checked={included.includes(f)} onChange={() => setIncluded(toggleIn(included, f))} />
-              <span>{t(`field.${f}` as MessageKey)}</span>
-            </label>
-          ))}
-        </div>
-        {!app.profile && <p className="footer-note">{t('repNoProfile')}</p>}
+      <h2>{t('repChoose')}</h2>
+      <p className="small muted">{t('repChooseHint')}</p>
+      <div className="stack">
+        {available.map((f) => (
+          <label key={f} className="check">
+            <input type="checkbox" checked={included.includes(f)} onChange={() => setIncluded(toggleIn(included, f))} />
+            <span>{t(`field.${f}` as MessageKey)}</span>
+          </label>
+        ))}
         {included.includes('meds') && (
-          <div className="field" style={{ marginTop: 12 }}>
+          <div className="field">
             <label htmlFor="meds">
               {t('repMeds')} <span className="small muted">({t('optional')})</span>
             </label>
             <input id="meds" type="text" value={meds} placeholder={t('repMedsPh')} onChange={(e) => setMeds(e.target.value)} />
           </div>
         )}
-      </section>
-      <label className="check" style={{ marginBottom: 12 }}>
-        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-        <span>{t('repConsent')}</span>
-      </label>
-      <button type="button" className="btn block big" disabled={busy || !agreed || included.length === 0} onClick={make}>
-        {t('repMakeBtn')}
-      </button>
+      </div>
+      {!app.profile && <p className="footer-note">{t('repNoProfile')}</p>}
+      <hr className="divider" />
+      <div className="stack">
+        <label className="check">
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+          <span>{t('repConsent')}</span>
+        </label>
+        <Worse119 />
+      </div>
+      <footer className="w-footer">
+        <button type="button" className="btn block" disabled={busy || !agreed || included.length === 0} onClick={make}>
+          {t('repMakeBtn')}
+        </button>
+      </footer>
     </div>
   );
 }
