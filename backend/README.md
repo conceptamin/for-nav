@@ -9,7 +9,7 @@
 2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-학습 모델(`modeling/README.md`)은 아직 붙이지 않았고, LLM은 `/api/extract`와 접수 도우미의 상황 줄 슬롯에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
+학습 모델(`modeling/README.md`)은 `MODEL_DIR`이 있을 때 `/api/triage`에 붙고(없으면 규칙·보조 점수), LLM은 `/api/extract`와 접수 도우미의 상황 줄 슬롯에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
 
 ## 기술 스택
 
@@ -19,6 +19,7 @@
 | 프레임워크 | FastAPI + Pydantic v2 | PRD의 실서비스 구성과 동일, 스키마 자동 문서(`/docs`) |
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict) | 목업이므로 재시작하면 mock 시드 상태로 돌아간다 |
+| 모델 | `lightgbm`, `numpy`(modeling과 같은 버전) + `modeling/src`의 `predict()` | 응급도·진료과 모델(backlog 06). `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
 
@@ -30,6 +31,7 @@ backend/
   app/
     main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
+    model.py           응급도·진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
@@ -64,6 +66,7 @@ backend/
     test_api.py        경로별 응답 형태·상태 코드
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
     test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
+    test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     fakes.py           FakeLLMClient
 ```
@@ -140,7 +143,28 @@ backend/
   "department": { "primary": "internal", "alt": "family" }, "missing": [] }
 ```
 
-**`Intake`의 응급도 모델 입력(선택)** — 모든 `Intake` 요청은 아래 키를 선택으로 더 받는다(backlog 10). 프론트 `Intake` 타입에는 아직 없고, 규칙은 이 값을 쓰지 않는다. 응급도 모델을 붙이면(backlog 06) 모델 입력으로 넘긴다. 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다.
+**모델이 있을 때(`MODEL_DIR`, backlog 06)** — 같은 요청에 선택 필드 `model`이 더해진다. 아래는 `modeling/models`(v2)로 띄운 실제 응답이다(확률은 줄임).
+
+```jsonc
+// 손·베인 상처·출혈 — 규칙표가 정한 조합이라 진료과는 규칙표 그대로
+{ "emergency": false, "reasons": [], "byRule": false, "byModel": false, "modelScore": 2,
+  "department": { "primary": "surgery", "alt": "ortho" }, "missing": [],
+  "model": { "acuity": "outpatient",
+             "acuityProba": { "emergency": 0.017, "today": 0.115, "outpatient": 0.869 },
+             "departmentProba": { "ortho": 0.292, "surgery": 0.476, "family": 0.166, "...": 0.066 },
+             "shap": [{ "feature": "symptom_cut", "value": 1.0, "contribution": 1.1125 }, "..."] } }
+// 가슴·통증 — 규칙이 응급이면 모델과 관계없이 응급(byRule: true). 이 입력은 모델도 응급이다
+{ "emergency": true, "reasons": ["chest"], "byRule": true, "byModel": true, "modelScore": 0,
+  "department": { "primary": "ortho", "alt": "internal" }, "missing": [], "model": { "acuity": "emergency", "...": "..." } }
+```
+
+- `byModel`: 모델이 있으면 `model.acuity == "emergency"`, 없으면 보조 점수 ≥ 3. `emergency = byRule || byModel`이고, 모델만 응급이면 `reasons`는 `["riskScore"]`다.
+- `modelScore`는 모델 유무와 관계없이 보조 점수 그대로다.
+- `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)만 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다.
+- `model.shap`: 판정한 응급도 클래스에 기여가 큰 피처 3개(`feature`, `value`, `contribution`). 값을 모르면 `value: null`.
+- 예측 중 오류가 나면 `model` 없이 규칙·보조 점수 결과를 돌려준다(로그에는 예외 종류만).
+
+**`Intake`의 응급도 모델 입력(선택)** — 모든 `Intake` 요청은 아래 키를 선택으로 더 받는다(backlog 10). 프론트 `Intake` 타입에는 아직 없고, 규칙은 이 값을 쓰지 않는다. `MODEL_DIR`이 있으면 응급도 모델 입력으로 넘긴다(backlog 06). 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다.
 
 | 키 | 값 |
 |---|---|
@@ -308,6 +332,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
+| `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다. 쓰려면 `PYTHONPATH`에 `../modeling/src`를 넣는다 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -326,6 +351,16 @@ uv run --env-file .env python scripts/llm_smoke.py   # 모델 이름, 소요 시
 uv run --env-file .env python scripts/extract_compare.py   # 픽스처 자유 입력의 LLM·키워드 추출 비교(번호와 열거값만 찍는다)
 uv run --env-file .env python scripts/slots_check.py       # 픽스처 자유 입력의 상황 줄 요약 guard 통과 건수(번호·글자 수·검사 결과만 찍는다)
 ```
+
+### 모델
+
+`MODEL_DIR`이 있으면 시작 시 `modeling/models`의 아티팩트(LightGBM 텍스트·JSON, `metadata.json`의 sha256 확인)를 한 번 읽어 `app.state.model`에 둔다. 아티팩트가 없거나 깨졌거나 `fornav_modeling`을 import할 수 없으면 서버가 뜨지 않는다. 모델 버전·피처·임계값은 `modeling/src/fornav_modeling/predict.py`와 `metadata.json`이 정하고 서버에 다시 적지 않는다.
+
+```sh
+PYTHONPATH=../modeling/src MODEL_DIR=../modeling/models uv run fastapi dev app/main.py
+```
+
+테스트는 가짜 `predict`로 돌고 `modeling` 코드를 import하지 않는다.
 
 프론트와 함께 띄울 때:
 
@@ -372,14 +407,14 @@ backend:
 
 | 자리 | 목업 동작 | 실서비스 |
 |---|---|---|
-| `TriageResult.modelScore`, `byModel` | 위험 신호 가산 점수(임계값 3) | 응급도 분류 모델(LightGBM, 3단계) — `modeling/README.md` |
-| `TriageResult.department` | 결정적 규칙표 | 명확 케이스 규칙 → 진료과 앙상블(모델 A + B) 상위 2개 |
+| `TriageResult.modelScore`, `byModel` | `MODEL_DIR`이 있으면 응급도 모델(`byModel`, `model`), 없으면 위험 신호 가산 점수(임계값 3) — 붙임(backlog 06). `modelScore`는 계속 가산 점수 | 같음 |
+| `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 막연한 분기만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
 | `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 원문 + "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 저장소 | 프로세스 메모리 | 서버 DB |
 
-모델 결과를 추가할 때는 기존 필드를 바꾸지 말고 `TriageResult.model`(예: `{ acuity, acuityProba, departmentProba, shap }`) 같은 선택 필드로 더한다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
+모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
 
 ## 확인이 필요한 값
 

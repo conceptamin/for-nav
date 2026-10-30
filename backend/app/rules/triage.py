@@ -1,11 +1,11 @@
 # 증상 분류(POST /api/triage)와 자유 입력 추출(POST /api/extract). frontend/src/domain/triage.ts와 1:1.
-# - 응급 감지: 키워드 규칙 OR 보조 점수(자체 모델 자리). 둘 중 하나라도 응급이면 응급.
+# - 응급 감지: 키워드 규칙 OR 보조 점수(모델이 있으면 응급도 모델, backlog 06). 둘 중 하나라도 응급이면 응급.
 # - 증상 추출: LLM 자리. 목업에서는 다국어 키워드 사전으로 추출하고, 못 찾은 항목은 버튼으로 다시 묻는다.
-# - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과.
+# - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과. 모델이 있으면 규칙표의 막연한 분기(GENERIC)만 모델 상위 2개로 바꾼다.
 
 from collections.abc import Callable
 
-from app.schemas import DepartmentPair, EmergencyReason, Extraction, Intake, TriageResult
+from app.schemas import DepartmentPair, EmergencyReason, Extraction, Intake, ModelPrediction, TriageResult
 from app.vocab import PACKS, BodyPart, LangPack, Onset, Symptom, WorkType, YesNoUnknown
 
 # ---------------------------------------------------------------------------
@@ -106,37 +106,59 @@ MSK: list[BodyPart] = ["back", "arm", "hand", "leg", "foot"]
 
 
 def recommend_department(body_parts: list[BodyPart], symptoms: list[Symptom]) -> DepartmentPair:
+    return rule_department(body_parts, symptoms)[0]
+
+
+def rule_department(body_parts: list[BodyPart], symptoms: list[Symptom]) -> tuple[DepartmentPair, bool]:
+    """(규칙표 결과, 막연한 분기인지). 막연한 분기는 내과 묶음(배·가슴·온몸·발열·구토·어지러움)과 기본값이다.
+
+    기본값은 부위가 하나라도 있으면 닿지 않는다(13개 부위가 모두 앞 분기에 있다). 그래서 내과 묶음까지 모델에 맡긴다(backlog 06).
+    """
     b = set(body_parts)
     s = set(symptoms)
     msk = any(p in b for p in MSK)
     if "chemical" in s:
-        return DepartmentPair(primary="occ", alt="derm" if "skin" in b else "internal")
+        return DepartmentPair(primary="occ", alt="derm" if "skin" in b else "internal"), False
     if "eye" in b or "foreign" in s:
-        return DepartmentPair(primary="ophth", alt="family")
+        return DepartmentPair(primary="ophth", alt="family"), False
     if "teeth" in b:
-        return DepartmentPair(primary="dental", alt="family")
+        return DepartmentPair(primary="dental", alt="family"), False
     if "burn" in s:
-        return DepartmentPair(primary="surgery", alt="derm")
+        return DepartmentPair(primary="surgery", alt="derm"), False
     if "cut" in s or "bleeding" in s:
-        return DepartmentPair(primary="surgery", alt="ortho" if msk else "family")
+        return DepartmentPair(primary="surgery", alt="ortho" if msk else "family"), False
     if "skin" in b or "rash" in s:
-        return DepartmentPair(primary="derm", alt="family")
+        return DepartmentPair(primary="derm", alt="family"), False
     if "ent" in b or "cough" in s:
-        return DepartmentPair(primary="ent", alt="internal")
+        return DepartmentPair(primary="ent", alt="internal"), False
     if msk:
-        return DepartmentPair(primary="ortho", alt="neuro" if "numb" in s else "family")
+        return DepartmentPair(primary="ortho", alt="neuro" if "numb" in s else "family"), False
     if "head" in b:
-        return DepartmentPair(primary="neuro", alt="internal")
+        return DepartmentPair(primary="neuro", alt="internal"), False
     if "abdomen" in b or "chest" in b or "whole" in b or "fever" in s or "nausea" in s or "dizzy" in s:
-        return DepartmentPair(primary="internal", alt="family")
-    return DepartmentPair(primary="family", alt="internal")
+        return DepartmentPair(primary="internal", alt="family"), True
+    return DepartmentPair(primary="family", alt="internal"), True
 
 
-def triage(intake: Intake) -> TriageResult:
+def department_for(intake: Intake, model: ModelPrediction | None) -> DepartmentPair:
+    """규칙표가 명시적으로 정한 조합은 규칙표, 막연한 분기만 모델 앙상블 상위 2개다."""
+    pair, generic = rule_department(intake.body_parts, intake.symptoms)
+    if model is None or not generic:
+        return pair
+    primary, alt = model.department_top2
+    return DepartmentPair(primary=primary, alt=alt)
+
+
+def triage(intake: Intake, model: ModelPrediction | None = None) -> TriageResult:
+    """규칙이 먼저다. 규칙이 응급이면 모델과 관계없이 응급이다.
+
+    `model`은 응급도·진료과 모델 예측(app/model.py)이다. 있으면 보조 점수 대신 모델 응급도로 byModel을 정하고,
+    없으면 프론트와 같다. modelScore는 모델 유무와 관계없이 보조 점수 그대로다.
+    """
     reasons = rule_reasons(intake)
     by_rule = len(reasons) > 0
     score = model_score(intake)
-    by_model = score >= MODEL_THRESHOLD
+    by_model = model.acuity == "emergency" if model else score >= MODEL_THRESHOLD
     if by_model and not reasons:
         reasons.append("riskScore")
     missing: list = []
@@ -150,8 +172,9 @@ def triage(intake: Intake) -> TriageResult:
         by_rule=by_rule,
         by_model=by_model,
         model_score=score,
-        department=recommend_department(intake.body_parts, intake.symptoms) if not missing else None,
+        department=department_for(intake, model) if not missing else None,
         missing=missing,
+        model=model,
     )
 
 

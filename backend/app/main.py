@@ -1,6 +1,6 @@
 # 울산 외국인 의료 내비게이터 목업 서버.
 # 프론트 브라우저 안의 규칙·템플릿·mock을 같은 입력이면 같은 결과가 나오도록 옮겼다.
-# LLM은 /api/extract에만 붙였고(키가 없으면 키워드 사전), 학습 모델은 아직 붙이지 않는다.
+# LLM(추출·템플릿 슬롯·번역)과 응급도·진료과 모델은 설정이 있을 때만 붙고, 없으면 규칙·템플릿으로 동작한다.
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import errors
+from app.model import load_model
 from app.routers import center, worker
 from app.schemas import Meta
 from app.settings import get_llm_client, settings
@@ -18,6 +19,8 @@ from app.settings import get_llm_client, settings
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # LLM 클라이언트는 시작 시 한 번 만들고 종료 시 닫는다. 키가 없으면 None이고 LLM 자리는 규칙·템플릿으로 동작한다.
     app.state.llm = get_llm_client()
+    # 모델은 MODEL_DIR이 있을 때만 시작 시 한 번 읽는다. 아티팩트가 깨졌으면 여기서 실패해 서버가 뜨지 않는다.
+    app.state.model = load_model(settings.model_dir)
     try:
         yield
     finally:

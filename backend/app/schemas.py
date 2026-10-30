@@ -6,7 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
-from app.vocab import AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown
+from app.vocab import Acuity, AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown
 
 
 class CamelModel(BaseModel):
@@ -63,15 +63,36 @@ class DepartmentPair(CamelModel):
     alt: Department
 
 
+class ShapItem(CamelModel):
+    # 응급도 피처 이름(modeling features/buttons.py FEATURE_NAMES), 입력값(모르면 null), 판정 클래스에 대한 기여도
+    feature: str
+    value: float | None
+    contribution: float
+
+
+class ModelPrediction(CamelModel):
+    """modeling predict()의 출력(app/model.py). 응답에는 앞 네 필드만 내보낸다."""
+
+    acuity: Acuity
+    acuity_proba: dict[Acuity, float]
+    department_proba: dict[Department, float]
+    shap: list[ShapItem]
+    # 진료과 앙상블 상위 2개(확신이 낮으면 모델 쪽 폴백 family·internal). 규칙표 분기를 대신할 때만 쓴다
+    department_top2: list[Department] = Field(exclude=True, min_length=2, max_length=2)
+    department_fallback: bool = Field(exclude=True)
+
+
 class TriageResult(CamelModel):
     emergency: bool
     reasons: list[EmergencyReason]
-    # 규칙과 보조 점수 각각의 판정(센터·평가 화면 표시용)
+    # 규칙과 보조 점수(모델이 있으면 응급도 모델) 각각의 판정(센터·평가 화면 표시용)
     by_rule: bool
     by_model: bool
     model_score: int
     department: DepartmentPair | None
     missing: list[Literal["bodyParts", "symptoms"]]
+    # 서버 전용 선택 필드. 응급도·진료과 모델 결과(backlog 06), 모델이 없으면 키가 없다
+    model: ModelPrediction | None = absent_if_none()
 
 
 class Extraction(CamelModel):

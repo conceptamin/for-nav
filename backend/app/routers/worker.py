@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 
 from app.llm import LLMClient
+from app.model import Predictor, run_model
 from app.rules.coverage import route_coverage
 from app.rules.extract_llm import extract_with_llm
 from app.rules.triage import filled_by_extraction, merge_extraction, triage
@@ -42,10 +43,15 @@ async def extract(req: ExtractRequest, llm: Annotated[LLMClient | None, Depends(
     return ExtractResponse(extraction=ex, intake=merged, filled=filled_by_extraction(req.intake, merged), source=source)
 
 
+def triage_model(request: Request) -> Predictor | None:
+    """서버 시작 시 읽은 응급도·진료과 모델. MODEL_DIR이 비었거나 lifespan 밖(테스트)이면 None이다."""
+    return getattr(request.app.state, "model", None)
+
+
 @router.post("/triage")
-def triage_(intake: Intake) -> TriageResult:
-    """S-05: 응급 판정과 진료과 추천."""
-    return triage(intake)
+def triage_(intake: Intake, model: Annotated[Predictor | None, Depends(triage_model)]) -> TriageResult:
+    """S-05: 응급 판정과 진료과 추천. 모델이 있으면 규칙 다음에 모델 결과를 더한다."""
+    return triage(intake, run_model(model, intake))
 
 
 @router.post("/route")
