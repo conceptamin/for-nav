@@ -58,7 +58,6 @@ export const ne: Record<MessageKey, string> = {
   signupSave: 'सेभ गरेर अगाडि बढ्नुहोस्',
 
   // S-04
-  homeHello: 'हामी कसरी सहयोग गरौं?',
   menuSick: 'म बिरामी छु / मलाई चोट लाग्यो',
   menuSickSub: 'कुन क्लिनिक जाने हेर्नुहोस्',
   menuGuide: 'अस्पताल कसरी प्रयोग गर्ने',
@@ -70,6 +69,7 @@ export const ne: Record<MessageKey, string> = {
   menuMy: 'मेरो जानकारी',
   menuMySub: 'प्रोफाइल, सेटिङ, मेरा रिपोर्ट',
   homeRecent: 'पछिल्लो रिपोर्ट',
+  homeStart: 'सुरु गर्नुहोस्',
   modeGuest: 'अतिथि',
 
   // S-05

@@ -58,7 +58,6 @@ export const zhCN: Record<MessageKey, string> = {
   signupSave: '保存并继续',
 
   // S-04
-  homeHello: '需要什么帮助？',
   menuSick: '我生病了／我受伤了',
   menuSickSub: '查找该看哪个科',
   menuGuide: '怎样去医院看病',
@@ -70,6 +69,7 @@ export const zhCN: Record<MessageKey, string> = {
   menuMy: '我的信息',
   menuMySub: '个人资料、设置、我的报告',
   homeRecent: '最新报告',
+  homeStart: '开始',
   modeGuest: '访客',
 
   // S-05

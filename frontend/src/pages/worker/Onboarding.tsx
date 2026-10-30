@@ -295,8 +295,8 @@ export function SignupPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-04 홈. 배치는 인사 → 나 한 줄 → 주 동작 → 최근 메모(있을 때) → 메뉴(backlog/12-home-my.md).
-// 나 한 줄에는 출생 연도만 쓴다(어깨 너머로 보이는 화면). 최근 메모 줄에 판정은 보이지 않는다.
+// S-04 홈. 심토미 홈 배치로 나 줄 → 시작 카드 → 기능 목록 → 최근 메모(있을 때)(backlog/23-home-simtomi.md,
+// design.md "홈"). 나 줄에는 출생 연도만 쓴다(어깨 너머로 보이는 화면). 최근 메모 카드에 판정은 보이지 않는다.
 // ---------------------------------------------------------------------------
 export function HomePage() {
   const app = useApp();
@@ -309,57 +309,66 @@ export function HomePage() {
   ];
   const profile = app.mode === 'member' ? app.profile : null;
   const recent = app.reports[0];
+  const recentSymptoms = recent?.rows.find((row) => row.field === 'symptoms') ?? recent?.rows[0];
+  const recentParts = recent?.rows.find((row) => row.field === 'bodyParts');
   return (
     <div className="stack wide">
-      <h1 style={{ margin: 0 }}>{t('homeHello')}</h1>
       {profile ? (
-        <Link to="/my" className="row link">
+        <Link to="/my" className="row link home-me">
           <span>
-            👤 {term(SEXES[profile.sex])} · {profile.birthDate.slice(0, 4)}
+            {term(SEXES[profile.sex])} · {profile.birthDate.slice(0, 4)}
           </span>
-          <span className="small">›</span>
+          <span className="chev" aria-hidden>
+            ›
+          </span>
         </Link>
       ) : (
-        <Link to="/signup" className="row link">
+        <Link to="/signup" className="row link home-me">
           <span>
-            👤 {t('modeGuest')} · {t('myProfileCreate')}
+            {t('modeGuest')} · {t('myProfileCreate')}
           </span>
-          <span className="small">›</span>
+          <span className="chev" aria-hidden>
+            ›
+          </span>
         </Link>
       )}
-      <nav className="menu">
-        <Link to="/intake" className="primary">
-          <span className="ico" aria-hidden>
-            🤕
-          </span>
-          <span>
-            <strong>{t('menuSick')}</strong>
-            <small>{t('menuSickSub')}</small>
-          </span>
-        </Link>
-      </nav>
-      {recent && (
-        <Link to={`/report/${recent.id}`} className="row link">
-          <span>
-            🩺 {t('homeRecent')} · {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { month: '2-digit', day: '2-digit' })}
-            <span className="small muted"> · {recent.rows.find((row) => row.field === 'symptoms')?.valueNative ?? ''}</span>
-          </span>
-          <span className="small">›</span>
-        </Link>
-      )}
-      <nav className="menu">
+      <Link to="/intake" className="home-hero">
+        <strong>{t('menuSick')}</strong>
+        <span className="sub">{t('menuSickSub')}</span>
+        <span className="go">{t('homeStart')}</span>
+      </Link>
+      <nav className="home-list">
         {menu.map((m) => (
           <Link key={m.to} to={m.to}>
             <span className="ico" aria-hidden>
               {m.ico}
             </span>
-            <span>
-              <strong>{m.title}</strong>
+            <span className="txt">
               <small>{m.sub}</small>
+              <strong>{m.title}</strong>
+            </span>
+            <span className="chev" aria-hidden>
+              ›
             </span>
           </Link>
         ))}
       </nav>
+      {recent && (
+        <>
+          <h2 className="home-h2">{t('homeRecent')}</h2>
+          <Link to={`/report/${recent.id}`} className="card home-recent">
+            <strong>{recentSymptoms?.valueNative}</strong>
+            {recentParts && (
+              <p>
+                {recentParts.labelNative}: {recentParts.valueNative}
+              </p>
+            )}
+            <p className="muted">
+              🕓 {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { year: 'numeric', month: '2-digit', day: '2-digit' })}
+            </p>
+          </Link>
+        </>
+      )}
     </div>
   );
 }

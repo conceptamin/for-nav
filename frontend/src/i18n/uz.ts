@@ -58,7 +58,6 @@ export const uz: Record<MessageKey, string> = {
   signupSave: 'Saqlash va davom etish',
 
   // S-04
-  homeHello: 'Sizga qanday yordam bera olamiz?',
   menuSick: 'Kasal boʻldim / Jarohat oldim',
   menuSickSub: 'Qaysi klinikaga borishni bilish',
   menuGuide: 'Shifoxonadan qanday foydalanish',
@@ -70,6 +69,7 @@ export const uz: Record<MessageKey, string> = {
   menuMy: 'Mening maʼlumotlarim',
   menuMySub: 'Profil, sozlamalar, hisobotlarim',
   homeRecent: 'Oxirgi hisobot',
+  homeStart: 'Boshlash',
   modeGuest: 'Mehmon',
 
   // S-05

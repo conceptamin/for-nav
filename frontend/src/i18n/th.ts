@@ -54,7 +54,6 @@ export const th: Record<MessageKey, string> = {
   signupNoVisa: 'เราไม่ถามวีซ่า ชื่อ หรือที่ทำงานของคุณ',
   signupSave: 'บันทึกและไปต่อ',
 
-  homeHello: 'ให้เราช่วยอะไรดี?',
   menuSick: 'ฉันป่วย / ฉันบาดเจ็บ',
   menuSickSub: 'หาว่าควรไปคลินิกไหน',
   menuGuide: 'วิธีใช้โรงพยาบาล',
@@ -66,6 +65,7 @@ export const th: Record<MessageKey, string> = {
   menuMy: 'ข้อมูลของฉัน',
   menuMySub: 'โปรไฟล์ การตั้งค่า รายงานของฉัน',
   homeRecent: 'รายงานล่าสุด',
+  homeStart: 'เริ่มต้น',
   modeGuest: 'ผู้เยี่ยมชม',
 
   intakeTitle: 'บอกอาการของคุณ',

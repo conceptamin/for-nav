@@ -54,7 +54,6 @@ export const ko: Record<MessageKey, string> = {
   signupNoVisa: '비자, 이름, 직장은 절대 묻지 않습니다.',
   signupSave: '저장하고 계속',
 
-  homeHello: '무엇을 도와드릴까요?',
   menuSick: '아파요 / 다쳤어요',
   menuSickSub: '어느 진료과로 가야 하는지 찾기',
   menuGuide: '병원 이용 방법',
@@ -66,6 +65,7 @@ export const ko: Record<MessageKey, string> = {
   menuMy: '내 정보',
   menuMySub: '프로필, 설정, 내 메모',
   homeRecent: '최근 메모',
+  homeStart: '시작하기',
   modeGuest: '비회원',
 
   intakeTitle: '증상을 알려 주세요',

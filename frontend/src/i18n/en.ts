@@ -57,7 +57,6 @@ export const en = {
   signupSave: 'Save and continue',
 
   // S-04
-  homeHello: 'How can we help?',
   menuSick: 'I am sick / I got hurt',
   menuSickSub: 'Find which clinic to visit',
   menuGuide: 'How to use a hospital',
@@ -69,6 +68,7 @@ export const en = {
   menuMy: 'My info',
   menuMySub: 'Profile, settings, my reports',
   homeRecent: 'Latest report',
+  homeStart: 'Start',
   modeGuest: 'Guest',
 
   // S-05

@@ -58,7 +58,6 @@ export const id: Record<MessageKey, string> = {
   signupSave: 'Simpan dan lanjut',
 
   // S-04
-  homeHello: 'Apa yang bisa kami bantu?',
   menuSick: 'Saya sakit / Saya terluka',
   menuSickSub: 'Cari klinik yang harus didatangi',
   menuGuide: 'Cara berobat di rumah sakit',
@@ -70,6 +69,7 @@ export const id: Record<MessageKey, string> = {
   menuMy: 'Info saya',
   menuMySub: 'Profil, pengaturan, laporan saya',
   homeRecent: 'Laporan terakhir',
+  homeStart: 'Mulai',
   modeGuest: 'Tamu',
 
   // S-05
