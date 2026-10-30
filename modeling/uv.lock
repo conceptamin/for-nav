@@ -395,16 +395,11 @@ wheels = [
 [[package]]
 name = "for-nav-modeling"
 version = "0.1.0"
-source = { virtual = "." }
-default-groups = ["dev", "notebook"]
+source = { editable = "." }
+default-groups = ["dev", "notebook", "train"]
 dependencies = [
     { name = "lightgbm" },
     { name = "numpy" },
-    { name = "openpyxl" },
-    { name = "pandas" },
-    { name = "pyarrow" },
-    { name = "scikit-learn" },
-    { name = "shap" },
 ]
 
 [package.dev-dependencies]
@@ -417,16 +412,18 @@ notebook = [
     { name = "matplotlib" },
     { name = "nbconvert" },
 ]
+train = [
+    { name = "openpyxl" },
+    { name = "pandas" },
+    { name = "pyarrow" },
+    { name = "scikit-learn" },
+    { name = "shap" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "lightgbm", specifier = "==4.7.0" },
     { name = "numpy", specifier = "==2.5.4" },
-    { name = "openpyxl", specifier = "==3.1.5" },
-    { name = "pandas", specifier = "==3.1.0" },
-    { name = "pyarrow", specifier = "==26.0.0" },
-    { name = "scikit-learn", specifier = "==1.9.1" },
-    { name = "shap", specifier = "==0.54.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -438,6 +435,13 @@ notebook = [
     { name = "ipykernel", specifier = "==7.4.0" },
     { name = "matplotlib", specifier = "==3.11.2" },
     { name = "nbconvert", specifier = "==7.17.2" },
+]
+train = [
+    { name = "openpyxl", specifier = "==3.1.5" },
+    { name = "pandas", specifier = "==3.1.0" },
+    { name = "pyarrow", specifier = "==26.0.0" },
+    { name = "scikit-learn", specifier = "==1.9.1" },
+    { name = "shap", specifier = "==0.54.1" },
 ]
 
 [[package]]
