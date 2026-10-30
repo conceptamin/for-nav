@@ -3,11 +3,12 @@
 // 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
 // C-02 상담 채팅은 src/api/chat.ts(WebSocket)를 거친다. 단독 모드에는 없다(backlog 25).
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router';
 import { getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
 import { isChatAvailable } from '../../api/chat';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
+import { useReveal } from '../../components/reveal';
 import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
 import { STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
 import { PATH_KO } from '../../domain/coverage';
@@ -64,9 +65,13 @@ function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; b
 
 export function CenterLayout() {
   const { connected, lastUpdated } = useCenterCases();
+  // 스크롤 등장(backlog 25). 근로자 화면과 같은 훅
+  const mainRef = useRef<HTMLElement>(null);
+  useReveal(mainRef, true);
   return (
     <div className="c-shell">
       <header className="c-header">
+        <img className="logo" src="/logo.png" width="24" height="24" alt="" />
         <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
         <nav>
           <NavLink to="/center" end>
@@ -83,7 +88,7 @@ export function CenterLayout() {
           ⚠️ {TEXT.offline} · {TEXT.lastUpdated} {lastUpdated ? hhmm(lastUpdated) : TEXT.never}
         </div>
       )}
-      <main className="c-main">
+      <main className="c-main" ref={mainRef}>
         <Outlet />
       </main>
     </div>
