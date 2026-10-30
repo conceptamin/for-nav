@@ -2,7 +2,7 @@
 // 문구는 props로 받는다(근로자는 i18n, 센터는 한국어 고정). 연결·다시 연결은 api/chat.ts의 useChat이 한다.
 // 단독 모드에서는 부르는 쪽이 isChatAvailable()로 이 패널을 그리지 않는다.
 
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { useChat, type ChatAuth, type ChatStopReason } from '../api/chat';
 import type { ChatRole } from '../domain/centerCase';
 import { CHAT_MAX_LEN } from '../domain/centerCase';
@@ -15,11 +15,27 @@ export interface ChatLabels {
   other: string;
   connecting: string;
   reconnecting: string;
-  stopped: Record<ChatStopReason, string>;
+  /** unauthorized(4401)는 센터에만 온다. 근로자 문구에는 없고, 없으면 denied 문구를 쓴다 */
+  stopped: Record<Exclude<ChatStopReason, 'unauthorized'>, string> & { unauthorized?: string };
   rejected: string;
 }
 
-export function ChatPanel({ caseId, auth, me, labels, locale }: { caseId: string; auth: ChatAuth; me: ChatRole; labels: ChatLabels; locale: string }) {
+/** `relogin`: 센터 세션이 끝나 멈췄을 때(4401) 멈춤 줄 안에 붙는 다시 로그인 링크 */
+export function ChatPanel({
+  caseId,
+  auth,
+  me,
+  labels,
+  locale,
+  relogin,
+}: {
+  caseId: string;
+  auth: ChatAuth;
+  me: ChatRole;
+  labels: ChatLabels;
+  locale: string;
+  relogin?: ReactNode;
+}) {
   const chat = useChat(caseId, auth);
   const [draft, setDraft] = useState('');
   const log = useRef<HTMLDivElement>(null);
@@ -30,6 +46,8 @@ export function ChatPanel({ caseId, auth, me, labels, locale }: { caseId: string
   }, [chat.messages.length]);
 
   const canSend = chat.state === 'open' && draft.trim() !== '';
+  // 세션이 끝나 멈췄으면 다시 로그인한 뒤 이어 쓸 수 있게 입력줄을 남긴다(보내기는 막힌다)
+  const unauthorized = chat.state === 'stopped' && chat.stopReason === 'unauthorized';
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
     // 보낸 글은 서버가 되돌려 주면 목록에 나타난다. 연결이 닫혀 보내지 못하면 입력을 남긴다
@@ -62,7 +80,8 @@ export function ChatPanel({ caseId, auth, me, labels, locale }: { caseId: string
       </div>
       {chat.state === 'stopped' && chat.stopReason ? (
         <div className="notice warn" role="status">
-          {labels.stopped[chat.stopReason]}
+          {unauthorized ? (labels.stopped.unauthorized ?? labels.stopped.denied) : labels.stopped[chat.stopReason as Exclude<ChatStopReason, 'unauthorized'>]}
+          {unauthorized && relogin && <> {relogin}</>}
         </div>
       ) : (
         chat.state !== 'open' && (
@@ -76,7 +95,7 @@ export function ChatPanel({ caseId, auth, me, labels, locale }: { caseId: string
           {labels.rejected}
         </div>
       )}
-      {chat.state !== 'stopped' && (
+      {(chat.state !== 'stopped' || unauthorized) && (
         <form className="chat-input" onSubmit={submit}>
           <textarea
             value={draft}

@@ -1,11 +1,13 @@
 // 센터 영역(PC 우선, 한국어): C-01 사례 접수함, C-02 사례 상세, C-03 통계
-// 데모에서는 로그인을 생략한다(PRD 5-2).
+// 서버가 센터 로그인을 쓰면(backend 17) 들어올 때 세션을 확인하고, 없거나 중간에 끝나면 C-00 로그인으로 보낸다(backlog 27).
+// 서버가 로그인을 쓰지 않거나 단독 모드면 지금처럼 바로 열린다(PRD 5-2 데모).
 // 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
 // C-02 상담 채팅은 src/api/chat.ts(WebSocket)를 거친다. 단독 모드에는 없다(backlog 25).
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router';
-import { getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import { getMe, loginPath, logout, onSessionEnded } from '../../api/auth';
+import { clearCases, getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
 import { isChatAvailable } from '../../api/chat';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useReveal } from '../../components/reveal';
@@ -31,6 +33,11 @@ const TEXT = {
   chatTitle: '상담 채팅',
   chatMock: '예시 사례라 근로자 채팅 토큰이 없습니다. 근로자는 이 채팅에 들어올 수 없습니다.',
   chatNote: '근로자가 쓴 글은 번역 없이 원문 그대로 보입니다.',
+  checking: '로그인을 확인하는 중입니다.',
+  meFailed: '서버에 연결하지 못했습니다. 서버 연결을 확인해 주세요.',
+  logout: '로그아웃',
+  logoutFailed: '로그아웃하지 못했습니다. 서버 연결을 확인해 주세요.',
+  relogin: '다시 로그인',
 } as const;
 
 const CHAT_LABELS: ChatLabels = {
@@ -45,6 +52,7 @@ const CHAT_LABELS: ChatLabels = {
     denied: '채팅에 연결할 권한이 없습니다.',
     missing: '서버에 이 사례가 없어 채팅을 열 수 없습니다.',
     reset: '데모 초기화로 채팅이 끝났습니다.',
+    unauthorized: '로그인이 끝났습니다. 다시 로그인해 주세요.',
   },
   rejected: '메시지를 보내지 못했습니다. 1~1000자로 써 주세요.',
 };
@@ -63,16 +71,92 @@ function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; b
   );
 }
 
+/** 센터 머리글. 로그인 화면(C-00)도 같은 머리글에 로고·이름만 쓴다 */
+export function CenterHeader({ children }: { children?: ReactNode }) {
+  return (
+    <header className="c-header">
+      <img className="logo" src="/logo.png" width="24" height="24" alt="" />
+      <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
+      {children}
+    </header>
+  );
+}
+
+type Gate = { kind: 'checking' } | { kind: 'open'; email: string | null } | { kind: 'error' };
+
+/**
+ * C-01~C-03 공통 틀. 들어올 때 `/api/auth/me`를 한 번 묻고, 열리기 전에는 접수함을 읽지 않는다.
+ * 로그인이 필요하면(또는 쓰는 중에 세션이 끝나면) 지금 주소를 `from`에 담아 로그인 화면으로 바꿔 간다.
+ */
 export function CenterLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  // 로그인 뒤 돌아올 주소. 세션 끝 알림은 나중에 오므로 그때의 주소를 읽도록 ref에 둔다
+  const here = useRef('');
+  here.current = location.pathname + location.search;
+  const [gate, setGate] = useState<Gate>({ kind: 'checking' });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    setGate({ kind: 'checking' });
+    getMe().then(
+      (me) => {
+        if (!alive) return;
+        if (me.required && me.email === null) navigate(loginPath(here.current), { replace: true });
+        else setGate({ kind: 'open', email: me.email });
+      },
+      () => alive && setGate({ kind: 'error' }),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [attempt, navigate]);
+
+  // 센터 경로가 401을 받으면(세션 만료, 직원 목록에서 빠짐) 하던 화면을 기억하고 로그인으로 간다
+  useEffect(() => onSessionEnded(() => navigate(loginPath(here.current), { replace: true })), [navigate]);
+
+  if (gate.kind === 'open') return <CenterOpen email={gate.email} />;
+  return (
+    <div className="c-shell">
+      <CenterHeader />
+      <main className="c-main">
+        {gate.kind === 'checking' ? (
+          <p className="muted">{TEXT.checking}</p>
+        ) : (
+          <Failure text={TEXT.meFailed} onRetry={() => setAttempt((n) => n + 1)} busy={false} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+/** 로그인 확인이 끝난 센터 화면. 여기서부터 접수함을 읽는다(useCenterCases 구독 = 폴링 시작) */
+function CenterOpen({ email }: { email: string | null }) {
   const { connected, lastUpdated } = useCenterCases();
+  const navigate = useNavigate();
+  const [leaving, setLeaving] = useState(false);
+  const [logoutFailed, setLogoutFailed] = useState(false);
   // 스크롤 등장(backlog 25). 근로자 화면과 같은 훅
   const mainRef = useRef<HTMLElement>(null);
   useReveal(mainRef, true);
+
+  const signOut = async () => {
+    setLeaving(true);
+    setLogoutFailed(false);
+    try {
+      await logout();
+      clearCases();
+      navigate('/center/login', { replace: true });
+    } catch {
+      setLogoutFailed(true);
+      setLeaving(false);
+    }
+  };
+
   return (
     <div className="c-shell">
-      <header className="c-header">
-        <img className="logo" src="/logo.png" width="24" height="24" alt="" />
-        <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
+      <CenterHeader>
         <nav>
           <NavLink to="/center" end>
             사례 접수함
@@ -82,13 +166,22 @@ export function CenterLayout() {
         <a href="/" target="_blank" rel="noreferrer" className="small">
           근로자 화면 열기 ↗
         </a>
-      </header>
+        {email && (
+          <>
+            <span className="who small muted">{email}</span>
+            <button type="button" className="btn ghost" disabled={leaving} onClick={signOut}>
+              {TEXT.logout}
+            </button>
+          </>
+        )}
+      </CenterHeader>
       {!connected && (
         <div className="c-offline" role="status">
           ⚠️ {TEXT.offline} · {TEXT.lastUpdated} {lastUpdated ? hhmm(lastUpdated) : TEXT.never}
         </div>
       )}
       <main className="c-main" ref={mainRef}>
+        {logoutFailed && <Failure text={TEXT.logoutFailed} onRetry={signOut} busy={leaving} />}
         <Outlet />
       </main>
     </div>
@@ -339,7 +432,14 @@ function CaseDetail({ c }: { c: CenterCase }) {
             <section className="panel">
               <h2>{TEXT.chatTitle}</h2>
               <p className="footer-note">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
-              <ChatPanel caseId={c.id} auth={{ role: 'center' }} me="center" labels={CHAT_LABELS} locale="ko-KR" />
+              <ChatPanel
+                caseId={c.id}
+                auth={{ role: 'center' }}
+                me="center"
+                labels={CHAT_LABELS}
+                locale="ko-KR"
+                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+              />
             </section>
           )}
           <section className="panel">

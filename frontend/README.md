@@ -71,7 +71,8 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 | S-11 | `/report/new` → `/report/:id` | 항목 선택(기본 전체) → 한국어·모국어 토글 리포트 |
 | S-12·S-13 | `/center-request`, `/my` | 센터 요청(회원만, 전송 동의 별도, 운영 시간 외 안내, API 모드면 전송 완료 화면에 센터와 대화 채팅), 내 정보(프로필·언어 설정·내 메모·센터 요청 id·전체 삭제. 프로필 수정은 `/signup?next=/my`) |
 | — | `/guide` | 병원 이용 안내 5개 항목(고정 문구) |
-| C-01~C-03 | `/center`, `/center/cases/:id`, `/center/stats` | 접수함(mock 24건 + 실제 전송), 상세·상태 변경·상담 채팅(API 모드), 익명 통계(5건 미만 칸은 `<5`) |
+| C-00 | `/center/login` | 센터 직원 로그인(API 모드 + 서버 `CENTER_AUTH=email`일 때만 쓰인다, backlog 27): 이메일 → 메일로 받은 6자리 코드. 로그인 뒤 `from`(센터 경로)으로 돌아간다 |
+| C-01~C-03 | `/center`, `/center/cases/:id`, `/center/stats` | 접수함(mock 24건 + 실제 전송), 상세·상태 변경·상담 채팅(API 모드), 익명 통계(5건 미만 칸은 `<5`). 들어올 때 로그인을 확인하고, 필요하면 C-00으로 보낸다. 머리글에 직원 이메일·로그아웃 |
 
 근로자 화면의 진입 순서(언어 → 동의 → 로그인/비회원)는 `WorkerLayout`이 지킨다. 앞 단계를 건너뛰고 들어오면 그 단계로 되돌린다.
 
@@ -80,10 +81,10 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 ```text
 src/
   main.tsx          경로 표. PRD 화면 ID를 주석으로 단다
-  pages/            worker/ (S-01~S-13, /guide), center/ (C-01~C-03)
+  pages/            worker/ (S-01~S-13, /guide), center/ (C-00 로그인, C-01~C-03)
                     화면은 api/·state/·i18n/·components/만 부른다. domain/을 직접 부르지 않는다(아래 "API 연결")
   components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PainRange·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅)
-  api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결), meta
+  api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결), auth(센터 직원 로그인·세션 끝 알림), meta
                     단독/API 모드 선택과 경로별 대체 정책은 여기에만 있다
   domain/           규칙 엔진(triage·coverage·centerCase)과 템플릿(templates), 어휘(vocab) — 타입·규칙·문장의 원본
     lang/           근로자 모국어별 내용 묶음(어휘 표기·접수 도우미 문장 틀·응급 키워드). 한국어를 뺀 19개 언어가 파일 하나씩, 형태는 types.ts의 LangPack
@@ -124,8 +125,10 @@ backlog/            작업 항목(NN-short-name.md)
 | `POST /api/report/clinician`, `POST /api/report/center` | S-11, S-12 미리보기 | 서버 템플릿. `translation.status`가 `ok`면 번역이 붙는다 | 브라우저 템플릿 | 번역이 없으면 지금처럼 "(원문, 번역 미연결)" |
 | `GET /api/meta` | 앱 시작 | `infoDate`, `centerHours`를 서버 값으로 바꾼다 | 브라우저 상수(`INFO_DATE`, `CENTER_HOURS`) | 없음 |
 | `POST /api/center/cases` | S-12 전송 | 서버가 저장하고 돌려준 `case`·`nextOpenDate`를 보여 준다 | **대체하지 않는다.** 전송 실패 문구와 다시 시도 버튼. localStorage에 넣지 않는다 | 명시적 실패(`notice.danger`) |
-| `GET /api/center/cases`, `GET /api/center/cases/{id}`, `PATCH`, `POST /api/center/reset`, `GET /api/center/stats` | C-01~C-03 | 2초 주기 폴링. `storage` 이벤트 갱신은 끈다. 통계는 집계 결과만 받아 그린다 | **대체하지 않는다.** 마지막으로 받은 목록을 그대로 두고 상단에 "서버 연결 안 됨" 띠를 띄운다. 상태 변경·초기화는 실패 문구 | 명시적 실패(상단 띠) |
-| `WS /api/center/cases/{id}/chat` | S-12 전송 완료, C-02 | 연결 직후 `history`로 목록을 통째로 받고, 이후 `message`를 덧붙인다. 내 글도 서버가 되돌려 준 것만 그린다 | **대체하지 않는다.** 단독 모드는 채팅을 숨긴다. 끊기면 3초 뒤 다시 연결하고, `4403`·`4404`·`4000`(데모 초기화)이면 멈춘다. 보내지 못한 입력은 남는다 | 채팅 안 상태 줄("다시 연결 중", 멈춤은 `notice.warn`), 서버가 거절한 글은 `notice.danger` |
+| `GET /api/center/cases`, `GET /api/center/cases/{id}`, `PATCH`, `POST /api/center/reset`, `GET /api/center/stats` | C-01~C-03 | 2초 주기 폴링. `storage` 이벤트 갱신은 끈다. 통계는 집계 결과만 받아 그린다 | **대체하지 않는다.** 마지막으로 받은 목록을 그대로 두고 상단에 "서버 연결 안 됨" 띠를 띄운다. 상태 변경·초기화는 실패 문구. **401은 실패가 아니라 세션 끝**이다: 받아 둔 목록을 비우고 하던 화면 주소를 `from`에 담아 C-00으로 보낸다(연결 띠를 띄우지 않는다) | 명시적 실패(상단 띠) |
+| `WS /api/center/cases/{id}/chat` | S-12 전송 완료, C-02 | 연결 직후 `history`로 목록을 통째로 받고, 이후 `message`를 덧붙인다. 내 글도 서버가 되돌려 준 것만 그린다 | **대체하지 않는다.** 단독 모드는 채팅을 숨긴다. 끊기면 3초 뒤 다시 연결하고, `4403`·`4404`·`4000`(데모 초기화)·`4401`(센터 세션 없음)이면 멈춘다. `4401`이면 멈춤 줄에 "다시 로그인" 링크를 붙이고 입력줄을 남긴다. 보내지 못한 입력은 남는다 | 채팅 안 상태 줄("다시 연결 중", 멈춤은 `notice.warn`), 서버가 거절한 글은 `notice.danger` |
+| `GET /api/auth/me` | C-01~C-03 진입, C-00 | `required: false`면 지금처럼 바로 연다. `required: true`인데 `email: null`이면 C-00으로 바꿔 간다. 확인이 끝나기 전에는 접수함을 읽지 않는다 | **대체하지 않는다.** 단독 모드는 부르지 않는다(로그인 없음) | 실패하면 "서버에 연결하지 못했습니다" + 다시 시도(C-00은 화면을 그대로 보인다) |
+| `POST /api/auth/code`, `POST /api/auth/verify`, `POST /api/auth/logout` | C-00, 센터 머리글 | 코드 받기 → 같은 안내(등록 여부와 관계없이), 로그인 → `from`으로, 로그아웃 → C-00 | **대체하지 않는다.** | `notice.danger`: 401 코드 틀림·만료, 429 요청 너무 많음, 그 밖 서버 연결 안 됨. 입력값은 남는다. 404(서버가 로그인을 쓰지 않음)면 센터 화면으로 돌아간다 |
 
 센터 경로를 대체하지 않는 이유: 센터 화면의 목적이 "다른 기기에서 보낸 사례가 도착하는 것"이라, localStorage로 대체하면 도착한 것처럼 보이는 가짜 성공이 된다.
 
@@ -134,7 +137,7 @@ backlog/            작업 항목(NN-short-name.md)
 지금 화면은 전부 동기 함수를 부르므로 로딩 상태가 없다. API 모드가 되면 아래를 지킨다.
 
 - **기다리는 동안 다음 버튼을 막는다.** 스피너를 새로 만들지 않는다. 버튼 비활성(`disabled`)만 쓴다. 두 번 눌리는 것을 막는 것이 목적이다.
-- **시간 제한은 `src/api/` 상수다.** 응급 판정 3초, 추출 8초(backlog 01), 제도 경로·접수 도우미·리포트·센터 요약 8초, `/api/meta` 3초(backlog 02), 센터 경로 5초와 접수함 다시 읽기 2초(backlog 03), 상담 채팅 다시 연결 3초(backlog 25). 화면 코드에 숫자를 쓰지 않는다.
+- **시간 제한은 `src/api/` 상수다.** 응급 판정 3초, 추출 8초(backlog 01), 제도 경로·접수 도우미·리포트·센터 요약 8초, `/api/meta` 3초(backlog 02), 센터 경로 5초와 접수함 다시 읽기 2초(backlog 03), 상담 채팅 다시 연결 3초(backlog 25), 센터 로그인 경로 10초와 코드 다시 받기 60초(backlog 27). 화면 코드에 숫자를 쓰지 않는다.
 - **버튼 없이 바로 뜨는 결과는 브라우저 결과를 먼저 그린다.** 제도 경로(S-08), 접수 창구(S-09), 전화 스크립트(S-10), 센터 요약 미리보기(S-12)는 브라우저 함수 결과를 곧바로 보여 주고, 서버 결과가 오면 그것으로 바꾼다(`src/api/useServerResult.ts`). 서버가 실패하거나 느리면 브라우저 결과가 그대로 남는다. 버튼을 눌러 만드는 의료진 리포트(S-11)만 서버를 기다린다.
 - **조용한 대체는 작은 줄로만 알린다.** 대체했다는 사실은 결과 아래 `notice.info` 한 줄이고, 결과 자체를 바꾸거나 가리지 않는다. 결과가 같은 경로(제도 경로·템플릿)는 알리지 않는다.
 - **명시적 실패는 다시 시도할 수 있어야 한다.** 센터 전송 실패와 센터 상태 변경 실패는 실패 문구 옆에 다시 시도 버튼을 둔다. 입력한 값은 지우지 않는다.
@@ -159,6 +162,7 @@ backlog/            작업 항목(NN-short-name.md)
 | localStorage | 회원 프로필(생년월일·성별), 회원 리포트, 내가 보낸 센터 사례 id | `umn.device` |
 | localStorage(단독 모드만) | 센터 접수함의 실제 전송 사례와 상태 변경 | `umn.center.*` |
 | 서버(API 모드) | 센터 사례와 상담 채팅 메시지. 요약·긴급도·운영 시간 외 여부·id·접수 시각, 메시지의 id·보낸 쪽·시각은 서버가 정한다 | — |
+| 쿠키(API 모드, 서버 `CENTER_AUTH=email`) | 센터 직원 세션. 서버가 주는 HttpOnly 쿠키라 화면 코드는 읽지 못하고 `state/`에도 두지 않는다(backlog 27) | `fornav_center` |
 
 - 비회원 입력은 브라우저 세션이 끝나면 사라진다. 이름·연락처·체류 자격은 받지 않는다.
 - 센터 요청(S-12)의 연락처는 전송 본문에만 들어가고 브라우저에 남기지 않는다.

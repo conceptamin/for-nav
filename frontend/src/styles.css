@@ -682,6 +682,7 @@ p {
 }
 
 input[type='text'],
+input[type='email'],
 input[type='date'],
 input[type='number'],
 input[type='tel'],
@@ -1476,6 +1477,7 @@ a.card.home-recent:active {
 }
 
 .c-header nav a {
+  white-space: nowrap;
   padding: 8px 14px;
   border-radius: 12px;
   text-decoration: none;
@@ -1487,6 +1489,16 @@ a.card.home-recent:active {
   background: var(--brand-2);
   color: var(--brand);
   box-shadow: var(--glass-in);
+}
+
+/* 로그인한 직원 이메일과 로그아웃(backlog 27). 좁아져도 줄바꿈하지 않는다 */
+.c-header .who {
+  white-space: nowrap;
+}
+
+.c-header .btn {
+  flex: none;
+  white-space: nowrap;
 }
 
 /* 서버와 끊겼을 때 헤더 아래 가로 띠. 평평하고 흐름 안에 있어 표를 덮지 않는다 */
@@ -1502,6 +1514,13 @@ a.card.home-recent:active {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
+}
+
+/* C-00 센터 로그인(backlog 27). 머리글 아래 가운데에 카드 하나 */
+.c-login {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 48px 16px;
 }
 
 .c-grid {
@@ -1791,6 +1810,11 @@ table.cases tr.fresh {
   .c-header {
     gap: 12px;
     padding: 0 16px;
+  }
+
+  /* 좁으면 머리글 칸이 모자라 직원 이메일은 숨기고 로그아웃만 남긴다 */
+  .c-header .who {
+    display: none;
   }
 
   .c-offline {
