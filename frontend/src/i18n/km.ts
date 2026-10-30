@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const km: Record<MessageKey, string> = {
-  appName: 'ជំនួយណែនាំផ្នែកវេជ្ជសាស្ត្រ អ៊ុលសាន',
+  appName: 'for nav',
   appTag: 'ជំនួយផ្នែកសុខាភិបាលសម្រាប់កម្មករបរទេសនៅអ៊ុលសាន',
   back: 'ថយក្រោយ',
   next: 'បន្ទាប់',

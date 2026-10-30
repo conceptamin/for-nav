@@ -58,7 +58,7 @@ export function WorkerLayout() {
   const show119Bar = pathname !== '/emergency';
   // 홈은 ← 대신 앱 이름(홈 링크). 그 밖은 ← 하나. S-01은 앱 바를 숨긴다
   const isRoot = pathname === '/' || pathname === '/home';
-  const appName = app.lang ? t('appName') : '울산 외국인 의료 내비게이터';
+  const appName = app.lang ? t('appName') : 'for nav';
 
   // 화면 이름은 브라우저 탭 제목으로만 쓴다
   useEffect(() => {
@@ -71,9 +71,12 @@ export function WorkerLayout() {
         {!bar.hidden && (
           <header className="w-header">
             {isRoot ? (
-              <Link to={app.mode ? '/home' : '/'} className="title">
-                {appName}
-              </Link>
+              <>
+                <img className="logo" src="/logo.png" width="24" height="24" alt="" />
+                <Link to={app.mode ? '/home' : '/'} className="title">
+                  {appName}
+                </Link>
+              </>
             ) : (
               <>
                 <button type="button" className="back" aria-label={t('back')} onClick={bar.onBack ?? (() => navigate('/home'))}>

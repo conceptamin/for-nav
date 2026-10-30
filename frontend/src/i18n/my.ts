@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const my: Record<MessageKey, string> = {
-  appName: 'အူလ်ဆန် ဆေးကုသမှု လမ်းညွှန်',
+  appName: 'for nav',
   appTag: 'အူလ်ဆန်ရှိ နိုင်ငံခြားသား အလုပ်သမားများအတွက် ဆေးကုသမှု အကူအညီ',
   back: 'နောက်သို့',
   next: 'ရှေ့သို့',

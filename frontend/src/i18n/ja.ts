@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const ja: Record<MessageKey, string> = {
-  appName: '蔚山 医療ナビ',
+  appName: 'for nav',
   appTag: '蔚山で働く外国人のための医療案内',
   back: '戻る',
   next: '次へ',

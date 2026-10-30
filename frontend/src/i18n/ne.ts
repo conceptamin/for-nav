@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const ne: Record<MessageKey, string> = {
-  appName: 'उल्सान स्वास्थ्य मार्गदर्शक',
+  appName: 'for nav',
   appTag: 'उल्सानमा विदेशी कामदारका लागि स्वास्थ्य सहायता',
   back: 'पछाडि',
   next: 'अर्को',

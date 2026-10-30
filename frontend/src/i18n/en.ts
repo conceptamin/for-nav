@@ -2,7 +2,7 @@
 // 다른 언어 파일은 이 키를 모두 가져야 하며, 빠지면 타입 검사에서 실패한다.
 
 export const en = {
-  appName: 'Ulsan Medical Navigator',
+  appName: 'for nav',
   appTag: 'Medical help for foreign workers in Ulsan',
   back: 'Back',
   next: 'Next',

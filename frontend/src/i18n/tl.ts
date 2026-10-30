@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const tl: Record<MessageKey, string> = {
-  appName: 'Ulsan Medical Navigator',
+  appName: 'for nav',
   appTag: 'Tulong medikal para sa mga dayuhang manggagawa sa Ulsan',
   back: 'Bumalik',
   next: 'Susunod',
