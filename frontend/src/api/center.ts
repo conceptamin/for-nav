@@ -1,12 +1,14 @@
 // 센터 경로(S-12 전송, C-01~C-03)가 부르는 함수. 단독/API 모드 분기는 여기에만 있다.
 // 센터 경로는 실패해도 대체하지 않는다(README "경로별 대체 정책"). localStorage로 대체하면
 // 다른 기기에서 보낸 사례가 도착한 것처럼 보이는 가짜 성공이 되므로, 실패는 ApiError를 그대로 던진다.
+// 서버가 센터 로그인을 쓸 때(backend 17) 401은 실패가 아니라 세션 끝이다. 받은 목록을 비우고 알린다(auth.ts의 onSessionEnded).
 
 import { useSyncExternalStore } from 'react';
 import type { CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse } from '../domain/centerCase';
 import type { CenterHours } from '../domain/coverage';
 import type { District } from '../domain/vocab';
 import { getStatsLocal, loadAllLocal, resetCenterDemoLocal, sendCaseLocal, setCaseStatusLocal, subscribeLocal } from '../state/centerStore';
+import { isSessionEnded, notifySessionEnded } from './auth';
 import { ApiError, isApiMode, logFailure, requestJson } from './http';
 
 /** 센터 경로 서버 호출 시간 제한. 넘기면 실패로 보인다 */
@@ -21,7 +23,8 @@ async function call<T>(path: string, options: { method?: 'GET' | 'POST' | 'PATCH
   try {
     return await requestJson<T>(path, { ...options, timeoutMs: CENTER_TIMEOUT_MS });
   } catch (e) {
-    logFailure(path, e);
+    if (isSessionEnded(e)) endSession();
+    else logFailure(path, e);
     throw e;
   }
 }
@@ -92,8 +95,9 @@ export interface CenterFeed {
 }
 
 const localFeed = (): CenterFeed => ({ cases: loadAllLocal(), connected: true, lastUpdated: new Date().toISOString() });
+const emptyFeed = (): CenterFeed => ({ cases: [], connected: true, lastUpdated: null });
 
-let feed: CenterFeed = isApiMode() ? { cases: [], connected: true, lastUpdated: null } : localFeed();
+let feed: CenterFeed = isApiMode() ? emptyFeed() : localFeed();
 const subscribers = new Set<() => void>();
 let stopLocal: (() => void) | null = null;
 let pollTimer: ReturnType<typeof setTimeout> | null = null;
@@ -108,7 +112,22 @@ function publish(next: CenterFeed): void {
   subscribers.forEach((f) => f());
 }
 
-/** 접수함을 지금 다시 읽는다. 실패는 연결 상태로만 드러나고 던지지 않는다 */
+/**
+ * 로그아웃·세션 끝: 받아 둔 사례를 비운다. 다시 로그인하면 빈 접수함에서 새로 읽는다(다른 직원에게 앞 사람 목록이 보이지 않게).
+ * 단독 모드에는 세션이 없다.
+ */
+export function clearCases(): void {
+  if (!isApiMode()) return;
+  applied = ++requested;
+  publish(emptyFeed());
+}
+
+function endSession(): void {
+  clearCases();
+  notifySessionEnded();
+}
+
+/** 접수함을 지금 다시 읽는다. 실패는 연결 상태로만 드러나고 던지지 않는다. 401은 세션 끝으로 알린다 */
 export async function refreshCases(): Promise<void> {
   if (!isApiMode()) {
     publish(localFeed());
@@ -123,6 +142,10 @@ export async function refreshCases(): Promise<void> {
   } catch (e) {
     if (seq < applied) return;
     applied = seq;
+    if (isSessionEnded(e)) {
+      endSession();
+      return;
+    }
     if (feed.connected) {
       logFailure('/center/cases', e);
       publish({ ...feed, connected: false });

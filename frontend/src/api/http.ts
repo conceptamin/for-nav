@@ -28,6 +28,8 @@ export type ApiErrorCode =
   | 'VALIDATION'
   | 'INTERNAL'
   | 'BAD_REQUEST'
+  | 'UNAUTHORIZED' // 센터 직원 세션이 없거나 끝났다, 로그인 코드가 틀렸다(backend 17)
+  | 'RATE_LIMITED' // 로그인 코드 요청이 보내기 제한을 넘었다(backend 17)
   | 'TIMEOUT' // 시간 제한을 넘겼다
   | 'NETWORK' // 연결 자체가 안 됐다
   | 'BAD_RESPONSE' // 2xx인데 JSON이 아니거나 필수 필드가 없다
@@ -89,8 +91,8 @@ export async function requestJson<T>(path: string, options: RequestOptions): Pro
     const code = body?.error?.code ?? (res.status >= 500 ? 'INTERNAL' : 'BAD_REQUEST');
     throw new ApiError(code, res.status, body?.error?.requestId ?? requestId, body?.error?.message);
   }
-  // 204(데모 초기화 등)는 본문이 없다
-  if (res.status === 204) return undefined as T;
+  // 204(데모 초기화 등)와 202(로그인 코드 요청, backend 17)는 본문이 없다
+  if (res.status === 204 || res.status === 202) return undefined as T;
   try {
     return (await res.json()) as T;
   } catch {

@@ -5,6 +5,7 @@ import { createBrowserRouter, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { WorkerLayout } from './components/WorkerLayout';
 import { CaseDetailPage, CenterLayout, InboxPage, StatsPage } from './pages/center/Center';
+import { CenterLoginPage } from './pages/center/Login';
 import { CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
 import { CoveragePage } from './pages/worker/Coverage';
 import { EmergencyPage, IntakePage, ResultPage } from './pages/worker/Intake';
@@ -44,6 +45,8 @@ const routes: RouteObject[] = [
       { path: '/center/stats', element: <StatsPage /> }, // C-03
     ],
   },
+  // 센터 로그인은 CenterLayout 밖이다(로그인 전에는 머리글 메뉴·접수함 폴링이 돌지 않는다, backlog 27)
+  { path: '/center/login', element: <CenterLoginPage /> }, // C-00
   { path: '*', element: <Navigate to="/" replace /> },
 ];
 
