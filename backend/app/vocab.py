@@ -166,6 +166,8 @@ AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
 Sex = Literal["female", "male"]
 # AVPU 의식 상태
 Mental = Literal["alert", "verbal", "pain", "unresponsive"]
+# 응급도 모델 출력(backlog 06). 값과 순서는 modeling/src/fornav_modeling/predict.py의 ACUITIES와 같다.
+Acuity = Literal["emergency", "today", "outpatient"]
 
 LANGUAGE_NAMES_KO: dict[Lang, str] = {
     "en": "영어",
