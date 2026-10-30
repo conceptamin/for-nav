@@ -8,7 +8,7 @@
 
 ## 범위
 - 하는 것
-  - `.github/workflows/deploy-backend.yml`: `main` push(백엔드·프론트·모델링 코드·모델 변경, 문서 제외)와 수동 실행. 맥미니 `~/srv/for-nav`에서 `git pull --ff-only` 뒤 `deploy.sh`
+  - `.github/workflows/deploy-backend.yml`: `main` push(백엔드·프론트·모델링 코드·모델 변경, 문서 제외)와 수동 실행. 맥미니 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only` 뒤 `deploy.sh`
   - `backend/deploy/deploy.sh`: 프론트 API 모드 빌드를 새 폴더에 → `uv sync --frozen --no-dev` → 정적 파일 교체 → pm2 재시작 → `/api/health` 확인
   - `backend/deploy/ecosystem.config.cjs`: pm2 앱 `for-nav`. `STATIC_DIR`·`MODEL_DIR`을 정하고 `backend/.env`가 있으면 읽는다
   - `backend/README.md` "맥미니 배포": 맥미니 준비와 secrets
@@ -22,8 +22,7 @@ API 변경 없음. 위 파일과 `backend/.gitignore`(`deploy/static*/`)
 
 ## 완료 기준
 - [x] 이 맥북에서 `deploy.sh`를 돌려 pm2 앱이 뜨고 `/api/health`, `/`, `/center`가 응답한다
-- [ ] 맥미니에서 `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
-- [ ] secrets 3개를 넣고 Actions에서 "Deploy backend (Mac mini)"를 수동 실행해 성공한다
+- [ ] secrets 3개를 넣고 Actions에서 "Deploy backend (Mac mini)"를 수동 실행해 성공한다(클론이 없던 맥미니에서 첫 실행)
 
 ## 결과
 - 이 맥북에서 SSH 비대화형 셸처럼 환경을 비우고 실행: `env -i HOME=$HOME PATH=/usr/bin:/bin NODE_VERSION=24 PORT=8791 bash backend/deploy/deploy.sh` → `배포 완료`. `/api/health`·`/`·`/center` 200, `/assets/nope.js` 404, `POST /api/triage`에 `model`(응급도·진료과 확률)이 붙는다
@@ -35,7 +34,7 @@ API 변경 없음. 위 파일과 `backend/.gitignore`(`deploy/static*/`)
   - `git pull`은 워크플로에서, 빌드·재시작은 `deploy.sh`에서 한다. pull이 실행 중인 스크립트 파일을 바꾸지 않게 하기 위해서다
   - 프론트는 `frontend/dist`가 아니라 `backend/deploy/static.next`에 빌드하고 성공한 뒤 바꿔 끼운다. Vite는 빌드 시작 때 출력 폴더를 비우므로, 그 자리에 바로 빌드하면 실패 시 서빙 중인 화면이 깨진다
   - pm2는 `startOrRestart` 대신 지우고 새로 띄운다. 설정 파일의 인자·환경 변수 변경이 확실히 반영된다
-  - 맥미니 경로는 `~/srv/for-nav`로 고정하고 사용자 이름은 쓰지 않는다
+  - 맥미니 경로는 `~/srv/for-nav`로 고정하고 사용자 이름은 쓰지 않는다. 클론이 없으면 워크플로가 공개 HTTPS 주소로 만든다(사용자 요청). 공개 저장소라 pull에 인증이 필요 없다
 
 ## 메모
 - 맥미니 Node는 nvm 22를 쓴다(Vite 8은 22.12 이상). CI는 Node 24다
