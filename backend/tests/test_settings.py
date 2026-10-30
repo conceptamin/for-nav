@@ -107,3 +107,46 @@ print(json.dumps({"health": TestClient(app).get("/api/health").status_code, "cli
     env = {k: v for k, v in os.environ.items() if not k.startswith(("LLM_", "ANTHROPIC_"))}
     out = subprocess.run([sys.executable, "-c", script], cwd=BACKEND, env=env, capture_output=True, text=True, check=True)
     assert json.loads(out.stdout.strip().splitlines()[-1]) == {"health": 200, "client": True}
+
+
+def test_center_auth_defaults():
+    # 센터 직원 로그인(backlog 17)은 기본으로 꺼져 있다.
+    s = load_settings({})
+    assert (s.center_auth, s.mail_provider, s.mail_api_key, s.mail_from) == ("off", "resend", "", "")
+    assert (s.center_session_days, s.center_cookie_secure) == (30, True)
+
+
+def test_center_auth_reads_env(tmp_path):
+    s = load_settings(
+        {
+            "CENTER_AUTH": "email",
+            "DB_PATH": str(tmp_path / "center.db"),
+            "MAIL_API_KEY": " re_test ",
+            "MAIL_FROM": "for-nav 센터 <no-reply@for-nav.com>",
+            "CENTER_SESSION_DAYS": "7",
+        }
+    )
+    assert (s.center_auth, s.mail_api_key, s.center_session_days) == ("email", "re_test", 7)
+    assert "re_test" not in repr(s)
+
+
+@pytest.mark.parametrize(
+    ("env", "message"),
+    [
+        ({"CENTER_AUTH": "password"}, "CENTER_AUTH"),
+        ({"MAIL_PROVIDER": "smtp"}, "MAIL_PROVIDER"),
+        ({"CENTER_SESSION_DAYS": "0"}, "CENTER_SESSION_DAYS"),
+        ({"CENTER_COOKIE_SECURE": "yes"}, "CENTER_COOKIE_SECURE"),
+        ({"CENTER_AUTH": "email"}, "DB_PATH"),
+        ({"CENTER_AUTH": "email", "DB_PATH": "center.db", "MAIL_FROM": "a@b.c"}, "MAIL_API_KEY"),
+        ({"CENTER_AUTH": "email", "DB_PATH": "center.db", "MAIL_PROVIDER": "console"}, "CENTER_COOKIE_SECURE=false"),
+    ],
+)
+def test_center_auth_rejects(env, message):
+    with pytest.raises(ValueError, match=message):
+        load_settings(env)
+
+
+def test_console_mail_only_for_local_http():
+    s = load_settings({"CENTER_AUTH": "email", "DB_PATH": "center.db", "MAIL_PROVIDER": "console", "CENTER_COOKIE_SECURE": "false"})
+    assert (s.mail_provider, s.center_cookie_secure) == ("console", False)

@@ -1,6 +1,8 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
-# 표는 넷이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
+# 사례 표는 넷이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
 # chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지.
+# 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
+# auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지가 평문으로 남는다(데모 범위, README "센터 저장소").
 
@@ -12,7 +14,7 @@ from threading import Lock
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
 from app.schemas import CaseStatus, CenterCase, ChatMessage, ChatRole
-from app.store import latest_first, make_message, next_case_id, with_status
+from app.store import CODE_REQUEST_KEEP, AuthCode, latest_first, make_message, next_case_id, with_status
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS live_cases (
@@ -35,6 +37,27 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     text TEXT NOT NULL,
     at TEXT NOT NULL,
     PRIMARY KEY (case_id, id)
+);
+CREATE TABLE IF NOT EXISTS center_staff (
+    email TEXT PRIMARY KEY,
+    added_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS auth_code_requests (
+    email TEXT NOT NULL,
+    at TEXT NOT NULL,
+    sent INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS auth_codes (
+    email TEXT PRIMARY KEY,
+    code_hash TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    attempts INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS center_sessions (
+    token_hash TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
 );
 """
 
@@ -124,8 +147,86 @@ class SqliteStore:
             ).fetchall()
         return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
 
+    def is_staff(self, email: str) -> bool:
+        with self._lock:
+            return self._db.execute("SELECT 1 FROM center_staff WHERE email = ?", (email,)).fetchone() is not None
+
+    def add_staff(self, email: str, at: datetime) -> bool:
+        with self._lock, self._db:
+            cur = self._db.execute("INSERT OR IGNORE INTO center_staff (email, added_at) VALUES (?, ?)", (email, clock.iso_utc(at)))
+        return cur.rowcount == 1
+
+    def remove_staff(self, email: str) -> bool:
+        with self._lock, self._db:
+            cur = self._db.execute("DELETE FROM center_staff WHERE email = ?", (email,))
+            self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+            self._db.execute("DELETE FROM center_sessions WHERE email = ?", (email,))
+        return cur.rowcount == 1
+
+    def list_staff(self) -> list[str]:
+        with self._lock:
+            return [e for (e,) in self._db.execute("SELECT email FROM center_staff ORDER BY email")]
+
+    def add_code_request(self, email: str, at: datetime, sent: bool) -> None:
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM auth_code_requests WHERE at <= ?", (clock.iso_utc(at - CODE_REQUEST_KEEP),))
+            self._db.execute("INSERT INTO auth_code_requests (email, at, sent) VALUES (?, ?, ?)", (email, clock.iso_utc(at), int(sent)))
+
+    def code_requests(self, email: str, since: datetime) -> int:
+        with self._lock:
+            (n,) = self._db.execute(
+                "SELECT COUNT(*) FROM auth_code_requests WHERE email = ? AND at > ?", (email, clock.iso_utc(since))
+            ).fetchone()
+        return n
+
+    def sent_codes(self, since: datetime) -> int:
+        with self._lock:
+            (n,) = self._db.execute("SELECT COUNT(*) FROM auth_code_requests WHERE sent = 1 AND at > ?", (clock.iso_utc(since),)).fetchone()
+        return n
+
+    def set_code(self, email: str, code_hash: str, expires_at: datetime) -> None:
+        with self._lock, self._db:
+            self._db.execute(
+                "INSERT INTO auth_codes (email, code_hash, expires_at, attempts) VALUES (?, ?, ?, 0) "
+                "ON CONFLICT(email) DO UPDATE SET code_hash = excluded.code_hash, expires_at = excluded.expires_at, attempts = 0",
+                (email, code_hash, clock.iso_utc(expires_at)),
+            )
+
+    def get_code(self, email: str) -> AuthCode | None:
+        with self._lock:
+            row = self._db.execute("SELECT code_hash, expires_at, attempts FROM auth_codes WHERE email = ?", (email,)).fetchone()
+        return AuthCode(*row) if row else None
+
+    def add_code_attempt(self, email: str) -> int:
+        with self._lock, self._db:
+            self._db.execute("UPDATE auth_codes SET attempts = attempts + 1 WHERE email = ?", (email,))
+            row = self._db.execute("SELECT attempts FROM auth_codes WHERE email = ?", (email,)).fetchone()
+        return row[0] if row else 0
+
+    def delete_code(self, email: str) -> None:
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+
+    def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None:
+        with self._lock, self._db:
+            self._db.execute(
+                "INSERT INTO center_sessions (token_hash, email, created_at, expires_at) VALUES (?, ?, ?, ?)",
+                (token_hash, email, clock.iso_utc(created_at), clock.iso_utc(expires_at)),
+            )
+
+    def session_email(self, token_hash: str, now: datetime) -> str | None:
+        with self._lock:
+            row = self._db.execute(
+                "SELECT email FROM center_sessions WHERE token_hash = ? AND expires_at > ?", (token_hash, clock.iso_utc(now))
+            ).fetchone()
+        return row[0] if row else None
+
+    def delete_session(self, token_hash: str) -> None:
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM center_sessions WHERE token_hash = ?", (token_hash,))
+
     def reset(self) -> None:
-        """네 표를 비운다. 파일은 지우지 않는다."""
+        """사례 표 넷을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
         with self._lock, self._db:
             for table in ("live_cases", "case_status", "chat_tokens", "chat_messages"):
                 self._db.execute(f"DELETE FROM {table}")

@@ -60,6 +60,15 @@ def test_meta():
     }
 
 
+def test_auth_me_default_off():
+    # 센터 직원 로그인(backlog 17)은 기본으로 꺼져 있다. 자세한 경로 테스트는 test_auth.py
+    r = client.get("/api/auth/me")
+    assert r.status_code == 200
+    assert r.json() == {"required": False, "email": None}
+    assert client.post("/api/auth/code", json={"email": "a@b.co"}).status_code == 404
+    assert client.post("/api/auth/logout").status_code == 204
+
+
 def test_triage_readme_examples():
     r = client.post("/api/triage", json=INTAKE)
     assert r.status_code == 200

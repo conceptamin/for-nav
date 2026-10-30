@@ -1,5 +1,6 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
 # 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)과 통화 시그널링·자막 번역(backlog 16)을 연다.
+# CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17). 근로자 전송은 열려 있다.
 
 import asyncio
 import logging
@@ -7,12 +8,13 @@ import secrets
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from typing import Annotated
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, WebSocket, status
 from pydantic import TypeAdapter, ValidationError
 from starlette.websockets import WebSocketDisconnect
 
-from app import clock
+from app import auth, clock
 from app.chat import CallHub, ChatHub
 from app.data.mock import StatRecord
 from app.llm import LLMClient
@@ -42,6 +44,17 @@ from app.vocab import INDUSTRIES, District, Lang
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/center")
+
+
+def require_staff(request: Request) -> None:
+    """센터 읽기·쓰기 경로에 거는 의존성. 근로자 전송(POST /cases)에는 걸지 않는다."""
+    if settings.center_auth != "email":
+        return
+    if auth.session_email(store, request.cookies.get(auth.COOKIE), clock.now()) is None:
+        raise HTTPException(status_code=401, detail="센터 로그인이 필요하다")
+
+
+staff_only = [Depends(require_staff)]
 
 
 @router.post("/cases", status_code=status.HTTP_201_CREATED)
@@ -89,7 +102,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
     return NewCaseResponse(case=c, next_open_date=next_open_day(now).isoformat(), chat_token=token)
 
 
-@router.get("/cases")
+@router.get("/cases", dependencies=staff_only)
 def list_cases(status: CaseStatus | None = None, since: datetime | None = None) -> list[CenterCase]:
     """C-01: 최신순 목록. `since`를 주면 그 시각 이후에 접수된 사례만 돌려준다."""
     cases = store.all()
@@ -105,7 +118,7 @@ def _not_found(case_id: str) -> HTTPException:
     return HTTPException(status_code=404, detail=f"사례 {case_id}를 찾을 수 없다")
 
 
-@router.get("/cases/{case_id}")
+@router.get("/cases/{case_id}", dependencies=staff_only)
 def get_case(case_id: str) -> CenterCase:
     """C-02: 사례 상세."""
     c = store.get(case_id)
@@ -114,7 +127,7 @@ def get_case(case_id: str) -> CenterCase:
     return c
 
 
-@router.patch("/cases/{case_id}")
+@router.patch("/cases/{case_id}", dependencies=staff_only)
 def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
     """C-02: 상태 변경."""
     c = store.set_status(case_id, body.status)
@@ -123,7 +136,7 @@ def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
     return c
 
 
-@router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/reset", status_code=status.HTTP_204_NO_CONTENT, dependencies=staff_only)
 async def reset(request: Request) -> Response:
     """C-01 데모 초기화: live 사례, 상태 변경, 채팅을 지우고 열린 채팅·통화 연결을 닫는다."""
     store.reset()
@@ -140,14 +153,30 @@ async def reset(request: Request) -> Response:
 # ---------------------------------------------------------------------------
 CLOSE_NOT_FOUND = 4404
 CLOSE_FORBIDDEN = 4403
+# role=center인데 직원 세션이 없거나 끝났다(backlog 17)
+CLOSE_UNAUTHORIZED = 4401
 INVALID_FRAME = {"type": "error", "code": "invalid"}
 
 
-def _chat_denied(case_id: str, role: str, token: str) -> int | None:
+def _same_site(ws: WebSocket) -> bool:
+    """다른 사이트의 페이지가 직원 쿠키를 실어 붙는 것을 막는다. Origin이 없으면 브라우저가 아니므로 쿠키 확인에 맡긴다."""
+    origin = ws.headers.get("origin")
+    if origin is None or origin in settings.cors_origins:
+        return True
+    return urlsplit(origin).netloc == ws.headers.get("host", "")
+
+
+def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | None:
     if store.get(case_id) is None:
         return CLOSE_NOT_FOUND
     if role == "center":
-        # 센터 화면에 로그인이 없어 데모에서는 역할만으로 붙는다(README "나중에 붙일 자리").
+        # CENTER_AUTH=off이면 센터 화면에 로그인이 없어 역할만으로 붙는다.
+        if settings.center_auth != "email":
+            return None
+        if not _same_site(ws):
+            return CLOSE_FORBIDDEN
+        if auth.session_email(store, ws.cookies.get(auth.COOKIE), clock.now()) is None:
+            return CLOSE_UNAUTHORIZED
         return None
     expected = store.chat_token(case_id)
     if role == "worker" and expected and secrets.compare_digest(token.encode(), expected.encode()):
@@ -159,7 +188,7 @@ def _chat_denied(case_id: str, role: str, token: str) -> int | None:
 async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
     """근로자·센터 상담 채팅. 연결 직후 이전 메시지(history)를 한 번 보내고, 이후 메시지를 같은 방의 모든 연결에 보낸다."""
     await ws.accept()
-    denied = _chat_denied(case_id, role, token)
+    denied = _chat_denied(ws, case_id, role, token)
     if denied:
         await ws.close(denied)
         return
@@ -220,7 +249,7 @@ async def _send_caption(hub: CallHub, case_id: str, sender: ChatRole, text: str,
 async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
     """근로자·센터 통화. 연결 직후 방에 있는 상대(joined)를 알리고, signal은 상대에게만, caption은 번역해 양쪽에 보낸다."""
     await ws.accept()
-    denied = _chat_denied(case_id, role, token)
+    denied = _chat_denied(ws, case_id, role, token)
     if denied:
         await ws.close(denied)
         return
@@ -281,7 +310,7 @@ def _count_by[K](recs: list[StatRecord], keys: list[K], get: Callable[[StatRecor
 STATS_DAYS = (30, 90, 180)
 
 
-@router.get("/stats")
+@router.get("/stats", dependencies=staff_only)
 def stats(days: int = 90, district: District | None = None) -> CenterStats:
     """C-03: 기간(30·90·180일)·구군별 익명 집계."""
     if days not in STATS_DAYS:

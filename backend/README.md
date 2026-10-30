@@ -39,6 +39,8 @@ backend/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
     chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 자막 번호, 데모 초기화 때 닫기
+    auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장)
+    mail.py            로그인 코드 메일 — Mailer 프로토콜, Resend(httpx), 로컬 개발용 console
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (20개 언어 Lang, 부위·증상·진료과·업종·구군 어휘, josa, 언어 묶음 PACKS 읽기)
@@ -56,11 +58,12 @@ backend/
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages 표)
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 직원·로그인 코드·세션
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, center_staff, auth_code_requests, auth_codes, center_sessions 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
+      auth.py          /api/auth/* (센터 직원 로그인)
   deploy/
     deploy.sh          맥미니 배포 — 프론트 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
     ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, MODEL_DIR=../modeling/models, .env 있으면 읽기)
@@ -69,12 +72,14 @@ backend/
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
     slots_check.py     픽스처 자유 입력의 상황 줄 요약이 guard를 통과하는지 집계(CI에서 돌지 않음)
     translate_check.py 픽스처 자유 입력의 번역 수락·거부 건수와 소요 시간 집계(CI에서 돌지 않음)
+    staff.py           센터 직원 목록 add·remove·list(DB_PATH의 SQLite, CI에서 돌지 않음)
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_store.py      센터 저장소 메모리·SQLite 같은 테스트, SQLite 재시작 뒤 유지
     test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 4409, 데모 초기화, 로그에 SDP·자막 없음)
+    test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
@@ -82,7 +87,7 @@ backend/
     test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
-    fakes.py           FakeLLMClient
+    fakes.py           FakeLLMClient, FakeMailer
 ```
 
 ## 공통 규칙
@@ -105,8 +110,10 @@ backend/
 
 | 상태 | `code` | `message` |
 |---|---|---|
+| 401 | `UNAUTHORIZED` | 센터 직원 세션이 없거나 끝났다(`센터 로그인이 필요하다`), 로그인 코드가 틀렸다 |
 | 404 | `NOT_FOUND` | 없는 경로·사례(`사례 C-0를 찾을 수 없다`) |
 | 422 | `VALIDATION` | 어긋난 필드 위치만 적는다(요청 값은 넣지 않는다). 경로 안 검사(`days`)도 이 코드 |
+| 429 | `RATE_LIMITED` | 로그인 코드 요청이 보내기 제한을 넘었다 |
 | 500 | `INTERNAL` | `서버 오류가 발생했다` |
 | 그 밖 4xx | `BAD_REQUEST` | 예: 405 |
 
@@ -135,6 +142,12 @@ backend/
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `GET /api/center/stats` | `StatsPage`의 집계 | C-03 | `?days=30\|90\|180&district=` | 아래 참고 |
+| `GET /api/auth/me` | — (프론트 미연결) | C-01~C-03 진입 | — | `{ required, email }` |
+| `POST /api/auth/code` | — (프론트 미연결) | 센터 로그인 | `{ email }` | `202` (등록 여부와 관계없이 같다) / `429` |
+| `POST /api/auth/verify` | — (프론트 미연결) | 센터 로그인 | `{ email, code }` | `{ required, email }` + 세션 쿠키 / `401` |
+| `POST /api/auth/logout` | — (프론트 미연결) | 센터 헤더 | — | `204` + 쿠키 지우기 |
+
+`CENTER_AUTH=email`이면 센터 읽기·쓰기(`GET /api/center/cases`, `GET`·`PATCH /api/center/cases/{id}`, `POST /api/center/reset`, `GET /api/center/stats`)와 채팅·통화의 `role=center`는 직원 세션 쿠키가 있어야 한다(없으면 401, WS는 `4401`). 근로자 전송(`POST /api/center/cases`)과 `role=worker`는 그대로 열려 있다. 기본값 `off`에서는 지금처럼 로그인 없이 열린다(backlog 17).
 
 ### 요청·응답 예시
 
@@ -270,12 +283,13 @@ backend/
 
 **`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
-사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(센터 로그인은 아직 없다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
+사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(`CENTER_AUTH=email`이면 직원 세션 쿠키도 있어야 한다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
 
 | 닫힘 코드 | 언제 |
 |---|---|
 | `4404` | 사례가 없다 |
-| `4403` | `role`이 없거나 틀렸다, 근로자 토큰이 없거나 맞지 않는다(mock 사례에는 근로자 토큰이 없다) |
+| `4403` | `role`이 없거나 틀렸다, 근로자 토큰이 없거나 맞지 않는다(mock 사례에는 근로자 토큰이 없다), `role=center`인데 `Origin`이 다른 사이트다 |
+| `4401` | `role=center`인데 직원 세션이 없거나 끝났다(`CENTER_AUTH=email`일 때만) |
 | `4000` | 데모 초기화(`POST /api/center/reset`)로 방이 비었다 |
 
 ```jsonc
@@ -333,6 +347,31 @@ backend/
 ```
 
 (숫자는 형태 예시다. 실제 값은 mock 시드와 기간 필터로 정해진다.)
+
+**`/api/auth/*`** — 센터 직원 로그인(backlog 17, `CENTER_AUTH=email`일 때)
+
+직원 이메일은 `scripts/staff.py`로 SQLite(`center_staff`)에 넣는다. 비밀번호는 없다. 이메일을 보내면 등록된 직원에게만 6자리 코드 메일이 가고(10분 유효, 5번 틀리면 무효, 새 코드를 받으면 이전 코드 무효), 맞는 코드를 보내면 세션 쿠키를 받는다.
+
+```jsonc
+// GET /api/auth/me — 센터 화면이 들어올 때. 세션이 없어도 401이 아니다
+{ "required": true, "email": null }          // CENTER_AUTH=off이면 { "required": false, "email": null }
+
+// POST /api/auth/code → 202 (본문 없음). 등록되지 않은 이메일도 같은 202다(메일만 보내지 않는다)
+{ "email": "staff@example.org" }
+
+// POST /api/auth/verify → 200 + Set-Cookie: fornav_center=…; HttpOnly; SameSite=lax; Path=/; Max-Age=2592000; Secure
+{ "email": "staff@example.org", "code": "042917" }
+{ "required": true, "email": "staff@example.org" }
+// 틀림·만료·없음은 이유를 나누지 않고 401
+{ "error": { "code": "UNAUTHORIZED", "message": "코드가 맞지 않거나 만료되었다", "requestId": "…" } }
+```
+
+- 이메일은 앞뒤 공백을 지우고 소문자로 맞춘다. 형식이 아니면 422다.
+- 보내기 제한(넘으면 429 `RATE_LIMITED`): 같은 이메일은 60초에 한 번, 1시간에 5번(등록 여부와 관계없이 똑같이 건다). 서버 전체로 10분에 실제 발송 30통.
+- 메일 발송이 실패해도 202다(실패를 알리면 등록 여부가 드러난다). 서버 로그에 `로그인 코드 메일 실패 <종류> request_id=`만 남는다.
+- 코드·세션 토큰은 sha256 해시만 저장하고, 이메일·코드·토큰·쿠키 값은 로그에 남기지 않는다. 세션은 `CENTER_SESSION_DAYS`(기본 30일) 뒤 끝나고 늘어나지 않는다. `scripts/staff.py remove`는 그 직원의 세션도 지운다.
+- 데모 초기화(`POST /api/center/reset`)는 직원·코드·세션을 지우지 않는다.
+- 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트(예: Vercel)에서 쿠키를 보내는 설정은 하지 않았다.
 
 ## mock 데이터
 
@@ -415,6 +454,12 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
+| `CENTER_AUTH` | `off` | `off` \| `email` | 센터 직원 로그인(backlog 17). `email`이면 `DB_PATH`가 있어야 한다 |
+| `MAIL_PROVIDER` | `resend` | `resend` \| `console` | 로그인 코드 메일. `console`은 코드를 서버 표준 출력에 찍는다(로컬 개발 전용, `CENTER_COOKIE_SECURE=false`일 때만 허용) |
+| `MAIL_API_KEY` | (없음) | Resend API 키 | `resend`이면 있어야 한다 |
+| `MAIL_FROM` | (없음) | 예: `for-nav 센터 <no-reply@for-nav.com>` | 보내는 사람. `resend`이면 있어야 한다(Resend에서 인증한 도메인) |
+| `CENTER_SESSION_DAYS` | `30` | 1 이상 정수 | 직원 세션 길이(일) |
+| `CENTER_COOKIE_SECURE` | `true` | `true` \| `false` | 세션 쿠키의 `Secure`. 로컬 http 개발에서만 `false` |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -493,6 +538,21 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 - 포트를 바꾸려면 `PORT=8080 bash backend/deploy/deploy.sh`처럼 넘긴다. 워크플로는 8000을 쓴다.
 - 서버 로그는 `pm2 logs for-nav`, 상태는 `pm2 status`로 본다. 배포가 실패하면 Actions 로그 끝에 pm2 로그 40줄이 찍힌다.
+
+센터 직원 로그인 켜기(backlog 17):
+
+1. Resend에 가입하고 Domains에 `for-nav.com`을 더한 뒤, 안내하는 DNS 레코드(SPF·DKIM 등)를 Cloudflare DNS에 그대로 넣는다(프록시 끔). 인증되면 API Keys에서 보내기 전용 키를 만든다.
+2. `~/srv/for-nav/backend/.env`에 넣는다(커밋하지 않는다).
+   ```sh
+   CENTER_AUTH=email
+   DB_PATH=/Users/<사용자>/srv/for-nav-data/center.db
+   MAIL_PROVIDER=resend
+   MAIL_API_KEY=re_...
+   MAIL_FROM="for-nav 센터 <no-reply@for-nav.com>"
+   ```
+   `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅도 이 파일에 평문으로 남는다.
+3. 직원을 등록한다: `cd ~/srv/for-nav/backend && uv run --env-file .env python scripts/staff.py add staff@example.org` (`list`, `remove`도 같다). 서버를 다시 띄울 필요는 없다.
+4. `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 한 번 다시 띄운다(`.env`를 새로 읽는다).
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
@@ -539,7 +599,7 @@ backend:
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
-| 상담 채팅 센터 인증 | `role=center`만으로 붙는다. 사례 id를 알면 누구나 센터로 붙을 수 있다(backlog 14) | 상담자 로그인·상담자별 권한 |
+| 상담 채팅 센터 인증 | `CENTER_AUTH=email`이면 직원 이메일 코드 로그인 세션이 있어야 `role=center`로 붙는다 — 붙임(backlog 17). `off`(기본)이면 역할만으로 붙는다 | 상담자별 권한, 담당자 지정, 처리 직원 기록 |
 | 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 14) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
 | 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
 | 통화 기록 | 음성·자막을 저장하지 않는다(backlog 16) | 동의를 받은 자막 기록, 보존 기간 |
