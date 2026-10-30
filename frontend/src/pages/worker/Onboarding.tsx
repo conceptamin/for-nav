@@ -1,53 +1,76 @@
 // S-01 언어 선택, S-02 약관 동의, S-03 로그인(데모) → 프로필, S-04 홈
 // 온보딩 세 화면. 배치는 Figma 화면 골격(backlog/08-figma-layout.md)을 따른다.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
-import { LANGUAGE_OPTIONS, useT } from '../../i18n';
+import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
 import { useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
-import { LOCALES, SEXES } from '../../domain/vocab';
+import { suggestLangs } from '../../i18n/suggest';
+import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 위를 비우고 가운데 로고, 언어 버튼은 바닥에 2열 격자로. 로고 화면이라 앱 바가 없다.
+// S-01: 대화형. 안내원(로고)이 폰 언어로 묻고, 근로자는 자기 언어로 된 대답 말풍선을 누른다.
+// 폰 언어와 가까운 언어를 위에 크게, 나머지는 "다른 언어" 칩으로 모두 보인다(backlog 20). 로고 화면이라 앱 바가 없다.
 // ---------------------------------------------------------------------------
+const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
+
 export function LanguagePage() {
   const app = useApp();
   const navigate = useNavigate();
   useScreenBar({ hidden: true });
   const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
+  const { first, suggested, rest } = useMemo(
+    () => suggestLangs(navigator.languages ?? [navigator.language], LANGUAGE_OPTIONS.map((o) => o.lang)),
+    [],
+  );
+  // 질문은 폰 언어로. 폰 언어를 모르면 영어로 묻고, 영어가 아니면 아래에 영어 한 줄을 붙인다(추천이 틀렸을 때를 위해)
+  const ask: Lang = first ?? 'en';
+  const choose = (lang: Lang) => {
+    app.setLang(lang);
+    navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
+  };
+
   return (
-    <div className="w-screen">
-      <div className="w-logo">
-        <img className="mark" src="/logo.png" width="64" height="64" alt="" />
-        <h1>Choose your language</h1>
-        <p className="muted">Chọn ngôn ngữ · 언어를 선택하세요</p>
+    <div className="w-screen w-chat" dir={RTL_LANGS.includes(ask) ? 'rtl' : undefined}>
+      <div className="ask" lang={ask}>
+        <img className="mark" src="/logo.png" width="40" height="40" alt="" />
+        <div className="bubble">
+          <h1>{translate(ask, 'langAsk')}</h1>
+          {ask !== 'en' && (
+            <p className="small muted" lang="en" dir="ltr">
+              {translate('en', 'langAsk')}
+            </p>
+          )}
+        </div>
       </div>
-      <div className="stack">
-        <div className="w-langs">
-          {LANGUAGE_OPTIONS.map((o) => (
-            <button
-              key={o.lang}
-              type="button"
-              className="btn secondary"
-              lang={o.lang}
-              onClick={() => {
-                app.setLang(o.lang);
-                navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
-              }}
-            >
-              {o.native}
-              {o.native !== o.english && <span className="muted small">{o.english}</span>}
+      <div className="replies">
+        {suggested.map((l) => (
+          <button key={l} type="button" className="reply" lang={l} onClick={() => choose(l)}>
+            <strong>{translate(l, 'langReply')}</strong>
+            {l !== 'en' && <span lang="en">{LANG_OPTION.get(l)?.english}</span>}
+          </button>
+        ))}
+      </div>
+      <div className="chip-group">
+        <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
+        <div className="chips">
+          {rest.map((l) => (
+            <button key={l} type="button" className="chip" lang={l} onClick={() => choose(l)}>
+              {LANG_OPTION.get(l)?.native}
             </button>
           ))}
         </div>
-        <p className="footer-note" style={{ textAlign: 'center' }}>
-          <Link to="/center">센터 상담원 화면 →</Link>
-        </p>
       </div>
+      <p className="footer-note" lang={ask}>
+        {translate(ask, 'langHint')}
+      </p>
+      <p className="footer-note" style={{ textAlign: 'center' }}>
+        <Link to="/center">센터 상담원 화면 →</Link>
+      </p>
     </div>
   );
 }

@@ -22,6 +22,9 @@ export const si: Record<MessageKey, string> = {
   // S-01
   langTitle: 'ඔබේ භාෂාව තෝරන්න',
   langHint: 'පසුව තිරයේ උඩින් එය වෙනස් කරන්න පුළුවන්.',
+  langAsk: 'අපි කුමන භාෂාවෙන් කතා කරමුද?',
+  langReply: 'සිංහලෙන් කතා කරමු',
+  langOther: 'වෙනත් භාෂා',
 
   // S-02
   consentTitle: 'පටන් ගන්න කලින්',

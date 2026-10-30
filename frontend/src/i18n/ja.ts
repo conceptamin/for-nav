@@ -22,6 +22,9 @@ export const ja: Record<MessageKey, string> = {
   // S-01
   langTitle: '言語を選んでください',
   langHint: 'あとで画面の上から変えられます。',
+  langAsk: '何語で話しましょうか？',
+  langReply: '日本語で話します',
+  langOther: 'ほかの言語',
 
   // S-02
   consentTitle: 'はじめる前に',

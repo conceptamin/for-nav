@@ -22,6 +22,9 @@ export const kk: Record<MessageKey, string> = {
   // S-01
   langTitle: 'Тілді таңдаңыз',
   langHint: 'Тілді кейін экранның жоғарғы жағынан өзгертуге болады.',
+  langAsk: 'Қай тілде сөйлесейік?',
+  langReply: 'Қазақша сөйлесейік',
+  langOther: 'Басқа тілдер',
 
   // S-02
   consentTitle: 'Бастамас бұрын',
