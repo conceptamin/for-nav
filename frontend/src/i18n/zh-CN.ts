@@ -247,6 +247,20 @@ export const zhCN: Record<MessageKey, string> = {
   cenSend: '发送',
   sendFailed: '无法发送给中心。您的回答已保留，请再试一次。',
   retry: '再试一次',
+
+  // S-12 상담 채팅
+  chatTitle: '与中心聊天',
+  chatIntro: '咨询员查看您的请求后会在这里回复。消息按原文发送，不会翻译。',
+  chatEmpty: '还没有消息。您可以先发消息。',
+  chatPlaceholder: '输入消息',
+  chatSend: '发送',
+  chatMe: '我',
+  chatCenter: '中心',
+  chatConnecting: '正在连接…',
+  chatReconnecting: '连接已断开，正在重新连接…',
+  chatStopped: '此聊天已结束。请通过其他方式联系中心。',
+  chatRejected: '消息发送失败。请检查后重试。',
+
   cenSentTitle: '已发送给中心',
   cenSentBody: '咨询员会查看您的请求并联系您。',
   cenAfterHours: '中心现在已下班。我们会在下一个工作日联系您：',

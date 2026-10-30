@@ -235,6 +235,20 @@ export const ko: Record<MessageKey, string> = {
   cenSend: '보내기',
   sendFailed: '센터로 보내지 못했습니다. 입력한 내용은 그대로 있습니다. 다시 시도해 주세요.',
   retry: '다시 시도',
+
+  // S-12 상담 채팅
+  chatTitle: '센터와 대화',
+  chatIntro: '상담원이 요청을 확인한 뒤 여기에 답합니다. 메시지는 번역 없이 그대로 전달됩니다.',
+  chatEmpty: '아직 메시지가 없습니다. 먼저 써도 됩니다.',
+  chatPlaceholder: '메시지 입력',
+  chatSend: '보내기',
+  chatMe: '나',
+  chatCenter: '센터',
+  chatConnecting: '연결 중…',
+  chatReconnecting: '연결이 끊겼습니다. 다시 연결하는 중…',
+  chatStopped: '대화를 이어갈 수 없습니다. 다른 방법으로 센터에 연락해 주세요.',
+  chatRejected: '메시지를 보내지 못했습니다. 내용을 확인하고 다시 보내 주세요.',
+
   cenSentTitle: '센터로 보냈습니다',
   cenSentBody: '상담원이 요청을 확인하고 연락드립니다.',
   cenAfterHours: '지금은 센터 운영 시간이 아닙니다. 다음 운영일에 연락드립니다:',

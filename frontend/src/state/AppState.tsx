@@ -1,5 +1,5 @@
 // 근로자 영역 상태.
-// - 세션(sessionStorage): 언어, 동의, 이용 방식, 현재 증상 입력·판정, 제도 경로 결과, 비회원 리포트
+// - 세션(sessionStorage): 언어, 동의, 이용 방식, 현재 증상 입력·판정, 제도 경로 결과, 비회원 리포트, 상담 채팅 토큰
 //   → 비회원 입력은 브라우저 세션이 끝나면 사라진다.
 // - 기기(localStorage): 회원 프로필, 회원 리포트, 회원이 보낸 센터 사례 id
 // - 메모리: 서버 설정값(정보 기준일·센터 운영 시간). 저장하지 않고 시작할 때마다 GET /api/meta로 받는다
@@ -30,6 +30,8 @@ interface SessionState {
   emergencySeen: boolean;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
   guestReports: ClinicianReport[];
+  /** 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례 채팅에 붙는 열쇠라 탭을 닫으면 사라지는 세션에 둔다 */
+  chatTokens: Record<string, string>;
 }
 
 interface DeviceState {
@@ -50,6 +52,7 @@ const initialSession: SessionState = {
   emergencySeen: false,
   coverage: null,
   guestReports: [],
+  chatTokens: {},
 };
 const initialDevice: DeviceState = { profile: null, memberReports: [], myCaseIds: [] };
 
@@ -64,7 +67,8 @@ interface AppContextValue extends SessionState, DeviceState {
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
   saveReport: (r: ClinicianReport) => void;
-  addMyCase: (id: string) => void;
+  /** 보낸 사례 id는 기기에, 상담 채팅 토큰(있으면)은 세션에 둔다 */
+  addMyCase: (id: string, chatToken?: string) => void;
   reports: ClinicianReport[];
   clearMyData: () => void;
 }
@@ -118,7 +122,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (mode === 'member') setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] }));
         else setSession((s) => ({ ...s, guestReports: [r, ...s.guestReports] }));
       },
-      addMyCase: (id) => setDevice((d) => ({ ...d, myCaseIds: [id, ...d.myCaseIds] })),
+      addMyCase: (id, chatToken) => {
+        setDevice((d) => ({ ...d, myCaseIds: [id, ...d.myCaseIds] }));
+        if (chatToken) setSession((s) => ({ ...s, chatTokens: { ...s.chatTokens, [id]: chatToken } }));
+      },
       reports: mode === 'member' ? device.memberReports : session.guestReports,
       clearMyData: () => {
         removeKey(localStorage, DEVICE_KEY);
