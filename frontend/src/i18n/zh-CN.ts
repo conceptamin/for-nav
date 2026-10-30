@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const zhCN: Record<MessageKey, string> = {
-  appName: '蔚山就医向导',
+  appName: 'for nav',
   appTag: '为在蔚山工作的外国人提供就医帮助',
   back: '返回',
   next: '下一步',

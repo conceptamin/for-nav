@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const vi: Record<MessageKey, string> = {
-  appName: 'Hướng dẫn y tế Ulsan',
+  appName: 'for nav',
   appTag: 'Hỗ trợ khám bệnh cho lao động nước ngoài tại Ulsan',
   back: 'Quay lại',
   next: 'Tiếp',

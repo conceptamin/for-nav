@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const zhTW: Record<MessageKey, string> = {
-  appName: '蔚山就醫導航',
+  appName: 'for nav',
   appTag: '給在蔚山工作的外國人的就醫幫助',
   back: '返回',
   next: '下一步',

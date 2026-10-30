@@ -22,9 +22,7 @@ export function LanguagePage() {
   return (
     <div className="w-screen">
       <div className="w-logo">
-        <div className="mark" aria-hidden>
-          🏥
-        </div>
+        <img className="mark" src="/logo.png" width="64" height="64" alt="" />
         <h1>Choose your language</h1>
         <p className="muted">Chọn ngôn ngữ · 언어를 선택하세요</p>
       </div>
@@ -157,9 +155,7 @@ export function SignupPage() {
     return (
       <div className="w-screen">
         <div className="w-logo">
-          <div className="mark" aria-hidden>
-            🏥
-          </div>
+          <img className="mark" src="/logo.png" width="64" height="64" alt="" />
           <h1>{t('appName')}</h1>
           <p className="muted">{t('appTag')}</p>
         </div>

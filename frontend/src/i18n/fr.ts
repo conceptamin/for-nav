@@ -3,7 +3,7 @@
 import type { MessageKey } from './en';
 
 export const fr: Record<MessageKey, string> = {
-  appName: 'Guide médical d’Ulsan',
+  appName: 'for nav',
   appTag: 'Aide médicale pour les travailleurs étrangers à Ulsan',
   back: 'Retour',
   next: 'Suivant',

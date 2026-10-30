@@ -7,8 +7,8 @@
   --line: #d9e1e6;
   --bg: #e6edf2; /* 화면 바닥. 점토가 놓이는 면 */
   --card: #f8fafc; /* 점토 표면. 순백이 아니어야 흰 하이라이트가 보인다 */
-  --brand: #0f5b78;
-  --brand-2: #dcebf2;
+  --brand: #085e60; /* 화면용 진한 틸. 로고 키 컬러 #12979a는 흰 글자 대비가 모자라 글자·버튼에 쓰지 않는다(design.md "Colors") */
+  --brand-2: #d9f0ef;
   --ok: #1f7a4d;
   --ok-bg: #e2f3ea;
   --warn: #9a5b00;
@@ -21,7 +21,7 @@
   --info: #0b4f8a;
   --info-bg: #dceeff; /* 신규 상태 칩 */
   --warn-ink: #5c3700; /* 파스텔 안내 상자 글자(진한 변형) */
-  --brand-ink: #0b3e52;
+  --brand-ink: #074547;
   --ok-ink: #134d31;
   --bg-2: #eef3f6; /* 들어간 홈의 바탕(원문 상자, 막대 트랙), 낮음 칩. --bg와 --card 사이 */
   --bg-3: #f2f6f9; /* 표 머리, 행 강조. --card보다 한 단계 어둡다 */
@@ -119,6 +119,13 @@ p {
   color: var(--ink);
 }
 
+/* 홈(/·/home) 앱 바의 로고 마크. ← 가 있는 화면에는 없다 */
+.w-header .logo {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
 .w-header .title {
   flex: 1;
   font-weight: 700;
@@ -200,9 +207,11 @@ p {
   padding: 32px 0;
 }
 
+/* 팀 로고 마크(public/logo.png). 바탕이 투명이라 화살표 자리로 바닥색이 비친다 */
 .w-logo .mark {
-  font-size: 3rem;
-  line-height: 1;
+  display: block;
+  width: 64px;
+  height: 64px;
   margin-bottom: 16px;
 }
 
