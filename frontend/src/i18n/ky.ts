@@ -23,8 +23,6 @@ export const ky: Record<MessageKey, string> = {
   langTitle: 'Тилди тандаңыз',
   langHint: 'Тилди кийин экрандын жогору жагынан өзгөртсөңүз болот.',
   langAsk: 'Кайсы тилде сүйлөшөбүз?',
-  langReply: 'Кыргызча сүйлөшөлү',
-  langOther: 'Башка тилдер',
 
   // S-02
   consentTitle: 'Баштоодон мурун',

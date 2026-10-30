@@ -23,8 +23,6 @@ export const fr: Record<MessageKey, string> = {
   langTitle: 'Choisissez votre langue',
   langHint: 'Vous pourrez la changer plus tard en haut de l’écran.',
   langAsk: 'Dans quelle langue voulez-vous parler ?',
-  langReply: 'Parlons en français',
-  langOther: 'Autres langues',
 
   // S-02
   consentTitle: 'Avant de commencer',
