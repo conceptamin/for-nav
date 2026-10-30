@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))  # package = false라 설치되지 않으므로 src를 직접 찾는다
+sys.path.insert(0, str(ROOT / "src"))  # uv run 없이 실행해도 src를 찾는다
 
 from fornav_modeling.data import download  # noqa: E402
 

@@ -94,7 +94,7 @@ def test_404_format():
 
 
 def test_500_format_and_no_body_in_log(caplog, monkeypatch):
-    def boom(intake):
+    def boom(intake, model=None):
         raise RuntimeError(f"failed on {intake.free_text}")
 
     monkeypatch.setattr(worker, "triage", boom)
