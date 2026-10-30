@@ -538,7 +538,7 @@ gradients:
 >
 > **키 컬러와 화면용 틸을 나눈다.** 키 컬러 `#12979A`는 흰 글자를 올리면 WCAG 3.55:1 · APCA Lc 68로 본문 기준에 못 미친다. 그래서 글자·버튼·링크에는 같은 색상(hue 181°)에서 명도를 낮춘 `--brand` `#085e60`을 쓴다. 흰 글자 7.55:1 · Lc 90.7, `--card` 위 7.22:1 · Lc 82.7, `--bg` 위 6.39:1 · Lc 74.5, `--brand-2` 위 6.35:1 · Lc 74.1이다(바닥 위·옅은 바탕 위는 Lc 75에 조금 못 미치며, 바꾸기 전 `#0f5b78`도 같은 수준이었다). 로고는 키 컬러 한 색과 투명만 쓰고, 화살표는 바탕이 비치는 빈 자리다. 빨간 십자(적십자 표장)·초록 십자(약국)로 바꾸지 않는다.
 
-> **이 프로젝트의 역할 색(2026-10-30, backlog 19).** 글자·선·상태색은 아래 SEED 역할 값을 `styles.css` `:root` 토큰으로 읽는다. 바탕·점토 표면(`--bg`·`--card`·`--bg-2`·`--bg-3`)은 `## 클레이모피즘` › `### 바탕`이 정하고, `--accent`(포커스 윤곽·실제 전송 띠)·`--live-bg`·`--chart-2`·`--chart-3`은 역할 대응 밖이다.
+> **이 프로젝트의 역할 색(2026-10-30, backlog 19).** 글자·선·상태색은 아래 SEED 역할 값을 `styles.css` `:root` 토큰으로 읽는다. 바탕·유리 표면(`--bg`·`--card`·`--bg-2`·`--bg-3`)은 `## 글래스모피즘` › `### 바탕`이 정하고, `--accent`(포커스 윤곽·실제 전송 띠)·`--live-bg`·`--chart-2`·`--chart-3`은 역할 대응 밖이다.
 >
 > | SEED 역할 | 이 앱의 토큰 | 값 | 쓰는 곳 |
 > |---|---|---|---|
@@ -710,29 +710,56 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 
 다크 모드에서 shadow의 알파가 크게 올라가는 것(`s1` 8% → 50%)에 주목할 것 — 어두운 배경에서 같은 농도로는 층이 보이지 않기 때문이다 [src:7]. 그럼에도 shadow는 주목도가 가장 높은 소수 요소에만 쓰고, 대부분의 층 분리는 surface color와 stroke로 해결한다 [src:11].
 
-> **이 프로젝트의 예외.** 화면의 깊이는 아래 `## 클레이모피즘`으로 그린다. SEED의 `s1`~`s3` 그림자와 surface color 층위는 참고값으로만 싣고, 화면의 면은 전부 `--clay*` 토큰 중 하나를 쓴다.
+> **이 프로젝트의 예외.** 화면의 깊이는 아래 `## 글래스모피즘`으로 그린다. SEED의 `s1`~`s3` 그림자와 surface color 층위는 참고값으로만 싣고, 화면의 면은 전부 `--glass*` 토큰 중 하나를 쓴다.
 
-## 클레이모피즘
+## 글래스모피즘
 
-점토로 빚은 인형의 느낌을 CSS로 옮긴 것이다. 세 가지가 전부다.
+> **적용 전(2026-10-30).** 이 절은 클레이모피즘(backlog 06)을 대신한다. 지금 `styles.css`는 아직 `--clay*` 토큰으로 그리고, backlog 21이 이 절대로 옮긴다. 옮기기 전까지 두 쪽이 어긋나는 것은 의도한 것이다.
 
-1. **큰 둥글기.** 모서리가 보이지 않는다. 카드 20px, 버튼·칩·입력란 16px, 응급 전화 버튼과 홈 메뉴 항목 28px. 직각 모서리는 표의 셀과 구분선뿐이다.
-2. **푹신한 3D 안쪽 그림자.** 빛은 항상 **왼쪽 위**에서 온다. 면의 왼쪽 위 안쪽 가장자리에 흰 하이라이트, 오른쪽 아래 안쪽 가장자리에 어두운 음영을 `inset` 그림자로 넣어 가운데가 부풀어 보이게 한다. 그 아래로 부드러운 바깥 그림자 하나를 깔아 바닥에서 떠 있게 한다. 이 셋을 합친 것이 `--clay`다.
-3. **누르면 들어간다.** 눌린 상태(`:active`, `aria-pressed="true"`, 입력란)는 바깥 그림자를 없애고 안쪽 그림자의 방향을 뒤집어(왼쪽 위가 어둡고 오른쪽 아래가 밝다) 점토가 눌려 들어간 모양이 된다. 이것이 `--clay-in`이다.
+색이 비치는 바닥 위에 젖빛 유리판을 올린 느낌을 CSS로 옮긴 것이다. 네 가지가 전부다.
 
-면은 **테두리로 모양을 만들지 않는다.** 면의 경계는 안쪽 그림자가 만든다. 테두리를 남기는 곳은 포커스 윤곽, 표의 줄, 3언어 줄·리포트 행의 구분선뿐이다.
+1. **비치는 바닥.** 화면 바닥은 단색이 아니라 옅은 틸·파랑 빛 번짐이 깔린 면이다. 유리는 뒤에 비칠 것이 있어야 유리로 보인다. 바닥을 그리는 곳은 `body` 하나이고, 나머지 레이아웃 상자(`.w-shell`, `.c-shell`)는 바탕을 칠하지 않는다.
+2. **반투명 면 + 흐림.** 떠 있는 면은 흰색 반투명 채움(`--card`)에 `backdrop-filter`로 뒤를 흐린다. 면의 경계는 테두리가 아니라 **안쪽 1px 흰 반투명 선**(유리 가장자리)과 위쪽 1px 더 밝은 선(빛 받는 모서리)이 만든다. 그 아래로 부드러운 바깥 그림자 하나를 깐다. 이것이 `--glass`다.
+3. **누르면 들어간다.** 눌린 상태(`:active`, `aria-pressed="true"`, 입력란)는 바깥 그림자와 흰 가장자리를 없애고, 위쪽 안쪽에 옅은 음영을 넣어 유리 면이 한 단계 내려앉은 모양이 된다. 이것이 `--glass-in`이다.
+4. **색이 있는 면은 불투명하다.** 브랜드 버튼, 응급 히어로, 119 띠는 바탕을 비치게 하지 않는다. 흰 글자 대비(backlog 18·19가 잰 값)는 불투명한 색 위에서만 성립하고, 응급 표시는 뒤에 무엇이 지나가든 같은 색이어야 한다. 유리 느낌은 가장자리 선과 위쪽 빛 선으로만 낸다.
+
+면은 **테두리(`border`)로 모양을 만들지 않는다.** 유리 가장자리도 `box-shadow`의 `inset 0 0 0 1px`로 그린다. 눌림에서 가장자리가 사라져도 크기가 1px 흔들리지 않게 하려는 것이다. 테두리를 남기는 곳은 포커스 윤곽, 표의 줄, 3언어 줄·리포트 행의 구분선뿐이다.
 
 ### 세 가지 면
 
-모든 조각은 아래 셋 중 하나다. 새 조각을 그릴 때 먼저 어느 면인지 정하고 그 토큰을 쓴다. `box-shadow`에 값을 직접 쓰지 않는다.
+모든 조각은 아래 셋 중 하나다. 새 조각을 그릴 때 먼저 어느 면인지 정하고 그 토큰을 쓴다. `box-shadow`·`backdrop-filter`에 값을 직접 쓰지 않는다.
 
 | 면 | 토큰 | 뜻 | 쓰는 곳 |
 |---|---|---|---|
-| 떠 있음 | `--clay` / `--clay-sm` | 바닥 위에 올라앉은 점토 덩어리. 누를 수 있거나 내용을 담는 것 | 카드, 버튼, 칩, 홈 메뉴, 진료과 상자, 응급 전화 버튼, 하단 119 띠, KPI, 패널, 표 상자 |
-| 들어감 | `--clay-in` | 점토를 눌러 만든 홈. 값을 받거나 눌린 것 | 입력란, textarea, select, 눌린 버튼(`:active`), 선택된 칩·토글·필터, 단계 점 트랙, 모국어 원문 상자, 막대 트랙 |
-| 평평 | 없음 | 그림자 없이 파스텔 배경만. 시선을 끌지 않아야 하는 것 | 안내 상자(`notice`), 긴급도·상태 칩(`pill`), 헤더, 표의 행, 각주 |
+| 떠 있음 | `--glass` / `--glass-sm` | 바닥 위에 올린 유리판. 누를 수 있거나 내용을 담는 것 | 카드, 버튼, 칩, 홈 메뉴, 진료과 상자, 응급 전화 버튼, KPI, 패널, 표 상자 |
+| 들어감 | `--glass-in` | 유리 면이 내려앉은 홈. 값을 받거나 눌린 것 | 입력란, textarea, select, 눌린 버튼(`:active`), 선택된 칩·토글·필터, 단계 점 트랙, 모국어 원문 상자, 막대 트랙 |
+| 평평 | 없음 | 그림자 없이 파스텔 배경만. 시선을 끌지 않아야 하는 것 | 안내 상자(`notice`), 긴급도·상태 칩(`pill`), 표의 행, 각주 |
 
-색이 있는 면(브랜드 버튼, 응급 히어로, 119 띠)은 흰 하이라이트가 흰 면에서보다 약하게 보여야 하므로 `--clay-color` / `--clay-color-sm`을 쓴다. 하이라이트와 음영의 알파만 다르고 방향·크기는 같다.
+색이 있는 면(브랜드 버튼, 응급 히어로, 119 띠)은 `--glass-color` / `--glass-color-sm` / `--glass-color-in`을 쓴다. 바깥 그림자는 같고, 가장자리·빛 선의 알파만 색 위에 맞춘 값이다.
+
+### 흐림은 맨 위 유리에만
+
+`backdrop-filter: var(--glass-blur)`는 **바닥 위에 바로 놓인 큰 면**과 **스크롤 위에 고정된 띠**에만 단다.
+
+| 흐림을 다는 것 | 흐림을 달지 않는 것 |
+|---|---|
+| 카드, 패널, KPI, 표 상자, 홈 메뉴 항목, 진료과 상자, 응급 전화 버튼, 안내원 말풍선 | 카드 안의 버튼·칩·체크·입력란·토글·필터, 대답 말풍선, 알약 칩, 들어간 면 전부 |
+| 근로자 앱 바(`.w-header`), 아래 주 동작 자리(`.w-footer`), 하단 119 띠(`.bar-119`), 센터 헤더(`.c-header`) | 색이 있는 면(불투명이라 흐릴 것이 보이지 않는다) |
+
+- 유리 안에 유리를 겹쳐 흐리지 않는다. 겹친 흐림은 저가형 안드로이드에서 스크롤을 끊기게 하고, 이미 흐린 바탕을 한 번 더 흐려도 보이는 차이가 없다. 안쪽 조각은 같은 반투명 채움과 가장자리만 쓴다.
+- 고정된 띠는 그림자 없이 `--card` 채움 + 흐림 + 아래(하단 띠는 위) 쪽 1px `--glass-edge` 선 하나다. 띠 아래로 지나가는 내용이 흐리게 비친다.
+
+### 대비를 지키는 규칙
+
+반투명 면 위 글자 대비는 바닥에 따라 달라진다. 아래 두 가지로 묶는다.
+
+- **유리 면의 합성색은 클레이 때의 `--bg`(`#e6edf2`)보다 어두워지지 않는다.** backlog 18·19가 잰 대비(`--brand` 바닥 위 6.39:1, `--ink-2` 등)는 이 바닥에서 잰 최솟값이다. 바닥 빛 번짐의 가장 진한 곳 위에 `--card`를 얹은 색이 이보다 밝으면 그 숫자들이 그대로 성립한다. 빛 번짐 알파나 `--card` 알파를 바꾸면 이 합성색을 다시 잰다.
+- **바닥 위에 바로 놓이는 글자**(카드 밖 h1, 각주)는 빛 번짐의 가장 진한 곳 위에서 `--ink-2`가 4.5:1 이상이어야 한다. 넘지 못하면 빛 번짐을 옅게 한다. 글자 뒤에 유리를 덧대서 해결하지 않는다.
+
+### 흐림을 쓸 수 없을 때
+
+- `backdrop-filter`를 모르는 브라우저(`@supports not (backdrop-filter: blur(1px)) and not (-webkit-backdrop-filter: blur(1px))`)와 투명도를 줄이도록 설정한 기기(`@media (prefers-reduced-transparency: reduce)`)에서는 `--card`를 불투명한 `--card-solid`로 바꾼다. 면·그림자·눌림은 그대로이고 비침만 없어진다.
+- Safari를 위해 `-webkit-backdrop-filter`를 함께 쓴다. 두 줄 모두 같은 토큰을 읽는다.
 
 ### 비활성
 
@@ -740,13 +767,28 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 
 ### 바탕
 
-점토가 놓이는 바닥과 점토 표면은 한 단계 차이가 나야 한다. 표면이 순백이면 왼쪽 위 흰 하이라이트가 보이지 않는다.
-
 | 토큰 | 값 | 의미 |
 |---|---|---|
-| `--bg` | `#e6edf2` | 화면 바닥. 점토가 놓이는 면이라 카드보다 한 단계 어둡다 |
-| `--card` | `#f8fafc` | 점토 표면(카드·버튼·칩의 바탕). 순백이 아니어야 왼쪽 위 흰 하이라이트가 보인다 |
-| `--bg-2` | `#eef3f6` | 들어간 홈의 바탕(모국어 원문 상자, 막대 트랙), 낮음 칩(`pill.low`, 홈의 회원 링크 포함). `--bg`와 `--card` 사이 |
+| `--bg` | `#e3eff0` | 바닥의 기본색. 빛 번짐 아래 깔리는 단색이고, 흐림을 쓸 수 없을 때도 이 색 위에 그린다 |
+| `--bg-glow-1` | `rgb(8 94 96 / 12%)` | 바닥 왼쪽 위 빛 번짐(`--brand`의 색상) |
+| `--bg-glow-2` | `rgb(11 69 150 / 10%)` | 바닥 오른쪽 아래 빛 번짐(`--info`의 색상) |
+| `--bg-paint` | 아래 CSS | `body`의 `background`. 빛 번짐 둘 + `--bg`. `background-attachment: fixed`로 스크롤해도 바닥이 움직이지 않는다 |
+| `--card` | `rgb(255 255 255 / 62%)` | 유리 채움(카드·버튼·칩·띠의 바탕). 이 이름 그대로 둔다 |
+| `--card-solid` | `#f3f8f9` | 흐림을 쓸 수 없을 때의 `--card` |
+| `--bg-2` | `rgb(18 35 46 / 5%)` | 들어간 홈의 바탕(모국어 원문 상자, 막대 트랙), 낮음 칩(`pill.low`, 홈의 회원 링크 포함). 어느 유리 위에서도 한 단계 어둡게 보이도록 틴트로 둔다 |
+| `--bg-3` | `rgb(18 35 46 / 4%)` | 표 머리, 행 강조 |
+
+```css
+:root {
+  --bg-paint:
+    radial-gradient(70% 50% at 0% 0%, var(--bg-glow-1), transparent),
+    radial-gradient(60% 50% at 100% 100%, var(--bg-glow-2), transparent),
+    var(--bg);
+}
+body { background: var(--bg-paint); background-attachment: fixed; }
+```
+
+빛 번짐은 두 개뿐이고 화면 모서리에 둔다. 움직이는 그러데이션·노이즈 질감·이미지 바탕은 쓰지 않는다(애니메이션 없음, 웹폰트·이미지 없이 서빙).
 
 ### 둥글기
 
@@ -759,84 +801,90 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 | `12px` | 토큰 없음 | 높이 36~38px로 낮은 것: 헤더 언어 선택, 센터 탭, 센터 필터 버튼·select |
 | `6px` | 토큰 없음 | 말풍선 꼬리 쪽 한 모서리(S-01 안내원·대답 말풍선). 나머지 세 모서리는 `--radius` |
 
-SEED `rounded` 사다리로는 `--radius`가 `r5`(20px), `--radius-sm`이 `r4`(16px)이고, `--radius-lg` 28px은 사다리 밖 값이다. 면의 높이가 둥글기의 2배보다 작으면 알약 모양이 된다. 48px 버튼에 16px은 괜찮고, 36px 센터 필터에는 `--radius-sm` 대신 12px을 쓴다.
+둥글기 값은 클레이모피즘 때와 같다. SEED `rounded` 사다리로는 `--radius`가 `r5`(20px), `--radius-sm`이 `r4`(16px)이고, `--radius-lg` 28px은 사다리 밖 값이다. 면의 높이가 둥글기의 2배보다 작으면 알약 모양이 된다. 48px 버튼에 16px은 괜찮고, 36px 센터 필터에는 `--radius-sm` 대신 12px을 쓴다.
 
-### 그림자
+### 그림자와 흐림
 
-빛의 방향(왼쪽 위)과 세 면의 구분은 이 토큰이 전부 정한다. 값은 `:root`에만 있다.
+세 면의 구분은 이 토큰이 전부 정한다. 값은 `:root`에만 있다.
 
 ```css
 :root {
   /* 재료 */
-  --clay-light: rgb(255 255 255 / 85%);   /* 왼쪽 위 하이라이트 */
-  --clay-dark: rgb(18 35 46 / 12%);        /* 오른쪽 아래 음영 */
-  --clay-drop: rgb(18 35 46 / 10%);        /* 바닥 그림자 */
+  --glass-edge: rgb(255 255 255 / 70%);    /* 유리 가장자리 1px */
+  --glass-shine: rgb(255 255 255 / 90%);   /* 위쪽 빛 받는 모서리 1px */
+  --glass-shade: rgb(18 35 46 / 12%);      /* 들어간 면 위쪽 음영 */
+  --glass-drop: rgb(18 35 46 / 10%);       /* 바닥 그림자 */
+  --glass-blur: blur(20px) saturate(160%);
 
   /* 떠 있음: 카드·패널·KPI·메뉴·진료과 상자 */
-  --clay:
-    0 8px 16px var(--clay-drop),
-    inset 6px 6px 12px var(--clay-light),
-    inset -6px -6px 12px var(--clay-dark);
+  --glass:
+    0 8px 24px var(--glass-drop),
+    inset 0 1px 0 var(--glass-shine),
+    inset 0 0 0 1px var(--glass-edge);
 
   /* 떠 있음(작게): 버튼·칩·체크·토글·필터 */
-  --clay-sm:
-    0 4px 8px var(--clay-drop),
-    inset 3px 3px 6px var(--clay-light),
-    inset -3px -3px 6px var(--clay-dark);
+  --glass-sm:
+    0 4px 12px var(--glass-drop),
+    inset 0 1px 0 var(--glass-shine),
+    inset 0 0 0 1px var(--glass-edge);
 
   /* 들어감: 입력란·눌린 버튼·선택된 칩·트랙 */
-  --clay-in:
-    inset 4px 4px 8px var(--clay-dark),
-    inset -3px -3px 6px var(--clay-light);
+  --glass-in:
+    inset 0 2px 4px var(--glass-shade),
+    inset 0 0 0 1px rgb(18 35 46 / 6%);
 
-  /* 색이 있는 면: 브랜드 버튼·응급 히어로·119 띠 */
-  --clay-color:
-    0 8px 16px var(--clay-drop),
-    inset 4px 4px 10px rgb(255 255 255 / 35%),
-    inset -4px -4px 10px rgb(0 0 0 / 20%);
-  --clay-color-sm:
-    0 4px 8px var(--clay-drop),
-    inset 3px 3px 6px rgb(255 255 255 / 35%),
-    inset -3px -3px 6px rgb(0 0 0 / 20%);
-  --clay-color-in:
-    inset 4px 4px 8px rgb(0 0 0 / 22%),
-    inset -3px -3px 6px rgb(255 255 255 / 25%);
+  /* 색이 있는 면: 브랜드 버튼·응급 히어로·119 띠(불투명) */
+  --glass-color:
+    0 8px 24px var(--glass-drop),
+    inset 0 1px 0 rgb(255 255 255 / 35%),
+    inset 0 0 0 1px rgb(255 255 255 / 18%);
+  --glass-color-sm:
+    0 4px 12px var(--glass-drop),
+    inset 0 1px 0 rgb(255 255 255 / 35%),
+    inset 0 0 0 1px rgb(255 255 255 / 18%);
+  --glass-color-in:
+    inset 0 2px 6px rgb(0 0 0 / 25%);
 }
 ```
 
-- 안쪽 그림자의 양수 오프셋(`6px 6px`)은 왼쪽 위 안쪽 가장자리에, 음수 오프셋(`-6px -6px`)은 오른쪽 아래 안쪽 가장자리에 생긴다. 하이라이트는 양수, 음영은 음수가 "왼쪽 위에서 오는 빛"이다. 들어감은 그 반대다.
-- 바깥 그림자는 하나뿐이고 아래로만(`0 8px`) 떨어진다. 옆이나 위로 퍼지는 그림자, 여러 겹의 바깥 그림자를 만들지 않는다.
-- 안쪽 그림자가 가장자리 6px(작은 면 3px)을 차지하므로 **글자가 음영 위에 놓이지 않게** 면의 안쪽 여백은 가로 12px 아래로 내리지 않는다.
-- `:root` 밖에서 그림자 값을 직접 쓰는 곳은 표시 띠 두 가지다. 실제 전송 행의 왼쪽 띠(`inset 4px 0 0 var(--accent)`)와 결과 카드의 위쪽 띠(`.card.band`의 `inset 0 6px 0 var(--band)`)다. 면이 아니라 표시 띠라서 예외이고, **표시 띠는 테두리가 아니라 안쪽 그림자로 그린다.**
+- 빛 선(`inset 0 1px 0`)이 가장자리 선보다 앞에 와야 위쪽 모서리가 더 밝게 보인다. `box-shadow`는 앞에 쓴 것이 위에 그려진다.
+- 바깥 그림자는 하나뿐이고 아래로만(`0 8px`) 떨어진다. 옆이나 위로 퍼지는 그림자, 여러 겹의 바깥 그림자, 색이 있는 빛(glow) 그림자를 만들지 않는다.
+- 안쪽 선은 1px이라 글자를 가리지 않지만, 면의 안쪽 여백은 가로 12px 아래로 내리지 않는다(클레이 때와 같은 여백을 지킨다).
+- `:root` 밖에서 그림자 값을 직접 쓰는 곳은 표시 띠 두 가지다. 실제 전송 행의 왼쪽 띠(`inset 4px 0 0 var(--accent)`)와 결과 카드의 위쪽 띠(`.card.band`의 `inset 0 6px 0 var(--band), var(--glass)`)다. 면이 아니라 표시 띠라서 예외이고, **표시 띠는 테두리가 아니라 안쪽 그림자로 그린다.**
 
 ### 눌림의 예
 
 ```css
-.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--clay); padding: 16px; }
+.card { background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-radius: var(--radius); box-shadow: var(--glass); padding: 16px; }
 
-.btn { background: var(--brand); color: var(--on-brand); border: 0; border-radius: var(--radius-sm); box-shadow: var(--clay-color-sm); }
-.btn:active { box-shadow: var(--clay-color-in); }
-.btn.secondary { background: var(--card); color: var(--brand); box-shadow: var(--clay-sm); }
-.btn.secondary:active { box-shadow: var(--clay-in); }
+.btn { background: var(--brand); color: var(--on-brand); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-color-sm); }
+.btn:active { box-shadow: var(--glass-color-in); }
+.btn.secondary { background: var(--card); color: var(--brand); box-shadow: var(--glass-sm); }   /* 카드 안이라 흐림 없음 */
+.btn.secondary:active { box-shadow: var(--glass-in); }
 .btn.ghost { background: transparent; box-shadow: none; }           /* 평평. 되돌아가기 */
 
-.chip { background: var(--card); border: 0; border-radius: var(--radius-sm); box-shadow: var(--clay-sm); }
-.chip[aria-pressed='true'] { background: var(--brand-2); box-shadow: var(--clay-in); font-weight: 700; }
+.chip { background: var(--card); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-sm); }
+.chip[aria-pressed='true'] { background: var(--brand-2); box-shadow: var(--glass-in); font-weight: 700; }
 .chip[aria-pressed='true']::before { content: '✓'; color: var(--brand); }
 
-input[type='text'], textarea, select.input { background: var(--card); border: 0; border-radius: var(--radius-sm); box-shadow: var(--clay-in); }
+input[type='text'], textarea, select.input { background: var(--bg-2); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-in); }
+
+.w-header { background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 1px 0 var(--glass-edge); }
 ```
+
+- 입력란은 `--card`가 아니라 `--bg-2` 틴트 위에 둔다. 흰 반투명 채움은 떠 있는 면의 색이라, 입력란이 같은 색이면 들어간 면으로 읽히지 않는다.
+- 선택된 칩·토글의 `--brand-2`는 불투명하다. 선택 표시가 바닥 색에 따라 흔들리지 않게 한다.
 
 눌림은 `:active`에서 즉시 바뀌고 되돌아온다. `transition`을 달지 않는다. `:hover`에는 아무것도 하지 않는다. 근로자는 손가락으로 누르므로 호버가 없고, 센터 표의 행 강조만 예외다.
 
 ### 말풍선
 
-S-01 대화형 언어 선택(backlog 20·21)에만 쓴다. 안내원(사람 동그라미)이 묻고 근로자가 대답하는 두 가지다.
+S-01 대화형 언어 선택(backlog 20·22)에만 쓴다. 안내원(사람 동그라미)이 묻고 근로자가 대답하는 두 가지다.
 
 | 말풍선 | 면 | 바탕·글자 | 자리 |
 |---|---|---|---|
-| 안내원 `.w-chat .ask .bubble` | 떠 있음 `--clay` | `--card` 위 `--ink`, 아래 영어 한 줄 `--ink-2` | 시작 쪽. 옆에 안내원 동그라미 40px(`.avatar`: `--brand-2` 바탕에 `--brand` 사람 모양, `--clay-sm`), 꼬리는 끝-시작 모서리(`border-end-start-radius: 6px`) |
-| 대답 `.w-chat .reply` | 떠 있음(작게) `--clay-sm`, 누르면 `--clay-in` | `--brand-2` 위 `--brand-ink`, 아래 영어 이름 `--ink-2` | 끝 쪽 정렬, 최대 너비 85%, 꼬리는 끝-끝 모서리(`border-end-end-radius: 6px`) |
+| 안내원 `.w-chat .ask .bubble` | 떠 있음 `--glass` + 흐림 | `--card` 위 `--ink`, 아래 영어 한 줄 `--ink-2` | 시작 쪽. 옆에 안내원 동그라미 40px(`.avatar`: `--brand-2` 바탕에 `--brand` 사람 모양, `--glass-sm`), 꼬리는 끝-시작 모서리(`border-end-start-radius: 6px`) |
+| 대답 `.w-chat .reply` | 떠 있음(작게) `--glass-sm`, 누르면 `--glass-in`. 흐림 없음 | `--brand-2` 위 `--brand-ink`, 아래 영어 이름 `--ink-2` | 끝 쪽 정렬, 최대 너비 85%, 꼬리는 끝-끝 모서리(`border-end-end-radius: 6px`) |
 
 - 좌우는 논리 속성(`start`·`end`)으로만 정한다. 아랍어 폰이면 화면 뿌리에 `dir="rtl"`이 붙어 안내원은 오른쪽, 대답은 왼쪽으로 뒤집힌다.
 - "다른 언어"는 기존 칩 묶음(`.chip-group` + `.chips`)을 **알약**(`border-radius: 999px`, 높이 44px)으로 바꿔 쓴다. 칩 안은 국기 + 모국어 이름이고, 국기는 `aria-hidden`이다. 면·눌림은 칩 그대로다. 묶음은 화면 바닥(119 띠 위)에 붙는다(`margin-top: auto`). 말풍선을 알약으로, 알약을 말풍선으로 바꿔 쓰지 않는다.

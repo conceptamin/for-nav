@@ -67,6 +67,7 @@
 - 프론트 화면은 응급/비응급 둘뿐이라 `today`/`outpatient`와 SHAP 표시는 frontend 항목이다
 
 ## 메모
+- (병합 뒤) 모델링 코드 부르기를 (b) `PYTHONPATH`에서 (a) 경로 의존성으로 바꿨다 — backlog 12
 - 모델링 코드를 부르는 방법은 시작 전에 사용자와 정한다. 후보는 (a) `[tool.uv.sources]`로 `../modeling` 경로 의존성(모델링의 `package = false`를 바꿔야 함), (b) `PYTHONPATH`에 `modeling/src` 추가. 피처 코드를 서버에 복사하는 방법은 쓰지 않는다
 - `acuity` 값(`emergency`/`today`/`outpatient`)은 modeling 08 메모에 있듯 백엔드에 아직 정의되지 않았다. 이 항목에서 `vocab.py`에 `Acuity`로 정의하고 모델링 `schema.py`와 같은지 확인한다
 - 모델이 `today`/`outpatient`를 내도 프론트 화면은 응급/비응급 둘뿐이다. 3단계 표시는 frontend 항목이다

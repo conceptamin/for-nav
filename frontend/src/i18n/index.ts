@@ -48,7 +48,7 @@ const MESSAGES: Record<Lang, Record<MessageKey, string>> = {
 };
 
 // 언어 선택 화면의 순서. 요청받은 국기 목록(backlog 16)의 순서를 따른다.
-// flag는 S-01 "다른 언어" 알약의 국기(backlog 21). 국기는 나라 표시라 언어와 1:1이 아니다. 그 목록 이미지의 국기를 그대로 쓴다(번체도 🇨🇳)
+// flag는 S-01 "다른 언어" 알약의 국기(backlog 22). 국기는 나라 표시라 언어와 1:1이 아니다. 그 목록 이미지의 국기를 그대로 쓴다(번체도 🇨🇳)
 export const LANGUAGE_OPTIONS: { lang: Lang; native: string; english: string; flag: string }[] = [
   { lang: 'ko', native: '한국어', english: 'Korean', flag: '🇰🇷' },
   { lang: 'ne', native: 'नेपाली', english: 'Nepali', flag: '🇳🇵' },
