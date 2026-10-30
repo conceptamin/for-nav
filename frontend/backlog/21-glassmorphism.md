@@ -1,6 +1,6 @@
 # 21. 글래스모피즘 적용
 
-상태: 대기
+상태: 완료
 의존: 06(클레이모피즘. 같은 클래스 표를 그대로 옮긴다), 18(틸 브랜드), 19(SEED 역할 색. 대비 기준값을 쓴다)
 
 ## 목표
@@ -29,18 +29,53 @@
 - `frontend/src/styles.css`, `frontend/design.md`(적용 전 단락 삭제)
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] `grep -n "clay" src/styles.css`가 비어 있다
-- [ ] `awk '/^:root/,/^}/{next} /box-shadow:/ && !/var\(--glass/ && !/box-shadow: none/' src/styles.css`의 출력이 실제 전송 행 띠 한 줄과 고정 띠의 1px 선뿐이다
-- [ ] `backdrop-filter`가 붙은 클래스가 `design.md` "흐림은 맨 위 유리에만" 표의 왼쪽 칸과 같다. 유리 안의 조각(버튼·칩·입력란)에는 없다
-- [ ] 빛 번짐이 가장 진한 화면 왼쪽 위에서 유리 면 합성색이 `#e6edf2`보다 밝고, 바닥 위 `--ink-2`가 4.5:1 이상이다(합성색을 브라우저에서 찍어 잰 숫자를 `## 결과`에 적는다)
-- [ ] 360px에서 `/home`·`/intake`·`/result`·`/emergency`·`/report`를 en·vi·ko로 보고, 스크롤할 때 앱 바·119 띠 아래로 내용이 흐리게 비친다
-- [ ] 1280px·900px에서 `/center` 세 화면이 같은 규칙으로 그려진다
-- [ ] 개발자 도구에서 `prefers-reduced-transparency: reduce`를 켜면 비침 없이 불투명 면으로 그려진다
-- [ ] 119 띠·응급 히어로는 바탕 스크롤과 관계없이 같은 `--danger` 색이다
+- [x] `npm run build` 통과
+- [x] `grep -n "clay" src/styles.css`가 비어 있다
+- [x] `awk '/^:root/,/^}/{next} /box-shadow:/ && !/var\(--glass/ && !/box-shadow: none/' src/styles.css`의 출력이 실제 전송 행 띠 한 줄뿐이다(고정 띠의 1px 선은 `var(--glass-edge)`라 걸리지 않는다)
+- [x] `backdrop-filter`가 붙은 클래스가 `design.md` "흐림은 맨 위 유리에만" 표의 왼쪽 칸과 같다. 유리 안의 조각(버튼·칩·입력란)에는 없다
+- [x] 빛 번짐이 가장 진한 화면 왼쪽 위에서 유리 면 합성색이 `#e6edf2`보다 밝고, 바닥 위 `--ink-2`가 4.5:1 이상이다(합성색을 브라우저에서 찍어 잰 숫자를 `## 결과`에 적는다)
+- [x] 360px에서 `/home`·`/intake`·`/result`·`/emergency`·`/report`를 en·vi·ko로 보고, 스크롤할 때 앱 바·119 띠 아래로 내용이 흐리게 비친다
+- [x] 1280px·900px에서 `/center` 세 화면이 같은 규칙으로 그려진다
+- [x] 개발자 도구에서 `prefers-reduced-transparency: reduce`를 켜면 비침 없이 불투명 면으로 그려진다
+- [x] 119 띠·응급 히어로는 바탕 스크롤과 관계없이 같은 `--danger` 색이다
 
 ## 결과
-(구현 후 작성)
+2026-10-30. `frontend/glassmorphism` 브랜치. 문서 PR conceptamin/for-nav#91(`docs/design-glassmorphism`) 위에 쌓았다.
+
+| 검사 | 결과 |
+|---|---|
+| `npm run build` | 통과(500 kB 청크 경고는 전부터 있던 것) |
+| `grep -n "clay" src/styles.css` | 빈 출력 |
+| `:root` 밖 `var(--glass*)` 아닌 `box-shadow` | `table.cases tr.fresh`의 `inset 4px 0 0 var(--accent)` 한 줄 |
+| `backdrop-filter`가 붙은 클래스 | 11개: `.w-header`·`.w-footer`·`.bar-119`·`.c-header`·`.card`·`.kpi`·`.table-wrap`·`.panel`·`.menu a`·`.w-chat .ask .bubble`·`.dept.alt`. `.menu a.primary`는 `none`으로 끈다 |
+
+대비(Playwright Chromium, 360×780, `/home` en, 화면을 찍어 픽셀을 읽어 WCAG 2 대비를 계산):
+
+| 자리 | 색 | `--brand` | `--ink-2` |
+|---|---|---|---|
+| 바닥 빛 번짐 가장 진한 곳(0,0) | `rgb(200 221 222)` | — | 4.68:1 |
+| 바닥 오른쪽 아래(359,779) | `rgb(205 221 231)` | — | 4.76:1 |
+| 메뉴 카드 유리 합성색(20,300) | `rgb(239 248 249)` | 7.00:1 | 6.13:1 |
+| 메뉴 카드 유리 합성색(20,400) | `rgb(242 249 250)` | 7.09:1 | 6.21:1 |
+| 비교: 옛 `--bg` `#e6edf2` | | 6.39:1 | 5.60:1 |
+
+유리 합성색은 두 곳 모두 옛 `--bg`보다 밝다. 바닥 위 `--ink-2`는 가장 진한 곳에서도 4.5:1을 넘는다.
+
+화면 확인(Playwright Chromium, 개발 서버, 세션 저장소에 입력을 넣어 진입):
+- 360px, en·vi·ko: `/home`, `/intake`, `/result`(vi는 스크롤 후도), `/report/new`, `/emergency`. 앱 바·아래 주 동작 자리·119 띠 아래로 스크롤된 카드가 흐리게 비친다. 응급 히어로와 119 버튼은 불투명 `--danger` 그대로다.
+- 1280px·880px: `/center`, `/center/stats`. 센터 헤더가 유리 띠로, KPI·표 상자·패널이 유리 면으로 그려진다.
+- CDP `Emulation.setEmulatedMedia`로 `prefers-reduced-transparency: reduce`를 켜면 `--card`가 `#f3f8f9`로 바뀌고 비침이 없어진다(Playwright의 `emulateMedia({ reducedTransparency })`는 이 Chromium에서 적용되지 않아 CDP로 확인했다).
+
+결정 사항:
+- **응급 전화 버튼(`.em-call`)은 `--card-solid`.** 불투명한 빨간 히어로 위에 놓여 반투명 흰색이면 분홍으로 비친다. `design.md`에 "색이 있는 면 위의 흰 면은 `--card-solid`" 규칙을 더했다.
+- **흐림은 반투명 바탕인 면에만.** 첫 진료과 상자(`.dept`, 불투명 `--brand-2`)와 첫 메뉴(`.menu a.primary`)는 흐릴 것이 보이지 않아 빼고, `design.md` 표를 그에 맞게 고쳤다.
+- **`.w-footer`를 화면 폭으로 넓혔다**(`margin: 16px -16px -16px; padding: 16px`). 바닥색일 때는 좌우 여백이 보이지 않았지만, 유리 띠는 본문 폭에서 끊기면 상자처럼 보인다. 버튼 위치는 그대로다.
+- **센터 헤더의 아래 `border-bottom: 1px solid var(--line)`을 유리 가장자리 선(`box-shadow: 0 1px 0 var(--glass-edge)`)으로 바꿨다.**
+- 입력란·토글 바탕을 `--card`에서 `--bg-2`로 바꿨다(흰 반투명은 떠 있는 면의 색이라 들어간 면으로 읽히지 않는다).
+
+남은 문제:
+- ar(RTL)·my·ru는 보지 않았다. 배치는 `.w-footer` 좌우 여백(대칭) 말고 바꾸지 않았다.
+- 실제 저가형 안드로이드에서 스크롤 성능은 재지 않았다(메모 참고).
 
 ## 메모
 - 클레이모피즘(06)을 대신한다. 06의 결과 기록은 그대로 둔다.
