@@ -6,3 +6,5 @@ __pycache__
 # 센터 사례 SQLite(DB_PATH)
 *.db
 *.db-*
+# 맥미니 배포의 프론트 빌드(deploy/deploy.sh)
+deploy/static*/
