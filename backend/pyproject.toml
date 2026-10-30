@@ -6,9 +6,8 @@ requires-python = ">=3.12"
 dependencies = [
     "anthropic>=2.3.0",
     "fastapi[standard]>=0.162.0",
-    # 응급도·진료과 모델(MODEL_DIR이 있을 때만 import). modeling/pyproject.toml과 같은 버전으로 고정한다
-    "lightgbm==4.7.0",
-    "numpy==2.5.4",
+    # 응급도·진료과 모델(MODEL_DIR이 있을 때만 import). lightgbm·numpy 버전은 modeling/pyproject.toml이 고정한다(backlog 12)
+    "for-nav-modeling",
 ]
 
 [dependency-groups]
@@ -19,6 +18,10 @@ dev = [
 
 [tool.uv]
 package = false
+
+[tool.uv.sources]
+# predict가 modeling/models를 소스 위치에서 찾으므로 editable로만 설치한다
+for-nav-modeling = { path = "../modeling", editable = true }
 
 [tool.ruff]
 line-length = 140
