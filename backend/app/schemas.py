@@ -224,6 +224,14 @@ class ReportRow(CamelModel):
     value_native: str
 
 
+TranslationStatus = Literal["ok", "rejected", "skipped"]
+
+
+class TranslationInfo(CamelModel):
+    # ok: 번역을 썼다, rejected: 역번역 비교·검사에 걸려 버렸다, skipped: 번역할 필요가 없거나 LLM이 없거나 호출이 실패했다
+    status: TranslationStatus
+
+
 class ClinicianReport(CamelModel):
     id: str
     intake_id: str
@@ -233,6 +241,7 @@ class ClinicianReport(CamelModel):
     created_at: str
     # 서버 전용 선택 필드. 템플릿 빌더는 비워 두고(동기화 테스트가 프론트 결과와 그대로 비교) 라우터가 채운다
     llm_slots: list[str] | None = absent_if_none()
+    translation: TranslationInfo | None = absent_if_none()
 
 
 class ClinicianReportRequest(CamelModel):
@@ -258,6 +267,8 @@ class CenterSummaryInput(CamelModel):
 class CenterSummary(CamelModel):
     ko: str
     native: str
+    # 서버 전용 선택 필드. 자유 입력 번역 결과(backlog 05), 라우터가 채운다
+    translation: TranslationInfo | None = absent_if_none()
 
 
 # ---------------------------------------------------------------------------

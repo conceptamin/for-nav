@@ -19,6 +19,7 @@ from app.schemas import (
     ExtractRequest,
     ExtractResponse,
     Intake,
+    TranslationInfo,
     TriageResult,
     VisitHelperRequest,
     VisitHelperResponse,
@@ -26,6 +27,7 @@ from app.schemas import (
 from app.settings import settings
 from app.templates.llm_slots import build_visit_helper
 from app.templates.reports import build_center_summary, build_clinician_report
+from app.templates.translate import SKIPPED, translate_note
 
 router = APIRouter()
 
@@ -69,14 +71,26 @@ async def visit_helper(req: VisitHelperRequest, llm: Annotated[LLMClient | None,
 
 
 @router.post("/report/clinician")
-def report_clinician(req: ClinicianReportRequest) -> ClinicianReport:
-    """S-11: 의료진용 리포트. note 번역 슬롯은 backlog 05에서 채우므로 아직 LLM 슬롯이 없다."""
-    report = build_clinician_report(req.intake, req.included, req.profile, req.meds)
+async def report_clinician(req: ClinicianReportRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> ClinicianReport:
+    """S-11: 의료진용 리포트. LLM이 있으면 자유 입력을 번역·역번역 검사해 note에 원문과 함께 넣는다."""
+    # 근로자가 note를 뺐으면 자유 입력을 LLM에도 보내지 않는다.
+    tr = (
+        await translate_note(
+            req.intake.free_text, req.intake.language, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts
+        )
+        if "note" in req.included
+        else SKIPPED
+    )
+    report = build_clinician_report(req.intake, req.included, req.profile, req.meds, note_translation=tr.ko)
     report.llm_slots = []
+    report.translation = TranslationInfo(status=tr.status)
     return report
 
 
 @router.post("/report/center")
-def report_center(i: CenterSummaryInput) -> CenterSummary:
-    """S-12 미리보기: 센터 전송 요약."""
-    return build_center_summary(i)
+async def report_center(i: CenterSummaryInput, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> CenterSummary:
+    """S-12 미리보기: 센터 전송 요약. 실제 전송(POST /api/center/cases)과 같은 번역을 거친다."""
+    tr = await translate_note(i.intake.free_text, i.intake.language, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts)
+    summary = build_center_summary(i, note_translation=tr.ko)
+    summary.translation = TranslationInfo(status=tr.status)
+    return summary

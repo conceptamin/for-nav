@@ -9,7 +9,7 @@
 2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-학습 모델(`modeling/README.md`)은 `MODEL_DIR`이 있을 때 `/api/triage`에 붙고(없으면 규칙·보조 점수), LLM은 `/api/extract`와 접수 도우미의 상황 줄 슬롯에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
+학습 모델(`modeling/README.md`)은 `MODEL_DIR`이 있을 때 `/api/triage`에 붙고(없으면 규칙·보조 점수), LLM은 `/api/extract`, 접수 도우미의 상황 줄 슬롯, 리포트 자유 입력 번역에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿·원문 표시). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
 
 ## 기술 스택
 
@@ -49,6 +49,7 @@ backend/
       common.py        pick·joinTerms 등 공통 도우미
       guard.py         LLM이 쓴 한국어 문장 검사(금지어·60자·한국어 여부)
       llm_slots.py     템플릿 슬롯 LLM 채우기(자유 입력 → 상황 줄), 실패 시 기본 템플릿
+      translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
@@ -60,6 +61,7 @@ backend/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
     slots_check.py     픽스처 자유 입력의 상황 줄 요약이 guard를 통과하는지 집계(CI에서 돌지 않음)
+    translate_check.py 픽스처 자유 입력의 번역 수락·거부 건수와 소요 시간 집계(CI에서 돌지 않음)
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
@@ -68,6 +70,7 @@ backend/
     test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
     test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
+    test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
     fakes.py           FakeLLMClient
 ```
 
@@ -111,8 +114,8 @@ backend/
 | `POST /api/triage` | `triage` | S-05 | `Intake` | `TriageResult` |
 | `POST /api/route` | `routeCoverage` | S-08 | `CoverageInput` | `CoverageResult` |
 | `POST /api/visit-helper` | `buildDeskSheet`, `buildCallScript` | S-09, S-10 | `{ intake, department, firstVisit, lang }` | `{ desk: DeskSheet, call: { lines, faq }, llmSlots }` |
-| `POST /api/report/clinician` | `buildClinicianReport` | S-11 | `{ intake, included, profile, meds }` | `ClinicianReport` + `llmSlots` |
-| `POST /api/report/center` | `buildCenterSummary` | S-12 미리보기 | `CenterSummaryInput` | `{ ko, native }` |
+| `POST /api/report/clinician` | `buildClinicianReport` | S-11 | `{ intake, included, profile, meds }` | `ClinicianReport` + `llmSlots`, `translation` |
+| `POST /api/report/center` | `buildCenterSummary` | S-12 미리보기 | `CenterSummaryInput` | `{ ko, native, translation }` |
 | `POST /api/center/cases` | `addLiveCase` (+ `rateUrgency`, `isAfterHours`, `nextOpenDay`) | S-12 전송 | 아래 참고 | `{ case: CenterCase, nextOpenDate }` |
 | `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
@@ -205,7 +208,20 @@ backend/
 
 - 요약 한 번(LLM 호출 1회)을 두 슬롯에 함께 쓴다. 고정 문장은 바뀌지 않는다. 상황 줄을 빼면 LLM 켜짐·꺼짐 응답이 바이트 단위로 같다.
 - 요약은 `templates/guard.py` 검사(병명·추측·치료 권고 금지어, 60자 이내, 한 줄, 글자의 절반 이상 한글)를 통과해야 쓴다. 걸리거나 LLM이 없거나 실패하면 상황 줄을 넣지 않는다.
-- `/api/report/clinician`의 `llmSlots`는 지금 항상 `[]`다. 비한국어 `note`를 한국어로 옮기는 것은 번역이므로 역번역 검사(backlog 05)와 함께 채운다.
+- `/api/report/clinician`의 `llmSlots`는 항상 `[]`다. `note`의 LLM 사용 여부는 아래 `translation`이 알려 준다.
+
+**자유 입력 번역 `translation`** — `/api/report/clinician`, `/api/report/center`의 서버 전용 선택 필드다(backlog 05). 자유 입력을 한국어로 번역하고, 번역을 근로자 언어로 다시 옮긴 역번역이 원문과 같은 사실을 말하는지 LLM으로 비교한다(호출 3회).
+
+| `status` | 뜻 | 의료진 `note`의 `valueKo` | 센터 요약 `ko` |
+|---|---|---|---|
+| `"ok"` | 번역을 썼다 | `프레스 기계에 손가락이 끼여서 부었습니다. (원문: Ngón tay bị kẹp vào máy dập, bị sưng.)` | 끝에 `근로자 메모(번역): "…"` 한 문장을 더한다 |
+| `"rejected"` | 번역이 guard(금지어·한국어 여부)에 걸렸거나 역번역 비교가 다르다고 했다 | 지금과 같다(`원문 (원문, 번역 미연결)`) | 지금과 같다 |
+| `"skipped"` | 한국어 사용자, 빈 자유 입력, 근로자가 `note`를 뺐음, LLM 없음, 호출 실패 | 지금과 같다 | 지금과 같다 |
+
+- 원문은 항상 남는다. 의료진 `note`는 괄호 안에, 센터 사례는 `native`(`originalNative`)의 메모 줄에 그대로 있다.
+- 근로자가 리포트에서 `note`를 뺐으면 자유 입력을 LLM에 보내지 않는다.
+- `POST /api/center/cases`는 같은 번역을 다시 거쳐 `summaryKo`를 만든다. 미리보기와 실제 접수 요약이 같다.
+- 번역은 리포트 화면이 기다리는 동안 돈다. 실측은 평균 4초 안팎이고, 최악은 `LLM_TIMEOUT_S × LLM_ATTEMPTS × 3`이다(기본 60초).
 
 **`POST /api/route`** — 업무 관련 "모름", 보험 "없음", 울산 90일 "예"
 
@@ -217,7 +233,7 @@ backend/
 
 **`POST /api/center/cases`** — 근로자 전송
 
-요약·긴급도·운영 시간 외 여부·id·접수 시각은 **서버가 계산**한다. 클라이언트가 보낸 요약은 믿지 않고 같은 입력으로 다시 만든다.
+요약·긴급도·운영 시간 외 여부·id·접수 시각은 **서버가 계산**한다. 클라이언트가 보낸 요약은 믿지 않고 같은 입력으로 다시 만든다. LLM이 있으면 요약에 자유 입력 번역이 더해진다(위 `translation`).
 
 ```jsonc
 // 요청
@@ -350,6 +366,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 uv run --env-file .env python scripts/llm_smoke.py   # 모델 이름, 소요 시간, 스키마 통과 여부만 찍는다
 uv run --env-file .env python scripts/extract_compare.py   # 픽스처 자유 입력의 LLM·키워드 추출 비교(번호와 열거값만 찍는다)
 uv run --env-file .env python scripts/slots_check.py       # 픽스처 자유 입력의 상황 줄 요약 guard 통과 건수(번호·글자 수·검사 결과만 찍는다)
+uv run --env-file .env python scripts/translate_check.py   # 픽스처 자유 입력의 번역 수락·거부 건수와 소요 시간(번호·언어·결과·초만 찍는다)
 ```
 
 ### 모델
@@ -411,7 +428,7 @@ backend:
 | `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 막연한 분기만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
 | `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
-| 리포트 `note` 번역 | 원문 + "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
+| 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리 | 서버 DB |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
