@@ -5,7 +5,7 @@
 
 from typing import Literal, NotRequired, TypedDict, get_args
 
-Lang = Literal["en", "vi", "ko"]
+Lang = Literal["en", "vi", "ko", "ne", "ru", "mn", "my", "si", "ar", "uz", "ja", "zh-CN", "zh-TW", "kk", "km", "ky", "th", "fr", "tl", "id"]
 
 BodyPart = Literal["head", "eye", "ent", "teeth", "chest", "abdomen", "back", "arm", "hand", "leg", "foot", "skin", "whole"]
 

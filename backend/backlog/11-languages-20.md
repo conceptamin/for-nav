@@ -16,12 +16,11 @@
 - 하지 않는 것
   - 자유 입력 키워드 추출 사전(부위·증상·시점)에 새 언어 넣기. 프론트도 넣지 않았다
   - mock·센터 통계의 언어 분포(vi·en 그대로)
-  - `modeling/src/fornav_modeling/schema.py`의 `Lang`(아래 메모)
 
 ## API·파일
 - 요청의 `language`·`lang`: `en vi ko ne ru mn my si ar uz ja zh-CN zh-TW kk km ky th fr tl id`. 그 밖은 422
 - **응답 변경**: `POST /api/visit-helper`의 `call.faq[].q`가 `{ ko, en, vi }`에서 `{ ko, native }`로 바뀐다. 프론트가 같은 PR에서 함께 바뀐다
-- 파일: `app/vocab.py`, `app/lang/packs.json`(새로 만듦), `app/schemas.py`(`Tri` 삭제, `Faq.q: KoNative`), `app/templates/common.py`, `app/templates/visit.py`, `app/templates/reports.py`, `app/rules/triage.py`, `app/rules/extract_llm.py`, `tests/test_api.py`, `tests/fixtures/parity.json`, `README.md`
+- 파일: `app/vocab.py`, `app/lang/packs.json`(새로 만듦), `app/schemas.py`(`Tri` 삭제, `Faq.q: KoNative`), `app/templates/common.py`, `app/templates/visit.py`, `app/templates/reports.py`, `app/rules/triage.py`, `app/rules/extract_llm.py`, `tests/test_api.py`, `tests/fixtures/parity.json`, `README.md`. 사용자 요청으로 `modeling/src/fornav_modeling/schema.py`의 `Lang`도 같은 PR에서 20개로 맞췄다
 
 ## 완료 기준
 - [x] `parity.json`(20개 언어) 재생성 후 `uv run pytest` 통과
@@ -36,5 +35,5 @@
   3. 문장 틀 자리표시 `{이름}`·`{이름:lower}`는 프론트 `fill`과 같은 규칙이다(이름은 ASCII)
 
 ## 메모
-- `modeling/tests/test_schema.py`가 백엔드 `Lang`과 `schema.py`의 `Lang`(en·vi·ko)이 다르다고 3건 실패한다. `language`는 모델 피처가 아니라 `schema.py`의 `Lang` 한 줄만 맞추면 된다. modeling 폴더라 이 항목에서는 고치지 않았다
+- `modeling/tests/test_schema.py`가 백엔드 `Lang`과 비교하므로 `schema.py`의 `Lang` 한 줄을 맞췄다. `language`는 모델 피처가 아니라 모델·아티팩트는 그대로다. `cd modeling && uv run pytest` → 180 통과
 - 새 17개 언어 문구는 기계 번역 초안이다(frontend 16 메모)

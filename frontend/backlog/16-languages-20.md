@@ -88,7 +88,7 @@
   - 우즈베크어는 라틴 문자 키워드만 있다. 키릴로 쓰는 사용자 키워드는 후속
   - 미얀마어는 표준 유니코드 입력만 잡는다(Zawgyi 인코딩은 못 잡는다)
 - 백엔드 이전은 `backend/backlog/11-languages-20.md`. 언어 묶음을 고치면 `dump-lang-packs.ts`로 `packs.json`을 다시 만들어야 서버와 맞는다
-- `modeling/src/fornav_modeling/schema.py`의 `Lang`은 en·vi·ko 그대로라 `modeling/tests/test_schema.py` 3건이 실패한다(CI 밖). `language`는 모델 피처가 아니다
+- `modeling/src/fornav_modeling/schema.py`의 `Lang`도 20개로 맞췄다(`language`는 모델 피처가 아니다)
 - 앱 바·센터 요청 화면의 `select`도 20개가 된다. 바꾸지 않았다
 - RTL에서 `›` 같은 방향 기호는 뒤집지 않았다. 아랍어 원어민 검수 때 함께 본다
 - 번들이 두 배가 됐다. 언어 파일을 고른 언어만 불러오게(dynamic import) 나누는 일은 후속
