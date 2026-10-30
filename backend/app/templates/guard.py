@@ -54,14 +54,20 @@ def _is_hangul(ch: str) -> bool:
 
 
 def check_ko_sentence(text: str) -> GuardFailure | None:
-    """내보내도 되면 None, 아니면 걸린 이유. 이유에는 문장 원문을 넣지 않는다."""
+    """슬롯 문장(한 줄, MAX_LEN 이내) 검사. 내보내도 되면 None, 아니면 걸린 이유. 이유에는 문장 원문을 넣지 않는다."""
     s = text.strip()
-    if not s:
-        return "empty"
     if "\n" in s:
         return "multiline"
     if len(s) > MAX_LEN:
         return "too_long"
+    return check_ko_text(s)
+
+
+def check_ko_text(text: str) -> GuardFailure | None:
+    """번역문 검사. 길이·줄 수는 원문을 따르므로 보지 않고 한국어 여부와 금지어만 본다."""
+    s = text.strip()
+    if not s:
+        return "empty"
     # 장비 이름 같은 외국어 낱말은 허용하되, 글자의 절반 이상이 한글이어야 한다.
     letters = [ch for ch in s if ch.isalpha()]
     if sum(map(_is_hangul, letters)) * 2 < len(letters):

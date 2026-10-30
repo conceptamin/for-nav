@@ -113,8 +113,13 @@ def _base36(n: int) -> str:
 YES_NO_KO = {"yes": "예", "no": "아니요", "unknown": "모름"}
 
 
-def build_clinician_report(intake: Intake, included: list[ReportField], profile: Profile | None, meds: str) -> ClinicianReport:
-    """근로자가 제외한 항목은 아예 계산하지 않는다(LLM에도 보내지 않는 원칙과 동일)."""
+def build_clinician_report(
+    intake: Intake, included: list[ReportField], profile: Profile | None, meds: str, note_translation: str | None = None
+) -> ClinicianReport:
+    """근로자가 제외한 항목은 아예 계산하지 않는다(LLM에도 보내지 않는 원칙과 동일).
+
+    `note_translation`은 역번역 검사를 통과한 자유 입력 번역(templates/translate.py)이다. 없으면 프론트 템플릿과 같다.
+    """
     lang = intake.language
     rows: list[ReportRow] = []
 
@@ -153,8 +158,11 @@ def build_clinician_report(intake: Intake, included: list[ReportField], profile:
         if lang != "ko":
             circ_native.append(f"{tpl(lang)['industry']}: {pick(INDUSTRIES[intake.industry], lang)}")
     add("circumstance", " / ".join(circ_ko), " / ".join(circ_ko) if lang == "ko" else " / ".join(circ_native))
-    # 자유 입력은 번역 LLM이 연결되기 전까지 원문 그대로 둔다. 한국어 입력은 번역이 필요 없다.
-    note_ko = intake.free_text if lang == "ko" else f"{intake.free_text} (원문, 번역 미연결)"
+    # 번역이 없으면 원문 그대로 둔다. 한국어 입력은 번역이 필요 없다. 번역이 있어도 원문을 함께 남긴다.
+    if note_translation:
+        note_ko = f"{note_translation} (원문: {intake.free_text})"
+    else:
+        note_ko = intake.free_text if lang == "ko" else f"{intake.free_text} (원문, 번역 미연결)"
     add("note", note_ko if intake.free_text else "", intake.free_text)
     if profile:
         add("baseline", baseline_text(profile, "ko"), baseline_text(profile, lang))
@@ -200,8 +208,11 @@ SUMMARY_KO = {
 INSURANCE_KO = {"yes": "있음", "no": "없음", "unknown": "모름"}
 
 
-def build_center_summary(i: CenterSummaryInput) -> CenterSummary:
-    """사실 요약만 한다. 판단·추측 문장을 넣지 않는다."""
+def build_center_summary(i: CenterSummaryInput, note_translation: str | None = None) -> CenterSummary:
+    """사실 요약만 한다. 판단·추측 문장을 넣지 않는다.
+
+    `note_translation`이 있으면 한국어 요약 끝에 번역 메모 한 문장을 더한다. 원문은 native의 메모 줄에 그대로 남는다.
+    """
     intake = i.intake
     lang = intake.language
     parts = [BODY_PARTS[p] for p in intake.body_parts]
@@ -232,6 +243,8 @@ def build_center_summary(i: CenterSummaryInput) -> CenterSummary:
     ko.append(f"요청 유형: {REQUEST_TYPE_KO[i.request_type]}.")
     if i.contact_method:
         ko.append(f"연락 희망: {CONTACT_METHOD_KO[i.contact_method]}.")
+    if note_translation:
+        ko.append(f'근로자 메모(번역): "{note_translation}"')
 
     t = SUMMARY_KO if lang == "ko" else tpl(lang)
     if parts or syms:

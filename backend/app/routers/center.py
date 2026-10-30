@@ -2,26 +2,37 @@
 
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import clock
 from app.data.mock import StatRecord
+from app.llm import LLMClient
+from app.routers.worker import llm_client
 from app.rules.coverage import is_after_hours, next_open_day
 from app.rules.urgency import rate_urgency
 from app.schemas import CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse, StatCell, StatusPatch
+from app.settings import settings
 from app.store import store
 from app.templates.reports import build_center_summary
+from app.templates.translate import translate_note
 from app.vocab import INDUSTRIES, District
 
 router = APIRouter(prefix="/center")
 
 
 @router.post("/cases", status_code=status.HTTP_201_CREATED)
-def create_case(req: NewCaseRequest) -> NewCaseResponse:
-    """S-12 전송. 요약·긴급도·운영 시간 외 여부·id·접수 시각은 서버가 같은 입력으로 다시 계산한다."""
+async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> NewCaseResponse:
+    """S-12 전송. 요약·긴급도·운영 시간 외 여부·id·접수 시각은 서버가 같은 입력으로 다시 계산한다.
+
+    요약의 자유 입력 번역은 미리보기(POST /api/report/center)와 같은 함수로 다시 만든다.
+    """
     now = clock.now()
-    summary = build_center_summary(req)
+    tr = await translate_note(
+        req.intake.free_text, req.intake.language, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts
+    )
+    summary = build_center_summary(req, note_translation=tr.ko)
     urgency, reasons = rate_urgency(req.emergency_flag, req.intake.work_related, req.insurance)
     contact = (req.contact or "").strip() or None
 
