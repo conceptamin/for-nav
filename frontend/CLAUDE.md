@@ -1,7 +1,7 @@
 # frontend 작업 규칙
 
 울산 외국인 의료 내비게이터의 근로자 화면(모바일)과 센터 화면(PC)을 만드는 폴더다(Vite + React + TypeScript). 지금은 규칙·템플릿·mock이 모두 브라우저 안에서 도는 단독 데모이고, 백엔드 API(`backend/`)로 전환할 자리를 만들어 가는 중이다.
-무엇을 보여 주는지(화면 구성, API 연결 정책, 상태의 경계, 미결 값)는 `README.md`가 정하고, 어떻게 그리는지(SEED Design 토큰·컴포넌트와 클레이모피즘)는 `design.md`가 정하고, **무엇을 언제 만드는지는 `backlog/` 문서가 정한다.** 이 문서는 그 셋을 코드로 옮길 때 지키는 규칙이다.
+무엇을 보여 주는지(화면 구성, API 연결 정책, 상태의 경계, 미결 값)는 `README.md`가 정하고, 어떻게 그리는지(SEED Design 토큰·컴포넌트와 글래스모피즘)는 `design.md`가 정하고, **무엇을 언제 만드는지는 `backlog/` 문서가 정한다.** 이 문서는 그 셋을 코드로 옮길 때 지키는 규칙이다.
 
 브랜치·커밋·PR 규칙은 루트 `CLAUDE.md`를 따른다. 브랜치 영역은 `frontend/`이다.
 
@@ -9,7 +9,7 @@
 
 1. 루트 `CLAUDE.md`
 2. `frontend/README.md` — 화면 구성(PRD 8장 경로), 폴더 구조, API 연결(두 모드, 경로별 대체 정책, 비동기 UX 규칙), 상태의 경계, 나중에 붙일 자리, 확인이 필요한 값. 여기에 없는 화면·경로를 새로 넣지 않고, 대체 정책 표에 없는 실패 동작을 만들지 않는다.
-3. `frontend/design.md` — 화면을 그릴 때. SEED Design의 색·타이포·간격·둥글기 토큰과 컴포넌트, Do's and Don'ts, 그리고 이 프로젝트의 클레이모피즘(세 가지 면, `--clay*` 그림자 토큰). 문서에 없는 모양을 그리기 전에 문서를 먼저 고친다.
+3. `frontend/design.md` — 화면을 그릴 때. SEED Design의 색·타이포·간격·둥글기 토큰과 컴포넌트, Do's and Don'ts, 그리고 이 프로젝트의 글래스모피즘(세 가지 면, `--glass*` 그림자·흐림 토큰). 문서에 없는 모양을 그리기 전에 문서를 먼저 고친다.
 4. `frontend/backlog/` — 작업 항목. 사용자가 지정한 항목 하나만 구현한다.
 5. API를 부를 때는 `backend/README.md`의 API 목록·요청·응답 예시와 "프론트 전환 방법", `backend/app/schemas.py`(응답 형태), `backend/app/vocab.py`(열거값)
 6. 규칙·템플릿·mock을 바꿀 때는 `frontend/scripts/dump-fixtures.ts`와 `backend/README.md`의 "프론트 동기화 테스트"
