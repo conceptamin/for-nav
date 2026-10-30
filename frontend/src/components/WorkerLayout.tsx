@@ -25,12 +25,14 @@ const ScreenBarContext = createContext<(bar: ScreenBar) => void>(() => {});
  */
 export function useScreenBar(bar: ScreenBar) {
   const set = useContext(ScreenBarContext);
+  const navigate = useNavigate();
   const ref = useRef(bar);
   ref.current = bar;
   const { title, hidden } = bar;
   useEffect(() => {
-    set({ title, hidden, onBack: () => ref.current.onBack?.() });
-  }, [set, title, hidden]);
+    // onBack을 등록하지 않은 화면(S-12, S-13)도 ← 가 /home으로 가야 한다
+    set({ title, hidden, onBack: () => (ref.current.onBack ? ref.current.onBack() : navigate('/home')) });
+  }, [set, title, hidden, navigate]);
   useEffect(() => () => set({}), [set]);
 }
 
