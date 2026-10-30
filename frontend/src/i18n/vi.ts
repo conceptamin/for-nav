@@ -22,7 +22,6 @@ export const vi: Record<MessageKey, string> = {
   langTitle: 'Chọn ngôn ngữ',
   langHint: 'Bạn có thể đổi lại ở phía trên màn hình.',
   langAsk: 'Bạn muốn nói chuyện bằng ngôn ngữ nào?',
-  langReply: 'Tôi nói tiếng Việt',
   langOther: 'Ngôn ngữ khác',
 
   consentTitle: 'Trước khi bắt đầu',

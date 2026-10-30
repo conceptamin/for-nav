@@ -13,17 +13,10 @@ import { suggestLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 벤토 그리드(backlog 24). 폰 언어로 묻고, 20개 언어를 크기가 다른 타일로 한 격자에 모두 보인다.
-// 추천 첫째(폰 언어)는 한 줄 전체 큰 타일, 추천 나머지는 두 개씩 중간 타일, 나머지는 세 개씩 작은 타일. 앱 바가 없다.
+// S-01: 언어 격자(backlog 24). 폰 언어로 묻고, 20개 언어를 같은 크기 칸(국기 + 모국어 이름 + 영어 이름) 두 줄 격자로 모두 보인다.
+// 폰 언어 추천(suggestLangs)은 위 격자에 바탕색만 다르게, 나머지는 "다른 언어" 아래 격자에. 앱 바가 없다.
 // ---------------------------------------------------------------------------
 const LANG_OPTION = new Map(LANGUAGE_OPTIONS.map((o) => [o.lang, o]));
-
-/** 줄 끝이 비지 않게 마지막 타일들의 폭을 늘린다. perRow개씩 놓이는 타일 목록에서 i번째의 폭 클래스 */
-function tileSpan(i: number, count: number, perRow: 2 | 3): string {
-  const left = count % perRow;
-  if (left === 0 || i < count - left) return '';
-  return left === 1 ? 'wide' : 'half';
-}
 
 export function LanguagePage() {
   const app = useApp();
@@ -41,20 +34,21 @@ export function LanguagePage() {
     navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
   };
 
-  const [big, ...mid] = suggested;
-  const tile = (l: Lang, size: 'big' | 'mid' | 'small', span = '') => {
+  const tile = (l: Lang, suggest = false) => {
     const o = LANG_OPTION.get(l);
     return (
-      <button key={l} type="button" className={`tile ${size} ${span}`.trim()} lang={l} onClick={() => choose(l)}>
+      <button key={l} type="button" className={suggest ? 'tile suggest' : 'tile'} lang={l} onClick={() => choose(l)}>
         <span className="flag" aria-hidden="true">
           {o?.flag}
         </span>
-        <strong>{size === 'big' ? translate(l, 'langReply') : o?.native}</strong>
-        {l !== 'en' && (
-          <span className="en" lang="en">
-            {o?.english}
-          </span>
-        )}
+        <span className="name">
+          <strong>{o?.native}</strong>
+          {l !== 'en' && (
+            <span className="en" lang="en">
+              {o?.english}
+            </span>
+          )}
+        </span>
       </button>
     );
   };
@@ -69,12 +63,9 @@ export function LanguagePage() {
           </p>
         )}
       </div>
-      <div className="lang-bento">
-        {tile(big, 'big')}
-        {mid.map((l, i) => tile(l, 'mid', tileSpan(i, mid.length, 2)))}
-      </div>
+      <div className="lang-grid">{suggested.map((l) => tile(l, true))}</div>
       <h2 lang={ask}>{translate(ask, 'langOther')}</h2>
-      <div className="lang-bento">{rest.map((l, i) => tile(l, 'small', tileSpan(i, rest.length, 3)))}</div>
+      <div className="lang-grid">{rest.map((l) => tile(l))}</div>
       <p className="footer-note" lang={ask}>
         {translate(ask, 'langHint')}
       </p>

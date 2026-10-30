@@ -69,7 +69,7 @@ export function WorkerLayout() {
     document.title = bar.title ? `${bar.title} · ${appName}` : appName;
   }, [bar.title, appName]);
 
-  // 119 띠는 스플래시·로딩과 관계없이 보인다(응급 화면은 자기 전화 버튼이 있다)
+  // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
   const bar119 = pathname !== '/emergency' && (
     <div className="bar-119">
       <a href="tel:119">📞 {app.lang ? t('bar119') : '119 · Emergency · Khẩn cấp'}</a>
@@ -83,7 +83,6 @@ export function WorkerLayout() {
           <img className="mark" src="/logo.png" width="96" height="96" alt="" />
           <h1>{appName}</h1>
         </main>
-        {bar119}
       </div>
     );
   }

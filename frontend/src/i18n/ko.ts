@@ -22,7 +22,6 @@ export const ko: Record<MessageKey, string> = {
   langTitle: '언어를 선택하세요',
   langHint: '화면 위쪽에서 언제든 바꿀 수 있습니다.',
   langAsk: '어떤 언어로 이야기할까요?',
-  langReply: '한국어로 할게요',
   langOther: '다른 언어',
 
   consentTitle: '시작하기 전에',

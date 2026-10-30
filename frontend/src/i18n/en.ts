@@ -22,7 +22,6 @@ export const en = {
   langTitle: 'Choose your language',
   langHint: 'You can change it later at the top of the screen.',
   langAsk: 'Which language should we talk in?',
-  langReply: 'Let’s talk in English',
   langOther: 'Other languages',
 
   // S-02
