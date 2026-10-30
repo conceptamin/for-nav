@@ -54,7 +54,6 @@ export const ar: Record<MessageKey, string> = {
   signupNoVisa: 'لا نسأل أبدا عن تأشيرتك أو اسمك أو مكان عملك.',
   signupSave: 'احفظ وتابع',
 
-  homeHello: 'كيف يمكننا مساعدتك؟',
   menuSick: 'أنا مريض / أصبت',
   menuSickSub: 'اعرف أي عيادة تذهب إليها',
   menuGuide: 'كيف تستخدم المستشفى',
@@ -66,6 +65,7 @@ export const ar: Record<MessageKey, string> = {
   menuMy: 'معلوماتي',
   menuMySub: 'الملف الشخصي، الإعدادات، تقاريري',
   homeRecent: 'آخر تقرير',
+  homeStart: 'ابدأ',
   modeGuest: 'ضيف',
 
   intakeTitle: 'أخبرنا عن أعراضك',

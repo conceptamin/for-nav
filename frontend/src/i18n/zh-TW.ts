@@ -58,7 +58,6 @@ export const zhTW: Record<MessageKey, string> = {
   signupSave: '儲存並繼續',
 
   // S-04
-  homeHello: '需要什麼幫助？',
   menuSick: '我生病了／我受傷了',
   menuSickSub: '查詢該看哪一科',
   menuGuide: '怎麼去醫院看病',
@@ -70,6 +69,7 @@ export const zhTW: Record<MessageKey, string> = {
   menuMy: '我的資料',
   menuMySub: '個人檔案、設定、我的報告',
   homeRecent: '最新報告',
+  homeStart: '開始',
   modeGuest: '訪客',
 
   // S-05

@@ -54,7 +54,6 @@ export const km: Record<MessageKey, string> = {
   signupNoVisa: 'យើងមិនដែលសួរពីទិដ្ឋាការ ឈ្មោះ ឬកន្លែងធ្វើការរបស់អ្នកទេ។',
   signupSave: 'រក្សាទុក ហើយបន្ត',
 
-  homeHello: 'តើយើងអាចជួយអ្វីបាន?',
   menuSick: 'ខ្ញុំឈឺ / ខ្ញុំរបួស',
   menuSickSub: 'ស្វែងរកគ្លីនិកដែលគួរទៅ',
   menuGuide: 'របៀបប្រើមន្ទីរពេទ្យ',
@@ -66,6 +65,7 @@ export const km: Record<MessageKey, string> = {
   menuMy: 'ព័ត៌មានរបស់ខ្ញុំ',
   menuMySub: 'ប្រវត្តិរូប ការកំណត់ របាយការណ៍របស់ខ្ញុំ',
   homeRecent: 'របាយការណ៍ចុងក្រោយ',
+  homeStart: 'ចាប់ផ្តើម',
   modeGuest: 'ភ្ញៀវ',
 
   intakeTitle: 'ប្រាប់យើងពីរោគសញ្ញារបស់អ្នក',

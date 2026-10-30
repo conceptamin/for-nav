@@ -58,7 +58,6 @@ export const si: Record<MessageKey, string> = {
   signupSave: 'සුරකින්න සහ ඉදිරියට',
 
   // S-04
-  homeHello: 'අපට කොහොමද උදව් කරන්න පුළුවන්?',
   menuSick: 'මට අසනීපයි / මට තුවාල වුණා',
   menuSickSub: 'යන්න ඕනේ සායනය සොයන්න',
   menuGuide: 'රෝහලක් භාවිතා කරන හැටි',
@@ -70,6 +69,7 @@ export const si: Record<MessageKey, string> = {
   menuMy: 'මගේ තොරතුරු',
   menuMySub: 'පැතිකඩ, සැකසුම්, මගේ වාර්තා',
   homeRecent: 'අලුත්ම වාර්තාව',
+  homeStart: 'ආරම්භ කරන්න',
   modeGuest: 'අමුත්තා',
 
   // S-05

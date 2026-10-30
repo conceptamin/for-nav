@@ -58,7 +58,6 @@ export const fr: Record<MessageKey, string> = {
   signupSave: 'Enregistrer et continuer',
 
   // S-04
-  homeHello: 'Comment pouvons-nous vous aider ?',
   menuSick: 'Je suis malade / blessé',
   menuSickSub: 'Trouver quelle clinique consulter',
   menuGuide: 'Comment aller à l’hôpital',
@@ -70,6 +69,7 @@ export const fr: Record<MessageKey, string> = {
   menuMy: 'Mes infos',
   menuMySub: 'Profil, réglages, mes rapports',
   homeRecent: 'Dernier rapport',
+  homeStart: 'Commencer',
   modeGuest: 'Invité',
 
   // S-05

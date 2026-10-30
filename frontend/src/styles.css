@@ -31,7 +31,7 @@
   --bg-2: rgb(18 35 46 / 5%); /* 들어간 홈의 바탕(입력란, 원문 상자, 막대 트랙), 낮음 칩. 어느 유리 위에서도 한 단계 어둡다 */
   --bg-3: rgb(18 35 46 / 4%); /* 표 머리, 행 강조 */
   --live-bg: #fff8e1; /* 실제 전송 행 */
-  --on-brand-soft: rgb(255 255 255 / 20%); /* 진한 바탕 위의 옅은 흰 칸(첫 메뉴 아이콘) */
+  --on-brand-soft: rgb(255 255 255 / 20%); /* 진한 바탕 위의 옅은 흰 칸(홈 시작 카드의 알약·장식 판) */
   --chart-1: var(--brand); /* 차트 계열색. 범례 글자와 함께 쓴다 */
   --chart-2: #e08a00;
   --chart-3: #9aa8b2;
@@ -790,32 +790,105 @@ hr.divider {
   box-shadow: var(--glass-color-sm);
 }
 
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* ---------- 홈 S-04 (design.md "홈") ---------- */
+.row.link.home-me {
+  flex-wrap: nowrap;
+  font-size: var(--t8);
+  font-weight: 700;
 }
 
-.menu a {
+/* 시작 카드: 색이 있는 면이라 흐림 없음. 카드 전체가 링크 하나이고 .go 알약은 모양만이다 */
+.home-hero {
+  position: relative;
+  overflow: hidden;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 168px;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--glass-color);
+  text-decoration: none;
+}
+
+.home-hero:active {
+  box-shadow: var(--glass-color-in);
+}
+
+/* 끝-아래 모서리의 장식 판 두 장. 글자보다 아래에 깔린다 */
+.home-hero::before,
+.home-hero::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: -48px;
+  width: 168px;
+  height: 120px;
+  border-radius: var(--radius);
+  background: var(--on-brand-soft);
+  transform: rotate(-24deg);
+  pointer-events: none;
+}
+
+.home-hero::before {
+  bottom: 12px;
+}
+
+.home-hero::after {
+  bottom: -44px;
+}
+
+.home-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero strong {
+  font-size: var(--t9);
+}
+
+.home-hero .sub {
+  font-size: var(--t4);
+}
+
+.home-hero .go {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--on-brand-soft);
+  font-weight: 700;
+}
+
+/* 기능 목록: 떠 있는 판 하나, 안의 줄은 평평. 줄 사이 구분선 없음 */
+.home-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
   background: var(--card);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   box-shadow: var(--glass);
-  text-decoration: none;
+  overflow: hidden;
+}
+
+.home-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 10px 16px;
   color: var(--ink);
-  min-height: 72px;
+  text-decoration: none;
 }
 
-.menu a:active {
-  box-shadow: var(--glass-in);
+.home-list a:active {
+  background: var(--bg-2);
 }
 
-.menu a .ico {
+.home-list .ico {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-sm);
@@ -827,30 +900,57 @@ hr.divider {
   flex: none;
 }
 
-.menu a.primary {
-  background: var(--brand);
-  -webkit-backdrop-filter: none; /* 불투명한 색 면은 흐릴 것이 보이지 않는다 */
-  backdrop-filter: none;
-  color: var(--on-brand);
-  box-shadow: var(--glass-color);
+.home-list .txt {
+  flex: 1;
+  min-width: 0;
 }
 
-.menu a.primary:active {
-  box-shadow: var(--glass-color-in);
-}
-
-.menu a.primary .ico {
-  background: var(--on-brand-soft);
-  box-shadow: var(--glass-color-in);
-}
-
-.menu a strong {
+.home-list small {
   display: block;
-  font-size: var(--t5);
+  font-size: var(--t3);
+  color: var(--ink-2);
 }
 
-.menu a small {
-  opacity: 0.8;
+.home-list strong {
+  display: block;
+  font-size: var(--t6);
+}
+
+.home-list .chev,
+.home-me .chev {
+  flex: none;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+:root[dir='rtl'] .home-list .chev,
+:root[dir='rtl'] .home-me .chev {
+  transform: scaleX(-1);
+}
+
+.home-h2 {
+  margin: 8px 0 0;
+}
+
+a.card.home-recent {
+  display: block;
+  margin-bottom: 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+a.card.home-recent:active {
+  box-shadow: var(--glass-in);
+}
+
+.home-recent strong {
+  display: block;
+  font-size: var(--t6);
+}
+
+.home-recent p {
+  margin: 4px 0 0;
+  font-size: var(--t4);
 }
 
 .dept {

@@ -58,7 +58,6 @@ export const ru: Record<MessageKey, string> = {
   signupSave: 'Сохранить и продолжить',
 
   // S-04
-  homeHello: 'Чем мы можем помочь?',
   menuSick: 'Я заболел(а) / получил(а) травму',
   menuSickSub: 'Узнать, в какую клинику идти',
   menuGuide: 'Как пользоваться больницей',
@@ -70,6 +69,7 @@ export const ru: Record<MessageKey, string> = {
   menuMy: 'Мои данные',
   menuMySub: 'Профиль, настройки, мои отчеты',
   homeRecent: 'Последний отчет',
+  homeStart: 'Начать',
   modeGuest: 'Гость',
 
   // S-05
