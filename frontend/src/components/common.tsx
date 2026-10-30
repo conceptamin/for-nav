@@ -37,7 +37,7 @@ export function Chip({ pressed, onClick, children }: { pressed: boolean; onClick
   );
 }
 
-/** 단계 숫자 원. 장식이라 aria-hidden이고, 단계 수는 글로 알려 주지 않는다(design.md "접근성") */
+/** 단계 숫자 원. 장식이라 aria-hidden이고, 단계 수는 글로 알려 주지 않는다 */
 export function Steps({ count, current }: { count: number; current: number }) {
   return (
     <ol className="steps" aria-hidden>

@@ -140,8 +140,8 @@ export function CenterRequestPage() {
     }
   };
 
-  // 입력 화면 골격(design.md "화면 골격"): 고르는 것은 카드 밖, 보내기 버튼 하나가 바닥에 붙는다.
-  // 전송이 실패해도 바닥 버튼은 그대로 있고, 누르면 같은 입력으로 다시 보낸다(바닥에 버튼을 둘 두지 않는다).
+  // 입력 화면 골격(backlog 08·17): 고르는 것은 카드 밖, 보내기 버튼 하나가 바닥에 붙는다.
+  // 전송이 실패하면 동의 줄 아래에 실패 문구 + 다시 시도(README "비동기 UX 규칙")를 두고, 바닥 버튼도 그대로 남는다.
   return (
     <div className="w-screen">
       <h1>{t('cenTitle')}</h1>
@@ -181,8 +181,11 @@ export function CenterRequestPage() {
           <span>{t('cenConsent')}</span>
         </label>
         {sendFailed && (
-          <div className="notice danger" role="alert">
-            {t('sendFailed')}
+          <div className="notice danger with-retry" role="alert">
+            <span>{t('sendFailed')}</span>
+            <button type="button" className="btn secondary" disabled={sending || !type || !agreed} onClick={() => void send()}>
+              {t('retry')}
+            </button>
           </div>
         )}
       </div>
@@ -199,7 +202,7 @@ export function CenterRequestPage() {
 
 // ---------------------------------------------------------------------------
 // S-13 내 정보: 프로필 → 설정(언어) → 내 메모 → 센터로 보낸 요청 → 전체 지우기.
-// 배치는 design.md "홈과 내 화면". 전부 브라우저 안 상태(AppState)이고 서버 계정은 없다.
+// 배치는 backlog/12-home-my.md. 전부 브라우저 안 상태(AppState)이고 서버 계정은 없다.
 // ---------------------------------------------------------------------------
 const DRINK_KEY = { none: 'drinkNone', sometimes: 'drinkSometimes', often: 'drinkOften' } as const;
 const SMOKE_KEY = { no: 'smokeNo', yes: 'smokeYes', quit: 'smokeQuit' } as const;

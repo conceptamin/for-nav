@@ -1,6 +1,6 @@
 // 근로자 영역 레이아웃: 앱 바(← + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드.
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
-// title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다(design.md "화면 골격(Figma 기준)" 앱 바).
+// title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';

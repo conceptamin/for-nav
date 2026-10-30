@@ -1,5 +1,5 @@
 // S-01 언어 선택, S-02 약관 동의, S-03 로그인(데모) → 프로필, S-04 홈
-// 배치는 design.md "화면 골격(Figma 기준)"의 "온보딩 세 화면"을 따른다.
+// 온보딩 세 화면. 배치는 Figma 화면 골격(backlog/08-figma-layout.md)을 따른다.
 
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
@@ -268,7 +268,7 @@ export function SignupPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-04 홈. 배치는 design.md "홈과 내 화면": 인사 → 나 한 줄 → 주 동작 → 최근 메모(있을 때) → 메뉴.
+// S-04 홈. 배치는 인사 → 나 한 줄 → 주 동작 → 최근 메모(있을 때) → 메뉴(backlog/12-home-my.md).
 // 나 한 줄에는 출생 연도만 쓴다(어깨 너머로 보이는 화면). 최근 메모 줄에 판정은 보이지 않는다.
 // ---------------------------------------------------------------------------
 export function HomePage() {

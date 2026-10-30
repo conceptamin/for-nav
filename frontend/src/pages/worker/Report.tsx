@@ -1,6 +1,6 @@
 // S-11 의료진용 리포트: 항목 선택(기본값 모두 포함) → 동의 → 리포트(/report/:id)
 // 한국어·모국어 두 벌을 미리 만들어 두어 토글 전환이 즉시 된다.
-// 리포트는 버튼을 누를 때 api/worker.ts가 만든다. 기다리는 동안 버튼만 막는다(design.md "로딩과 실패를 그리는 법").
+// 리포트는 버튼을 누를 때 api/worker.ts가 만든다. 기다리는 동안 버튼만 막는다 (README.md "비동기 UX 규칙").
 
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
@@ -50,7 +50,7 @@ export function ReportBuilderPage() {
     }
   };
 
-  // 입력 화면 골격(design.md "화면 골격"): h1 → 항목 고르기 → 동의 → 바닥에 붙은 만들기 버튼 하나
+  // 입력 화면 골격(backlog 08·17): h1 → 항목 고르기 → 동의 → 바닥에 붙은 만들기 버튼 하나
   return (
     <div className="w-screen">
       <h1>{t('repTitle')}</h1>
