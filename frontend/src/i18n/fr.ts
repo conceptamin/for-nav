@@ -23,8 +23,6 @@ export const fr: Record<MessageKey, string> = {
   langTitle: 'Choisissez votre langue',
   langHint: 'Vous pourrez la changer plus tard en haut de l’écran.',
   langAsk: 'Dans quelle langue voulez-vous parler ?',
-  langReply: 'Parlons en français',
-  langOther: 'Autres langues',
 
   // S-02
   consentTitle: 'Avant de commencer',
@@ -249,6 +247,20 @@ export const fr: Record<MessageKey, string> = {
   cenSend: 'Envoyer',
   sendFailed: 'Envoi au centre impossible. Vos réponses sont gardées. Réessayez, s’il vous plaît.',
   retry: 'Réessayer',
+
+  // S-12 상담 채팅
+  chatTitle: 'Discuter avec le centre',
+  chatIntro: 'Un conseiller répondra ici après avoir examiné votre demande. Les messages sont transmis tels quels, sans traduction.',
+  chatEmpty: 'Aucun message pour l’instant. Vous pouvez écrire en premier.',
+  chatPlaceholder: 'Écrire un message',
+  chatSend: 'Envoyer',
+  chatMe: 'Moi',
+  chatCenter: 'Centre',
+  chatConnecting: 'Connexion…',
+  chatReconnecting: 'Connexion perdue. Reconnexion…',
+  chatStopped: 'Cette discussion est terminée. Veuillez contacter le centre autrement.',
+  chatRejected: 'Impossible d’envoyer ce message. Vérifiez-le et réessayez.',
+
   cenSentTitle: 'Envoyé au centre',
   cenSentBody: 'Un conseiller va lire votre demande et vous contacter.',
   cenAfterHours: 'Le centre est fermé maintenant. Nous vous contacterons le prochain jour ouvré :',

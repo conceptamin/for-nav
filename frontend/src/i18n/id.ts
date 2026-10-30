@@ -23,8 +23,6 @@ export const id: Record<MessageKey, string> = {
   langTitle: 'Pilih bahasa Anda',
   langHint: 'Anda bisa menggantinya nanti di bagian atas layar.',
   langAsk: 'Kita bicara dalam bahasa apa?',
-  langReply: 'Pakai Bahasa Indonesia',
-  langOther: 'Bahasa lain',
 
   // S-02
   consentTitle: 'Sebelum mulai',
@@ -249,6 +247,20 @@ export const id: Record<MessageKey, string> = {
   cenSend: 'Kirim',
   sendFailed: 'Gagal mengirim ke pusat bantuan. Jawaban Anda tetap tersimpan. Silakan coba lagi.',
   retry: 'Coba lagi',
+
+  // S-12 상담 채팅
+  chatTitle: 'Obrolan dengan pusat',
+  chatIntro: 'Konselor akan membalas di sini setelah memeriksa permintaan Anda. Pesan dikirim apa adanya, tanpa terjemahan.',
+  chatEmpty: 'Belum ada pesan. Anda bisa menulis lebih dulu.',
+  chatPlaceholder: 'Tulis pesan',
+  chatSend: 'Kirim',
+  chatMe: 'Saya',
+  chatCenter: 'Pusat',
+  chatConnecting: 'Menghubungkan…',
+  chatReconnecting: 'Koneksi terputus. Menghubungkan ulang…',
+  chatStopped: 'Obrolan ini telah berakhir. Silakan hubungi pusat dengan cara lain.',
+  chatRejected: 'Pesan tidak dapat dikirim. Periksa lalu coba lagi.',
+
   cenSentTitle: 'Terkirim ke pusat bantuan',
   cenSentBody: 'Konselor akan memeriksa permintaan Anda dan menghubungi Anda.',
   cenAfterHours: 'Pusat bantuan sedang tutup. Kami akan menghubungi Anda pada hari kerja berikutnya:',

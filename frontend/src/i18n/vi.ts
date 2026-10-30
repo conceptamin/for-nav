@@ -22,8 +22,6 @@ export const vi: Record<MessageKey, string> = {
   langTitle: 'Chọn ngôn ngữ',
   langHint: 'Bạn có thể đổi lại ở phía trên màn hình.',
   langAsk: 'Bạn muốn nói chuyện bằng ngôn ngữ nào?',
-  langReply: 'Tôi nói tiếng Việt',
-  langOther: 'Ngôn ngữ khác',
 
   consentTitle: 'Trước khi bắt đầu',
   consentIntro: 'Vui lòng đọc và đồng ý. Thông tin của bạn chỉ dùng để hướng dẫn bạn.',
@@ -237,6 +235,20 @@ export const vi: Record<MessageKey, string> = {
   cenSend: 'Gửi',
   sendFailed: 'Không gửi được đến trung tâm. Câu trả lời của bạn vẫn được giữ. Vui lòng thử lại.',
   retry: 'Thử lại',
+
+  // S-12 상담 채팅
+  chatTitle: 'Trò chuyện với trung tâm',
+  chatIntro: 'Tư vấn viên sẽ trả lời tại đây sau khi xem yêu cầu của bạn. Tin nhắn được gửi nguyên văn, không dịch.',
+  chatEmpty: 'Chưa có tin nhắn. Bạn có thể nhắn trước.',
+  chatPlaceholder: 'Nhập tin nhắn',
+  chatSend: 'Gửi',
+  chatMe: 'Tôi',
+  chatCenter: 'Trung tâm',
+  chatConnecting: 'Đang kết nối…',
+  chatReconnecting: 'Mất kết nối. Đang kết nối lại…',
+  chatStopped: 'Cuộc trò chuyện đã kết thúc. Vui lòng liên hệ trung tâm bằng cách khác.',
+  chatRejected: 'Không gửi được tin nhắn. Vui lòng kiểm tra và thử lại.',
+
   cenSentTitle: 'Đã gửi đến trung tâm',
   cenSentBody: 'Tư vấn viên sẽ xem yêu cầu và liên lạc với bạn.',
   cenAfterHours: 'Trung tâm đang đóng cửa. Chúng tôi sẽ liên lạc vào ngày làm việc tiếp theo:',

@@ -43,7 +43,26 @@ export interface NewCaseResponse {
   case: CenterCase;
   /** 다음 운영일(YYYY-MM-DD, 센터 시각) */
   nextOpenDate: string;
+  /** 이 사례 상담 채팅에 근로자로 붙는 열쇠(API 모드만, backend 14). 센터 목록·상세에는 나오지 않는다 */
+  chatToken?: string;
 }
+
+/** 상담 채팅에서 보낸 쪽. 연결할 때 서버가 확인한 역할이다 */
+export type ChatRole = 'worker' | 'center';
+
+/** 상담 채팅 메시지 하나. id·from·at은 서버가 정한다(backend 14) */
+export interface ChatMessage {
+  /** 사례 안에서 m-1, m-2… */
+  id: string;
+  caseId: string;
+  from: ChatRole;
+  text: string;
+  /** ISO(UTC) */
+  at: string;
+}
+
+/** 서버가 받는 글 길이(앞뒤 공백을 지운 뒤). 넘으면 서버가 error 프레임을 보낸다 */
+export const CHAT_MAX_LEN = 1000;
 
 /** 통계 칸. 이보다 적은 칸은 숫자를 내보내지 않는다(개인 단위 기록 보호) */
 export const MIN_CELL = 5;

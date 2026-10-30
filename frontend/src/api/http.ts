@@ -10,6 +10,16 @@ export function isApiMode(): boolean {
 }
 
 /**
+ * WebSocket 주소. `VITE_API_BASE`가 상대(`/api`)든 절대(`https://…/api`)든 지금 페이지 기준으로 풀고
+ * `http:`→`ws:`, `https:`→`wss:`로 바꾼다. 단독 모드에서는 부르지 않는다.
+ */
+export function wsUrl(path: string): string {
+  const url = new URL(`${API_BASE}${path}`, window.location.href);
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+  return url.toString();
+}
+
+/**
  * 오류 코드. 서버가 준 것(`backend/README.md` "오류 형식")은 그대로 쓰고,
  * 서버 응답이 없는 경우는 클라이언트에서 아래 값을 붙인다.
  */

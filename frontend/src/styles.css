@@ -273,9 +273,9 @@ p {
   margin: 0;
 }
 
-/* S-01 언어 선택 벤토 그리드(backlog 24). 질문 → 추천 격자(큰 타일 + 중간 타일) → 다른 언어 h2 → 작은 타일 격자.
-   6칸 격자라 큰 타일은 6칸, 중간은 3칸, 작은 것은 2칸. 줄 끝이 남으면 .wide(6칸)·.half(3칸)로 채운다.
-   타일은 바닥 위에 바로 놓이지만 칩처럼 흐림을 달지 않는다(20개를 한 화면에서 흐리면 저가형 폰이 끊긴다) */
+/* S-01 언어 격자(backlog 24). 질문 → 20개 언어 격자 하나. 모든 칸이 같은 크기·같은 모양이고 폰 언어 하나만 맨 앞에 온다.
+   칸 = 국기 + (모국어 이름 위, 영어 이름 아래).
+   칸은 바닥 위에 바로 놓이지만 칩처럼 흐림을 달지 않는다(20개를 한 화면에서 흐리면 저가형 폰이 끊긴다) */
 .w-lang {
   gap: 16px;
   padding-top: 8px;
@@ -290,106 +290,59 @@ p {
   margin: 4px 0 0;
 }
 
-.w-lang h2 {
-  font-size: var(--t5);
-  color: var(--ink-2);
-  margin: 8px 0 -8px;
-}
-
-.lang-bento {
+.lang-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(80px, auto); /* 영어 이름이 두 줄인 중국어 칸도 같은 높이에 들도록 */
   gap: 8px;
 }
 
-.lang-bento .tile {
-  grid-column: span 2;
+.lang-grid .tile {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: 2px;
-  min-height: 84px;
-  padding: 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--card);
   color: var(--ink);
   box-shadow: var(--glass-sm);
   font: inherit;
   text-align: start;
-  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
-.lang-bento .tile:active {
+.lang-grid .tile:active {
   box-shadow: var(--glass-in);
 }
 
-.lang-bento .tile .flag {
-  font-size: var(--t8);
-  line-height: 1;
-  margin-bottom: auto;
+/* 국기 그림(public/flags, 4:3). 흰 바탕 국기(일본·한국)가 칸 바탕에 묻히지 않게 안쪽 1px 선을 겹친다 */
+.lang-grid .tile .flag {
+  flex: none;
+  display: block;
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+  object-fit: cover;
 }
 
-.lang-bento .tile strong {
+.lang-grid .tile .name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lang-grid .tile strong {
   font-size: var(--t5);
   line-height: 1.25;
 }
 
-.lang-bento .tile .en {
+.lang-grid .tile .en {
   font-size: var(--t2);
   color: var(--ink-2);
-}
-
-.lang-bento .tile.mid {
-  grid-column: span 3;
-  min-height: 96px;
-  background: var(--brand-2);
-  color: var(--brand-ink);
-  box-shadow: var(--glass);
-}
-
-.lang-bento .tile.mid strong {
-  font-size: var(--t7);
-}
-
-.lang-bento .tile.mid:active {
-  box-shadow: var(--glass-in);
-}
-
-.lang-bento .tile.big {
-  grid-column: span 6;
-  min-height: 120px;
-  padding: 16px 20px;
-  background: var(--brand);
-  color: var(--on-brand);
-  box-shadow: var(--glass-color);
-}
-
-.lang-bento .tile.big:active {
-  box-shadow: var(--glass-color-in);
-}
-
-.lang-bento .tile.big .flag {
-  font-size: var(--t12);
-}
-
-.lang-bento .tile.big strong {
-  font-size: var(--t9);
-}
-
-.lang-bento .tile.big .en {
-  font-size: var(--t4);
-  color: var(--on-brand);
-}
-
-.lang-bento .tile.wide {
-  grid-column: span 6;
-}
-
-.lang-bento .tile.half {
-  grid-column: span 3;
 }
 
 /* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */
@@ -417,11 +370,8 @@ p {
   width: 100%;
   max-width: 480px;
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: 0 -1px 0 var(--glass-edge);
   z-index: 20;
+  pointer-events: none; /* 띠 바탕이 없으므로 버튼 둘레의 빈자리는 아래 내용이 눌리게 한다 */
 }
 
 .bar-119 a {
@@ -437,6 +387,7 @@ p {
   font-size: var(--t6);
   text-decoration: none;
   box-shadow: var(--glass-color-sm);
+  pointer-events: auto;
 }
 
 .bar-119 a:active {
@@ -792,6 +743,86 @@ hr.divider {
 
 .panel .notice.with-retry {
   margin: 12px 0 0;
+}
+
+/* 상담 채팅(backlog 25, design.md "상담 채팅"). 근로자 S-12 카드와 센터 C-02 패널 안에 같은 모양으로 들어간다 */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 메시지 목록은 들어간 홈이다. 높이를 묶고 안에서만 스크롤한다 */
+.chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+/* 말풍선은 평평하다. 상대는 시작 쪽 흰 면, 내 것은 끝 쪽 --brand-2. 좌우는 글 방향을 따른다(RTL이면 반대) */
+.chat-msg {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+}
+
+.chat-msg.mine {
+  align-self: flex-end;
+  background: var(--brand-2);
+  color: var(--brand-ink);
+}
+
+.chat-msg p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-meta {
+  font-size: var(--t2);
+  color: var(--ink-2);
+}
+
+.chat-msg.mine .chat-meta {
+  color: var(--brand-ink);
+}
+
+.chat-state {
+  margin: 0;
+  font-size: var(--t4);
+  color: var(--ink-2);
+}
+
+.chat .notice {
+  margin-bottom: 0;
+}
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.chat-input textarea {
+  flex: 1;
+  min-height: 48px;
+  resize: none;
+}
+
+.chat-input .btn {
+  flex: none;
 }
 
 /* 단계 숫자 원. 현재는 브랜드색으로 떠 있고, 지난·남은 단계는 들어간 홈 + 흐린 숫자 */
