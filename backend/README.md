@@ -58,6 +58,9 @@ backend/
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*
+  deploy/
+    deploy.sh          맥미니 배포 — 프론트 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
+    ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, MODEL_DIR=../modeling/models, .env 있으면 읽기)
   scripts/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
@@ -407,6 +410,33 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 - 프론트를 API 모드(`VITE_API_BASE=/api`)로 빌드해야 같은 출처의 `/api`를 부른다. 단독 모드로 빌드하면 서버가 떠 있어도 브라우저 안 mock만 쓴다.
 - 시연 전에 휴대폰에서 응급 판정 실패 시 브라우저 규칙 대체가 동작하는지(서버를 잠깐 끄고 증상 입력) 확인한다.
 - 필요하면 `DB_PATH`, `MODEL_DIR`, `LLM_API_KEY`를 같은 명령에 더한다.
+
+### 맥미니 배포
+
+`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
+
+`deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에 빌드 → `uv sync --frozen --no-dev` → `static`으로 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 실패하면 떠 있는 서버와 `static`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+
+처음 한 번 준비할 것:
+
+1. 맥미니에 도구를 둔다: Homebrew `uv`, nvm Node 22 이상(`nvm install 22`), `npm i -g pm2`(nvm Node 22에 설치), 재부팅 뒤 자동 시작이 필요하면 `pm2 startup`.
+2. 맥미니에 저장소를 클론한다. 이 폴더에서는 파일을 손으로 고치지 않는다(`git pull --ff-only`가 실패한다).
+   ```sh
+   mkdir -p ~/srv && git clone https://github.com/conceptamin/for-nav.git ~/srv/for-nav
+   ```
+3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. `STATIC_DIR`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
+4. 맥미니에서 한 번 직접 돌려 본다: `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
+5. GitHub 저장소 Settings → Secrets and variables → Actions에 secrets 3개를 넣는다.
+
+| secret | 값 |
+|---|---|
+| `MAC_MINI_IP` | 맥미니의 외부 IP 또는 도메인(SSH 포트 2222로 열려 있는 주소) |
+| `MAC_MINI_USERNAME` | 맥미니 로그인 사용자 |
+| `MAC_MINI_SSH_KEY` | 맥미니 `~/.ssh/authorized_keys`에 공개키가 등록된 개인키 전체 |
+
+- 포트를 바꾸려면 `PORT=8080 bash backend/deploy/deploy.sh`처럼 넘긴다. 워크플로는 8000을 쓴다.
+- 서버 로그는 `pm2 logs for-nav`, 상태는 `pm2 status`로 본다. 배포가 실패하면 Actions 로그 끝에 pm2 로그 40줄이 찍힌다.
+- 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
 
