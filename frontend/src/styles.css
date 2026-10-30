@@ -206,6 +206,26 @@ p {
   margin-bottom: 16px;
 }
 
+/* 아랍어(RTL) 화면 안의 한국어 줄(접수 창구·전화 스크립트)은 왼쪽에서 오른쪽으로 쓴다. 마침표·물음표가 앞으로 넘어가지 않게 */
+:root[dir='rtl'] [lang='ko'] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* S-01 언어 버튼 2열 격자. 버튼 안은 모국어 이름 위, 영어 이름 아래 두 줄 */
+.w-langs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.w-langs .btn {
+  flex-direction: column;
+  gap: 2px;
+  min-height: 60px;
+  padding: 8px;
+}
+
 /* 분석 중 화면. 누를 것이 없고 멈춘 그림 + 글 두 줄만 세로 가운데에 */
 .w-wait {
   flex: 1;
@@ -398,7 +418,7 @@ p {
   font-size: 0.98rem;
   color: var(--ink);
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -944,7 +964,7 @@ hr.divider {
 .photo .rm {
   position: absolute;
   top: 4px;
-  right: 4px;
+  inset-inline-end: 4px;
   width: 44px;
   height: 44px;
   border: 0;

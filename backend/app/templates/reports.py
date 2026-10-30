@@ -16,25 +16,25 @@ from app.schemas import (
     ReportRow,
     RequestType,
 )
-from app.templates.common import join_terms, pick, tri
-from app.vocab import BODY_PARTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, SYMPTOMS, WORK_TYPES, Lang
+from app.templates.common import fill, join_terms, pick, tpl
+from app.vocab import BODY_PARTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, PACKS, SYMPTOMS, WORK_TYPES, Lang
 
 # ---------------------------------------------------------------------------
 # FR-60 의료진용 리포트
 # ---------------------------------------------------------------------------
-FIELD_LABEL: dict[ReportField, dict[str, str]] = {
-    "symptoms": tri("증상", "Symptoms", "Triệu chứng"),
-    "bodyParts": tri("부위", "Body part", "Vị trí"),
-    "onset": tri("시작 시점", "Started", "Bắt đầu"),
-    "circumstance": tri("경위", "How it happened", "Hoàn cảnh"),
-    "note": tri("환자 메모(원문)", "My note (original)", "Ghi chú (nguyên văn)"),
-    "baseline": tri("기저 정보", "Basic health info", "Thông tin sức khỏe cơ bản"),
-    "meds": tri("복용 중인 약", "Medicines I take", "Thuốc đang dùng"),
+FIELD_LABEL_KO: dict[ReportField, str] = {
+    "symptoms": "증상",
+    "bodyParts": "부위",
+    "onset": "시작 시점",
+    "circumstance": "경위",
+    "note": "환자 메모(원문)",
+    "baseline": "기저 정보",
+    "meds": "복용 중인 약",
 }
 
 
 def field_label(field: ReportField, lang: Lang) -> str:
-    return pick(FIELD_LABEL[field], lang)
+    return FIELD_LABEL_KO[field] if lang == "ko" else tpl(lang)["fields"][field]
 
 
 def _parse_birth(birth_date: str) -> date | None:
@@ -65,29 +65,37 @@ def js_num(x: float) -> str:
     return str(int(x)) if float(x).is_integer() else repr(x)
 
 
-DRINK = {
-    "none": tri("안 함", "none", "không"),
-    "sometimes": tri("가끔", "sometimes", "thỉnh thoảng"),
-    "often": tri("자주", "often", "thường xuyên"),
-}
-SMOKE = {"no": tri("안 함", "no", "không"), "yes": tri("함", "yes", "có"), "quit": tri("끊음", "quit", "đã bỏ")}
-SEX = {"male": tri("남", "Male", "Nam"), "female": tri("여", "Female", "Nữ")}
+DRINK_KO = {"none": "안 함", "sometimes": "가끔", "often": "자주"}
+SMOKE_KO = {"no": "안 함", "yes": "함", "quit": "끊음"}
+SEX_KO = {"male": "남", "female": "여"}
 
 
 def baseline_text(p: Profile, key: Lang) -> str:
     parts: list[str] = []
     a = age(p.birth_date)
-    sex = SEX[p.sex]
+    if key == "ko":
+        if a is not None:
+            parts.append(f"{a}세 {SEX_KO[p.sex]}")
+        if p.height:
+            parts.append(f"키 {js_num(p.height)}cm")
+        if p.weight:
+            parts.append(f"체중 {js_num(p.weight)}kg")
+        if p.drinking:
+            parts.append(f"음주: {DRINK_KO[p.drinking]}")
+        if p.smoking:
+            parts.append(f"흡연: {SMOKE_KO[p.smoking]}")
+        return " · ".join(parts)
+    t = tpl(key)
     if a is not None:
-        parts.append(f"{a}세 {sex['ko']}" if key == "ko" else f"{a} tuổi, {sex['vi']}" if key == "vi" else f"{a} y/o, {sex['en']}")
+        parts.append(fill(t["age"], {"age": str(a), "sex": PACKS[key]["terms"]["sexes"][p.sex]}))
     if p.height:
-        parts.append(f"{'키' if key == 'ko' else 'Chiều cao' if key == 'vi' else 'Height'} {js_num(p.height)}cm")
+        parts.append(f"{t['height']} {js_num(p.height)}cm")
     if p.weight:
-        parts.append(f"{'체중' if key == 'ko' else 'Cân nặng' if key == 'vi' else 'Weight'} {js_num(p.weight)}kg")
+        parts.append(f"{t['weight']} {js_num(p.weight)}kg")
     if p.drinking:
-        parts.append(f"{'음주' if key == 'ko' else 'Rượu bia' if key == 'vi' else 'Alcohol'}: {DRINK[p.drinking][key]}")
+        parts.append(f"{t['alcohol']}: {t['drinkingValue'][p.drinking]}")
     if p.smoking:
-        parts.append(f"{'흡연' if key == 'ko' else 'Hút thuốc' if key == 'vi' else 'Smoking'}: {SMOKE[p.smoking][key]}")
+        parts.append(f"{t['smoking']}: {t['smokingValue'][p.smoking]}")
     return " · ".join(parts)
 
 
@@ -101,9 +109,8 @@ def _base36(n: int) -> str:
             return out
 
 
+# 한국어 사용자에게 보일 때의 "모국어" 문구. 다른 언어는 vocab.PACKS 언어 묶음의 templates에 있다.
 YES_NO_KO = {"yes": "예", "no": "아니요", "unknown": "모름"}
-YES_NO_EN = {"yes": "yes", "no": "no", "unknown": "not sure"}
-YES_NO_VI = {"yes": "có", "no": "không", "unknown": "không rõ"}
 
 
 def build_clinician_report(intake: Intake, included: list[ReportField], profile: Profile | None, meds: str) -> ClinicianReport:
@@ -117,9 +124,9 @@ def build_clinician_report(intake: Intake, included: list[ReportField], profile:
         rows.append(
             ReportRow(
                 field=field,
-                label_ko=FIELD_LABEL[field]["ko"],
+                label_ko=FIELD_LABEL_KO[field],
                 value_ko=value_ko,
-                label_native=pick(FIELD_LABEL[field], lang),
+                label_native=field_label(field, lang),
                 value_native=value_native,
             )
         )
@@ -135,17 +142,16 @@ def build_clinician_report(intake: Intake, included: list[ReportField], profile:
     circ_native: list[str] = []
     if intake.work_related:
         circ_ko.append(f"업무 중 발생: {YES_NO_KO[intake.work_related]}")
-        circ_native.append(
-            f"Xảy ra khi làm việc: {YES_NO_VI[intake.work_related]}"
-            if lang == "vi"
-            else f"Happened at work: {YES_NO_EN[intake.work_related]}"
-        )
+        if lang != "ko":
+            circ_native.append(f"{tpl(lang)['happenedAtWork']}: {tpl(lang)['yesNo'][intake.work_related]}")
     if intake.work_type:
         circ_ko.append(f"작업 유형: {WORK_TYPES[intake.work_type]['ko']}")
-        circ_native.append(f"{'Loại công việc' if lang == 'vi' else 'Type of work'}: {pick(WORK_TYPES[intake.work_type], lang)}")
+        if lang != "ko":
+            circ_native.append(f"{tpl(lang)['workType']}: {pick(WORK_TYPES[intake.work_type], lang)}")
     if intake.industry:
         circ_ko.append(f"업종: {INDUSTRIES[intake.industry]['ko']}")
-        circ_native.append(f"{'Ngành' if lang == 'vi' else 'Industry'}: {pick(INDUSTRIES[intake.industry], lang)}")
+        if lang != "ko":
+            circ_native.append(f"{tpl(lang)['industry']}: {pick(INDUSTRIES[intake.industry], lang)}")
     add("circumstance", " / ".join(circ_ko), " / ".join(circ_ko) if lang == "ko" else " / ".join(circ_native))
     # 자유 입력은 번역 LLM이 연결되기 전까지 원문 그대로 둔다. 한국어 입력은 번역이 필요 없다.
     note_ko = intake.free_text if lang == "ko" else f"{intake.free_text} (원문, 번역 미연결)"
@@ -182,12 +188,14 @@ CONTACT_METHOD_KO: dict[ContactMethod, str] = {
     "zalo": "Zalo",
     "visit": "센터 방문",
 }
-REQUEST_TYPE_NATIVE: dict[RequestType, dict[str, str]] = {
-    "booking": tri("예약 지원", "Booking support", "Hỗ trợ đặt lịch"),
-    "interpret": tri("통번역", "Interpretation", "Phiên dịch"),
-    "policy": tri("제도 상담", "Insurance & support advice", "Tư vấn bảo hiểm, chế độ"),
-    "referral": tri("기관 연계", "Referral to an agency", "Kết nối cơ quan"),
-    "other": tri("기타", "Other", "Khác"),
+SUMMARY_KO = {
+    "problem": "불편한 점",
+    "happenedAtWork": "업무 중 발생",
+    "area": "지역",
+    "industry": "업종",
+    "myNote": "내 메모",
+    "request": "요청",
+    "yesNo": YES_NO_KO,
 }
 INSURANCE_KO = {"yes": "있음", "no": "없음", "unknown": "모름"}
 
@@ -225,24 +233,21 @@ def build_center_summary(i: CenterSummaryInput) -> CenterSummary:
     if i.contact_method:
         ko.append(f"연락 희망: {CONTACT_METHOD_KO[i.contact_method]}.")
 
-    def label(en: str, vi: str, ko_: str) -> str:
-        return {"en": en, "vi": vi, "ko": ko_}[lang]
-
+    t = SUMMARY_KO if lang == "ko" else tpl(lang)
     if parts or syms:
         onset_nv = f" ({pick(ONSETS[intake.onset], lang)})" if intake.onset else ""
-        nv.append(f"{label('Problem', 'Vấn đề', '불편한 점')}: {join_terms(syms, lang)} — {join_terms(parts, lang)}{onset_nv}.")
+        nv.append(f"{t['problem']}: {join_terms(syms, lang)} — {join_terms(parts, lang)}{onset_nv}.")
     if intake.work_related:
-        answer = {"ko": YES_NO_KO, "en": YES_NO_EN, "vi": YES_NO_VI}[lang][intake.work_related]
-        nv.append(f"{label('Happened at work', 'Xảy ra khi làm việc', '업무 중 발생')}: {answer}.")
+        nv.append(f"{t['happenedAtWork']}: {t['yesNo'][intake.work_related]}.")
     if intake.district:
-        nv.append(f"{label('Area', 'Khu vực', '지역')}: {pick(DISTRICTS[intake.district], lang)}.")
+        nv.append(f"{t['area']}: {pick(DISTRICTS[intake.district], lang)}.")
     if intake.industry:
-        nv.append(f"{label('Industry', 'Ngành', '업종')}: {pick(INDUSTRIES[intake.industry], lang)}.")
+        nv.append(f"{t['industry']}: {pick(INDUSTRIES[intake.industry], lang)}.")
     if intake.free_text:
-        nv.append(f'{label("My note", "Ghi chú", "내 메모")}: "{intake.free_text}"')
-    nv.append(f"{label('Request', 'Yêu cầu', '요청')}: {pick(REQUEST_TYPE_NATIVE[i.request_type], lang)}.")
+        nv.append(f'{t["myNote"]}: "{intake.free_text}"')
+    nv.append(f"{t['request']}: {request_type_native(i.request_type, lang)}.")
     return CenterSummary(ko=" ".join(ko), native="\n".join(nv))
 
 
 def request_type_native(t: RequestType, lang: Lang) -> str:
-    return pick(REQUEST_TYPE_NATIVE[t], lang)
+    return REQUEST_TYPE_KO[t] if lang == "ko" else tpl(lang)["requestTypes"][t]

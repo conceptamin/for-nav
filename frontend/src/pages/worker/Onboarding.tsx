@@ -12,7 +12,7 @@ import type { Profile } from '../../domain/templates';
 import { LOCALES, SEXES } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
-// S-01: 위를 비우고 가운데 로고, 언어 버튼은 바닥에 세로로. 로고 화면이라 앱 바가 없다.
+// S-01: 위를 비우고 가운데 로고, 언어 버튼은 바닥에 2열 격자로. 로고 화면이라 앱 바가 없다.
 // ---------------------------------------------------------------------------
 export function LanguagePage() {
   const app = useApp();
@@ -29,20 +29,23 @@ export function LanguagePage() {
         <p className="muted">Chọn ngôn ngữ · 언어를 선택하세요</p>
       </div>
       <div className="stack">
-        {LANGUAGE_OPTIONS.map((o) => (
-          <button
-            key={o.lang}
-            type="button"
-            className="btn secondary block big"
-            onClick={() => {
-              app.setLang(o.lang);
-              navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
-            }}
-          >
-            {o.native}
-            {o.native !== o.english && <span className="muted small">({o.english})</span>}
-          </button>
-        ))}
+        <div className="w-langs">
+          {LANGUAGE_OPTIONS.map((o) => (
+            <button
+              key={o.lang}
+              type="button"
+              className="btn secondary"
+              lang={o.lang}
+              onClick={() => {
+                app.setLang(o.lang);
+                navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
+              }}
+            >
+              {o.native}
+              {o.native !== o.english && <span className="muted small">{o.english}</span>}
+            </button>
+          ))}
+        </div>
         <p className="footer-note" style={{ textAlign: 'center' }}>
           <Link to="/center">센터 상담원 화면 →</Link>
         </p>

@@ -3,6 +3,8 @@
 // - 증상 추출: LLM 자리. 데모에서는 다국어 키워드 사전으로 추출하고, 못 찾은 항목은 버튼으로 다시 묻는다.
 // - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과.
 
+import { PACKS } from './lang';
+import type { KeywordReason, LangPack } from './lang/types';
 import type { AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown } from './vocab';
 
 export interface Intake {
@@ -53,28 +55,37 @@ export interface TriageResult {
 }
 
 // ---------------------------------------------------------------------------
-// 응급 키워드 규칙(한국어·영어·베트남어). 소문자 부분 일치.
+// 응급 키워드 규칙. 한국어는 여기에, 다른 언어는 lang/<언어>.ts의 emergency에 있고 합쳐 쓴다. 소문자 부분 일치.
 // ---------------------------------------------------------------------------
-const EMERGENCY_KEYWORDS: Record<Exclude<EmergencyReason, 'riskScore' | 'headInjury'>, string[]> = {
-  unconscious: ['의식', '기절', '쓰러', 'unconscious', 'fainted', 'passed out', 'collapsed', 'bất tỉnh', 'ngất', 'xỉu'],
-  breathing: ['숨을 못', '숨이 안', '호흡곤란', '호흡 곤란', "can't breathe", 'cannot breathe', 'not breathing', 'khó thở', 'không thở được'],
-  chest: ['가슴 통증', '가슴이 아', '가슴이 조', 'chest pain', 'chest hurts', 'tức ngực', 'đau ngực'],
-  heavyBleeding: ['피가 멈추지', '피가 안 멈', '피가 많이', '출혈이 심', 'bleeding a lot', "won't stop bleeding", 'heavy bleeding', 'chảy máu nhiều', 'máu không cầm', 'không cầm máu', 'máu chảy không ngừng'],
-  amputation: ['절단됐', '절단되', '잘렸', '잘려', 'cut off', 'amputat', 'severed', 'đứt lìa', 'đứt ngón', 'bị đứt tay'],
-  fall: ['추락', '높은 곳에서 떨어', 'fell from', 'fall from', 'fell off', 'ngã từ trên cao', 'rơi từ', 'té từ'],
-  seizure: ['경련', '발작', 'seizure', 'convulsion', 'co giật'],
-  stroke: ['마비', '말이 어눌', '한쪽이 저', 'paralys', 'one side', 'slurred', 'liệt', 'méo miệng', 'nói ngọng'],
-  severeBurn: ['큰 화상', '전신 화상', '감전', 'electric shock', 'electrocut', 'severe burn', 'bỏng nặng', 'điện giật'],
-  chemicalEye: ['눈에 화학', '눈에 약품', '눈에 약물', 'chemical in eye', 'chemical in my eye', 'hóa chất vào mắt', 'hóa chất bắn vào mắt'],
-  poisoning: ['가스를 마', '가스 마셨', '중독', 'gas leak', 'inhaled gas', 'poison', 'ngộ độc', 'hít phải khí'],
+const EMERGENCY_KEYWORDS_KO: Record<KeywordReason, string[]> = {
+  unconscious: ['의식', '기절', '쓰러'],
+  breathing: ['숨을 못', '숨이 안', '호흡곤란', '호흡 곤란'],
+  chest: ['가슴 통증', '가슴이 아', '가슴이 조'],
+  heavyBleeding: ['피가 멈추지', '피가 안 멈', '피가 많이', '출혈이 심'],
+  amputation: ['절단됐', '절단되', '잘렸', '잘려'],
+  fall: ['추락', '높은 곳에서 떨어'],
+  seizure: ['경련', '발작'],
+  stroke: ['마비', '말이 어눌', '한쪽이 저'],
+  severeBurn: ['큰 화상', '전신 화상', '감전'],
+  chemicalEye: ['눈에 화학', '눈에 약품', '눈에 약물'],
+  poisoning: ['가스를 마', '가스 마셨', '중독'],
 };
 
 // 머리 부상은 구토·어지러움이 함께 있을 때만 응급으로 본다.
-const HEAD_INJURY = ['머리를 부딪', '머리를 다쳐', '머리를 맞', 'hit my head', 'head injury', 'đập đầu', 'chấn thương đầu', 'va đầu'];
-const VOMIT = ['토했', '구토', 'vomit', 'threw up', 'nôn'];
+const HEAD_INJURY_KO = ['머리를 부딪', '머리를 다쳐', '머리를 맞'];
+const VOMIT_KO = ['토했', '구토'];
 
 // 보조 점수에 쓰는 심각도 표현
-const SEVERITY = ['심하', '심해', '너무', '매우', 'severe', 'very bad', 'terrible', 'a lot', 'unbearable', 'nặng', 'rất đau', 'dữ dội', 'không chịu được'];
+const SEVERITY_KO = ['심하', '심해', '너무', '매우'];
+
+const packs = Object.values(PACKS);
+const withPacks = (ko: string[], pick: (p: LangPack) => string[]) => [...ko, ...packs.flatMap(pick)];
+const EMERGENCY_KEYWORDS = Object.fromEntries(
+  (Object.keys(EMERGENCY_KEYWORDS_KO) as KeywordReason[]).map((r) => [r, withPacks(EMERGENCY_KEYWORDS_KO[r], (p) => p.emergency.keywords[r])]),
+) as Record<KeywordReason, string[]>;
+const HEAD_INJURY = withPacks(HEAD_INJURY_KO, (p) => p.emergency.headInjury);
+const VOMIT = withPacks(VOMIT_KO, (p) => p.emergency.vomit);
+const SEVERITY = withPacks(SEVERITY_KO, (p) => p.emergency.severity);
 
 const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
 

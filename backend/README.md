@@ -36,7 +36,8 @@ backend/
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
-    vocab.py           ← domain/vocab.ts (부위·증상·진료과·업종·구군 어휘, josa)
+    vocab.py           ← domain/vocab.ts (20개 언어 Lang, 부위·증상·진료과·업종·구군 어휘, josa, 언어 묶음 PACKS 읽기)
+    lang/packs.json    ← domain/lang/*.ts (근로자 모국어 19개의 어휘 표기·문장 틀·응급 키워드). 손으로 고치지 않는다
     rules/
       triage.py        ← domain/triage.ts (응급 키워드, 보조 점수, 진료과 규칙표, 자유 입력 추출)
       extract_llm.py   자유 입력 LLM 추출(프롬프트, 열거값 밖 필드 버리기, 실패 시 키워드 사전)
@@ -236,9 +237,13 @@ backend/
    ```
    운영 시간·mock 시각은 로컬 시각으로 계산되므로 `TZ=Asia/Seoul`을 반드시 붙인다(빠지면 스크립트가 멈춘다).
    프론트 규칙·템플릿·mock을 바꾸면 이 명령으로 `parity.json`을 다시 만들어 함께 커밋한다.
+   언어 묶음(`frontend/src/domain/lang/*.ts`)을 바꿨으면 서버가 읽는 `app/lang/packs.json`도 다시 만든다.
+   ```sh
+   npx rolldown scripts/dump-lang-packs.ts --file /tmp/packs.mjs --format esm && node /tmp/packs.mjs > ../backend/app/lang/packs.json
+   ```
 3. `tests/test_parity.py`가 같은 입력을 서버 함수에 넣어 출력이 완전히 같은지 비교한다.
 4. 입력 목록에는 최소한 다음을 넣는다.
-   - 응급 키워드 13종 각각(한국어·영어·베트남어 1개씩)
+   - 응급 키워드 13종 각각(근로자 언어 20개마다 1개씩)
    - 머리 부상 + 구토 / 머리 부상만(응급 아님)
    - 보조 점수 경계값(2점, 3점)
    - 진료과 규칙표의 모든 분기

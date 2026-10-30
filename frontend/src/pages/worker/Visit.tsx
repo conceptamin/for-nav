@@ -144,7 +144,7 @@ function CallView({ intake, dept }: { intake: Intake; dept: Department }) {
                 <div style={{ fontWeight: 800, fontSize: '1.1rem' }} lang="ko">
                   {f.q.ko}
                 </div>
-                {lang !== 'ko' && <div className="small muted">{f.q[lang]}</div>}
+                {lang !== 'ko' && <div className="small muted">{f.q.native}</div>}
                 <div className="stack" style={{ marginTop: 8, gap: 6 }}>
                   {f.answers.map((a, i) => (
                     <Chip key={a.ko} pressed={chosen === i} onClick={() => setPicked({ ...picked, [f.id]: i })}>

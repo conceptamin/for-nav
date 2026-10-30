@@ -11,6 +11,7 @@ import { DEFAULT_META } from '../domain/coverage';
 import type { ClinicianReport, Profile } from '../domain/templates';
 import type { Intake, TriageResult } from '../domain/triage';
 import type { Lang } from '../domain/vocab';
+import { RTL_LANGS } from '../domain/vocab';
 import { readJson, removeKey, writeJson } from './storage';
 
 export interface Consents {
@@ -89,6 +90,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = session.lang ?? 'ko';
+    document.documentElement.dir = session.lang && RTL_LANGS.includes(session.lang) ? 'rtl' : 'ltr';
   }, [session.lang]);
 
   const patch = useCallback((p: Partial<SessionState>) => setSession((s) => ({ ...s, ...p })), []);

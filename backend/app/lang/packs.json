@@ -1,0 +1,4930 @@
+{
+  "en": {
+    "terms": {
+      "bodyParts": {
+        "head": "Head",
+        "eye": "Eye",
+        "ent": "Ear, nose, throat",
+        "teeth": "Teeth, gums",
+        "chest": "Chest",
+        "abdomen": "Stomach",
+        "back": "Back, waist",
+        "arm": "Arm, shoulder",
+        "hand": "Hand, finger",
+        "leg": "Leg, knee",
+        "foot": "Foot, ankle",
+        "skin": "Skin",
+        "whole": "Whole body"
+      },
+      "symptoms": {
+        "pain": "Pain",
+        "swelling": "Swelling",
+        "cut": "Cut, wound",
+        "bleeding": "Bleeding",
+        "burn": "Burn",
+        "numb": "Numbness",
+        "cantmove": "Hard to move",
+        "fever": "Fever",
+        "cough": "Cough",
+        "dizzy": "Dizziness",
+        "rash": "Rash, itching",
+        "nausea": "Nausea, vomiting",
+        "breath": "Hard to breathe",
+        "chemical": "Chemical exposure",
+        "foreign": "Something in the eye"
+      },
+      "departments": {
+        "ortho": "Orthopaedics",
+        "surgery": "General surgery",
+        "internal": "Internal medicine",
+        "ophth": "Eye clinic",
+        "ent": "ENT (ear, nose, throat)",
+        "derm": "Dermatology (skin)",
+        "dental": "Dentist",
+        "neuro": "Neurology",
+        "family": "Family medicine",
+        "occ": "Occupational medicine"
+      },
+      "onsets": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "days": "2–3 days ago",
+        "week": "Over a week ago"
+      },
+      "industries": {
+        "shipbuilding": "Shipbuilding",
+        "autoparts": "Auto parts",
+        "chemical": "Chemical",
+        "construction": "Construction",
+        "other": "Other"
+      },
+      "workTypes": {
+        "welding": "Welding",
+        "lifting": "Lifting, carrying",
+        "machine": "Machine work (press etc.)",
+        "grinding": "Cutting, grinding",
+        "painting": "Painting, chemical handling",
+        "assembly": "Assembly"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "Under 30",
+        "30to44": "30–44",
+        "45to64": "45–64",
+        "65plus": "65 or older"
+      },
+      "sexes": {
+        "female": "Female",
+        "male": "Male"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "This is my first visit.",
+        "revisit": "I have been here before.",
+        "workYes": "It happened while I was working.",
+        "workNo": "It is not related to work.",
+        "korean": "My Korean is limited. Please speak slowly.",
+        "hello": "Hello. I would like to make an appointment.",
+        "arc": "I have an alien registration card (ARC)."
+      },
+      "symptom": "I have {syms:lower} in my {parts:lower} and would like to see a doctor.",
+      "department": "I would like to see {dept}.",
+      "onset": "It started {onset:lower}.",
+      "docs": {
+        "arc": "Alien registration card (ARC)",
+        "insurance": "Health insurance card (if you have one)",
+        "meds": "Medicines you are taking (if any)"
+      },
+      "faq": {
+        "first": "Is this your first visit?",
+        "when": "When would you like to come?",
+        "where": "Where does it hurt?",
+        "insurance": "Do you have health insurance?",
+        "help": "(When you did not understand)"
+      },
+      "answers": {
+        "firstYes": "Yes, it is my first time.",
+        "firstNo": "No, I have been before.",
+        "whenToday": "Today, please.",
+        "whenTomorrowAm": "Tomorrow morning, please.",
+        "whenTomorrowPm": "Tomorrow afternoon, please.",
+        "whenEarliest": "The earliest time available.",
+        "insuranceYes": "Yes, I do.",
+        "insuranceNo": "No, I do not.",
+        "insuranceUnsure": "I am not sure.",
+        "helpRepeat": "Please say that again.",
+        "helpText": "Please send it by text message."
+      },
+      "fields": {
+        "symptoms": "Symptoms",
+        "bodyParts": "Body part",
+        "onset": "Started",
+        "circumstance": "How it happened",
+        "note": "My note (original)",
+        "baseline": "Basic health info",
+        "meds": "Medicines I take"
+      },
+      "age": "{age} y/o, {sex}",
+      "height": "Height",
+      "weight": "Weight",
+      "alcohol": "Alcohol",
+      "smoking": "Smoking",
+      "drinkingValue": {
+        "none": "none",
+        "sometimes": "sometimes",
+        "often": "often"
+      },
+      "smokingValue": {
+        "no": "no",
+        "yes": "yes",
+        "quit": "quit"
+      },
+      "yesNo": {
+        "yes": "yes",
+        "no": "no",
+        "unknown": "not sure"
+      },
+      "happenedAtWork": "Happened at work",
+      "workType": "Type of work",
+      "industry": "Industry",
+      "problem": "Problem",
+      "area": "Area",
+      "myNote": "My note",
+      "request": "Request",
+      "requestTypes": {
+        "booking": "Booking support",
+        "interpret": "Interpretation",
+        "policy": "Insurance & support advice",
+        "referral": "Referral to an agency",
+        "other": "Other"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "unconscious",
+          "fainted",
+          "passed out",
+          "collapsed"
+        ],
+        "breathing": [
+          "can't breathe",
+          "cannot breathe",
+          "not breathing"
+        ],
+        "chest": [
+          "chest pain",
+          "chest hurts"
+        ],
+        "heavyBleeding": [
+          "bleeding a lot",
+          "won't stop bleeding",
+          "heavy bleeding"
+        ],
+        "amputation": [
+          "cut off",
+          "amputat",
+          "severed"
+        ],
+        "fall": [
+          "fell from",
+          "fall from",
+          "fell off"
+        ],
+        "seizure": [
+          "seizure",
+          "convulsion"
+        ],
+        "stroke": [
+          "paralys",
+          "one side",
+          "slurred"
+        ],
+        "severeBurn": [
+          "electric shock",
+          "electrocut",
+          "severe burn"
+        ],
+        "chemicalEye": [
+          "chemical in eye",
+          "chemical in my eye"
+        ],
+        "poisoning": [
+          "gas leak",
+          "inhaled gas",
+          "poison"
+        ]
+      },
+      "headInjury": [
+        "hit my head",
+        "head injury"
+      ],
+      "vomit": [
+        "vomit",
+        "threw up"
+      ],
+      "severity": [
+        "severe",
+        "very bad",
+        "terrible",
+        "a lot",
+        "unbearable"
+      ]
+    }
+  },
+  "vi": {
+    "terms": {
+      "bodyParts": {
+        "head": "Đầu",
+        "eye": "Mắt",
+        "ent": "Tai, mũi, họng",
+        "teeth": "Răng, lợi",
+        "chest": "Ngực",
+        "abdomen": "Bụng",
+        "back": "Lưng, eo",
+        "arm": "Cánh tay, vai",
+        "hand": "Bàn tay, ngón tay",
+        "leg": "Chân, đầu gối",
+        "foot": "Bàn chân, cổ chân",
+        "skin": "Da",
+        "whole": "Toàn thân"
+      },
+      "symptoms": {
+        "pain": "Đau",
+        "swelling": "Sưng",
+        "cut": "Vết cắt, vết thương",
+        "bleeding": "Chảy máu",
+        "burn": "Bỏng",
+        "numb": "Tê",
+        "cantmove": "Khó cử động",
+        "fever": "Sốt",
+        "cough": "Ho",
+        "dizzy": "Chóng mặt",
+        "rash": "Phát ban, ngứa",
+        "nausea": "Buồn nôn, nôn",
+        "breath": "Khó thở",
+        "chemical": "Tiếp xúc hóa chất",
+        "foreign": "Dị vật trong mắt"
+      },
+      "departments": {
+        "ortho": "Chỉnh hình",
+        "surgery": "Ngoại khoa",
+        "internal": "Nội khoa",
+        "ophth": "Nhãn khoa",
+        "ent": "Tai mũi họng",
+        "derm": "Da liễu",
+        "dental": "Nha khoa",
+        "neuro": "Thần kinh",
+        "family": "Y học gia đình",
+        "occ": "Y học nghề nghiệp"
+      },
+      "onsets": {
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "days": "2–3 ngày trước",
+        "week": "Hơn một tuần trước"
+      },
+      "industries": {
+        "shipbuilding": "Đóng tàu",
+        "autoparts": "Phụ tùng ô tô",
+        "chemical": "Hóa chất",
+        "construction": "Xây dựng",
+        "other": "Khác"
+      },
+      "workTypes": {
+        "welding": "Hàn",
+        "lifting": "Nâng, khuân vác",
+        "machine": "Vận hành máy (máy dập...)",
+        "grinding": "Cắt, mài",
+        "painting": "Sơn, xử lý hóa chất",
+        "assembly": "Lắp ráp"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "Dưới 30 tuổi",
+        "30to44": "30–44 tuổi",
+        "45to64": "45–64 tuổi",
+        "65plus": "Từ 65 tuổi trở lên"
+      },
+      "sexes": {
+        "female": "Nữ",
+        "male": "Nam"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Tôi đến lần đầu.",
+        "revisit": "Tôi đã từng đến đây.",
+        "workYes": "Bị trong lúc đang làm việc.",
+        "workNo": "Không liên quan đến công việc.",
+        "korean": "Tôi nói tiếng Hàn chưa giỏi. Xin hãy nói chậm.",
+        "hello": "Xin chào. Tôi muốn đặt lịch khám.",
+        "arc": "Tôi có thẻ đăng ký người nước ngoài (ARC)."
+      },
+      "symptom": "Tôi bị {syms:lower} ở {parts:lower}, muốn được khám.",
+      "department": "Tôi muốn khám {dept:lower}.",
+      "onset": "Bắt đầu từ {onset:lower}.",
+      "docs": {
+        "arc": "Thẻ đăng ký người nước ngoài (ARC)",
+        "insurance": "Thẻ bảo hiểm y tế (nếu có)",
+        "meds": "Thuốc đang dùng (nếu có)"
+      },
+      "faq": {
+        "first": "Đây là lần đầu bạn đến phải không?",
+        "when": "Bạn muốn đến khi nào?",
+        "where": "Bạn bị đau ở đâu?",
+        "insurance": "Bạn có bảo hiểm y tế không?",
+        "help": "(Khi bạn không hiểu)"
+      },
+      "answers": {
+        "firstYes": "Vâng, lần đầu.",
+        "firstNo": "Không, tôi đã từng đến.",
+        "whenToday": "Tôi muốn đến hôm nay.",
+        "whenTomorrowAm": "Tôi muốn đến sáng mai.",
+        "whenTomorrowPm": "Tôi muốn đến chiều mai.",
+        "whenEarliest": "Thời gian sớm nhất có thể.",
+        "insuranceYes": "Vâng, tôi có.",
+        "insuranceNo": "Tôi không có.",
+        "insuranceUnsure": "Tôi không rõ.",
+        "helpRepeat": "Xin nhắc lại một lần nữa.",
+        "helpText": "Xin gửi tin nhắn cho tôi."
+      },
+      "fields": {
+        "symptoms": "Triệu chứng",
+        "bodyParts": "Vị trí",
+        "onset": "Bắt đầu",
+        "circumstance": "Hoàn cảnh",
+        "note": "Ghi chú (nguyên văn)",
+        "baseline": "Thông tin sức khỏe cơ bản",
+        "meds": "Thuốc đang dùng"
+      },
+      "age": "{age} tuổi, {sex}",
+      "height": "Chiều cao",
+      "weight": "Cân nặng",
+      "alcohol": "Rượu bia",
+      "smoking": "Hút thuốc",
+      "drinkingValue": {
+        "none": "không",
+        "sometimes": "thỉnh thoảng",
+        "often": "thường xuyên"
+      },
+      "smokingValue": {
+        "no": "không",
+        "yes": "có",
+        "quit": "đã bỏ"
+      },
+      "yesNo": {
+        "yes": "có",
+        "no": "không",
+        "unknown": "không rõ"
+      },
+      "happenedAtWork": "Xảy ra khi làm việc",
+      "workType": "Loại công việc",
+      "industry": "Ngành",
+      "problem": "Vấn đề",
+      "area": "Khu vực",
+      "myNote": "Ghi chú",
+      "request": "Yêu cầu",
+      "requestTypes": {
+        "booking": "Hỗ trợ đặt lịch",
+        "interpret": "Phiên dịch",
+        "policy": "Tư vấn bảo hiểm, chế độ",
+        "referral": "Kết nối cơ quan",
+        "other": "Khác"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "bất tỉnh",
+          "ngất",
+          "xỉu"
+        ],
+        "breathing": [
+          "khó thở",
+          "không thở được"
+        ],
+        "chest": [
+          "tức ngực",
+          "đau ngực"
+        ],
+        "heavyBleeding": [
+          "chảy máu nhiều",
+          "máu không cầm",
+          "không cầm máu",
+          "máu chảy không ngừng"
+        ],
+        "amputation": [
+          "đứt lìa",
+          "đứt ngón",
+          "bị đứt tay"
+        ],
+        "fall": [
+          "ngã từ trên cao",
+          "rơi từ",
+          "té từ"
+        ],
+        "seizure": [
+          "co giật"
+        ],
+        "stroke": [
+          "liệt",
+          "méo miệng",
+          "nói ngọng"
+        ],
+        "severeBurn": [
+          "bỏng nặng",
+          "điện giật"
+        ],
+        "chemicalEye": [
+          "hóa chất vào mắt",
+          "hóa chất bắn vào mắt"
+        ],
+        "poisoning": [
+          "ngộ độc",
+          "hít phải khí"
+        ]
+      },
+      "headInjury": [
+        "đập đầu",
+        "chấn thương đầu",
+        "va đầu"
+      ],
+      "vomit": [
+        "nôn"
+      ],
+      "severity": [
+        "nặng",
+        "rất đau",
+        "dữ dội",
+        "không chịu được"
+      ]
+    }
+  },
+  "ne": {
+    "terms": {
+      "bodyParts": {
+        "head": "टाउको",
+        "eye": "आँखा",
+        "ent": "कान, नाक, घाँटी",
+        "teeth": "दाँत, गिजा",
+        "chest": "छाती",
+        "abdomen": "पेट",
+        "back": "ढाड, कम्मर",
+        "arm": "पाखुरा, काँध",
+        "hand": "हात, औंला",
+        "leg": "खुट्टा, घुँडा",
+        "foot": "पैताला, गोलीगाँठो",
+        "skin": "छाला",
+        "whole": "पूरै शरीर"
+      },
+      "symptoms": {
+        "pain": "दुखाइ",
+        "swelling": "सुन्निनु",
+        "cut": "काटिएको, घाउ",
+        "bleeding": "रगत बग्नु",
+        "burn": "पोलेको",
+        "numb": "झमझमाउनु (सुन्न हुनु)",
+        "cantmove": "चलाउन गाह्रो",
+        "fever": "ज्वरो",
+        "cough": "खोकी",
+        "dizzy": "रिँगटा",
+        "rash": "दाग, चिलाउनु",
+        "nausea": "वाकवाकी, बान्ता",
+        "breath": "सास फेर्न गाह्रो",
+        "chemical": "रसायन लागेको",
+        "foreign": "आँखामा केही पसेको"
+      },
+      "departments": {
+        "ortho": "हाड-जोर्नी विभाग (अर्थोपेडिक्स)",
+        "surgery": "सामान्य सर्जरी",
+        "internal": "आन्तरिक चिकित्सा (मेडिसिन)",
+        "ophth": "आँखा विभाग",
+        "ent": "नाक-कान-घाँटी विभाग (ENT)",
+        "derm": "छाला विभाग",
+        "dental": "दाँतको डाक्टर",
+        "neuro": "स्नायु विभाग (न्युरोलोजी)",
+        "family": "पारिवारिक चिकित्सा",
+        "occ": "पेशागत स्वास्थ्य विभाग"
+      },
+      "onsets": {
+        "today": "आज",
+        "yesterday": "हिजो",
+        "days": "2–3 दिन अघि",
+        "week": "एक हप्ताभन्दा पहिले"
+      },
+      "industries": {
+        "shipbuilding": "जहाज निर्माण",
+        "autoparts": "गाडीका पार्टपुर्जा",
+        "chemical": "रसायन",
+        "construction": "निर्माण",
+        "other": "अन्य"
+      },
+      "workTypes": {
+        "welding": "वेल्डिङ",
+        "lifting": "उचाल्ने, बोक्ने",
+        "machine": "मेसिनको काम (प्रेस आदि)",
+        "grinding": "काट्ने, घोट्ने (ग्राइन्डिङ)",
+        "painting": "रंग लगाउने, रसायन चलाउने",
+        "assembly": "जडान (एसेम्ब्ली)"
+      },
+      "districts": {
+        "jung": "जुङ-गु (Jung-gu)",
+        "nam": "नाम-गु (Nam-gu)",
+        "dong": "दोङ-गु (Dong-gu)",
+        "buk": "बुक-गु (Buk-gu)",
+        "ulju": "उल्जु-गुन (Ulju-gun)"
+      },
+      "ageGroups": {
+        "under30": "30 वर्षभन्दा कम",
+        "30to44": "30–44 वर्ष",
+        "45to64": "45–64 वर्ष",
+        "65plus": "65 वर्ष वा माथि"
+      },
+      "sexes": {
+        "female": "महिला",
+        "male": "पुरुष"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "म यहाँ पहिलो पटक आएको हुँ।",
+        "revisit": "म यहाँ पहिले पनि आएको छु।",
+        "workYes": "काम गर्दा भएको हो।",
+        "workNo": "कामसँग सम्बन्धित छैन।",
+        "korean": "मलाई कोरियाली राम्रोसँग आउँदैन। कृपया बिस्तारै बोल्नुहोस्।",
+        "hello": "नमस्ते। म जाँचको लागि समय लिन चाहन्छु।",
+        "arc": "मसँग विदेशी दर्ता कार्ड (ARC) छ।"
+      },
+      "symptom": "मेरो {parts} मा {syms} छ। म डाक्टरलाई देखाउन चाहन्छु।",
+      "department": "म {dept} मा जाँच गराउन चाहन्छु।",
+      "onset": "{onset} सुरु भयो।",
+      "docs": {
+        "arc": "विदेशी दर्ता कार्ड (ARC)",
+        "insurance": "स्वास्थ्य बीमा कार्ड (छ भने)",
+        "meds": "खाइरहेको औषधि (छ भने)"
+      },
+      "faq": {
+        "first": "यहाँ पहिलो पटक आउनुभएको हो?",
+        "when": "कहिले आउन चाहनुहुन्छ?",
+        "where": "कहाँ दुख्छ?",
+        "insurance": "तपाईंसँग स्वास्थ्य बीमा छ?",
+        "help": "(नबुझेको बेला)"
+      },
+      "answers": {
+        "firstYes": "हो, पहिलो पटक हो।",
+        "firstNo": "होइन, पहिले पनि आएको छु।",
+        "whenToday": "आजै आउन चाहन्छु।",
+        "whenTomorrowAm": "भोलि बिहान आउन चाहन्छु।",
+        "whenTomorrowPm": "भोलि दिउँसो आउन चाहन्छु।",
+        "whenEarliest": "सबैभन्दा छिटो मिल्ने समयमा।",
+        "insuranceYes": "हो, छ।",
+        "insuranceNo": "छैन।",
+        "insuranceUnsure": "मलाई थाहा छैन।",
+        "helpRepeat": "कृपया फेरि एक पटक भन्नुहोस्।",
+        "helpText": "कृपया SMS मा पठाइदिनुहोस्।"
+      },
+      "fields": {
+        "symptoms": "लक्षण",
+        "bodyParts": "शरीरको भाग",
+        "onset": "सुरु भएको",
+        "circumstance": "कसरी भयो",
+        "note": "मेरो टिपोट (मूल)",
+        "baseline": "आधारभूत स्वास्थ्य जानकारी",
+        "meds": "खाइरहेको औषधि"
+      },
+      "age": "{age} वर्ष, {sex}",
+      "height": "उचाइ",
+      "weight": "तौल",
+      "alcohol": "रक्सी",
+      "smoking": "धूम्रपान",
+      "drinkingValue": {
+        "none": "पिउँदिनँ",
+        "sometimes": "कहिलेकाहीं",
+        "often": "धेरैजसो"
+      },
+      "smokingValue": {
+        "no": "गर्दिनँ",
+        "yes": "गर्छु",
+        "quit": "छोडिसकें"
+      },
+      "yesNo": {
+        "yes": "हो",
+        "no": "होइन",
+        "unknown": "थाहा छैन"
+      },
+      "happenedAtWork": "काममा भएको",
+      "workType": "कामको प्रकार",
+      "industry": "क्षेत्र",
+      "problem": "समस्या",
+      "area": "ठाउँ",
+      "myNote": "मेरो टिपोट",
+      "request": "अनुरोध",
+      "requestTypes": {
+        "booking": "बुकिङ सहायता",
+        "interpret": "दोभाषे",
+        "policy": "बीमा र सहायता सल्लाह",
+        "referral": "निकायमा पठाउने",
+        "other": "अन्य"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "बेहोस",
+          "होस गुम",
+          "होस छैन",
+          "मूर्छा"
+        ],
+        "breathing": [
+          "सास फेर्न सकिन",
+          "सास फेर्न सकिँदैन",
+          "सास फेर्न सक्दिन",
+          "सास फेर्न गाह्रो",
+          "सास चलेको छैन"
+        ],
+        "chest": [
+          "छाती दुख",
+          "छातीमा दुख",
+          "छाती कस",
+          "छातीमा कस"
+        ],
+        "heavyBleeding": [
+          "धेरै रगत",
+          "रगत रोकिँदैन",
+          "रगत रोकिएन",
+          "रगत बगिरह"
+        ],
+        "amputation": [
+          "औंला छिनि",
+          "हात छिनि",
+          "खुट्टा छिनि",
+          "काटिएर अलग",
+          "काटिएर झर"
+        ],
+        "fall": [
+          "माथिबाट खस",
+          "माथिबाट लड",
+          "अग्लो ठाउँबाट",
+          "उचाइबाट"
+        ],
+        "seizure": [
+          "मिर्गी",
+          "छारे रोग",
+          "छारे लाग",
+          "मुखबाट फिँज"
+        ],
+        "stroke": [
+          "पक्षाघात",
+          "प्यारालाइसिस",
+          "शरीरको एक भाग",
+          "मुख बाङ्गो",
+          "बोली लरबर"
+        ],
+        "severeBurn": [
+          "करेन्ट लाग",
+          "बिजुलीको झट्का",
+          "नराम्ररी पोल",
+          "आगोले जल"
+        ],
+        "chemicalEye": [
+          "आँखामा केमिकल",
+          "आँखामा रसायन",
+          "आँखामा औषधि पर"
+        ],
+        "poisoning": [
+          "ग्यास चुहि",
+          "ग्यास सुँघ",
+          "विषाक्त",
+          "विष खा"
+        ]
+      },
+      "headInjury": [
+        "टाउकोमा चोट",
+        "टाउको ठोक्कि",
+        "टाउकोमा लाग"
+      ],
+      "vomit": [
+        "बान्ता",
+        "उल्टी"
+      ],
+      "severity": [
+        "असह्य",
+        "साह्रै दुख",
+        "एकदमै दुख",
+        "धेरै दुख"
+      ]
+    }
+  },
+  "ru": {
+    "terms": {
+      "bodyParts": {
+        "head": "Голова",
+        "eye": "Глаз",
+        "ent": "Ухо, нос, горло",
+        "teeth": "Зубы, десны",
+        "chest": "Грудь",
+        "abdomen": "Живот",
+        "back": "Спина, поясница",
+        "arm": "Рука, плечо",
+        "hand": "Кисть, палец",
+        "leg": "Нога, колено",
+        "foot": "Стопа, лодыжка",
+        "skin": "Кожа",
+        "whole": "Все тело"
+      },
+      "symptoms": {
+        "pain": "Боль",
+        "swelling": "Отек",
+        "cut": "Порез, рана",
+        "bleeding": "Кровотечение",
+        "burn": "Ожог",
+        "numb": "Онемение",
+        "cantmove": "Трудно двигаться",
+        "fever": "Температура",
+        "cough": "Кашель",
+        "dizzy": "Головокружение",
+        "rash": "Сыпь, зуд",
+        "nausea": "Тошнота, рвота",
+        "breath": "Трудно дышать",
+        "chemical": "Контакт с химикатами",
+        "foreign": "Что-то попало в глаз"
+      },
+      "departments": {
+        "ortho": "Ортопедия",
+        "surgery": "Общая хирургия",
+        "internal": "Терапия (внутренние болезни)",
+        "ophth": "Глазной врач",
+        "ent": "Отоларинголог (ухо, нос, горло)",
+        "derm": "Дерматология (кожа)",
+        "dental": "Стоматолог",
+        "neuro": "Неврология",
+        "family": "Семейная медицина",
+        "occ": "Профпатология (медицина труда)"
+      },
+      "onsets": {
+        "today": "Сегодня",
+        "yesterday": "Вчера",
+        "days": "2–3 дня назад",
+        "week": "Больше недели назад"
+      },
+      "industries": {
+        "shipbuilding": "Судостроение",
+        "autoparts": "Автозапчасти",
+        "chemical": "Химическая промышленность",
+        "construction": "Строительство",
+        "other": "Другое"
+      },
+      "workTypes": {
+        "welding": "Сварка",
+        "lifting": "Подъем, перенос грузов",
+        "machine": "Работа на станке (пресс и др.)",
+        "grinding": "Резка, шлифовка",
+        "painting": "Покраска, работа с химикатами",
+        "assembly": "Сборка"
+      },
+      "districts": {
+        "jung": "Чун-гу",
+        "nam": "Нам-гу",
+        "dong": "Тон-гу",
+        "buk": "Пук-гу",
+        "ulju": "Ульджу-гун"
+      },
+      "ageGroups": {
+        "under30": "До 30 лет",
+        "30to44": "30–44 года",
+        "45to64": "45–64 года",
+        "65plus": "65 лет и старше"
+      },
+      "sexes": {
+        "female": "Женский",
+        "male": "Мужской"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Я здесь первый раз.",
+        "revisit": "Я здесь уже был(а).",
+        "workYes": "Это случилось во время работы.",
+        "workNo": "Это не связано с работой.",
+        "korean": "Я плохо говорю по-корейски. Пожалуйста, говорите медленно.",
+        "hello": "Здравствуйте. Я хочу записаться на прием.",
+        "arc": "У меня есть карта регистрации иностранца (ARC)."
+      },
+      "symptom": "Симптомы: {syms:lower}. Где: {parts:lower}. Я хочу к врачу.",
+      "department": "Мне нужно к врачу: {dept:lower}.",
+      "onset": "Началось: {onset:lower}.",
+      "docs": {
+        "arc": "Карта регистрации иностранца (ARC)",
+        "insurance": "Карта медицинской страховки (если есть)",
+        "meds": "Лекарства, которые вы принимаете (если есть)"
+      },
+      "faq": {
+        "first": "Вы у нас первый раз?",
+        "when": "Когда вы хотите прийти?",
+        "where": "Где у вас болит?",
+        "insurance": "У вас есть медицинская страховка?",
+        "help": "(Если вы не поняли)"
+      },
+      "answers": {
+        "firstYes": "Да, первый раз.",
+        "firstNo": "Нет, я уже был(а).",
+        "whenToday": "Сегодня, пожалуйста.",
+        "whenTomorrowAm": "Завтра утром, пожалуйста.",
+        "whenTomorrowPm": "Завтра днем, пожалуйста.",
+        "whenEarliest": "В самое ближайшее время.",
+        "insuranceYes": "Да, есть.",
+        "insuranceNo": "Нет.",
+        "insuranceUnsure": "Не знаю.",
+        "helpRepeat": "Повторите, пожалуйста.",
+        "helpText": "Пришлите, пожалуйста, SMS-сообщением."
+      },
+      "fields": {
+        "symptoms": "Симптомы",
+        "bodyParts": "Часть тела",
+        "onset": "Началось",
+        "circumstance": "Как это случилось",
+        "note": "Мои слова (оригинал)",
+        "baseline": "Основные данные о здоровье",
+        "meds": "Мои лекарства"
+      },
+      "age": "Возраст: {age}, пол: {sex:lower}",
+      "height": "Рост",
+      "weight": "Вес",
+      "alcohol": "Алкоголь",
+      "smoking": "Курение",
+      "drinkingValue": {
+        "none": "не пью",
+        "sometimes": "иногда",
+        "often": "часто"
+      },
+      "smokingValue": {
+        "no": "нет",
+        "yes": "да",
+        "quit": "бросил(а)"
+      },
+      "yesNo": {
+        "yes": "да",
+        "no": "нет",
+        "unknown": "не знаю"
+      },
+      "happenedAtWork": "Случилось на работе",
+      "workType": "Вид работы",
+      "industry": "Отрасль",
+      "problem": "Проблема",
+      "area": "Район",
+      "myNote": "Мои слова",
+      "request": "Запрос",
+      "requestTypes": {
+        "booking": "Помощь с записью",
+        "interpret": "Перевод",
+        "policy": "Советы о страховке и помощи",
+        "referral": "Направление в учреждение",
+        "other": "Другое"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "потерял сознани",
+          "потеряла сознани",
+          "без сознани",
+          "в обморок",
+          "не приходит в себя"
+        ],
+        "breathing": [
+          "не могу дышать",
+          "не может дышать",
+          "не дышит",
+          "задыха"
+        ],
+        "chest": [
+          "боль в груди",
+          "боли в груди",
+          "болит грудь",
+          "грудь болит",
+          "давит в груди"
+        ],
+        "heavyBleeding": [
+          "сильное кровотечение",
+          "сильно кровоточ",
+          "кровь не останавлива",
+          "много крови",
+          "кровь хлещет"
+        ],
+        "amputation": [
+          "отрезало",
+          "оторвало",
+          "отрубило",
+          "отрезал палец",
+          "ампутац"
+        ],
+        "fall": [
+          "упал с высот",
+          "упала с высот",
+          "упал с лес",
+          "упала с лес",
+          "упал с крыш"
+        ],
+        "seizure": [
+          "припадок",
+          "эпилепт",
+          "конвульс",
+          "судороги по всему телу"
+        ],
+        "stroke": [
+          "парализ",
+          "перекосило лицо",
+          "лицо перекосило",
+          "невнятная речь",
+          "одна сторона тела"
+        ],
+        "severeBurn": [
+          "ударило током",
+          "удар током",
+          "поражение током",
+          "сильный ожог",
+          "сильно обж"
+        ],
+        "chemicalEye": [
+          "химия в глаз",
+          "химия попала в глаз",
+          "химикат в глаз",
+          "химикаты попали в глаз",
+          "кислота в глаз"
+        ],
+        "poisoning": [
+          "отравлен",
+          "отравил",
+          "утечка газа",
+          "надышался газ",
+          "вдохнул газ"
+        ]
+      },
+      "headInjury": [
+        "ударился головой",
+        "ударилась головой",
+        "травма головы",
+        "удар по голове"
+      ],
+      "vomit": [
+        "рвот",
+        "вырвало",
+        "стошнило"
+      ],
+      "severity": [
+        "очень сильн",
+        "невыносим",
+        "ужасн",
+        "очень плохо",
+        "нет сил терпеть"
+      ]
+    }
+  },
+  "mn": {
+    "terms": {
+      "bodyParts": {
+        "head": "Толгой",
+        "eye": "Нүд",
+        "ent": "Чих, хамар, хоолой",
+        "teeth": "Шүд, буйл",
+        "chest": "Цээж",
+        "abdomen": "Гэдэс",
+        "back": "Нуруу, бүсэлхий",
+        "arm": "Гар, мөр",
+        "hand": "Гарын сарвуу, хуруу",
+        "leg": "Хөл, өвдөг",
+        "foot": "Хөлийн тавхай, шагай",
+        "skin": "Арьс",
+        "whole": "Бүх бие"
+      },
+      "symptoms": {
+        "pain": "Өвдөлт",
+        "swelling": "Хаван",
+        "cut": "Зүсэгдсэн, шарх",
+        "bleeding": "Цус гарах",
+        "burn": "Түлэгдэлт",
+        "numb": "Мэдээ алдах",
+        "cantmove": "Хөдлөхөд хэцүү",
+        "fever": "Халуурах",
+        "cough": "Ханиалга",
+        "dizzy": "Толгой эргэх",
+        "rash": "Тууралт, загатнах",
+        "nausea": "Дотор муухайрах, бөөлжих",
+        "breath": "Амьсгалахад хэцүү",
+        "chemical": "Химийн бодист өртсөн",
+        "foreign": "Нүдэнд юм орсон"
+      },
+      "departments": {
+        "ortho": "Гэмтэл, ясны эмч (ортопед)",
+        "surgery": "Ерөнхий мэс засал",
+        "internal": "Дотрын эмч",
+        "ophth": "Нүдний эмч",
+        "ent": "Чих хамар хоолойн эмч",
+        "derm": "Арьсны эмч",
+        "dental": "Шүдний эмч",
+        "neuro": "Мэдрэлийн эмч",
+        "family": "Өрхийн эмч",
+        "occ": "Мэргэжлээс шалтгаалах өвчний эмч"
+      },
+      "onsets": {
+        "today": "Өнөөдөр",
+        "yesterday": "Өчигдөр",
+        "days": "2–3 хоногийн өмнө",
+        "week": "Долоо хоногоос илүү өмнө"
+      },
+      "industries": {
+        "shipbuilding": "Усан онгоц үйлдвэрлэл",
+        "autoparts": "Автомашины эд анги",
+        "chemical": "Химийн үйлдвэр",
+        "construction": "Барилга",
+        "other": "Бусад"
+      },
+      "workTypes": {
+        "welding": "Гагнуур",
+        "lifting": "Өргөх, зөөх",
+        "machine": "Машин дээр ажиллах (пресс г.м.)",
+        "grinding": "Огтлох, зүлгэх",
+        "painting": "Будах, химийн бодистой ажиллах",
+        "assembly": "Угсралт"
+      },
+      "districts": {
+        "jung": "Жун-гу",
+        "nam": "Нам-гу",
+        "dong": "Дон-гу",
+        "buk": "Бук-гу",
+        "ulju": "Ульжу-гун"
+      },
+      "ageGroups": {
+        "under30": "30-аас доош",
+        "30to44": "30–44 нас",
+        "45to64": "45–64 нас",
+        "65plus": "65 ба түүнээс дээш"
+      },
+      "sexes": {
+        "female": "Эмэгтэй",
+        "male": "Эрэгтэй"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Би анх удаа ирж байна.",
+        "revisit": "Би өмнө нь энд ирж байсан.",
+        "workYes": "Ажиллаж байхдаа болсон.",
+        "workNo": "Ажилтай холбоогүй.",
+        "korean": "Би солонгос хэл сайн мэдэхгүй. Удаан ярина уу.",
+        "hello": "Сайн байна уу. Үзлэгт цаг захиалмаар байна.",
+        "arc": "Надад гадаад иргэний үнэмлэх (ARC) байгаа."
+      },
+      "symptom": "Шинж тэмдэг: {syms:lower}. Хаана: {parts:lower}. Эмчид үзүүлмээр байна.",
+      "department": "Би дараах эмчид үзүүлмээр байна: {dept}.",
+      "onset": "Эхэлсэн хугацаа: {onset:lower}.",
+      "docs": {
+        "arc": "Гадаад иргэний үнэмлэх (ARC)",
+        "insurance": "Эрүүл мэндийн даатгалын карт (байвал)",
+        "meds": "Ууж байгаа эм (байвал)"
+      },
+      "faq": {
+        "first": "Анх удаа ирж байна уу?",
+        "when": "Хэзээ ирмээр байна вэ?",
+        "where": "Хаана өвдөж байна вэ?",
+        "insurance": "Эрүүл мэндийн даатгалтай юу?",
+        "help": "(Ойлгоогүй үед)"
+      },
+      "answers": {
+        "firstYes": "Тийм, анх удаа.",
+        "firstNo": "Үгүй, өмнө нь ирж байсан.",
+        "whenToday": "Өнөөдөр ирмээр байна.",
+        "whenTomorrowAm": "Маргааш өглөө ирмээр байна.",
+        "whenTomorrowPm": "Маргааш үдээс хойш ирмээр байна.",
+        "whenEarliest": "Хамгийн эрт боломжтой цагт.",
+        "insuranceYes": "Тийм, байгаа.",
+        "insuranceNo": "Үгүй, байхгүй.",
+        "insuranceUnsure": "Сайн мэдэхгүй байна.",
+        "helpRepeat": "Дахиад нэг хэлж өгнө үү.",
+        "helpText": "Мессежээр явуулж өгнө үү."
+      },
+      "fields": {
+        "symptoms": "Шинж тэмдэг",
+        "bodyParts": "Биеийн хэсэг",
+        "onset": "Эхэлсэн",
+        "circumstance": "Яаж болсон",
+        "note": "Миний тэмдэглэл (эх бичвэр)",
+        "baseline": "Эрүүл мэндийн үндсэн мэдээлэл",
+        "meds": "Ууж байгаа эм"
+      },
+      "age": "{age} настай, {sex:lower}",
+      "height": "Өндөр",
+      "weight": "Жин",
+      "alcohol": "Архи",
+      "smoking": "Тамхи",
+      "drinkingValue": {
+        "none": "уудаггүй",
+        "sometimes": "заримдаа",
+        "often": "байнга"
+      },
+      "smokingValue": {
+        "no": "татдаггүй",
+        "yes": "татдаг",
+        "quit": "хаясан"
+      },
+      "yesNo": {
+        "yes": "тийм",
+        "no": "үгүй",
+        "unknown": "мэдэхгүй"
+      },
+      "happenedAtWork": "Ажил дээр болсон",
+      "workType": "Ажлын төрөл",
+      "industry": "Салбар",
+      "problem": "Асуудал",
+      "area": "Байршил",
+      "myNote": "Миний тэмдэглэл",
+      "request": "Хүсэлт",
+      "requestTypes": {
+        "booking": "Цаг захиалгын тусламж",
+        "interpret": "Орчуулга",
+        "policy": "Даатгал, дэмжлэгийн зөвлөгөө",
+        "referral": "Байгууллагад холбож өгөх",
+        "other": "Бусад"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "ухаан алд",
+          "ухаангүй",
+          "муужир",
+          "ухаан орохгүй"
+        ],
+        "breathing": [
+          "амьсгалж чадахгүй",
+          "амьсгал авч чадахгүй",
+          "амьсгал боогд",
+          "амьсгалахгүй"
+        ],
+        "chest": [
+          "цээж өвд",
+          "цээжээр өвд",
+          "цээж шахаж",
+          "зүрх өвд"
+        ],
+        "heavyBleeding": [
+          "их цус",
+          "цус их гар",
+          "цус зогсохгүй",
+          "цус тогтохгүй"
+        ],
+        "amputation": [
+          "хуруу тасар",
+          "хуруугаа тасл",
+          "гар тасар",
+          "хөл тасар"
+        ],
+        "fall": [
+          "өндрөөс уна",
+          "өндөрөөс уна",
+          "дээрээс унас",
+          "шатнаас уна",
+          "тавцангаас уна"
+        ],
+        "seizure": [
+          "таталт",
+          "таталда",
+          "эпилепси"
+        ],
+        "stroke": [
+          "саажи",
+          "саажс",
+          "биеийн нэг тал",
+          "хэл ээдэр",
+          "ам хазай"
+        ],
+        "severeBurn": [
+          "цахилгаанд цохиул",
+          "гүйдэлд цохиул",
+          "хүчтэй түлэгд",
+          "хүнд түлэгд",
+          "их түлэгд"
+        ],
+        "chemicalEye": [
+          "нүдэнд хими",
+          "нүд рүү хими",
+          "химийн бодис нүд",
+          "нүдэнд уусмал"
+        ],
+        "poisoning": [
+          "хий алдагд",
+          "хийнд хорд",
+          "утаанд хорд",
+          "хордло",
+          "хордс"
+        ]
+      },
+      "headInjury": [
+        "толгой цохиул",
+        "толгойгоо цохи",
+        "толгой гэмт",
+        "толгойгоо гэмт"
+      ],
+      "vomit": [
+        "бөөлж",
+        "огиж"
+      ],
+      "severity": [
+        "хүчтэй",
+        "маш их",
+        "тэвчихийн аргагүй",
+        "тэсэхгүй",
+        "аймаар"
+      ]
+    }
+  },
+  "my": {
+    "terms": {
+      "bodyParts": {
+        "head": "ခေါင်း",
+        "eye": "မျက်စိ",
+        "ent": "နား၊ နှာခေါင်း၊ လည်ချောင်း",
+        "teeth": "သွား၊ သွားဖုံး",
+        "chest": "ရင်ဘတ်",
+        "abdomen": "ဗိုက်",
+        "back": "ကျော၊ ခါး",
+        "arm": "လက်မောင်း၊ ပခုံး",
+        "hand": "လက်၊ လက်ချောင်း",
+        "leg": "ခြေထောက်၊ ဒူး",
+        "foot": "ခြေဖဝါး၊ ခြေကျင်းဝတ်",
+        "skin": "အရေပြား",
+        "whole": "တစ်ကိုယ်လုံး"
+      },
+      "symptoms": {
+        "pain": "နာကျင်ခြင်း",
+        "swelling": "ရောင်ရမ်းခြင်း",
+        "cut": "ပြတ်ရှခြင်း၊ ဒဏ်ရာ",
+        "bleeding": "သွေးထွက်ခြင်း",
+        "burn": "မီးလောင်ခြင်း",
+        "numb": "ထုံကျင်ခြင်း",
+        "cantmove": "လှုပ်ရှားရ ခက်ခြင်း",
+        "fever": "ဖျားခြင်း",
+        "cough": "ချောင်းဆိုးခြင်း",
+        "dizzy": "မူးဝေခြင်း",
+        "rash": "အဖုအပိမ့်၊ ယားယံခြင်း",
+        "nausea": "ပျို့အန်ခြင်း",
+        "breath": "အသက်ရှူရ ခက်ခြင်း",
+        "chemical": "ဓာတုပစ္စည်း ထိတွေ့ခြင်း",
+        "foreign": "မျက်စိထဲ တစ်ခုခု ဝင်ခြင်း"
+      },
+      "departments": {
+        "ortho": "အရိုးအကြော ဌာန",
+        "surgery": "အထွေထွေ ခွဲစိတ်ဌာန",
+        "internal": "အတွင်းရောဂါ ဌာန",
+        "ophth": "မျက်စိ ဌာန",
+        "ent": "နား၊ နှာခေါင်း၊ လည်ချောင်း ဌာန (ENT)",
+        "derm": "အရေပြား ဌာန",
+        "dental": "သွားဆရာဝန်",
+        "neuro": "အာရုံကြော ဌာန",
+        "family": "မိသားစု ဆေးပညာ",
+        "occ": "လုပ်ငန်းခွင် ကျန်းမာရေး ဌာန"
+      },
+      "onsets": {
+        "today": "ဒီနေ့",
+        "yesterday": "မနေ့က",
+        "days": "2–3 ရက်က",
+        "week": "တစ်ပတ်ကျော်က"
+      },
+      "industries": {
+        "shipbuilding": "သင်္ဘောတည်ဆောက်ရေး",
+        "autoparts": "ကားအပိုပစ္စည်း",
+        "chemical": "ဓာတုပစ္စည်း",
+        "construction": "ဆောက်လုပ်ရေး",
+        "other": "အခြား"
+      },
+      "workTypes": {
+        "welding": "ဂဟေဆော်ခြင်း",
+        "lifting": "ပစ္စည်း မခြင်း၊ သယ်ခြင်း",
+        "machine": "စက်အလုပ် (ဖိစက် စသည်)",
+        "grinding": "ဖြတ်ခြင်း၊ ကြိတ်ခြင်း",
+        "painting": "ဆေးသုတ်ခြင်း၊ ဓာတုပစ္စည်း ကိုင်တွယ်ခြင်း",
+        "assembly": "တပ်ဆင်ခြင်း"
+      },
+      "districts": {
+        "jung": "ဂျုံးဂူ (Jung-gu)",
+        "nam": "နမ်းဂူ (Nam-gu)",
+        "dong": "ဒုံးဂူ (Dong-gu)",
+        "buk": "ဘုခ်ဂူ (Buk-gu)",
+        "ulju": "အူလ်ဂျူဂွန် (Ulju-gun)"
+      },
+      "ageGroups": {
+        "under30": "အသက် 30 အောက်",
+        "30to44": "အသက် 30–44",
+        "45to64": "အသက် 45–64",
+        "65plus": "အသက် 65 နှင့်အထက်"
+      },
+      "sexes": {
+        "female": "အမျိုးသမီး",
+        "male": "အမျိုးသား"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "ဒီကို ပထမဆုံး လာတာပါ။",
+        "revisit": "အရင်က ဒီကို လာဖူးပါတယ်။",
+        "workYes": "အလုပ်လုပ်နေတုန်း ဖြစ်တာပါ။",
+        "workNo": "အလုပ်နဲ့ မသက်ဆိုင်ပါ။",
+        "korean": "ကိုရီးယားစကား သိပ်မတတ်ပါ။ ဖြည်းဖြည်း ပြောပေးပါ။",
+        "hello": "မင်္ဂလာပါ။ ဆရာဝန်နဲ့ ပြဖို့ ချိန်းဆိုချင်ပါတယ်။",
+        "arc": "နိုင်ငံခြားသား မှတ်ပုံတင်ကတ် (ARC) ရှိပါတယ်။"
+      },
+      "symptom": "{parts} မှာ {syms} ဖြစ်နေလို့ ဆရာဝန်နဲ့ ပြချင်ပါတယ်။",
+      "department": "{dept} မှာ ပြချင်ပါတယ်။",
+      "onset": "{onset} စဖြစ်ပါတယ်။",
+      "docs": {
+        "arc": "နိုင်ငံခြားသား မှတ်ပုံတင်ကတ် (ARC)",
+        "insurance": "ကျန်းမာရေး အာမခံကတ် (ရှိရင်)",
+        "meds": "သောက်နေတဲ့ ဆေး (ရှိရင်)"
+      },
+      "faq": {
+        "first": "ဒီကို ပထမဆုံး လာတာလား?",
+        "when": "ဘယ်တော့ လာချင်လဲ?",
+        "where": "ဘယ်နေရာ နာလဲ?",
+        "insurance": "ကျန်းမာရေး အာမခံ ရှိလား?",
+        "help": "(နားမလည်တဲ့အခါ)"
+      },
+      "answers": {
+        "firstYes": "ဟုတ်ကဲ့၊ ပထမဆုံးပါ။",
+        "firstNo": "မဟုတ်ပါ၊ အရင်က လာဖူးပါတယ်။",
+        "whenToday": "ဒီနေ့ လာချင်ပါတယ်။",
+        "whenTomorrowAm": "မနက်ဖြန် မနက် လာချင်ပါတယ်။",
+        "whenTomorrowPm": "မနက်ဖြန် နေ့လယ် လာချင်ပါတယ်။",
+        "whenEarliest": "အစောဆုံး ရနိုင်တဲ့ အချိန်ပါ။",
+        "insuranceYes": "ဟုတ်ကဲ့၊ ရှိပါတယ်။",
+        "insuranceNo": "မရှိပါ။",
+        "insuranceUnsure": "မသေချာပါ။",
+        "helpRepeat": "နောက်တစ်ခါ ပြန်ပြောပေးပါ။",
+        "helpText": "စာတို (SMS) နဲ့ ပို့ပေးပါ။"
+      },
+      "fields": {
+        "symptoms": "ရောဂါလက္ခဏာ",
+        "bodyParts": "ခန္ဓာကိုယ် အစိတ်အပိုင်း",
+        "onset": "စဖြစ်ချိန်",
+        "circumstance": "ဘယ်လိုဖြစ်ခဲ့လဲ",
+        "note": "ကျွန်ုပ်၏ မှတ်စု (မူရင်း)",
+        "baseline": "အခြေခံ ကျန်းမာရေး အချက်အလက်",
+        "meds": "သောက်နေတဲ့ ဆေး"
+      },
+      "age": "အသက် {age} နှစ်၊ {sex}",
+      "height": "အရပ်",
+      "weight": "ကိုယ်အလေးချိန်",
+      "alcohol": "အရက်",
+      "smoking": "ဆေးလိပ်",
+      "drinkingValue": {
+        "none": "မသောက်ပါ",
+        "sometimes": "ရံဖန်ရံခါ",
+        "often": "မကြာခဏ"
+      },
+      "smokingValue": {
+        "no": "မသောက်ပါ",
+        "yes": "သောက်ပါတယ်",
+        "quit": "ဖြတ်ပြီး"
+      },
+      "yesNo": {
+        "yes": "ဟုတ်ကဲ့",
+        "no": "မဟုတ်ပါ",
+        "unknown": "မသေချာပါ"
+      },
+      "happenedAtWork": "အလုပ်မှာ ဖြစ်ခဲ့",
+      "workType": "အလုပ်အမျိုးအစား",
+      "industry": "လုပ်ငန်း",
+      "problem": "ပြဿနာ",
+      "area": "နေရာ",
+      "myNote": "ကျွန်ုပ်၏ မှတ်စု",
+      "request": "တောင်းဆိုချက်",
+      "requestTypes": {
+        "booking": "ချိန်းဆိုမှု အကူအညီ",
+        "interpret": "စကားပြန်",
+        "policy": "အာမခံနှင့် အထောက်အပံ့ အကြံဉာဏ်",
+        "referral": "အဖွဲ့အစည်းသို့ လွှဲပေးခြင်း",
+        "other": "အခြား"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "သတိလစ်",
+          "သတိမရ",
+          "မေ့မြော",
+          "ပြိုလဲ"
+        ],
+        "breathing": [
+          "အသက်ရှူမရ",
+          "အသက်ရှူကျပ်",
+          "အသက်မရှူ",
+          "အသက်ရှူခက်"
+        ],
+        "chest": [
+          "ရင်ဘတ်နာ",
+          "ရင်ဘတ်အောင့်",
+          "ရင်ဘတ်ကျပ်",
+          "ရင်အုံနာ"
+        ],
+        "heavyBleeding": [
+          "သွေးအများကြီး",
+          "သွေးတွေအများကြီး",
+          "သွေးမတိတ်",
+          "သွေးထွက်များ"
+        ],
+        "amputation": [
+          "ပြတ်ထွက်",
+          "လက်ချောင်းပြတ်သွား",
+          "လက်ချောင်းပြတ်ကျ",
+          "ပြတ်ကျသွား"
+        ],
+        "fall": [
+          "အမြင့်ကပြုတ်ကျ",
+          "အမြင့်ကနေ",
+          "အမြင့်မှ",
+          "အပေါ်ကပြုတ်ကျ"
+        ],
+        "seizure": [
+          "ဝက်ရူး",
+          "တက်ခေါက်",
+          "ကိုယ်တွေတက်",
+          "ပါးစပ်ကအမြှုပ်"
+        ],
+        "stroke": [
+          "လေဖြတ်",
+          "ကိုယ်တစ်ခြမ်း",
+          "ပါးစပ်ရွဲ့",
+          "စကားဝါး"
+        ],
+        "severeBurn": [
+          "ဓာတ်လိုက်",
+          "မီးအကြီးအကျယ်လောင်",
+          "မီးလောင်တာပြင်း",
+          "ပြင်းပြင်းထန်ထန်မီးလောင်"
+        ],
+        "chemicalEye": [
+          "မျက်လုံးထဲဓာတု",
+          "မျက်စိထဲဓာတု",
+          "မျက်လုံးထဲ ဓာတု",
+          "ဓာတုဆေးမျက်လုံး",
+          "ဓာတုဆေးမျက်စိ"
+        ],
+        "poisoning": [
+          "ဓာတ်ငွေ့ယို",
+          "ဂက်စ်ယို",
+          "ဓာတ်ငွေ့ရှူမိ",
+          "အဆိပ်သင့်"
+        ]
+      },
+      "headInjury": [
+        "ခေါင်းထိ",
+        "ခေါင်းဆောင့်",
+        "ခေါင်းဒဏ်ရာ",
+        "ခေါင်းကိုထိ"
+      ],
+      "vomit": [
+        "အော့အန်",
+        "အန်ထွက်",
+        "အန်ချ",
+        "အန်တယ်",
+        "အန်နေ"
+      ],
+      "severity": [
+        "အရမ်းနာ",
+        "သိပ်နာ",
+        "မခံနိုင်",
+        "ပြင်းထန်"
+      ]
+    }
+  },
+  "si": {
+    "terms": {
+      "bodyParts": {
+        "head": "හිස",
+        "eye": "ඇස",
+        "ent": "කන, නාසය, උගුර",
+        "teeth": "දත්, විදුරුමස්",
+        "chest": "පපුව",
+        "abdomen": "බඩ",
+        "back": "පිට, ඉණ",
+        "arm": "අත, උරහිස",
+        "hand": "අත්ල, ඇඟිලි",
+        "leg": "කකුල, දණහිස",
+        "foot": "පාදය, වළලුකර",
+        "skin": "සම",
+        "whole": "මුළු ශරීරය"
+      },
+      "symptoms": {
+        "pain": "වේදනාව",
+        "swelling": "ඉදිමීම",
+        "cut": "කැපුම, තුවාලය",
+        "bleeding": "ලේ ගැලීම",
+        "burn": "පිළිස්සීම",
+        "numb": "හිරිවැටීම",
+        "cantmove": "චලනය කිරීමට අමාරුයි",
+        "fever": "උණ",
+        "cough": "කැස්ස",
+        "dizzy": "කරකැවිල්ල",
+        "rash": "කුෂ්ඨ, කැසීම",
+        "nausea": "ඔක්කාරය, වමනය",
+        "breath": "හුස්ම ගැනීමට අමාරුයි",
+        "chemical": "රසායනවලට නිරාවරණය",
+        "foreign": "ඇසට යමක් වැටුණා"
+      },
+      "departments": {
+        "ortho": "අස්ථි සහ සන්ධි අංශය (ඕතෝපීඩික්)",
+        "surgery": "සාමාන්‍ය ශල්‍ය අංශය",
+        "internal": "අභ්‍යන්තර වෛද්‍ය අංශය",
+        "ophth": "ඇස් සායනය",
+        "ent": "කන්, නාස්, උගුර අංශය (ENT)",
+        "derm": "සමේ රෝග අංශය",
+        "dental": "දන්ත වෛද්‍ය",
+        "neuro": "ස්නායු රෝග අංශය",
+        "family": "පවුල් වෛද්‍ය",
+        "occ": "වෘත්තීය සෞඛ්‍ය අංශය"
+      },
+      "onsets": {
+        "today": "අද",
+        "yesterday": "ඊයේ",
+        "days": "දින 2–3කට කලින්",
+        "week": "සතියකට වඩා කලින්"
+      },
+      "industries": {
+        "shipbuilding": "නැව් තැනීම",
+        "autoparts": "වාහන අමතර කොටස්",
+        "chemical": "රසායන",
+        "construction": "ඉදිකිරීම්",
+        "other": "වෙනත්"
+      },
+      "workTypes": {
+        "welding": "වෙල්ඩින්",
+        "lifting": "එසවීම, ඇදගෙන යාම",
+        "machine": "මැෂින් වැඩ (ප්‍රෙස් ආදිය)",
+        "grinding": "කැපීම, ඇඹරීම (ග්‍රයින්ඩින්)",
+        "painting": "පින්තාරු කිරීම, රසායන හැසිරවීම",
+        "assembly": "එකලස් කිරීම"
+      },
+      "districts": {
+        "jung": "ජුං-ගු (Jung-gu)",
+        "nam": "නම්-ගු (Nam-gu)",
+        "dong": "දොං-ගු (Dong-gu)",
+        "buk": "බුක්-ගු (Buk-gu)",
+        "ulju": "උල්ජු-ගුන් (Ulju-gun)"
+      },
+      "ageGroups": {
+        "under30": "අවුරුදු 30ට අඩු",
+        "30to44": "අවුරුදු 30–44",
+        "45to64": "අවුරුදු 45–64",
+        "65plus": "අවුරුදු 65 හෝ ඊට වැඩි"
+      },
+      "sexes": {
+        "female": "ස්ත්‍රී",
+        "male": "පුරුෂ"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "මම මෙහි එන්නේ පළමු වතාවටයි.",
+        "revisit": "මම කලින් මෙහි ඇවිත් තියෙනවා.",
+        "workYes": "මෙය වුණේ මම වැඩ කරන අතරේයි.",
+        "workNo": "මෙය වැඩට සම්බන්ධ නැහැ.",
+        "korean": "මට කොරියානු භාෂාව ටිකයි තේරෙන්නේ. කරුණාකර සෙමින් කතා කරන්න.",
+        "hello": "ආයුබෝවන්. මට දිනයක් වෙන් කරගන්න ඕනේ.",
+        "arc": "මට විදේශිකයන්ගේ ලියාපදිංචි කාඩ්පතක් (ARC) තියෙනවා."
+      },
+      "symptom": "මගේ {parts} වල {syms} තියෙනවා. මට දොස්තර කෙනෙක්ව හමුවෙන්න ඕනේ.",
+      "department": "මට {dept} වෙත පෙන්වන්න ඕනේ.",
+      "onset": "{onset} පටන් ගත්තා.",
+      "docs": {
+        "arc": "විදේශිකයන්ගේ ලියාපදිංචි කාඩ්පත (ARC)",
+        "insurance": "සෞඛ්‍ය රක්ෂණ කාඩ්පත (තිබේ නම්)",
+        "meds": "ඔබ ගන්නා බෙහෙත් (තිබේ නම්)"
+      },
+      "faq": {
+        "first": "ඔබ මෙහි එන්නේ පළමු වතාවටද?",
+        "when": "ඔබට එන්න ඕනේ කවදාද?",
+        "where": "රිදෙන්නේ කොහෙද?",
+        "insurance": "ඔබට සෞඛ්‍ය රක්ෂණය තියෙනවාද?",
+        "help": "(ඔබට තේරුණේ නැති විට)"
+      },
+      "answers": {
+        "firstYes": "ඔව්, පළමු වතාවයි.",
+        "firstNo": "නැහැ, කලින් ඇවිත් තියෙනවා.",
+        "whenToday": "අදම එන්න කැමතියි.",
+        "whenTomorrowAm": "හෙට උදේ එන්න කැමතියි.",
+        "whenTomorrowPm": "හෙට දවල් එන්න කැමතියි.",
+        "whenEarliest": "පුළුවන් ඉක්මනම වෙලාවට.",
+        "insuranceYes": "ඔව්, තියෙනවා.",
+        "insuranceNo": "නැහැ, මට නැහැ.",
+        "insuranceUnsure": "මට විශ්වාස නැහැ.",
+        "helpRepeat": "කරුණාකර ආයෙත් කියන්න.",
+        "helpText": "කරුණාකර කෙටි පණිවිඩයකින් එවන්න."
+      },
+      "fields": {
+        "symptoms": "රෝග ලක්ෂණ",
+        "bodyParts": "ශරීර කොටස",
+        "onset": "පටන් ගත්තේ",
+        "circumstance": "වුණේ කොහොමද",
+        "note": "මගේ සටහන (මුල් පිටපත)",
+        "baseline": "මූලික සෞඛ්‍ය තොරතුරු",
+        "meds": "මම ගන්නා බෙහෙත්"
+      },
+      "age": "වයස {age}, {sex}",
+      "height": "උස",
+      "weight": "බර",
+      "alcohol": "මත්පැන්",
+      "smoking": "දුම්පානය",
+      "drinkingValue": {
+        "none": "නැහැ",
+        "sometimes": "සමහර වෙලාවට",
+        "often": "නිතර"
+      },
+      "smokingValue": {
+        "no": "නැහැ",
+        "yes": "ඔව්",
+        "quit": "නතර කළා"
+      },
+      "yesNo": {
+        "yes": "ඔව්",
+        "no": "නැහැ",
+        "unknown": "විශ්වාස නැහැ"
+      },
+      "happenedAtWork": "වැඩේදී වුණා",
+      "workType": "වැඩ වර්ගය",
+      "industry": "ක්ෂේත්‍රය",
+      "problem": "ප්‍රශ්නය",
+      "area": "ප්‍රදේශය",
+      "myNote": "මගේ සටහන",
+      "request": "ඉල්ලීම",
+      "requestTypes": {
+        "booking": "වෙන් කිරීමට සහාය",
+        "interpret": "භාෂා පරිවර්තනය",
+        "policy": "රක්ෂණ සහ සහාය උපදෙස්",
+        "referral": "ආයතනයකට යොමු කිරීම",
+        "other": "වෙනත්"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "සිහිය නැති",
+          "සිහි නැති",
+          "සිහිසුන්",
+          "ක්ලාන්ත"
+        ],
+        "breathing": [
+          "හුස්ම ගන්න බැ",
+          "හුස්ම ගන්න අමාරු",
+          "හුස්ම හිර",
+          "හුස්ම නැත",
+          "හුස්ම නෑ"
+        ],
+        "chest": [
+          "පපුවේ වේදනා",
+          "පපුව රිදෙ",
+          "පපුවේ රිදුම",
+          "පපුව තද"
+        ],
+        "heavyBleeding": [
+          "ලේ ගොඩක්",
+          "ගොඩක් ලේ",
+          "ලේ නවතින්නේ නැ",
+          "ලේ නවත්තන්න බැ"
+        ],
+        "amputation": [
+          "කැපිලා වෙන්",
+          "කැපී වෙන්",
+          "කැපිලා ගිහින්",
+          "කැපිලා ගැලවි"
+        ],
+        "fall": [
+          "උඩින් වැටුණ",
+          "උසින් වැටුණ",
+          "උස තැනකින්",
+          "උඩ ඉඳන් වැටුණ"
+        ],
+        "seizure": [
+          "වලිප්පු",
+          "අපස්මාර"
+        ],
+        "stroke": [
+          "අංශභාග",
+          "පැත්තක් පණ නැ",
+          "කට ඇද",
+          "කතාව පැටලෙ"
+        ],
+        "severeBurn": [
+          "කරන්ට් වැදු",
+          "කරන්ට් ගැහු",
+          "විදුලි සැර",
+          "දරුණු ලෙස පිළිස්සු",
+          "ගොඩක් පිච්චු"
+        ],
+        "chemicalEye": [
+          "ඇසට රසායන",
+          "ඇසට කෙමිකල්",
+          "ඇහැට කෙමිකල්",
+          "ඇහට කෙමිකල්",
+          "ඇස්වලට රසායන"
+        ],
+        "poisoning": [
+          "ගෑස් කාන්දු",
+          "ගෑස් හුස්ම",
+          "විෂ වුණ",
+          "විෂ වී",
+          "වස කෑ"
+        ]
+      },
+      "headInjury": [
+        "ඔළුව වැදුණ",
+        "ඔළුවට තුවාල",
+        "ඔළුවේ තුවාල",
+        "ඔළුව හැපුණ"
+      ],
+      "vomit": [
+        "වමන"
+      ],
+      "severity": [
+        "දරුණු",
+        "ගොඩක් රිදෙ",
+        "ඉවසන්න බැ",
+        "හරිම රිදෙ"
+      ]
+    }
+  },
+  "ar": {
+    "terms": {
+      "bodyParts": {
+        "head": "الرأس",
+        "eye": "العين",
+        "ent": "الأذن والأنف والحلق",
+        "teeth": "الأسنان واللثة",
+        "chest": "الصدر",
+        "abdomen": "البطن",
+        "back": "الظهر والخصر",
+        "arm": "الذراع والكتف",
+        "hand": "اليد والأصابع",
+        "leg": "الساق والركبة",
+        "foot": "القدم والكاحل",
+        "skin": "الجلد",
+        "whole": "الجسم كله"
+      },
+      "symptoms": {
+        "pain": "ألم",
+        "swelling": "تورم",
+        "cut": "جرح",
+        "bleeding": "نزيف",
+        "burn": "حرق",
+        "numb": "تنميل",
+        "cantmove": "صعوبة في الحركة",
+        "fever": "حمى",
+        "cough": "سعال",
+        "dizzy": "دوخة",
+        "rash": "طفح جلدي وحكة",
+        "nausea": "غثيان وقيء",
+        "breath": "صعوبة في التنفس",
+        "chemical": "تعرض لمواد كيميائية",
+        "foreign": "شيء في العين"
+      },
+      "departments": {
+        "ortho": "جراحة العظام",
+        "surgery": "الجراحة العامة",
+        "internal": "الطب الباطني",
+        "ophth": "طب العيون",
+        "ent": "الأنف والأذن والحنجرة",
+        "derm": "الأمراض الجلدية",
+        "dental": "طب الأسنان",
+        "neuro": "طب الأعصاب",
+        "family": "طب الأسرة",
+        "occ": "طب العمل"
+      },
+      "onsets": {
+        "today": "اليوم",
+        "yesterday": "أمس",
+        "days": "قبل 2–3 أيام",
+        "week": "قبل أكثر من أسبوع"
+      },
+      "industries": {
+        "shipbuilding": "بناء السفن",
+        "autoparts": "قطع غيار السيارات",
+        "chemical": "الكيماويات",
+        "construction": "البناء",
+        "other": "أخرى"
+      },
+      "workTypes": {
+        "welding": "اللحام",
+        "lifting": "رفع وحمل",
+        "machine": "العمل على الآلات (المكابس وغيرها)",
+        "grinding": "القطع والجلخ",
+        "painting": "الدهان والتعامل مع المواد الكيميائية",
+        "assembly": "التجميع"
+      },
+      "districts": {
+        "jung": "جونغ-غو",
+        "nam": "نام-غو",
+        "dong": "دونغ-غو",
+        "buk": "بوك-غو",
+        "ulju": "أولجو-غون"
+      },
+      "ageGroups": {
+        "under30": "أقل من 30",
+        "30to44": "30–44",
+        "45to64": "45–64",
+        "65plus": "65 أو أكثر"
+      },
+      "sexes": {
+        "female": "أنثى",
+        "male": "ذكر"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "هذه زيارتي الأولى.",
+        "revisit": "زرتكم من قبل.",
+        "workYes": "حدث ذلك أثناء عملي.",
+        "workNo": "لا علاقة له بالعمل.",
+        "korean": "لغتي الكورية ضعيفة. تكلم ببطء من فضلك.",
+        "hello": "مرحبا. أريد حجز موعد.",
+        "arc": "لدي بطاقة تسجيل الأجانب (ARC)."
+      },
+      "symptom": "أعاني من {syms} في {parts}، وأريد مراجعة طبيب.",
+      "department": "أريد مراجعة قسم {dept}.",
+      "onset": "بدأ ذلك {onset}.",
+      "docs": {
+        "arc": "بطاقة تسجيل الأجانب (ARC)",
+        "insurance": "بطاقة التأمين الصحي (إن وجدت)",
+        "meds": "الأدوية التي تتناولها (إن وجدت)"
+      },
+      "faq": {
+        "first": "هل هذه زيارتك الأولى؟",
+        "when": "متى تريد أن تأتي؟",
+        "where": "أين تشعر بالألم؟",
+        "insurance": "هل لديك تأمين صحي؟",
+        "help": "(عندما لا تفهم)"
+      },
+      "answers": {
+        "firstYes": "نعم، هذه أول مرة.",
+        "firstNo": "لا، زرتكم من قبل.",
+        "whenToday": "اليوم من فضلك.",
+        "whenTomorrowAm": "غدا صباحا من فضلك.",
+        "whenTomorrowPm": "غدا بعد الظهر من فضلك.",
+        "whenEarliest": "أقرب موعد متاح.",
+        "insuranceYes": "نعم، لدي.",
+        "insuranceNo": "لا، ليس لدي.",
+        "insuranceUnsure": "لست متأكدا.",
+        "helpRepeat": "من فضلك أعد ما قلته.",
+        "helpText": "من فضلك أرسله في رسالة نصية."
+      },
+      "fields": {
+        "symptoms": "الأعراض",
+        "bodyParts": "جزء الجسم",
+        "onset": "البداية",
+        "circumstance": "كيف حدث",
+        "note": "ملاحظتي (الأصل)",
+        "baseline": "معلومات صحية أساسية",
+        "meds": "أدويتي"
+      },
+      "age": "{age} سنة، {sex}",
+      "height": "الطول",
+      "weight": "الوزن",
+      "alcohol": "الكحول",
+      "smoking": "التدخين",
+      "drinkingValue": {
+        "none": "لا",
+        "sometimes": "أحيانا",
+        "often": "كثيرا"
+      },
+      "smokingValue": {
+        "no": "لا",
+        "yes": "نعم",
+        "quit": "توقف"
+      },
+      "yesNo": {
+        "yes": "نعم",
+        "no": "لا",
+        "unknown": "غير متأكد"
+      },
+      "happenedAtWork": "حدث في العمل",
+      "workType": "نوع العمل",
+      "industry": "القطاع",
+      "problem": "المشكلة",
+      "area": "المنطقة",
+      "myNote": "ملاحظتي",
+      "request": "الطلب",
+      "requestTypes": {
+        "booking": "المساعدة في الحجز",
+        "interpret": "الترجمة",
+        "policy": "استشارة التأمين والدعم",
+        "referral": "التحويل إلى جهة مختصة",
+        "other": "أخرى"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "فقد الوعي",
+          "فقدت الوعي",
+          "فاقد الوعي",
+          "غمي عليه",
+          "غمى عليه"
+        ],
+        "breathing": [
+          "ستطيع التنفس",
+          "لا يتنفس",
+          "صعوبة في التنفس",
+          "اختناق"
+        ],
+        "chest": [
+          "لم في الصدر",
+          "لم بالصدر",
+          "وجع في الصدر",
+          "وجع بالصدر",
+          "صدري يؤلمني"
+        ],
+        "heavyBleeding": [
+          "نزيف شديد",
+          "نزيف كثير",
+          "نزيف قوي",
+          "ينزف كثير",
+          "الدم لا يتوقف"
+        ],
+        "amputation": [
+          "مبتور",
+          "انبتر",
+          "قطع اصبع",
+          "قطع إصبع",
+          "اصبعي انقطع"
+        ],
+        "fall": [
+          "سقط من ارتفاع",
+          "سقط من فوق",
+          "وقع من فوق",
+          "من مكان عال",
+          "من السقالة"
+        ],
+        "seizure": [
+          "تشنجات",
+          "نوبة تشنج",
+          "نوبة صرع",
+          "يتشنج"
+        ],
+        "stroke": [
+          "شلل",
+          "نصف الجسم",
+          "كلامه ثقيل",
+          "فمه مائل",
+          "جانب واحد"
+        ],
+        "severeBurn": [
+          "صعق",
+          "حرق شديد",
+          "حروق شديد",
+          "حروق خطير",
+          "احترق جسم"
+        ],
+        "chemicalEye": [
+          "كيميائية في عين",
+          "كيميائي في عين",
+          "كيماوي في عين",
+          "كيميائية دخلت",
+          "كيماوي دخل"
+        ],
+        "poisoning": [
+          "تسمم",
+          "تسرب غاز",
+          "تسرب الغاز",
+          "غاز سام",
+          "استنشقت غاز"
+        ]
+      },
+      "headInjury": [
+        "ضربة على الرأس",
+        "ضربة على الراس",
+        "إصابة في الرأس",
+        "اصابة في الراس",
+        "ارتطم رأس"
+      ],
+      "vomit": [
+        "تقيأ",
+        "تقيؤ",
+        "استفرغ",
+        "قيء"
+      ],
+      "severity": [
+        "شديد",
+        "قوي جدا",
+        "لا يحتمل",
+        "لا أتحمل",
+        "كثير جدا"
+      ]
+    }
+  },
+  "uz": {
+    "terms": {
+      "bodyParts": {
+        "head": "Bosh",
+        "eye": "Koʻz",
+        "ent": "Quloq, burun, tomoq",
+        "teeth": "Tish, milk",
+        "chest": "Koʻkrak",
+        "abdomen": "Qorin",
+        "back": "Bel, orqa",
+        "arm": "Qoʻl, yelka",
+        "hand": "Panja, barmoq",
+        "leg": "Oyoq, tizza",
+        "foot": "Oyoq panjasi, toʻpiq",
+        "skin": "Teri",
+        "whole": "Butun tana"
+      },
+      "symptoms": {
+        "pain": "Ogʻriq",
+        "swelling": "Shish",
+        "cut": "Kesilgan joy, yara",
+        "bleeding": "Qon ketishi",
+        "burn": "Kuyish",
+        "numb": "Uvishish",
+        "cantmove": "Qimirlatish qiyin",
+        "fever": "Isitma",
+        "cough": "Yoʻtal",
+        "dizzy": "Bosh aylanishi",
+        "rash": "Toshma, qichishish",
+        "nausea": "Koʻngil aynishi, qusish",
+        "breath": "Nafas olish qiyin",
+        "chemical": "Kimyoviy moddaga tegish",
+        "foreign": "Koʻzga narsa tushgan"
+      },
+      "departments": {
+        "ortho": "Ortopediya (suyak, boʻgʻim)",
+        "surgery": "Umumiy jarrohlik",
+        "internal": "Terapiya (ichki kasalliklar)",
+        "ophth": "Koʻz shifokori",
+        "ent": "LOR (quloq, burun, tomoq)",
+        "derm": "Dermatologiya (teri)",
+        "dental": "Tish shifokori",
+        "neuro": "Nevrologiya",
+        "family": "Oilaviy shifokor",
+        "occ": "Kasb kasalliklari shifokori"
+      },
+      "onsets": {
+        "today": "Bugun",
+        "yesterday": "Kecha",
+        "days": "2–3 kun oldin",
+        "week": "Bir haftadan koʻproq oldin"
+      },
+      "industries": {
+        "shipbuilding": "Kemasozlik",
+        "autoparts": "Avtomobil ehtiyot qismlari",
+        "chemical": "Kimyo",
+        "construction": "Qurilish",
+        "other": "Boshqa"
+      },
+      "workTypes": {
+        "welding": "Payvandlash",
+        "lifting": "Koʻtarish, tashish",
+        "machine": "Stanokda ishlash (press va boshqalar)",
+        "grinding": "Kesish, silliqlash",
+        "painting": "Boʻyash, kimyoviy moddalar bilan ishlash",
+        "assembly": "Yigʻish"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "30 yoshgacha",
+        "30to44": "30–44 yosh",
+        "45to64": "45–64 yosh",
+        "65plus": "65 yosh va undan katta"
+      },
+      "sexes": {
+        "female": "Ayol",
+        "male": "Erkak"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Men birinchi marta keldim.",
+        "revisit": "Men bu yerga oldin kelganman.",
+        "workYes": "Bu ish paytida yuz berdi.",
+        "workNo": "Bu ish bilan bogʻliq emas.",
+        "korean": "Koreyschani yaxshi bilmayman. Iltimos, sekin gapiring.",
+        "hello": "Assalomu alaykum. Shifokor qabuliga yozilmoqchiman.",
+        "arc": "Menda chet el fuqarosi roʻyxatga olish kartasi (ARC) bor."
+      },
+      "symptom": "Belgilar: {syms:lower}. Joyi: {parts:lower}. Shifokorga koʻrinmoqchiman.",
+      "department": "Shu boʻlimga koʻrinmoqchiman: {dept}.",
+      "onset": "Boshlangan vaqti: {onset:lower}.",
+      "docs": {
+        "arc": "Chet el fuqarosi roʻyxatga olish kartasi (ARC)",
+        "insurance": "Tibbiy sugʻurta kartasi (boʻlsa)",
+        "meds": "Ichayotgan dorilaringiz (boʻlsa)"
+      },
+      "faq": {
+        "first": "Birinchi marta keldingizmi?",
+        "when": "Qachon kelmoqchisiz?",
+        "where": "Qayeringiz ogʻriyapti?",
+        "insurance": "Tibbiy sugʻurtangiz bormi?",
+        "help": "(Tushunmaganingizda)"
+      },
+      "answers": {
+        "firstYes": "Ha, birinchi marta.",
+        "firstNo": "Yoʻq, oldin kelganman.",
+        "whenToday": "Bugun kelmoqchiman.",
+        "whenTomorrowAm": "Ertaga ertalab kelmoqchiman.",
+        "whenTomorrowPm": "Ertaga tushdan keyin kelmoqchiman.",
+        "whenEarliest": "Eng erta boʻsh vaqtga.",
+        "insuranceYes": "Ha, bor.",
+        "insuranceNo": "Yoʻq, menda yoʻq.",
+        "insuranceUnsure": "Aniq bilmayman.",
+        "helpRepeat": "Iltimos, yana bir marta ayting.",
+        "helpText": "Iltimos, SMS orqali yuboring."
+      },
+      "fields": {
+        "symptoms": "Belgilar",
+        "bodyParts": "Tana qismi",
+        "onset": "Boshlangan",
+        "circumstance": "Qanday yuz bergan",
+        "note": "Mening yozuvim (asl matn)",
+        "baseline": "Asosiy sogʻliq maʼlumotlari",
+        "meds": "Ichayotgan dorilarim"
+      },
+      "age": "{age} yosh, {sex:lower}",
+      "height": "Boʻyi",
+      "weight": "Vazni",
+      "alcohol": "Spirtli ichimlik",
+      "smoking": "Chekish",
+      "drinkingValue": {
+        "none": "ichmaydi",
+        "sometimes": "baʼzan",
+        "often": "tez-tez"
+      },
+      "smokingValue": {
+        "no": "chekmaydi",
+        "yes": "chekadi",
+        "quit": "tashlagan"
+      },
+      "yesNo": {
+        "yes": "ha",
+        "no": "yoʻq",
+        "unknown": "bilmayman"
+      },
+      "happenedAtWork": "Ishda yuz bergan",
+      "workType": "Ish turi",
+      "industry": "Soha",
+      "problem": "Muammo",
+      "area": "Hudud",
+      "myNote": "Mening yozuvim",
+      "request": "Soʻrov",
+      "requestTypes": {
+        "booking": "Navbatga yozilishda yordam",
+        "interpret": "Tarjima",
+        "policy": "Sugʻurta va yordam boʻyicha maslahat",
+        "referral": "Tashkilotga yoʻllash",
+        "other": "Boshqa"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "hushidan ket",
+          "hushini yo",
+          "hushsiz",
+          "behush"
+        ],
+        "breathing": [
+          "nafas ololma",
+          "nafas olmayap",
+          "nafasim qis",
+          "nafasi qis"
+        ],
+        "chest": [
+          "krak og",
+          "kragim og",
+          "kragi og",
+          "yurak og",
+          "yurak sanch"
+        ],
+        "heavyBleeding": [
+          "qattiq qon ket",
+          "qon tinmay",
+          "qon to'xtama",
+          "qon toʻxtama",
+          "qon toxtama"
+        ],
+        "amputation": [
+          "kesilib tush",
+          "uzilib tush",
+          "kesib tashla",
+          "amputats"
+        ],
+        "fall": [
+          "balanddan yiqil",
+          "tepadan yiqil",
+          "yuqoridan yiqil",
+          "narvondan yiqil",
+          "iskaladan yiqil"
+        ],
+        "seizure": [
+          "tutqanoq",
+          "talvasa",
+          "epilepsi"
+        ],
+        "stroke": [
+          "falaj",
+          "tanasining bir tom",
+          "bir tomoni ishlama",
+          "tili aylanma",
+          "zi qiyshay"
+        ],
+        "severeBurn": [
+          "tok urdi",
+          "tok urib",
+          "elektr tok",
+          "qattiq kuy",
+          "kuchli kuy"
+        ],
+        "chemicalEye": [
+          "zimga kimyo",
+          "zga kimyo",
+          "zlarimga kimyo",
+          "zimga kislota"
+        ],
+        "poisoning": [
+          "gaz sizib",
+          "gaz chiqib",
+          "zaharlan",
+          "gazdan zahar"
+        ]
+      },
+      "headInjury": [
+        "boshim uril",
+        "boshi uril",
+        "boshimni ur",
+        "boshini ur",
+        "bosh jarohat"
+      ],
+      "vomit": [
+        "qusdi",
+        "qusyap",
+        "qusish",
+        "qayt qil"
+      ],
+      "severity": [
+        "juda kuchli",
+        "juda yomon",
+        "chidab bo",
+        "qattiq",
+        "juda ko"
+      ]
+    }
+  },
+  "ja": {
+    "terms": {
+      "bodyParts": {
+        "head": "頭",
+        "eye": "目",
+        "ent": "耳・鼻・のど",
+        "teeth": "歯・歯ぐき",
+        "chest": "胸",
+        "abdomen": "おなか",
+        "back": "背中・腰",
+        "arm": "腕・肩",
+        "hand": "手・指",
+        "leg": "脚・ひざ",
+        "foot": "足・足首",
+        "skin": "皮膚",
+        "whole": "全身"
+      },
+      "symptoms": {
+        "pain": "痛み",
+        "swelling": "腫れ",
+        "cut": "切り傷・傷",
+        "bleeding": "出血",
+        "burn": "やけど",
+        "numb": "しびれ",
+        "cantmove": "動かしにくさ",
+        "fever": "熱",
+        "cough": "咳",
+        "dizzy": "めまい",
+        "rash": "発疹・かゆみ",
+        "nausea": "吐き気・嘔吐",
+        "breath": "息苦しさ",
+        "chemical": "化学物質に触れた",
+        "foreign": "目に異物"
+      },
+      "departments": {
+        "ortho": "整形外科",
+        "surgery": "外科",
+        "internal": "内科",
+        "ophth": "眼科",
+        "ent": "耳鼻咽喉科",
+        "derm": "皮膚科",
+        "dental": "歯科",
+        "neuro": "神経内科",
+        "family": "家庭医療科",
+        "occ": "産業医学科"
+      },
+      "onsets": {
+        "today": "今日",
+        "yesterday": "昨日",
+        "days": "2〜3日前",
+        "week": "1週間以上前"
+      },
+      "industries": {
+        "shipbuilding": "造船",
+        "autoparts": "自動車部品",
+        "chemical": "化学",
+        "construction": "建設",
+        "other": "その他"
+      },
+      "workTypes": {
+        "welding": "溶接",
+        "lifting": "重い物の持ち上げ・運搬",
+        "machine": "機械作業（プレスなど）",
+        "grinding": "切断・研削",
+        "painting": "塗装・化学物質の取り扱い",
+        "assembly": "組立"
+      },
+      "districts": {
+        "jung": "中区",
+        "nam": "南区",
+        "dong": "東区",
+        "buk": "北区",
+        "ulju": "蔚州郡"
+      },
+      "ageGroups": {
+        "under30": "30歳未満",
+        "30to44": "30〜44歳",
+        "45to64": "45〜64歳",
+        "65plus": "65歳以上"
+      },
+      "sexes": {
+        "female": "女性",
+        "male": "男性"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "初めて来ました。",
+        "revisit": "前に来たことがあります。",
+        "workYes": "仕事中に起きました。",
+        "workNo": "仕事とは関係ありません。",
+        "korean": "韓国語があまりできません。ゆっくり話してください。",
+        "hello": "こんにちは。診察の予約をしたいです。",
+        "arc": "外国人登録証（ARC）を持っています。"
+      },
+      "symptom": "{parts}に{syms}があり、診察を受けたいです。",
+      "department": "{dept}を受診したいです。",
+      "onset": "{onset}から始まりました。",
+      "docs": {
+        "arc": "外国人登録証（ARC）",
+        "insurance": "健康保険証（あれば）",
+        "meds": "飲んでいる薬（あれば）"
+      },
+      "faq": {
+        "first": "こちらは初めてですか？",
+        "when": "いつ来たいですか？",
+        "where": "どこが痛いですか？",
+        "insurance": "健康保険に入っていますか？",
+        "help": "（聞き取れなかったとき）"
+      },
+      "answers": {
+        "firstYes": "はい、初めてです。",
+        "firstNo": "いいえ、前に来たことがあります。",
+        "whenToday": "今日お願いします。",
+        "whenTomorrowAm": "明日の午前にお願いします。",
+        "whenTomorrowPm": "明日の午後にお願いします。",
+        "whenEarliest": "いちばん早い時間でお願いします。",
+        "insuranceYes": "はい、入っています。",
+        "insuranceNo": "いいえ、入っていません。",
+        "insuranceUnsure": "よくわかりません。",
+        "helpRepeat": "もう一度言ってください。",
+        "helpText": "ショートメッセージで送ってください。"
+      },
+      "fields": {
+        "symptoms": "症状",
+        "bodyParts": "体の場所",
+        "onset": "始まった時期",
+        "circumstance": "起きた状況",
+        "note": "本人のメモ（原文）",
+        "baseline": "基本の健康情報",
+        "meds": "飲んでいる薬"
+      },
+      "age": "{age}歳、{sex}",
+      "height": "身長",
+      "weight": "体重",
+      "alcohol": "飲酒",
+      "smoking": "たばこ",
+      "drinkingValue": {
+        "none": "飲まない",
+        "sometimes": "ときどき",
+        "often": "よく飲む"
+      },
+      "smokingValue": {
+        "no": "吸わない",
+        "yes": "吸う",
+        "quit": "やめた"
+      },
+      "yesNo": {
+        "yes": "はい",
+        "no": "いいえ",
+        "unknown": "わからない"
+      },
+      "happenedAtWork": "仕事中に起きた",
+      "workType": "作業の種類",
+      "industry": "業種",
+      "problem": "困っていること",
+      "area": "地域",
+      "myNote": "メモ",
+      "request": "依頼",
+      "requestTypes": {
+        "booking": "予約の手伝い",
+        "interpret": "通訳",
+        "policy": "保険・支援の相談",
+        "referral": "機関の紹介",
+        "other": "その他"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "意識がない",
+          "意識不明",
+          "気を失",
+          "気絶",
+          "失神"
+        ],
+        "breathing": [
+          "息ができない",
+          "呼吸ができない",
+          "息をしていない",
+          "呼吸していない",
+          "息が吸えない"
+        ],
+        "chest": [
+          "胸が痛",
+          "胸の痛み",
+          "胸痛",
+          "胸が苦し",
+          "胸がしめつけ"
+        ],
+        "heavyBleeding": [
+          "大量出血",
+          "出血が止まら",
+          "血が止まら",
+          "血がたくさん"
+        ],
+        "amputation": [
+          "ちぎれ",
+          "千切れ",
+          "指が取れ",
+          "切断され",
+          "切り落と"
+        ],
+        "fall": [
+          "転落",
+          "墜落",
+          "高所から",
+          "足場から落",
+          "高いところから落"
+        ],
+        "seizure": [
+          "けいれん",
+          "痙攣",
+          "ひきつけ"
+        ],
+        "stroke": [
+          "麻痺",
+          "まひして",
+          "ろれつ",
+          "顔がゆが",
+          "片側が動かない"
+        ],
+        "severeBurn": [
+          "感電",
+          "大やけど",
+          "ひどいやけど",
+          "大火傷",
+          "ひどい火傷"
+        ],
+        "chemicalEye": [
+          "目に薬品",
+          "目に化学",
+          "薬品が目に",
+          "化学物質が目に",
+          "薬液が目に"
+        ],
+        "poisoning": [
+          "ガス漏れ",
+          "ガスを吸",
+          "有毒ガス",
+          "中毒"
+        ]
+      },
+      "headInjury": [
+        "頭を打",
+        "頭をぶつけ",
+        "頭のけが",
+        "頭部外傷"
+      ],
+      "vomit": [
+        "吐いた",
+        "嘔吐",
+        "吐き気",
+        "もどした"
+      ],
+      "severity": [
+        "ひどい",
+        "激痛",
+        "我慢できない",
+        "すごく痛",
+        "とても痛",
+        "耐えられない"
+      ]
+    }
+  },
+  "zh-CN": {
+    "terms": {
+      "bodyParts": {
+        "head": "头",
+        "eye": "眼睛",
+        "ent": "耳、鼻、喉",
+        "teeth": "牙齿、牙龈",
+        "chest": "胸部",
+        "abdomen": "肚子",
+        "back": "背、腰",
+        "arm": "手臂、肩膀",
+        "hand": "手、手指",
+        "leg": "腿、膝盖",
+        "foot": "脚、脚踝",
+        "skin": "皮肤",
+        "whole": "全身"
+      },
+      "symptoms": {
+        "pain": "疼痛",
+        "swelling": "肿胀",
+        "cut": "割伤、伤口",
+        "bleeding": "出血",
+        "burn": "烧烫伤",
+        "numb": "麻木",
+        "cantmove": "活动困难",
+        "fever": "发烧",
+        "cough": "咳嗽",
+        "dizzy": "头晕",
+        "rash": "皮疹、瘙痒",
+        "nausea": "恶心、呕吐",
+        "breath": "呼吸困难",
+        "chemical": "接触化学品",
+        "foreign": "眼内异物"
+      },
+      "departments": {
+        "ortho": "骨科",
+        "surgery": "普通外科",
+        "internal": "内科",
+        "ophth": "眼科",
+        "ent": "耳鼻喉科",
+        "derm": "皮肤科",
+        "dental": "口腔科（牙科）",
+        "neuro": "神经内科",
+        "family": "全科（家庭医学科）",
+        "occ": "职业医学科"
+      },
+      "onsets": {
+        "today": "今天",
+        "yesterday": "昨天",
+        "days": "2–3天前",
+        "week": "一周多以前"
+      },
+      "industries": {
+        "shipbuilding": "造船",
+        "autoparts": "汽车零部件",
+        "chemical": "化工",
+        "construction": "建筑",
+        "other": "其他"
+      },
+      "workTypes": {
+        "welding": "焊接",
+        "lifting": "搬运重物",
+        "machine": "机器操作（冲压等）",
+        "grinding": "切割、打磨",
+        "painting": "喷漆、处理化学品",
+        "assembly": "组装"
+      },
+      "districts": {
+        "jung": "中区",
+        "nam": "南区",
+        "dong": "东区",
+        "buk": "北区",
+        "ulju": "蔚州郡"
+      },
+      "ageGroups": {
+        "under30": "不满30岁",
+        "30to44": "30–44岁",
+        "45to64": "45–64岁",
+        "65plus": "65岁及以上"
+      },
+      "sexes": {
+        "female": "女",
+        "male": "男"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "我是第一次来。",
+        "revisit": "我以前来过。",
+        "workYes": "是在工作时发生的。",
+        "workNo": "和工作没有关系。",
+        "korean": "我韩语说得不好，请说慢一点。",
+        "hello": "您好，我想预约看病。",
+        "arc": "我有外国人登录证（ARC）。"
+      },
+      "symptom": "我的{parts}有{syms}的症状，想看医生。",
+      "department": "我想看{dept}。",
+      "onset": "是{onset}开始的。",
+      "docs": {
+        "arc": "外国人登录证（ARC）",
+        "insurance": "健康保险卡（如有）",
+        "meds": "正在吃的药（如有）"
+      },
+      "faq": {
+        "first": "您是第一次来吗？",
+        "when": "您想什么时候来？",
+        "where": "哪里疼？",
+        "insurance": "您有健康保险吗？",
+        "help": "（没听懂的时候）"
+      },
+      "answers": {
+        "firstYes": "是的，第一次来。",
+        "firstNo": "不是，以前来过。",
+        "whenToday": "我想今天去。",
+        "whenTomorrowAm": "我想明天上午去。",
+        "whenTomorrowPm": "我想明天下午去。",
+        "whenEarliest": "请给我最早的时间。",
+        "insuranceYes": "有，我有。",
+        "insuranceNo": "没有。",
+        "insuranceUnsure": "我不太清楚。",
+        "helpRepeat": "请再说一遍。",
+        "helpText": "请用短信发给我。"
+      },
+      "fields": {
+        "symptoms": "症状",
+        "bodyParts": "身体部位",
+        "onset": "开始时间",
+        "circumstance": "发生经过",
+        "note": "本人备注（原文）",
+        "baseline": "基本健康信息",
+        "meds": "正在吃的药"
+      },
+      "age": "{age}岁，{sex}",
+      "height": "身高",
+      "weight": "体重",
+      "alcohol": "饮酒",
+      "smoking": "吸烟",
+      "drinkingValue": {
+        "none": "不喝",
+        "sometimes": "偶尔",
+        "often": "经常"
+      },
+      "smokingValue": {
+        "no": "不吸",
+        "yes": "吸",
+        "quit": "已戒"
+      },
+      "yesNo": {
+        "yes": "是",
+        "no": "否",
+        "unknown": "不确定"
+      },
+      "happenedAtWork": "在工作时发生",
+      "workType": "工作类型",
+      "industry": "行业",
+      "problem": "问题",
+      "area": "地区",
+      "myNote": "备注",
+      "request": "请求",
+      "requestTypes": {
+        "booking": "预约帮助",
+        "interpret": "翻译",
+        "policy": "保险与援助咨询",
+        "referral": "转介到相关机关",
+        "other": "其他"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "昏迷",
+          "晕倒",
+          "昏倒",
+          "失去意识",
+          "晕过去"
+        ],
+        "breathing": [
+          "无法呼吸",
+          "不能呼吸",
+          "喘不过气",
+          "没有呼吸",
+          "没呼吸"
+        ],
+        "chest": [
+          "胸痛",
+          "胸口痛",
+          "胸口疼",
+          "胸闷"
+        ],
+        "heavyBleeding": [
+          "大出血",
+          "流血不止",
+          "血止不住",
+          "出血很多",
+          "流了很多血"
+        ],
+        "amputation": [
+          "断指",
+          "手指被切掉",
+          "被切断",
+          "切断了",
+          "断肢"
+        ],
+        "fall": [
+          "高处坠落",
+          "从高处",
+          "从脚手架",
+          "坠落",
+          "摔下来"
+        ],
+        "seizure": [
+          "抽搐",
+          "痉挛",
+          "口吐白沫"
+        ],
+        "stroke": [
+          "瘫痪",
+          "半身不遂",
+          "半边身体",
+          "口齿不清",
+          "嘴歪"
+        ],
+        "severeBurn": [
+          "触电",
+          "电击",
+          "被电到",
+          "严重烧伤",
+          "大面积烧伤"
+        ],
+        "chemicalEye": [
+          "化学品溅到眼",
+          "化学品进了眼",
+          "化学品进眼",
+          "药水溅到眼",
+          "眼睛进了化学"
+        ],
+        "poisoning": [
+          "中毒",
+          "煤气泄漏",
+          "气体泄漏",
+          "吸入毒气",
+          "毒气"
+        ]
+      },
+      "headInjury": [
+        "撞到头",
+        "头部受伤",
+        "头被砸",
+        "撞了头",
+        "头受伤"
+      ],
+      "vomit": [
+        "呕吐",
+        "吐了",
+        "想吐"
+      ],
+      "severity": [
+        "很严重",
+        "剧痛",
+        "受不了",
+        "非常痛",
+        "特别疼",
+        "疼得厉害"
+      ]
+    }
+  },
+  "zh-TW": {
+    "terms": {
+      "bodyParts": {
+        "head": "頭",
+        "eye": "眼睛",
+        "ent": "耳、鼻、喉嚨",
+        "teeth": "牙齒、牙齦",
+        "chest": "胸部",
+        "abdomen": "肚子",
+        "back": "背、腰",
+        "arm": "手臂、肩膀",
+        "hand": "手、手指",
+        "leg": "腿、膝蓋",
+        "foot": "腳、腳踝",
+        "skin": "皮膚",
+        "whole": "全身"
+      },
+      "symptoms": {
+        "pain": "疼痛",
+        "swelling": "腫脹",
+        "cut": "割傷、傷口",
+        "bleeding": "出血",
+        "burn": "燒燙傷",
+        "numb": "麻木",
+        "cantmove": "活動困難",
+        "fever": "發燒",
+        "cough": "咳嗽",
+        "dizzy": "頭暈",
+        "rash": "起疹子、癢",
+        "nausea": "噁心、嘔吐",
+        "breath": "呼吸困難",
+        "chemical": "接觸化學品",
+        "foreign": "眼睛有異物"
+      },
+      "departments": {
+        "ortho": "骨科",
+        "surgery": "一般外科",
+        "internal": "內科",
+        "ophth": "眼科",
+        "ent": "耳鼻喉科",
+        "derm": "皮膚科",
+        "dental": "牙科",
+        "neuro": "神經內科",
+        "family": "家庭醫學科",
+        "occ": "職業醫學科"
+      },
+      "onsets": {
+        "today": "今天",
+        "yesterday": "昨天",
+        "days": "2–3天前",
+        "week": "一個多禮拜前"
+      },
+      "industries": {
+        "shipbuilding": "造船",
+        "autoparts": "汽車零件",
+        "chemical": "化工",
+        "construction": "營造",
+        "other": "其他"
+      },
+      "workTypes": {
+        "welding": "焊接",
+        "lifting": "搬運重物",
+        "machine": "機器操作（沖壓等）",
+        "grinding": "切割、研磨",
+        "painting": "噴漆、處理化學品",
+        "assembly": "組裝"
+      },
+      "districts": {
+        "jung": "中區",
+        "nam": "南區",
+        "dong": "東區",
+        "buk": "北區",
+        "ulju": "蔚州郡"
+      },
+      "ageGroups": {
+        "under30": "未滿30歲",
+        "30to44": "30–44歲",
+        "45to64": "45–64歲",
+        "65plus": "65歲以上"
+      },
+      "sexes": {
+        "female": "女",
+        "male": "男"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "我是第一次來（初診）。",
+        "revisit": "我以前來過（複診）。",
+        "workYes": "是在工作時發生的。",
+        "workNo": "跟工作沒有關係。",
+        "korean": "我的韓語不太好，請說慢一點。",
+        "hello": "您好，我想預約掛號。",
+        "arc": "我有外國人登錄證（ARC）。"
+      },
+      "symptom": "我的{parts}有{syms}的症狀，想看醫生。",
+      "department": "我想掛{dept}。",
+      "onset": "是{onset}開始的。",
+      "docs": {
+        "arc": "外國人登錄證（ARC）",
+        "insurance": "健保卡（如果有）",
+        "meds": "正在吃的藥（如果有）"
+      },
+      "faq": {
+        "first": "您是第一次來嗎？",
+        "when": "您想什麼時候來？",
+        "where": "哪裡痛？",
+        "insurance": "您有健保嗎？",
+        "help": "（聽不懂的時候）"
+      },
+      "answers": {
+        "firstYes": "對，第一次來。",
+        "firstNo": "不是，以前來過。",
+        "whenToday": "我想今天去。",
+        "whenTomorrowAm": "我想明天上午去。",
+        "whenTomorrowPm": "我想明天下午去。",
+        "whenEarliest": "請給我最早的時間。",
+        "insuranceYes": "有，我有健保。",
+        "insuranceNo": "沒有。",
+        "insuranceUnsure": "我不太確定。",
+        "helpRepeat": "請再說一次。",
+        "helpText": "請用簡訊傳給我。"
+      },
+      "fields": {
+        "symptoms": "症狀",
+        "bodyParts": "身體部位",
+        "onset": "開始時間",
+        "circumstance": "發生經過",
+        "note": "本人備註（原文）",
+        "baseline": "基本健康資料",
+        "meds": "正在吃的藥"
+      },
+      "age": "{age}歲，{sex}",
+      "height": "身高",
+      "weight": "體重",
+      "alcohol": "喝酒",
+      "smoking": "抽菸",
+      "drinkingValue": {
+        "none": "不喝",
+        "sometimes": "偶爾",
+        "often": "常常"
+      },
+      "smokingValue": {
+        "no": "不抽",
+        "yes": "有抽",
+        "quit": "已戒"
+      },
+      "yesNo": {
+        "yes": "是",
+        "no": "否",
+        "unknown": "不確定"
+      },
+      "happenedAtWork": "在工作時發生",
+      "workType": "工作種類",
+      "industry": "行業",
+      "problem": "問題",
+      "area": "地區",
+      "myNote": "備註",
+      "request": "請求",
+      "requestTypes": {
+        "booking": "協助預約掛號",
+        "interpret": "口譯",
+        "policy": "健保與補助諮詢",
+        "referral": "轉介給相關機關",
+        "other": "其他"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "昏迷",
+          "暈倒",
+          "昏倒",
+          "失去意識",
+          "暈過去"
+        ],
+        "breathing": [
+          "無法呼吸",
+          "不能呼吸",
+          "喘不過氣",
+          "沒有呼吸",
+          "沒呼吸"
+        ],
+        "chest": [
+          "胸痛",
+          "胸口痛",
+          "胸口很痛",
+          "胸悶"
+        ],
+        "heavyBleeding": [
+          "大出血",
+          "流血不止",
+          "血止不住",
+          "一直流血",
+          "流很多血"
+        ],
+        "amputation": [
+          "斷指",
+          "手指被切掉",
+          "被切斷",
+          "切斷了",
+          "斷肢"
+        ],
+        "fall": [
+          "高處墜落",
+          "從高處",
+          "從鷹架",
+          "墜落",
+          "摔下來"
+        ],
+        "seizure": [
+          "抽搐",
+          "痙攣",
+          "口吐白沫"
+        ],
+        "stroke": [
+          "癱瘓",
+          "半身不遂",
+          "半邊身體",
+          "口齒不清",
+          "嘴歪"
+        ],
+        "severeBurn": [
+          "觸電",
+          "電擊",
+          "被電到",
+          "嚴重燒傷",
+          "大面積燒傷"
+        ],
+        "chemicalEye": [
+          "化學品濺到眼",
+          "化學品進了眼",
+          "化學品噴到眼",
+          "藥水濺到眼",
+          "眼睛進了化學"
+        ],
+        "poisoning": [
+          "中毒",
+          "瓦斯外洩",
+          "氣體外洩",
+          "吸入毒氣",
+          "毒氣"
+        ]
+      },
+      "headInjury": [
+        "撞到頭",
+        "頭部受傷",
+        "頭被砸",
+        "撞了頭",
+        "頭受傷"
+      ],
+      "vomit": [
+        "嘔吐",
+        "吐了",
+        "想吐"
+      ],
+      "severity": [
+        "很嚴重",
+        "劇痛",
+        "受不了",
+        "非常痛",
+        "痛得厲害"
+      ]
+    }
+  },
+  "kk": {
+    "terms": {
+      "bodyParts": {
+        "head": "Бас",
+        "eye": "Көз",
+        "ent": "Құлақ, мұрын, тамақ",
+        "teeth": "Тіс, қызыл иек",
+        "chest": "Кеуде",
+        "abdomen": "Іш",
+        "back": "Арқа, бел",
+        "arm": "Қол, иық",
+        "hand": "Алақан, саусақ",
+        "leg": "Аяқ, тізе",
+        "foot": "Табан, тобық",
+        "skin": "Тері",
+        "whole": "Бүкіл дене"
+      },
+      "symptoms": {
+        "pain": "Ауырсыну",
+        "swelling": "Ісіну",
+        "cut": "Кесік, жара",
+        "bleeding": "Қан кету",
+        "burn": "Күйік",
+        "numb": "Ұю (сезбеу)",
+        "cantmove": "Қозғалу қиын",
+        "fever": "Қызу көтерілу",
+        "cough": "Жөтел",
+        "dizzy": "Бас айналу",
+        "rash": "Бөртпе, қышу",
+        "nausea": "Жүрек айну, құсу",
+        "breath": "Тыныс алу қиын",
+        "chemical": "Химиялық заттың тиюі",
+        "foreign": "Көзге бірдеңе түсті"
+      },
+      "departments": {
+        "ortho": "Ортопедия",
+        "surgery": "Жалпы хирургия",
+        "internal": "Терапия (ішкі аурулар)",
+        "ophth": "Көз дәрігері",
+        "ent": "ЛОР (құлақ, мұрын, тамақ)",
+        "derm": "Дерматология (тері)",
+        "dental": "Тіс дәрігері",
+        "neuro": "Неврология",
+        "family": "Отбасылық медицина",
+        "occ": "Кәсіптік медицина"
+      },
+      "onsets": {
+        "today": "Бүгін",
+        "yesterday": "Кеше",
+        "days": "2–3 күн бұрын",
+        "week": "Бір аптадан бұрын"
+      },
+      "industries": {
+        "shipbuilding": "Кеме жасау",
+        "autoparts": "Автобөлшектер",
+        "chemical": "Химия өнеркәсібі",
+        "construction": "Құрылыс",
+        "other": "Басқа"
+      },
+      "workTypes": {
+        "welding": "Дәнекерлеу",
+        "lifting": "Жүк көтеру, тасу",
+        "machine": "Станокта жұмыс (пресс т.б.)",
+        "grinding": "Кесу, тегістеу",
+        "painting": "Бояу, химиялық заттармен жұмыс",
+        "assembly": "Құрастыру"
+      },
+      "districts": {
+        "jung": "Чун-гу",
+        "nam": "Нам-гу",
+        "dong": "Тон-гу",
+        "buk": "Пук-гу",
+        "ulju": "Ульджу-гун"
+      },
+      "ageGroups": {
+        "under30": "30 жасқа дейін",
+        "30to44": "30–44 жас",
+        "45to64": "45–64 жас",
+        "65plus": "65 жас және одан жоғары"
+      },
+      "sexes": {
+        "female": "Әйел",
+        "male": "Ер"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Мен бірінші рет келдім.",
+        "revisit": "Мен бұрын келгенмін.",
+        "workYes": "Бұл жұмыс істеп жүргенде болды.",
+        "workNo": "Бұл жұмысқа байланысты емес.",
+        "korean": "Корей тілін нашар білемін. Баяу сөйлеңізші.",
+        "hello": "Сәлеметсіз бе. Дәрігердің қабылдауына жазылғым келеді.",
+        "arc": "Менде шетелдіктің тіркеу картасы (ARC) бар."
+      },
+      "symptom": "Белгілері: {syms:lower}. Орны: {parts:lower}. Дәрігерге қаралғым келеді.",
+      "department": "Маған керек бөлім: {dept}.",
+      "onset": "Басталған уақыты: {onset:lower}.",
+      "docs": {
+        "arc": "Шетелдіктің тіркеу картасы (ARC)",
+        "insurance": "Медициналық сақтандыру картасы (болса)",
+        "meds": "Ішіп жүрген дәрілеріңіз (болса)"
+      },
+      "faq": {
+        "first": "Бізге бірінші рет келдіңіз бе?",
+        "when": "Қашан келгіңіз келеді?",
+        "where": "Қай жеріңіз ауырады?",
+        "insurance": "Медициналық сақтандыруыңыз бар ма?",
+        "help": "(Түсінбеген кезде)"
+      },
+      "answers": {
+        "firstYes": "Иә, бірінші рет.",
+        "firstNo": "Жоқ, бұрын келгенмін.",
+        "whenToday": "Бүгін келгім келеді.",
+        "whenTomorrowAm": "Ертең таңертең келгім келеді.",
+        "whenTomorrowPm": "Ертең түстен кейін келгім келеді.",
+        "whenEarliest": "Ең жақын бос уақытқа.",
+        "insuranceYes": "Иә, бар.",
+        "insuranceNo": "Жоқ.",
+        "insuranceUnsure": "Білмеймін.",
+        "helpRepeat": "Қайталап айтыңызшы.",
+        "helpText": "SMS хабарлама арқылы жіберіңізші."
+      },
+      "fields": {
+        "symptoms": "Белгілері",
+        "bodyParts": "Дене бөлігі",
+        "onset": "Басталды",
+        "circumstance": "Қалай болды",
+        "note": "Менің жазбам (түпнұсқа)",
+        "baseline": "Денсаулық туралы негізгі мәлімет",
+        "meds": "Ішіп жүрген дәрілерім"
+      },
+      "age": "Жасы: {age}, жынысы: {sex:lower}",
+      "height": "Бойы",
+      "weight": "Салмағы",
+      "alcohol": "Алкоголь",
+      "smoking": "Темекі",
+      "drinkingValue": {
+        "none": "ішпеймін",
+        "sometimes": "кейде",
+        "often": "жиі"
+      },
+      "smokingValue": {
+        "no": "жоқ",
+        "yes": "иә",
+        "quit": "тастадым"
+      },
+      "yesNo": {
+        "yes": "иә",
+        "no": "жоқ",
+        "unknown": "білмеймін"
+      },
+      "happenedAtWork": "Жұмыста болды",
+      "workType": "Жұмыс түрі",
+      "industry": "Сала",
+      "problem": "Мәселе",
+      "area": "Аудан",
+      "myNote": "Менің жазбам",
+      "request": "Өтініш",
+      "requestTypes": {
+        "booking": "Жазылуға көмек",
+        "interpret": "Аударма",
+        "policy": "Сақтандыру және көмек туралы кеңес",
+        "referral": "Мекемеге жолдама",
+        "other": "Басқа"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "есінен тан",
+          "естен тан",
+          "есін жоғалт",
+          "талып қал",
+          "талып құла"
+        ],
+        "breathing": [
+          "дем ала алма",
+          "тыныс ала алма",
+          "тыныс алмай",
+          "тұншығ",
+          "тұншық"
+        ],
+        "chest": [
+          "кеудем ауыр",
+          "кеуде ауыр",
+          "кеудесі ауыр",
+          "жүрегім ауыр",
+          "кеудем қысып"
+        ],
+        "heavyBleeding": [
+          "қан тоқтамай",
+          "қатты қан кет",
+          "көп қан кет",
+          "қан көп кет",
+          "қан көп ағ"
+        ],
+        "amputation": [
+          "кесіліп түс",
+          "үзіліп түс",
+          "жұлынып кет",
+          "үзіліп кет",
+          "ампутац"
+        ],
+        "fall": [
+          "биіктен құла",
+          "биіктіктен құла",
+          "жоғарыдан құла",
+          "сатыдан құла",
+          "төбеден құла"
+        ],
+        "seizure": [
+          "талма ұста",
+          "талмасы ұста",
+          "денесі құрыс",
+          "бүкіл денесі тартыл",
+          "эпилепс"
+        ],
+        "stroke": [
+          "сал болып",
+          "бір жағы істемей",
+          "беті қисай",
+          "тілі күрмел",
+          "парализ"
+        ],
+        "severeBurn": [
+          "ток соқ",
+          "тоқ соқ",
+          "электр соқ",
+          "қатты күйіп",
+          "қатты күйік"
+        ],
+        "chemicalEye": [
+          "көзіме химия",
+          "көзге химия",
+          "көзіне химия",
+          "химия көзіме",
+          "химия көзге"
+        ],
+        "poisoning": [
+          "уланды",
+          "уланып",
+          "улану",
+          "газ жұт",
+          "газ шық"
+        ]
+      },
+      "headInjury": [
+        "басымды соқ",
+        "басым соғыл",
+        "басымнан жарақат",
+        "бас жарақат"
+      ],
+      "vomit": [
+        "құсып",
+        "құстым",
+        "құсу"
+      ],
+      "severity": [
+        "өте қатты",
+        "шыдай алмай",
+        "шыдатпай",
+        "өте ауыр",
+        "төзуге болмай"
+      ]
+    }
+  },
+  "km": {
+    "terms": {
+      "bodyParts": {
+        "head": "ក្បាល",
+        "eye": "ភ្នែក",
+        "ent": "ត្រចៀក ច្រមុះ បំពង់ក",
+        "teeth": "ធ្មេញ អញ្ចាញធ្មេញ",
+        "chest": "ទ្រូង",
+        "abdomen": "ពោះ",
+        "back": "ខ្នង ចង្កេះ",
+        "arm": "ដៃ ស្មា",
+        "hand": "បាតដៃ ម្រាមដៃ",
+        "leg": "ជើង ជង្គង់",
+        "foot": "បាតជើង កជើង",
+        "skin": "ស្បែក",
+        "whole": "ទូទាំងខ្លួន"
+      },
+      "symptoms": {
+        "pain": "ឈឺ",
+        "swelling": "ហើម",
+        "cut": "មុត របួស",
+        "bleeding": "ហូរឈាម",
+        "burn": "រលាក",
+        "numb": "ស្ពឹក",
+        "cantmove": "ពិបាកកម្រើក",
+        "fever": "គ្រុនក្ដៅ",
+        "cough": "ក្អក",
+        "dizzy": "វិលមុខ",
+        "rash": "កន្ទួល រមាស់",
+        "nausea": "ចង់ក្អួត ក្អួត",
+        "breath": "ពិបាកដកដង្ហើម",
+        "chemical": "ប៉ះពាល់សារធាតុគីមី",
+        "foreign": "មានអ្វីចូលភ្នែក"
+      },
+      "departments": {
+        "ortho": "ឆ្អឹង និងសន្លាក់",
+        "surgery": "វះកាត់ទូទៅ",
+        "internal": "ជំងឺផ្ទៃក្នុង",
+        "ophth": "ភ្នែក",
+        "ent": "ត្រចៀក ច្រមុះ បំពង់ក",
+        "derm": "ស្បែក",
+        "dental": "ធ្មេញ",
+        "neuro": "សរសៃប្រសាទ",
+        "family": "វេជ្ជសាស្ត្រគ្រួសារ",
+        "occ": "វេជ្ជសាស្ត្រការងារ"
+      },
+      "onsets": {
+        "today": "ថ្ងៃនេះ",
+        "yesterday": "ម្សិលមិញ",
+        "days": "2–3 ថ្ងៃមុន",
+        "week": "ជាងមួយសប្ដាហ៍មុន"
+      },
+      "industries": {
+        "shipbuilding": "សាងសង់នាវា",
+        "autoparts": "គ្រឿងបន្លាស់រថយន្ត",
+        "chemical": "គីមី",
+        "construction": "សំណង់",
+        "other": "ផ្សេងៗ"
+      },
+      "workTypes": {
+        "welding": "ផ្សារដែក",
+        "lifting": "លើក សែង",
+        "machine": "ការងារម៉ាស៊ីន (ម៉ាស៊ីនសង្កត់ ។ល។)",
+        "grinding": "កាត់ សំលៀង",
+        "painting": "លាបថ្នាំ ប្រើសារធាតុគីមី",
+        "assembly": "ដំឡើង"
+      },
+      "districts": {
+        "jung": "ជុងគូ",
+        "nam": "ណាមគូ",
+        "dong": "ដុងគូ",
+        "buk": "ប៊ុកគូ",
+        "ulju": "អ៊ុលជូគុន"
+      },
+      "ageGroups": {
+        "under30": "ក្រោម 30 ឆ្នាំ",
+        "30to44": "30–44 ឆ្នាំ",
+        "45to64": "45–64 ឆ្នាំ",
+        "65plus": "65 ឆ្នាំឡើងទៅ"
+      },
+      "sexes": {
+        "female": "ស្រី",
+        "male": "ប្រុស"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "ខ្ញុំមកទីនេះលើកដំបូង។",
+        "revisit": "ខ្ញុំធ្លាប់មកទីនេះហើយ។",
+        "workYes": "វាកើតឡើងពេលខ្ញុំកំពុងធ្វើការ។",
+        "workNo": "វាមិនទាក់ទងនឹងការងារទេ។",
+        "korean": "ខ្ញុំចេះភាសាកូរ៉េតិចតួច។ សូមនិយាយយឺតៗ។",
+        "hello": "សួស្ដី។ ខ្ញុំចង់ណាត់ជួបគ្រូពេទ្យ។",
+        "arc": "ខ្ញុំមានប័ណ្ណចុះបញ្ជីជនបរទេស (ARC)។"
+      },
+      "symptom": "ខ្ញុំមានរោគសញ្ញា {syms} នៅ {parts} ហើយចង់ជួបគ្រូពេទ្យ។",
+      "department": "ខ្ញុំចង់ពិនិត្យនៅផ្នែក {dept}។",
+      "onset": "វាចាប់ផ្ដើម {onset}។",
+      "docs": {
+        "arc": "ប័ណ្ណចុះបញ្ជីជនបរទេស (ARC)",
+        "insurance": "ប័ណ្ណធានារ៉ាប់រងសុខភាព (បើមាន)",
+        "meds": "ថ្នាំដែលកំពុងលេប (បើមាន)"
+      },
+      "faq": {
+        "first": "តើនេះជាលើកដំបូងដែលអ្នកមកឬ?",
+        "when": "តើអ្នកចង់មកពេលណា?",
+        "where": "តើអ្នកឈឺនៅត្រង់ណា?",
+        "insurance": "តើអ្នកមានធានារ៉ាប់រងសុខភាពឬទេ?",
+        "help": "(ពេលអ្នកស្ដាប់មិនយល់)"
+      },
+      "answers": {
+        "firstYes": "បាទ/ចាស លើកដំបូង។",
+        "firstNo": "ទេ ខ្ញុំធ្លាប់មកហើយ។",
+        "whenToday": "សូមថ្ងៃនេះ។",
+        "whenTomorrowAm": "សូមព្រឹកស្អែក។",
+        "whenTomorrowPm": "សូមរសៀលស្អែក។",
+        "whenEarliest": "ពេលឆាប់បំផុតដែលទំនេរ។",
+        "insuranceYes": "បាទ/ចាស ខ្ញុំមាន។",
+        "insuranceNo": "ទេ ខ្ញុំគ្មានទេ។",
+        "insuranceUnsure": "ខ្ញុំមិនច្បាស់ទេ។",
+        "helpRepeat": "សូមនិយាយម្ដងទៀត។",
+        "helpText": "សូមផ្ញើជាសារ SMS។"
+      },
+      "fields": {
+        "symptoms": "រោគសញ្ញា",
+        "bodyParts": "ផ្នែករាងកាយ",
+        "onset": "ចាប់ផ្ដើម",
+        "circumstance": "របៀបដែលវាកើតឡើង",
+        "note": "កំណត់ចំណាំរបស់ខ្ញុំ (ដើម)",
+        "baseline": "ព័ត៌មានសុខភាពមូលដ្ឋាន",
+        "meds": "ថ្នាំដែលខ្ញុំលេប"
+      },
+      "age": "{age} ឆ្នាំ, {sex}",
+      "height": "កម្ពស់",
+      "weight": "ទម្ងន់",
+      "alcohol": "គ្រឿងស្រវឹង",
+      "smoking": "ជក់បារី",
+      "drinkingValue": {
+        "none": "មិនផឹក",
+        "sometimes": "ម្ដងម្កាល",
+        "often": "ញឹកញាប់"
+      },
+      "smokingValue": {
+        "no": "មិនជក់",
+        "yes": "ជក់",
+        "quit": "ឈប់ហើយ"
+      },
+      "yesNo": {
+        "yes": "បាទ/ចាស",
+        "no": "ទេ",
+        "unknown": "មិនច្បាស់"
+      },
+      "happenedAtWork": "កើតឡើងនៅកន្លែងធ្វើការ",
+      "workType": "ប្រភេទការងារ",
+      "industry": "វិស័យ",
+      "problem": "បញ្ហា",
+      "area": "តំបន់",
+      "myNote": "កំណត់ចំណាំរបស់ខ្ញុំ",
+      "request": "សំណើ",
+      "requestTypes": {
+        "booking": "ជំនួយក្នុងការណាត់ជួប",
+        "interpret": "ការបកប្រែផ្ទាល់មាត់",
+        "policy": "ការប្រឹក្សាអំពីធានារ៉ាប់រង និងជំនួយ",
+        "referral": "ការបញ្ជូនទៅស្ថាប័ន",
+        "other": "ផ្សេងៗ"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "សន្លប់",
+          "បាត់ស្មារតី",
+          "មិនដឹងខ្លួន"
+        ],
+        "breathing": [
+          "ដកដង្ហើមមិនរួច",
+          "មិនដកដង្ហើម",
+          "ថប់ដង្ហើម",
+          "ពិបាកដកដង្ហើម"
+        ],
+        "chest": [
+          "ឈឺទ្រូង",
+          "តឹងទ្រូង",
+          "ចុកទ្រូង"
+        ],
+        "heavyBleeding": [
+          "ហូរឈាមច្រើន",
+          "ឈាមហូរច្រើន",
+          "ឈាមមិនឈប់",
+          "ហូរឈាមមិនឈប់"
+        ],
+        "amputation": [
+          "ដាច់ម្រាមដៃ",
+          "ម្រាមដៃដាច់",
+          "ដាច់ដៃ",
+          "ដាច់ជើង",
+          "កាត់ដាច់"
+        ],
+        "fall": [
+          "ធ្លាក់ពីលើ",
+          "ធ្លាក់ពីកន្លែងខ្ពស់",
+          "ធ្លាក់ពីរន្ទា",
+          "ធ្លាក់ពីជណ្ដើរ",
+          "ធ្លាក់ពីជណ្តើរ"
+        ],
+        "seizure": [
+          "ប្រកាច់",
+          "ឆ្កួតជ្រូក"
+        ],
+        "stroke": [
+          "ខ្វិន",
+          "មាត់វៀច",
+          "និយាយលែងច្បាស់",
+          "ពាក់កណ្ដាលខ្លួន",
+          "ខ្សោយម្ខាង"
+        ],
+        "severeBurn": [
+          "ឆក់ភ្លើង",
+          "ភ្លើងឆក់",
+          "ឆក់ខ្សែភ្លើង",
+          "រលាកធ្ងន់ធ្ងរ"
+        ],
+        "chemicalEye": [
+          "គីមីចូលភ្នែក",
+          "គីមីខ្ទាតចូលភ្នែក",
+          "គីមីប៉ះភ្នែក"
+        ],
+        "poisoning": [
+          "ពុលឧស្ម័ន",
+          "ពុលគីមី",
+          "ពុលអាហារ",
+          "ហ្គាសលេច",
+          "ឧស្ម័នលេច"
+        ]
+      },
+      "headInjury": [
+        "ក្បាលបុក",
+        "បុកក្បាល",
+        "របួសក្បាល"
+      ],
+      "vomit": [
+        "ក្អួត"
+      ],
+      "severity": [
+        "ធ្ងន់ធ្ងរ",
+        "ឈឺខ្លាំង",
+        "ខ្លាំងណាស់",
+        "ទ្រាំមិនបាន",
+        "ទ្រាំមិនទៅ"
+      ]
+    }
+  },
+  "ky": {
+    "terms": {
+      "bodyParts": {
+        "head": "Баш",
+        "eye": "Көз",
+        "ent": "Кулак, мурун, тамак",
+        "teeth": "Тиш, бучкак",
+        "chest": "Көкүрөк",
+        "abdomen": "Курсак",
+        "back": "Арка, бел",
+        "arm": "Кол, ийин",
+        "hand": "Алакан, манжа",
+        "leg": "Бут, тизе",
+        "foot": "Таман, томук",
+        "skin": "Тери",
+        "whole": "Бүт дене"
+      },
+      "symptoms": {
+        "pain": "Оору",
+        "swelling": "Шишик",
+        "cut": "Кесилген жер, жара",
+        "bleeding": "Кан агуу",
+        "burn": "Күйүк",
+        "numb": "Уюу (сезбей калуу)",
+        "cantmove": "Кыймылдоо кыйын",
+        "fever": "Температура",
+        "cough": "Жөтөл",
+        "dizzy": "Баш айлануу",
+        "rash": "Исиркек, кычышуу",
+        "nausea": "Жүрөк айлануу, кусуу",
+        "breath": "Дем алуу кыйын",
+        "chemical": "Химиялык заттын тийиши",
+        "foreign": "Көзгө бир нерсе кирди"
+      },
+      "departments": {
+        "ortho": "Ортопедия",
+        "surgery": "Жалпы хирургия",
+        "internal": "Терапия (ички оорулар)",
+        "ophth": "Көз дарыгери",
+        "ent": "ЛОР (кулак, мурун, тамак)",
+        "derm": "Дерматология (тери)",
+        "dental": "Тиш дарыгери",
+        "neuro": "Неврология",
+        "family": "Үй-бүлөлүк медицина",
+        "occ": "Кесиптик медицина"
+      },
+      "onsets": {
+        "today": "Бүгүн",
+        "yesterday": "Кечээ",
+        "days": "2–3 күн мурун",
+        "week": "Бир жумадан мурун"
+      },
+      "industries": {
+        "shipbuilding": "Кеме куруу",
+        "autoparts": "Автобөлүктөр",
+        "chemical": "Химия өнөр жайы",
+        "construction": "Курулуш",
+        "other": "Башка"
+      },
+      "workTypes": {
+        "welding": "Ширетүү",
+        "lifting": "Жүк көтөрүү, ташуу",
+        "machine": "Станокто иштөө (пресс ж.б.)",
+        "grinding": "Кесүү, жылмалоо",
+        "painting": "Боёо, химиялык заттар менен иштөө",
+        "assembly": "Чогултуу"
+      },
+      "districts": {
+        "jung": "Чун-гу",
+        "nam": "Нам-гу",
+        "dong": "Тон-гу",
+        "buk": "Пук-гу",
+        "ulju": "Ульджу-гун"
+      },
+      "ageGroups": {
+        "under30": "30 жашка чейин",
+        "30to44": "30–44 жаш",
+        "45to64": "45–64 жаш",
+        "65plus": "65 жаш жана андан улуу"
+      },
+      "sexes": {
+        "female": "Аял",
+        "male": "Эркек"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Мен биринчи жолу келдим.",
+        "revisit": "Мен мурун келгем.",
+        "workYes": "Бул иштеп жатканда болду.",
+        "workNo": "Бул жумушка байланыштуу эмес.",
+        "korean": "Корей тилин начар билем. Жай сүйлөңүзчү.",
+        "hello": "Саламатсызбы. Дарыгердин кабыл алуусуна жазылгым келет.",
+        "arc": "Менде чет элдиктин каттоо картасы (ARC) бар."
+      },
+      "symptom": "Белгилери: {syms:lower}. Жери: {parts:lower}. Дарыгерге көрүнгүм келет.",
+      "department": "Мага керектүү бөлүм: {dept}.",
+      "onset": "Башталган убакыт: {onset:lower}.",
+      "docs": {
+        "arc": "Чет элдиктин каттоо картасы (ARC)",
+        "insurance": "Медициналык камсыздандыруу картасы (болсо)",
+        "meds": "Ичип жүргөн дарыларыңыз (болсо)"
+      },
+      "faq": {
+        "first": "Бизге биринчи жолу келдиңизби?",
+        "when": "Качан келгиңиз келет?",
+        "where": "Кайсы жериңиз ооруйт?",
+        "insurance": "Медициналык камсыздандырууңуз барбы?",
+        "help": "(Түшүнбөй калганда)"
+      },
+      "answers": {
+        "firstYes": "Ооба, биринчи жолу.",
+        "firstNo": "Жок, мурун келгем.",
+        "whenToday": "Бүгүн келгим келет.",
+        "whenTomorrowAm": "Эртең эртең менен келгим келет.",
+        "whenTomorrowPm": "Эртең түштөн кийин келгим келет.",
+        "whenEarliest": "Эң жакынкы бош убакытка.",
+        "insuranceYes": "Ооба, бар.",
+        "insuranceNo": "Жок.",
+        "insuranceUnsure": "Билбейм.",
+        "helpRepeat": "Кайталап айтып коюңузчу.",
+        "helpText": "SMS билдирүү менен жөнөтүп коюңузчу."
+      },
+      "fields": {
+        "symptoms": "Белгилери",
+        "bodyParts": "Дененин бөлүгү",
+        "onset": "Башталды",
+        "circumstance": "Кантип болду",
+        "note": "Менин жазуум (түп нуска)",
+        "baseline": "Ден соолук тууралуу негизги маалымат",
+        "meds": "Ичип жүргөн дарыларым"
+      },
+      "age": "Жашы: {age}, жынысы: {sex:lower}",
+      "height": "Бою",
+      "weight": "Салмагы",
+      "alcohol": "Алкоголь",
+      "smoking": "Тамеки",
+      "drinkingValue": {
+        "none": "ичпейм",
+        "sometimes": "кээде",
+        "often": "көп"
+      },
+      "smokingValue": {
+        "no": "жок",
+        "yes": "ооба",
+        "quit": "таштадым"
+      },
+      "yesNo": {
+        "yes": "ооба",
+        "no": "жок",
+        "unknown": "билбейм"
+      },
+      "happenedAtWork": "Жумушта болду",
+      "workType": "Жумуштун түрү",
+      "industry": "Тармак",
+      "problem": "Көйгөй",
+      "area": "Район",
+      "myNote": "Менин жазуум",
+      "request": "Өтүнүч",
+      "requestTypes": {
+        "booking": "Жазылууга жардам",
+        "interpret": "Котормо",
+        "policy": "Камсыздандыруу жана жардам боюнча кеңеш",
+        "referral": "Мекемеге жолдомо",
+        "other": "Башка"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "эсин жогот",
+          "эсинен тан",
+          "эси оо",
+          "эсине келбей",
+          "эс-учун жогот"
+        ],
+        "breathing": [
+          "дем ала албай",
+          "дем алалбай",
+          "дем албай",
+          "тумчуг"
+        ],
+        "chest": [
+          "көкүрөгүм оору",
+          "көкүрөк оору",
+          "көкүрөгү оору",
+          "жүрөгүм оору",
+          "төшүм оору"
+        ],
+        "heavyBleeding": [
+          "кан токтобо",
+          "көп кан аг",
+          "кан көп аг",
+          "катуу кан аг"
+        ],
+        "amputation": [
+          "кесилип түш",
+          "үзүлүп түш",
+          "үзүлүп кет",
+          "жулунуп кет",
+          "ампутац"
+        ],
+        "fall": [
+          "бийиктиктен кула",
+          "бийиктен кула",
+          "жогортон кула",
+          "тепкичтен кула",
+          "чатырдан кула"
+        ],
+        "seizure": [
+          "талма карма",
+          "талмасы карма",
+          "денеси тырыш",
+          "бүт денеси тартыш",
+          "эпилепс"
+        ],
+        "stroke": [
+          "шал бол",
+          "бир жагы иштебей",
+          "бети кыйшай",
+          "тили күрмөл",
+          "парализ"
+        ],
+        "severeBurn": [
+          "ток урд",
+          "ток уруп",
+          "электр ур",
+          "катуу күйүп",
+          "катуу күйгөн"
+        ],
+        "chemicalEye": [
+          "көзүмө химия",
+          "көзгө химия",
+          "көзүнө химия",
+          "химия көзүмө",
+          "химия көзгө"
+        ],
+        "poisoning": [
+          "уулан",
+          "газ чыгып",
+          "газ жутуп",
+          "уу жут"
+        ]
+      },
+      "headInjury": [
+        "башымды уруп",
+        "башымды урун",
+        "баш жаракат",
+        "башым жаракат"
+      ],
+      "vomit": [
+        "кусуп",
+        "кустум",
+        "кусуу"
+      ],
+      "severity": [
+        "абдан катуу",
+        "чыдай албай",
+        "чыдагыс",
+        "өтө катуу",
+        "чыдабай жатам"
+      ]
+    }
+  },
+  "th": {
+    "terms": {
+      "bodyParts": {
+        "head": "ศีรษะ",
+        "eye": "ตา",
+        "ent": "หู จมูก คอ",
+        "teeth": "ฟัน เหงือก",
+        "chest": "หน้าอก",
+        "abdomen": "ท้อง",
+        "back": "หลัง เอว",
+        "arm": "แขน ไหล่",
+        "hand": "มือ นิ้วมือ",
+        "leg": "ขา เข่า",
+        "foot": "เท้า ข้อเท้า",
+        "skin": "ผิวหนัง",
+        "whole": "ทั้งตัว"
+      },
+      "symptoms": {
+        "pain": "ปวด",
+        "swelling": "บวม",
+        "cut": "แผลบาด บาดแผล",
+        "bleeding": "เลือดออก",
+        "burn": "แผลไหม้",
+        "numb": "ชา",
+        "cantmove": "ขยับลำบาก",
+        "fever": "ไข้",
+        "cough": "ไอ",
+        "dizzy": "เวียนศีรษะ",
+        "rash": "ผื่น คัน",
+        "nausea": "คลื่นไส้ อาเจียน",
+        "breath": "หายใจลำบาก",
+        "chemical": "สัมผัสสารเคมี",
+        "foreign": "มีสิ่งแปลกปลอมเข้าตา"
+      },
+      "departments": {
+        "ortho": "ศัลยกรรมกระดูก",
+        "surgery": "ศัลยกรรมทั่วไป",
+        "internal": "อายุรกรรม",
+        "ophth": "จักษุ (ตา)",
+        "ent": "หู คอ จมูก",
+        "derm": "ผิวหนัง",
+        "dental": "ทันตกรรม",
+        "neuro": "ประสาทวิทยา",
+        "family": "เวชศาสตร์ครอบครัว",
+        "occ": "อาชีวเวชศาสตร์"
+      },
+      "onsets": {
+        "today": "วันนี้",
+        "yesterday": "เมื่อวาน",
+        "days": "2–3 วันก่อน",
+        "week": "มากกว่า 1 สัปดาห์ก่อน"
+      },
+      "industries": {
+        "shipbuilding": "ต่อเรือ",
+        "autoparts": "ชิ้นส่วนรถยนต์",
+        "chemical": "เคมี",
+        "construction": "ก่อสร้าง",
+        "other": "อื่น ๆ"
+      },
+      "workTypes": {
+        "welding": "งานเชื่อม",
+        "lifting": "ยกของ แบกของ",
+        "machine": "งานเครื่องจักร (เครื่องปั๊ม ฯลฯ)",
+        "grinding": "ตัด เจียร",
+        "painting": "พ่นสี จัดการสารเคมี",
+        "assembly": "งานประกอบ"
+      },
+      "districts": {
+        "jung": "จุงกู",
+        "nam": "นัมกู",
+        "dong": "ดงกู",
+        "buk": "บุกกู",
+        "ulju": "อุลจูกุน"
+      },
+      "ageGroups": {
+        "under30": "ต่ำกว่า 30 ปี",
+        "30to44": "30–44 ปี",
+        "45to64": "45–64 ปี",
+        "65plus": "65 ปีขึ้นไป"
+      },
+      "sexes": {
+        "female": "หญิง",
+        "male": "ชาย"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "มาที่นี่ครั้งแรก",
+        "revisit": "เคยมาที่นี่แล้ว",
+        "workYes": "เกิดขึ้นระหว่างทำงาน",
+        "workNo": "ไม่เกี่ยวกับงาน",
+        "korean": "พูดภาษาเกาหลีได้ไม่ดี กรุณาพูดช้า ๆ",
+        "hello": "สวัสดี อยากนัดหมายพบแพทย์",
+        "arc": "มีบัตรลงทะเบียนคนต่างชาติ (ARC)"
+      },
+      "symptom": "มีอาการ {syms} ที่ {parts} อยากพบแพทย์",
+      "department": "อยากพบแพทย์แผนก {dept}",
+      "onset": "เริ่มมีอาการตั้งแต่ {onset}",
+      "docs": {
+        "arc": "บัตรลงทะเบียนคนต่างชาติ (ARC)",
+        "insurance": "บัตรประกันสุขภาพ (ถ้ามี)",
+        "meds": "ยาที่กินอยู่ (ถ้ามี)"
+      },
+      "faq": {
+        "first": "มาครั้งแรกใช่ไหม?",
+        "when": "อยากมาเมื่อไร?",
+        "where": "เจ็บตรงไหน?",
+        "insurance": "มีประกันสุขภาพไหม?",
+        "help": "(เมื่อฟังไม่เข้าใจ)"
+      },
+      "answers": {
+        "firstYes": "ใช่ มาครั้งแรก",
+        "firstNo": "ไม่ใช่ เคยมาแล้ว",
+        "whenToday": "ขอเป็นวันนี้",
+        "whenTomorrowAm": "ขอเป็นพรุ่งนี้เช้า",
+        "whenTomorrowPm": "ขอเป็นพรุ่งนี้บ่าย",
+        "whenEarliest": "เวลาที่เร็วที่สุดที่ว่าง",
+        "insuranceYes": "ใช่ มี",
+        "insuranceNo": "ไม่มี",
+        "insuranceUnsure": "ไม่แน่ใจ",
+        "helpRepeat": "กรุณาพูดอีกครั้ง",
+        "helpText": "กรุณาส่งเป็นข้อความ SMS"
+      },
+      "fields": {
+        "symptoms": "อาการ",
+        "bodyParts": "ส่วนของร่างกาย",
+        "onset": "เริ่มเป็น",
+        "circumstance": "เกิดขึ้นอย่างไร",
+        "note": "บันทึกของฉัน (ต้นฉบับ)",
+        "baseline": "ข้อมูลสุขภาพพื้นฐาน",
+        "meds": "ยาที่กินอยู่"
+      },
+      "age": "{age} ปี, {sex}",
+      "height": "ส่วนสูง",
+      "weight": "น้ำหนัก",
+      "alcohol": "แอลกอฮอล์",
+      "smoking": "สูบบุหรี่",
+      "drinkingValue": {
+        "none": "ไม่ดื่ม",
+        "sometimes": "บางครั้ง",
+        "often": "บ่อย"
+      },
+      "smokingValue": {
+        "no": "ไม่สูบ",
+        "yes": "สูบ",
+        "quit": "เลิกแล้ว"
+      },
+      "yesNo": {
+        "yes": "ใช่",
+        "no": "ไม่ใช่",
+        "unknown": "ไม่แน่ใจ"
+      },
+      "happenedAtWork": "เกิดขึ้นที่ทำงาน",
+      "workType": "ประเภทงาน",
+      "industry": "อุตสาหกรรม",
+      "problem": "ปัญหา",
+      "area": "พื้นที่",
+      "myNote": "บันทึกของฉัน",
+      "request": "คำขอ",
+      "requestTypes": {
+        "booking": "ช่วยนัดหมาย",
+        "interpret": "ล่าม",
+        "policy": "คำปรึกษาเรื่องประกันและความช่วยเหลือ",
+        "referral": "ส่งต่อไปยังหน่วยงาน",
+        "other": "อื่น ๆ"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "หมดสติ",
+          "ไม่รู้สึกตัว",
+          "ไม่ได้สติ",
+          "สลบ"
+        ],
+        "breathing": [
+          "หายใจไม่ออก",
+          "หายใจไม่ได้",
+          "ไม่หายใจ",
+          "หายใจลำบาก"
+        ],
+        "chest": [
+          "เจ็บหน้าอก",
+          "แน่นหน้าอก",
+          "ปวดหน้าอก",
+          "เจ็บอก"
+        ],
+        "heavyBleeding": [
+          "เลือดออกมาก",
+          "เลือดออกเยอะ",
+          "เลือดไม่หยุด",
+          "เลือดไหลไม่หยุด",
+          "เลือดพุ่ง"
+        ],
+        "amputation": [
+          "นิ้วขาด",
+          "มือขาด",
+          "แขนขาด",
+          "ขาดออก",
+          "ตัดขาด"
+        ],
+        "fall": [
+          "ตกจากที่สูง",
+          "ตกลงมาจาก",
+          "ตกจากนั่งร้าน",
+          "ตกจากบันได",
+          "หล่นจากที่สูง"
+        ],
+        "seizure": [
+          "ชักเกร็ง",
+          "ลมชัก",
+          "อาการชัก",
+          "ชักกระตุก",
+          "กำลังชัก"
+        ],
+        "stroke": [
+          "อัมพาต",
+          "แขนขาอ่อนแรง",
+          "ซีกเดียว",
+          "ปากเบี้ยว",
+          "พูดไม่ชัด"
+        ],
+        "severeBurn": [
+          "ไฟดูด",
+          "ไฟฟ้าดูด",
+          "ไฟฟ้าช็อต",
+          "ไฟช็อต",
+          "ไหม้รุนแรง"
+        ],
+        "chemicalEye": [
+          "เคมีเข้าตา",
+          "เคมีกระเด็นเข้าตา",
+          "เคมีโดนตา",
+          "น้ำยาเข้าตา"
+        ],
+        "poisoning": [
+          "แก๊สรั่ว",
+          "ก๊าซรั่ว",
+          "สูดดมแก๊ส",
+          "สูดดมก๊าซ",
+          "สารพิษ"
+        ]
+      },
+      "headInjury": [
+        "หัวกระแทก",
+        "หัวฟาด",
+        "ศีรษะกระแทก",
+        "บาดเจ็บที่ศีรษะ",
+        "หัวโขก"
+      ],
+      "vomit": [
+        "อาเจียน",
+        "อ้วก"
+      ],
+      "severity": [
+        "รุนแรง",
+        "มากๆ",
+        "ทนไม่ไหว",
+        "เจ็บมาก",
+        "ปวดมาก"
+      ]
+    }
+  },
+  "fr": {
+    "terms": {
+      "bodyParts": {
+        "head": "Tête",
+        "eye": "Œil",
+        "ent": "Oreille, nez, gorge",
+        "teeth": "Dents, gencives",
+        "chest": "Poitrine",
+        "abdomen": "Ventre",
+        "back": "Dos, bas du dos",
+        "arm": "Bras, épaule",
+        "hand": "Main, doigt",
+        "leg": "Jambe, genou",
+        "foot": "Pied, cheville",
+        "skin": "Peau",
+        "whole": "Tout le corps"
+      },
+      "symptoms": {
+        "pain": "Douleur",
+        "swelling": "Gonflement",
+        "cut": "Coupure, plaie",
+        "bleeding": "Saignement",
+        "burn": "Brûlure",
+        "numb": "Engourdissement",
+        "cantmove": "Difficulté à bouger",
+        "fever": "Fièvre",
+        "cough": "Toux",
+        "dizzy": "Vertiges",
+        "rash": "Boutons, démangeaisons",
+        "nausea": "Nausée, vomissements",
+        "breath": "Difficulté à respirer",
+        "chemical": "Contact avec un produit chimique",
+        "foreign": "Quelque chose dans l’œil"
+      },
+      "departments": {
+        "ortho": "Orthopédie",
+        "surgery": "Chirurgie générale",
+        "internal": "Médecine interne",
+        "ophth": "Ophtalmologie (yeux)",
+        "ent": "ORL (oreille, nez, gorge)",
+        "derm": "Dermatologie (peau)",
+        "dental": "Dentiste",
+        "neuro": "Neurologie",
+        "family": "Médecine générale",
+        "occ": "Médecine du travail"
+      },
+      "onsets": {
+        "today": "Aujourd’hui",
+        "yesterday": "Hier",
+        "days": "Il y a 2–3 jours",
+        "week": "Il y a plus d’une semaine"
+      },
+      "industries": {
+        "shipbuilding": "Construction navale",
+        "autoparts": "Pièces automobiles",
+        "chemical": "Chimie",
+        "construction": "Bâtiment",
+        "other": "Autre"
+      },
+      "workTypes": {
+        "welding": "Soudure",
+        "lifting": "Levage, port de charges",
+        "machine": "Travail sur machine (presse, etc.)",
+        "grinding": "Découpe, meulage",
+        "painting": "Peinture, produits chimiques",
+        "assembly": "Assemblage"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "Moins de 30 ans",
+        "30to44": "30–44 ans",
+        "45to64": "45–64 ans",
+        "65plus": "65 ans ou plus"
+      },
+      "sexes": {
+        "female": "Femme",
+        "male": "Homme"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "C’est ma première visite.",
+        "revisit": "Je suis déjà venu ici.",
+        "workYes": "C’est arrivé pendant mon travail.",
+        "workNo": "Ce n’est pas lié au travail.",
+        "korean": "Je parle peu coréen. Parlez lentement, s’il vous plaît.",
+        "hello": "Bonjour. Je voudrais prendre rendez-vous.",
+        "arc": "J’ai une carte de résident étranger (ARC)."
+      },
+      "symptom": "J’ai ces symptômes : {syms:lower}, à cet endroit : {parts:lower}. Je voudrais voir un médecin.",
+      "department": "Je voudrais consulter ce service : {dept}.",
+      "onset": "Cela a commencé {onset:lower}.",
+      "docs": {
+        "arc": "Carte de résident étranger (ARC)",
+        "insurance": "Carte d’assurance maladie (si vous en avez une)",
+        "meds": "Médicaments que vous prenez (s’il y en a)"
+      },
+      "faq": {
+        "first": "Est-ce votre première visite ?",
+        "when": "Quand voulez-vous venir ?",
+        "where": "Où avez-vous mal ?",
+        "insurance": "Avez-vous une assurance maladie ?",
+        "help": "(Quand vous n’avez pas compris)"
+      },
+      "answers": {
+        "firstYes": "Oui, c’est la première fois.",
+        "firstNo": "Non, je suis déjà venu.",
+        "whenToday": "Aujourd’hui, s’il vous plaît.",
+        "whenTomorrowAm": "Demain matin, s’il vous plaît.",
+        "whenTomorrowPm": "Demain après-midi, s’il vous plaît.",
+        "whenEarliest": "Le plus tôt possible.",
+        "insuranceYes": "Oui, j’en ai une.",
+        "insuranceNo": "Non, je n’en ai pas.",
+        "insuranceUnsure": "Je ne sais pas.",
+        "helpRepeat": "Pouvez-vous répéter, s’il vous plaît ?",
+        "helpText": "Envoyez-le par SMS, s’il vous plaît."
+      },
+      "fields": {
+        "symptoms": "Symptômes",
+        "bodyParts": "Partie du corps",
+        "onset": "Début",
+        "circumstance": "Comment c’est arrivé",
+        "note": "Ma note (texte original)",
+        "baseline": "Infos de santé de base",
+        "meds": "Médicaments que je prends"
+      },
+      "age": "{age} ans, {sex}",
+      "height": "Taille",
+      "weight": "Poids",
+      "alcohol": "Alcool",
+      "smoking": "Tabac",
+      "drinkingValue": {
+        "none": "jamais",
+        "sometimes": "parfois",
+        "often": "souvent"
+      },
+      "smokingValue": {
+        "no": "non",
+        "yes": "oui",
+        "quit": "arrêté"
+      },
+      "yesNo": {
+        "yes": "oui",
+        "no": "non",
+        "unknown": "je ne sais pas"
+      },
+      "happenedAtWork": "Arrivé au travail",
+      "workType": "Type de travail",
+      "industry": "Secteur",
+      "problem": "Problème",
+      "area": "Quartier",
+      "myNote": "Ma note",
+      "request": "Demande",
+      "requestTypes": {
+        "booking": "Aide pour un rendez-vous",
+        "interpret": "Interprétation",
+        "policy": "Conseils assurance et aides",
+        "referral": "Orientation vers un organisme",
+        "other": "Autre"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "évanoui",
+          "evanoui",
+          "perdu connaissance",
+          "sans connaissance",
+          "inconscient"
+        ],
+        "breathing": [
+          "pas respirer",
+          "pas à respirer",
+          "pas a respirer",
+          "respire pas",
+          "étouffe",
+          "etouffe"
+        ],
+        "chest": [
+          "mal à la poitrine",
+          "mal a la poitrine",
+          "douleur à la poitrine",
+          "douleur a la poitrine",
+          "douleur thoracique"
+        ],
+        "heavyBleeding": [
+          "saigne beaucoup",
+          "saigne abondamment",
+          "beaucoup de sang",
+          "pas de saigner",
+          "saignement abondant"
+        ],
+        "amputation": [
+          "amput",
+          "sectionn",
+          "doigt arrach",
+          "main arrach",
+          "doigt tranch"
+        ],
+        "fall": [
+          "tombé de",
+          "tombé du",
+          "tombe de l",
+          "tombe du",
+          "chute de hauteur"
+        ],
+        "seizure": [
+          "convuls",
+          "épilep",
+          "epilep"
+        ],
+        "stroke": [
+          "paralys",
+          "bouche de travers",
+          "un côté du corps",
+          "un cote du corps"
+        ],
+        "severeBurn": [
+          "électrocut",
+          "electrocut",
+          "brûlure grave",
+          "brulure grave",
+          "décharge électrique",
+          "decharge electrique"
+        ],
+        "chemicalEye": [
+          "chimique dans les yeux",
+          "chimique dans l'œil",
+          "chimique dans l'oeil",
+          "chimique dans l’œil",
+          "chimique dans l’oeil"
+        ],
+        "poisoning": [
+          "fuite de gaz",
+          "empoisonn",
+          "intoxiq",
+          "respiré du gaz",
+          "respire du gaz"
+        ]
+      },
+      "headInjury": [
+        "cogné la tête",
+        "cogne la tete",
+        "coup à la tête",
+        "coup a la tete",
+        "blessure à la tête"
+      ],
+      "vomit": [
+        "vomi"
+      ],
+      "severity": [
+        "très mal",
+        "tres mal",
+        "insupportable",
+        "horrible",
+        "grave"
+      ]
+    }
+  },
+  "tl": {
+    "terms": {
+      "bodyParts": {
+        "head": "Ulo",
+        "eye": "Mata",
+        "ent": "Tainga, ilong, lalamunan",
+        "teeth": "Ngipin, gilagid",
+        "chest": "Dibdib",
+        "abdomen": "Tiyan",
+        "back": "Likod, baywang",
+        "arm": "Braso, balikat",
+        "hand": "Kamay, daliri",
+        "leg": "Binti, tuhod",
+        "foot": "Paa, bukung-bukong",
+        "skin": "Balat",
+        "whole": "Buong katawan"
+      },
+      "symptoms": {
+        "pain": "Pananakit",
+        "swelling": "Pamamaga",
+        "cut": "Hiwa, sugat",
+        "bleeding": "Pagdurugo",
+        "burn": "Paso",
+        "numb": "Pamamanhid",
+        "cantmove": "Hirap gumalaw",
+        "fever": "Lagnat",
+        "cough": "Ubo",
+        "dizzy": "Pagkahilo",
+        "rash": "Pantal, pangangati",
+        "nausea": "Pagduduwal, pagsusuka",
+        "breath": "Hirap huminga",
+        "chemical": "Nalantad sa kemikal",
+        "foreign": "May pumasok sa mata"
+      },
+      "departments": {
+        "ortho": "Orthopedics (buto)",
+        "surgery": "General surgery",
+        "internal": "Internal medicine",
+        "ophth": "Ophthalmology (mata)",
+        "ent": "ENT (tainga, ilong, lalamunan)",
+        "derm": "Dermatology (balat)",
+        "dental": "Dentista",
+        "neuro": "Neurology",
+        "family": "Family medicine",
+        "occ": "Occupational medicine"
+      },
+      "onsets": {
+        "today": "Ngayong araw",
+        "yesterday": "Kahapon",
+        "days": "2–3 araw na ang nakaraan",
+        "week": "Mahigit isang linggo na ang nakaraan"
+      },
+      "industries": {
+        "shipbuilding": "Paggawa ng barko",
+        "autoparts": "Piyesa ng sasakyan",
+        "chemical": "Kemikal",
+        "construction": "Konstruksyon",
+        "other": "Iba pa"
+      },
+      "workTypes": {
+        "welding": "Welding",
+        "lifting": "Pagbubuhat, pagdadala",
+        "machine": "Trabaho sa makina (press atbp.)",
+        "grinding": "Pagputol, grinding",
+        "painting": "Pagpipintura, paghawak ng kemikal",
+        "assembly": "Assembly"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "Wala pang 30",
+        "30to44": "30–44",
+        "45to64": "45–64",
+        "65plus": "65 pataas"
+      },
+      "sexes": {
+        "female": "Babae",
+        "male": "Lalaki"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Unang beses ko po rito.",
+        "revisit": "Nakapunta na po ako rito dati.",
+        "workYes": "Nangyari po ito habang nagtatrabaho ako.",
+        "workNo": "Wala po itong kinalaman sa trabaho.",
+        "korean": "Kaunti lang po ang alam kong Korean. Pakibagalan po ang pagsasalita.",
+        "hello": "Magandang araw po. Gusto ko pong magpa-appointment.",
+        "arc": "May alien registration card (ARC) po ako."
+      },
+      "symptom": "Ang nararamdaman ko po: {syms:lower}. Bahagi ng katawan: {parts:lower}. Gusto ko pong magpatingin sa doktor.",
+      "department": "Gusto ko pong magpatingin sa {dept}.",
+      "onset": "Nagsimula po ito {onset:lower}.",
+      "docs": {
+        "arc": "Alien registration card (ARC)",
+        "insurance": "Health insurance card (kung mayroon)",
+        "meds": "Mga gamot na iniinom mo (kung mayroon)"
+      },
+      "faq": {
+        "first": "Unang beses mo ba rito?",
+        "when": "Kailan mo gustong pumunta?",
+        "where": "Saan masakit?",
+        "insurance": "May health insurance ka ba?",
+        "help": "(Kapag hindi mo naintindihan)"
+      },
+      "answers": {
+        "firstYes": "Opo, unang beses ko po.",
+        "firstNo": "Hindi po, nakapunta na ako dati.",
+        "whenToday": "Ngayong araw po.",
+        "whenTomorrowAm": "Bukas ng umaga po.",
+        "whenTomorrowPm": "Bukas ng hapon po.",
+        "whenEarliest": "Ang pinakamaagang oras na bakante po.",
+        "insuranceYes": "Opo, mayroon.",
+        "insuranceNo": "Wala po.",
+        "insuranceUnsure": "Hindi po ako sigurado.",
+        "helpRepeat": "Pakiulit po.",
+        "helpText": "Paki-text na lang po."
+      },
+      "fields": {
+        "symptoms": "Mga sintomas",
+        "bodyParts": "Bahagi ng katawan",
+        "onset": "Nagsimula",
+        "circumstance": "Paano nangyari",
+        "note": "Aking tala (orihinal)",
+        "baseline": "Pangunahing impormasyon sa kalusugan",
+        "meds": "Mga gamot na iniinom ko"
+      },
+      "age": "{age} taong gulang, {sex}",
+      "height": "Taas",
+      "weight": "Timbang",
+      "alcohol": "Alak",
+      "smoking": "Paninigarilyo",
+      "drinkingValue": {
+        "none": "hindi umiinom",
+        "sometimes": "paminsan-minsan",
+        "often": "madalas"
+      },
+      "smokingValue": {
+        "no": "hindi",
+        "yes": "oo",
+        "quit": "tumigil na"
+      },
+      "yesNo": {
+        "yes": "oo",
+        "no": "hindi",
+        "unknown": "hindi sigurado"
+      },
+      "happenedAtWork": "Nangyari sa trabaho",
+      "workType": "Uri ng trabaho",
+      "industry": "Industriya",
+      "problem": "Problema",
+      "area": "Lugar",
+      "myNote": "Aking tala",
+      "request": "Request",
+      "requestTypes": {
+        "booking": "Tulong sa booking",
+        "interpret": "Interpretasyon",
+        "policy": "Payo tungkol sa insurance at tulong",
+        "referral": "Referral sa ahensya",
+        "other": "Iba pa"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "nahimatay",
+          "hinimatay",
+          "nawalan ng malay",
+          "walang malay"
+        ],
+        "breathing": [
+          "hindi makahinga",
+          "di makahinga",
+          "hirap huminga",
+          "hindi humihinga"
+        ],
+        "chest": [
+          "sakit sa dibdib",
+          "masakit ang dibdib",
+          "sumasakit ang dibdib",
+          "naninikip ang dibdib",
+          "paninikip ng dibdib"
+        ],
+        "heavyBleeding": [
+          "maraming dugo",
+          "malakas ang pagdurugo",
+          "ayaw tumigil ang dugo",
+          "hindi tumitigil ang dugo",
+          "dumudugo nang malakas"
+        ],
+        "amputation": [
+          "naputulan",
+          "putol ang daliri",
+          "putol ang kamay",
+          "putol ang braso",
+          "putol ang paa"
+        ],
+        "fall": [
+          "nahulog mula",
+          "nahulog galing",
+          "bumagsak mula",
+          "nalaglag mula",
+          "nahulog sa hagdan"
+        ],
+        "seizure": [
+          "nangingisay",
+          "kombulsyon",
+          "kumbulsyon",
+          "kinukumbulsyon"
+        ],
+        "stroke": [
+          "paralis",
+          "ngiwi ang bibig",
+          "kalahati ng katawan",
+          "hindi maigalaw ang isang"
+        ],
+        "severeBurn": [
+          "nakuryente",
+          "nakoryente",
+          "grabeng paso",
+          "malubhang paso",
+          "matinding paso"
+        ],
+        "chemicalEye": [
+          "kemikal sa mata",
+          "kemikal sa aking mata",
+          "kemikal sa mga mata",
+          "kemikal ang mata",
+          "kemikal ang mga mata"
+        ],
+        "poisoning": [
+          "nalason",
+          "pagkalason",
+          "tagas ng gas",
+          "tumagas ang gas",
+          "nakalanghap ng gas"
+        ]
+      },
+      "headInjury": [
+        "nauntog",
+        "nabagok",
+        "tinamaan ang ulo",
+        "tumama ang ulo",
+        "pinsala sa ulo"
+      ],
+      "vomit": [
+        "nagsuka",
+        "nagsusuka",
+        "sumuka",
+        "pagsusuka"
+      ],
+      "severity": [
+        "grabe",
+        "sobrang sakit",
+        "matindi",
+        "hindi ko matiis",
+        "malala"
+      ]
+    }
+  },
+  "id": {
+    "terms": {
+      "bodyParts": {
+        "head": "Kepala",
+        "eye": "Mata",
+        "ent": "Telinga, hidung, tenggorokan",
+        "teeth": "Gigi, gusi",
+        "chest": "Dada",
+        "abdomen": "Perut",
+        "back": "Punggung, pinggang",
+        "arm": "Lengan, bahu",
+        "hand": "Tangan, jari",
+        "leg": "Kaki, lutut",
+        "foot": "Telapak kaki, pergelangan kaki",
+        "skin": "Kulit",
+        "whole": "Seluruh badan"
+      },
+      "symptoms": {
+        "pain": "Nyeri",
+        "swelling": "Bengkak",
+        "cut": "Luka sayat, luka",
+        "bleeding": "Berdarah",
+        "burn": "Luka bakar",
+        "numb": "Mati rasa",
+        "cantmove": "Sulit bergerak",
+        "fever": "Demam",
+        "cough": "Batuk",
+        "dizzy": "Pusing",
+        "rash": "Ruam, gatal",
+        "nausea": "Mual, muntah",
+        "breath": "Sesak napas",
+        "chemical": "Terkena bahan kimia",
+        "foreign": "Ada benda masuk ke mata"
+      },
+      "departments": {
+        "ortho": "Ortopedi (tulang)",
+        "surgery": "Bedah umum",
+        "internal": "Penyakit dalam",
+        "ophth": "Dokter mata",
+        "ent": "THT (telinga, hidung, tenggorokan)",
+        "derm": "Dokter kulit",
+        "dental": "Dokter gigi",
+        "neuro": "Saraf (neurologi)",
+        "family": "Dokter umum",
+        "occ": "Kedokteran kerja"
+      },
+      "onsets": {
+        "today": "Hari ini",
+        "yesterday": "Kemarin",
+        "days": "2–3 hari lalu",
+        "week": "Lebih dari seminggu lalu"
+      },
+      "industries": {
+        "shipbuilding": "Galangan kapal",
+        "autoparts": "Suku cadang mobil",
+        "chemical": "Kimia",
+        "construction": "Konstruksi",
+        "other": "Lainnya"
+      },
+      "workTypes": {
+        "welding": "Pengelasan",
+        "lifting": "Mengangkat, mengangkut barang",
+        "machine": "Kerja mesin (mesin press, dll.)",
+        "grinding": "Memotong, menggerinda",
+        "painting": "Mengecat, menangani bahan kimia",
+        "assembly": "Perakitan"
+      },
+      "districts": {
+        "jung": "Jung-gu",
+        "nam": "Nam-gu",
+        "dong": "Dong-gu",
+        "buk": "Buk-gu",
+        "ulju": "Ulju-gun"
+      },
+      "ageGroups": {
+        "under30": "Di bawah 30 tahun",
+        "30to44": "30–44 tahun",
+        "45to64": "45–64 tahun",
+        "65plus": "65 tahun ke atas"
+      },
+      "sexes": {
+        "female": "Perempuan",
+        "male": "Laki-laki"
+      }
+    },
+    "templates": {
+      "phrases": {
+        "firstVisit": "Ini kunjungan pertama saya.",
+        "revisit": "Saya pernah datang ke sini.",
+        "workYes": "Ini terjadi saat saya bekerja.",
+        "workNo": "Ini tidak berhubungan dengan pekerjaan.",
+        "korean": "Bahasa Korea saya terbatas. Tolong bicara pelan-pelan.",
+        "hello": "Halo. Saya ingin membuat janji periksa.",
+        "arc": "Saya punya kartu registrasi orang asing (ARC)."
+      },
+      "symptom": "Saya mengalami {syms:lower} di bagian {parts:lower} dan ingin diperiksa dokter.",
+      "department": "Saya ingin diperiksa di bagian: {dept}.",
+      "onset": "Keluhan ini mulai {onset:lower}.",
+      "docs": {
+        "arc": "Kartu registrasi orang asing (ARC)",
+        "insurance": "Kartu asuransi kesehatan (jika ada)",
+        "meds": "Obat yang sedang Anda minum (jika ada)"
+      },
+      "faq": {
+        "first": "Apakah ini kunjungan pertama Anda?",
+        "when": "Kapan Anda ingin datang?",
+        "where": "Bagian mana yang sakit?",
+        "insurance": "Apakah Anda punya asuransi kesehatan?",
+        "help": "(Jika Anda tidak mengerti)"
+      },
+      "answers": {
+        "firstYes": "Ya, ini pertama kali.",
+        "firstNo": "Tidak, saya pernah datang.",
+        "whenToday": "Hari ini, tolong.",
+        "whenTomorrowAm": "Besok pagi, tolong.",
+        "whenTomorrowPm": "Besok siang, tolong.",
+        "whenEarliest": "Waktu paling cepat yang ada.",
+        "insuranceYes": "Ya, saya punya.",
+        "insuranceNo": "Tidak, saya tidak punya.",
+        "insuranceUnsure": "Saya tidak yakin.",
+        "helpRepeat": "Tolong ulangi sekali lagi.",
+        "helpText": "Tolong kirim lewat SMS."
+      },
+      "fields": {
+        "symptoms": "Gejala",
+        "bodyParts": "Bagian tubuh",
+        "onset": "Mulai",
+        "circumstance": "Bagaimana kejadiannya",
+        "note": "Catatan saya (asli)",
+        "baseline": "Info kesehatan dasar",
+        "meds": "Obat yang saya minum"
+      },
+      "age": "{age} tahun, {sex}",
+      "height": "Tinggi badan",
+      "weight": "Berat badan",
+      "alcohol": "Alkohol",
+      "smoking": "Merokok",
+      "drinkingValue": {
+        "none": "tidak pernah",
+        "sometimes": "kadang-kadang",
+        "often": "sering"
+      },
+      "smokingValue": {
+        "no": "tidak",
+        "yes": "ya",
+        "quit": "sudah berhenti"
+      },
+      "yesNo": {
+        "yes": "ya",
+        "no": "tidak",
+        "unknown": "tidak yakin"
+      },
+      "happenedAtWork": "Terjadi di tempat kerja",
+      "workType": "Jenis pekerjaan",
+      "industry": "Industri",
+      "problem": "Masalah",
+      "area": "Wilayah",
+      "myNote": "Catatan saya",
+      "request": "Permintaan",
+      "requestTypes": {
+        "booking": "Bantuan janji temu",
+        "interpret": "Penerjemahan",
+        "policy": "Saran asuransi & bantuan",
+        "referral": "Rujukan ke lembaga",
+        "other": "Lainnya"
+      }
+    },
+    "emergency": {
+      "keywords": {
+        "unconscious": [
+          "pingsan",
+          "sadarkan diri",
+          "hilang kesadaran",
+          "kolaps"
+        ],
+        "breathing": [
+          "sesak napas",
+          "sesak nafas",
+          "tidak bisa bernapas",
+          "tidak bisa napas",
+          "susah bernapas"
+        ],
+        "chest": [
+          "nyeri dada",
+          "sakit dada",
+          "dada sakit",
+          "dada sesak",
+          "dada terasa sesak"
+        ],
+        "heavyBleeding": [
+          "pendarahan hebat",
+          "perdarahan hebat",
+          "banyak darah",
+          "darah tidak berhenti",
+          "darahnya tidak berhenti"
+        ],
+        "amputation": [
+          "amputasi",
+          "jari putus",
+          "tangan putus",
+          "kaki putus",
+          "terpotong putus"
+        ],
+        "fall": [
+          "jatuh dari",
+          "jatuh ke bawah",
+          "terjun dari"
+        ],
+        "seizure": [
+          "kejang",
+          "epilepsi"
+        ],
+        "stroke": [
+          "lumpuh",
+          "mulut mencong",
+          "mulut miring",
+          "bicara pelo",
+          "separuh badan"
+        ],
+        "severeBurn": [
+          "tersengat listrik",
+          "kesetrum",
+          "kena setrum",
+          "luka bakar parah",
+          "luka bakar berat"
+        ],
+        "chemicalEye": [
+          "kimia masuk mata",
+          "kimia masuk ke mata",
+          "kimia kena mata",
+          "kimia di mata",
+          "mata kena bahan kimia",
+          "mata terkena bahan kimia"
+        ],
+        "poisoning": [
+          "keracunan",
+          "kebocoran gas",
+          "gas bocor",
+          "menghirup gas",
+          "terhirup gas"
+        ]
+      },
+      "headInjury": [
+        "kepala terbentur",
+        "kepalanya terbentur",
+        "terbentur kepala",
+        "cedera kepala",
+        "kepala terpukul"
+      ],
+      "vomit": [
+        "muntah"
+      ],
+      "severity": [
+        "parah",
+        "sakit sekali",
+        "sangat sakit",
+        "tidak tahan",
+        "tak tertahankan"
+      ]
+    }
+  }
+}

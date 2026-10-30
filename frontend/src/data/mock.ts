@@ -33,7 +33,7 @@ function weighted<T>(r: () => number, items: [T, number][]): T {
 }
 
 // mock 사례는 실제 이용 비중이 큰 베트남어·영어로만 만든다(한국어 사례는 실제 전송으로만 들어온다).
-type MockLang = Exclude<Lang, 'ko'>;
+type MockLang = Extract<Lang, 'en' | 'vi'>;
 
 const SCENARIOS: { parts: BodyPart[]; syms: Symptom[]; work: YesNoUnknown; type: WorkType | null; text: Record<MockLang, string> }[] = [
   { parts: ['hand'], syms: ['pain', 'swelling'], work: 'yes', type: 'machine', text: { en: 'My finger got caught in the press machine, it is swollen.', vi: 'Ngón tay bị kẹp vào máy dập, bị sưng.' } },
