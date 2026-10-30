@@ -371,7 +371,7 @@ backend/
 - 메일 발송이 실패해도 202다(실패를 알리면 등록 여부가 드러난다). 서버 로그에 `로그인 코드 메일 실패 <종류> request_id=`만 남는다.
 - 코드·세션 토큰은 sha256 해시만 저장하고, 이메일·코드·토큰·쿠키 값은 로그에 남기지 않는다. 세션은 `CENTER_SESSION_DAYS`(기본 30일) 뒤 끝나고 늘어나지 않는다. `scripts/staff.py remove`는 그 직원의 세션도 지운다.
 - 데모 초기화(`POST /api/center/reset`)는 직원·코드·세션을 지우지 않는다.
-- 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트(예: Vercel)에서 쿠키를 보내는 설정은 하지 않았다.
+- 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트에서 쿠키를 보내는 설정은 하지 않았다.
 
 ## mock 데이터
 
@@ -553,6 +553,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅도 이 파일에 평문으로 남는다.
 3. 직원을 등록한다: `cd ~/srv/for-nav/backend && uv run --env-file .env python scripts/staff.py add staff@example.org` (`list`, `remove`도 같다). 서버를 다시 띄울 필요는 없다.
 4. `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 한 번 다시 띄운다(`.env`를 새로 읽는다).
+- 세션 쿠키는 기본으로 `Secure`라 https 주소에서만 저장된다. 앞에 https 프록시 없이 `http://<맥미니>:8000`으로 열면 코드를 맞게 넣어도 로그인 화면으로 돌아온다. 그때는 `.env`에 `CENTER_COOKIE_SECURE=false`를 더한다(쿠키가 평문 http로 오간다).
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
