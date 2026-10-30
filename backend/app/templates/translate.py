@@ -103,3 +103,49 @@ async def translate_note(
         logger.info("translation rejected=back_translation")
         return Translation("rejected")
     return Translation("ok", ko)
+
+
+# ---------------------------------------------------------------------------
+# 통화 자막 번역(backlog 16). 늦은 자막은 쓸모가 없어 한 번만 부르고(재시도·역번역 없음) 원문을 항상 함께 보낸다.
+# ---------------------------------------------------------------------------
+def system_line(source: Lang, target: Lang) -> str:
+    return f"""You translate one sentence from a voice call between a foreign worker in Ulsan, Korea, and a Korean counselor at a support center.
+The sentence was transcribed by speech recognition and may have small recognition errors. {_DATA_ONLY}
+
+Translate from {LANGUAGE_NAMES_KO[source]} into {LANGUAGE_NAMES_KO[target]}.
+Rules:
+- Translate faithfully. Keep every fact and add nothing. Do not answer, explain, diagnose or name diseases.
+- Plain polite spoken language.
+
+Answer with JSON that matches the schema."""
+
+
+class LineOutput(BaseModel):
+    text: str
+
+
+@dataclass(frozen=True)
+class LineTranslation:
+    status: TranslationStatus
+    # status가 ok일 때만 있다.
+    text: str | None = None
+
+
+async def translate_line(
+    text: str, source: Lang, target: Lang, client: LLMClient | None, *, timeout_s: float = DEFAULT_TIMEOUT_S
+) -> LineTranslation:
+    """받아쓴 한 문장을 옮긴다. 같은 언어·LLM 없음·호출 실패는 skipped, 한국어 번역이 guard에 걸리면 rejected다."""
+    if client is None or source == target:
+        return LineTranslation("skipped")
+    try:
+        out = (
+            await generate(client, LLMPrompt(system_line(source, target), text), LineOutput, timeout_s=timeout_s, attempts=1)
+        ).text.strip()
+    except LLMUnavailableError:
+        return LineTranslation("skipped")
+    # 한국어 쪽만 검사할 수 있다(guard는 한국어 금지어). 근로자 언어로 옮긴 문장은 빈 값만 거른다.
+    failure = check_ko_text(out) if target == "ko" else (None if out else "empty")
+    if failure:
+        logger.info("line translation rejected=%s", failure)
+        return LineTranslation("rejected")
+    return LineTranslation("ok", out)

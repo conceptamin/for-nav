@@ -1,7 +1,7 @@
 # Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1.
 # JSON 필드명은 camelCase(프론트 타입 그대로), Python 코드 안에서는 snake_case를 쓴다.
 
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
@@ -340,6 +340,40 @@ class ChatIn(CamelModel):
 
     type: Literal["message"]
     text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+
+
+# ---------------------------------------------------------------------------
+# 통화와 자막 번역(backlog 16). 음성은 브라우저끼리 WebRTC로 오가고 서버는 시그널링·자막만 다룬다. 프론트 타입은 아직 없다
+# ---------------------------------------------------------------------------
+class CallSignalIn(CamelModel):
+    """SDP·ICE·끊기 등. 서버는 data를 열어 보지 않고 상대에게 그대로 보낸다."""
+
+    type: Literal["signal"]
+    data: dict[str, Any]
+
+
+class CallCaptionIn(CamelModel):
+    """브라우저가 받아쓴 확정 문장."""
+
+    type: Literal["caption"]
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
+
+
+CallIn = Annotated[CallSignalIn | CallCaptionIn, Field(discriminator="type")]
+
+
+class Caption(CamelModel):
+    # 사례 안에서 c-1, c-2…(저장하지 않는다)
+    id: str
+    from_: ChatRole = Field(alias="from")
+    # 원문과 그 언어. 근로자는 사례 언어, 센터는 한국어
+    text: str
+    lang: Lang
+    # status가 ok일 때만 있다
+    translated: str | None
+    translated_lang: Lang
+    translation: TranslationStatus
+    at: str
 
 
 class StatCell(CamelModel):
