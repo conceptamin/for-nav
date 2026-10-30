@@ -58,7 +58,6 @@ export const my: Record<MessageKey, string> = {
   signupSave: 'သိမ်းပြီး ဆက်သွားမည်',
 
   // S-04
-  homeHello: 'ဘာကူညီပေးရမလဲ?',
   menuSick: 'နေမကောင်းဘူး / ဒဏ်ရာရတယ်',
   menuSickSub: 'ဘယ်ဆေးခန်းသွားရမလဲ ရှာပါ',
   menuGuide: 'ဆေးရုံ သုံးနည်း',
@@ -70,6 +69,7 @@ export const my: Record<MessageKey, string> = {
   menuMy: 'ကျွန်ုပ်၏ အချက်အလက်',
   menuMySub: 'ပရိုဖိုင်၊ ဆက်တင်၊ ကျွန်ုပ်၏ အစီရင်ခံစာ',
   homeRecent: 'နောက်ဆုံး အစီရင်ခံစာ',
+  homeStart: 'စတင်ရန်',
   modeGuest: 'ဧည့်သည်',
 
   // S-05

@@ -58,7 +58,6 @@ export const ky: Record<MessageKey, string> = {
   signupSave: 'Сактоо жана улантуу',
 
   // S-04
-  homeHello: 'Кантип жардам бере алабыз?',
   menuSick: 'Ооруп жатам / жаракат алдым',
   menuSickSub: 'Кайсы клиникага барууну билүү',
   menuGuide: 'Ооруканага кантип баруу керек',
@@ -70,6 +69,7 @@ export const ky: Record<MessageKey, string> = {
   menuMy: 'Менин маалыматым',
   menuMySub: 'Профиль, жөндөөлөр, отчетторум',
   homeRecent: 'Акыркы отчет',
+  homeStart: 'Баштоо',
   modeGuest: 'Конок',
 
   // S-05

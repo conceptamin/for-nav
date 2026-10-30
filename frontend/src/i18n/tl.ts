@@ -58,7 +58,6 @@ export const tl: Record<MessageKey, string> = {
   signupSave: 'I-save at magpatuloy',
 
   // S-04
-  homeHello: 'Paano ka namin matutulungan?',
   menuSick: 'May sakit ako / Nasaktan ako',
   menuSickSub: 'Alamin kung saang klinika pupunta',
   menuGuide: 'Paano gumamit ng ospital',
@@ -70,6 +69,7 @@ export const tl: Record<MessageKey, string> = {
   menuMy: 'Aking impormasyon',
   menuMySub: 'Profile, settings, aking mga report',
   homeRecent: 'Pinakabagong report',
+  homeStart: 'Magsimula',
   modeGuest: 'Guest',
 
   // S-05

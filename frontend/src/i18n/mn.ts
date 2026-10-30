@@ -58,7 +58,6 @@ export const mn: Record<MessageKey, string> = {
   signupSave: 'Хадгалаад үргэлжлүүлэх',
 
   // S-04
-  homeHello: 'Бид юугаар туслах вэ?',
   menuSick: 'Би өвдсөн / Би гэмтсэн',
   menuSickSub: 'Аль эмнэлэгт очихоо олох',
   menuGuide: 'Эмнэлгийг яаж ашиглах вэ',
@@ -70,6 +69,7 @@ export const mn: Record<MessageKey, string> = {
   menuMy: 'Миний мэдээлэл',
   menuMySub: 'Профайл, тохиргоо, миний тайлан',
   homeRecent: 'Сүүлийн тайлан',
+  homeStart: 'Эхлэх',
   modeGuest: 'Зочин',
 
   // S-05

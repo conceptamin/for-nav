@@ -58,7 +58,6 @@ export const ja: Record<MessageKey, string> = {
   signupSave: '保存して続ける',
 
   // S-04
-  homeHello: 'どうしましたか？',
   menuSick: '具合が悪い／けがをした',
   menuSickSub: '行く病院（診療科）を探す',
   menuGuide: '病院の使い方',
@@ -70,6 +69,7 @@ export const ja: Record<MessageKey, string> = {
   menuMy: 'マイ情報',
   menuMySub: 'プロフィール・設定・レポート',
   homeRecent: '最新のレポート',
+  homeStart: 'はじめる',
   modeGuest: 'ゲスト',
 
   // S-05

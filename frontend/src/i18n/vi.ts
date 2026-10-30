@@ -54,7 +54,6 @@ export const vi: Record<MessageKey, string> = {
   signupNoVisa: 'Chúng tôi không bao giờ hỏi visa, tên hay nơi làm việc.',
   signupSave: 'Lưu và tiếp tục',
 
-  homeHello: 'Bạn cần giúp gì?',
   menuSick: 'Tôi bị ốm / bị thương',
   menuSickSub: 'Tìm nên khám ở khoa nào',
   menuGuide: 'Cách đi khám bệnh',
@@ -66,6 +65,7 @@ export const vi: Record<MessageKey, string> = {
   menuMy: 'Thông tin của tôi',
   menuMySub: 'Hồ sơ, cài đặt, phiếu của tôi',
   homeRecent: 'Phiếu gần nhất',
+  homeStart: 'Bắt đầu',
   modeGuest: 'Khách',
 
   intakeTitle: 'Cho chúng tôi biết triệu chứng',
