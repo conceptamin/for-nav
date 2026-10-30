@@ -22,7 +22,6 @@ export const km: Record<MessageKey, string> = {
   langTitle: 'ជ្រើសរើសភាសារបស់អ្នក',
   langHint: 'អ្នកអាចប្ដូរវាពេលក្រោយនៅខាងលើអេក្រង់។',
   langAsk: 'តើយើងនិយាយភាសាអ្វី?',
-  langReply: 'និយាយភាសាខ្មែរ',
   langOther: 'ភាសាផ្សេងទៀត',
 
   consentTitle: 'មុនពេលចាប់ផ្ដើម',

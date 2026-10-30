@@ -23,7 +23,6 @@ export const ru: Record<MessageKey, string> = {
   langTitle: 'Выберите язык',
   langHint: 'Язык можно поменять позже вверху экрана.',
   langAsk: 'На каком языке будем говорить?',
-  langReply: 'Давайте по-русски',
   langOther: 'Другие языки',
 
   // S-02
