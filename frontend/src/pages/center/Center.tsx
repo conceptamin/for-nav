@@ -3,12 +3,15 @@
 // 서버가 로그인을 쓰지 않거나 단독 모드면 지금처럼 바로 열린다(PRD 5-2 데모).
 // 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
 // C-02 상담 채팅은 src/api/chat.ts(WebSocket)를 거친다. 단독 모드에는 없다(backlog 25).
+// C-02 통화와 번역 자막은 src/api/call.ts(WebSocket + WebRTC)를 거친다. 단독 모드에는 없다(backlog 26).
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { getMe, loginPath, logout, onSessionEnded } from '../../api/auth';
 import { clearCases, getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
+import { isCallAvailable } from '../../api/call';
 import { isChatAvailable } from '../../api/chat';
+import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useReveal } from '../../components/reveal';
 import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
@@ -33,6 +36,9 @@ const TEXT = {
   chatTitle: '상담 채팅',
   chatMock: '예시 사례라 근로자 채팅 토큰이 없습니다. 근로자는 이 채팅에 들어올 수 없습니다.',
   chatNote: '근로자가 쓴 글은 번역 없이 원문 그대로 보입니다.',
+  callTitle: '통화',
+  callNote: '근로자와 인터넷으로 통화합니다. 두 사람의 말이 자막으로 남고 기계 번역이 붙습니다. 자막은 이 화면을 떠나면 사라집니다(서버에 저장하지 않음).',
+  callMock: '예시 사례라 근로자가 이 통화에 들어올 수 없습니다.',
   checking: '로그인을 확인하는 중입니다.',
   meFailed: '서버에 연결하지 못했습니다. 서버 연결을 확인해 주세요.',
   logout: '로그아웃',
@@ -55,6 +61,44 @@ const CHAT_LABELS: ChatLabels = {
     unauthorized: '로그인이 끝났습니다. 다시 로그인해 주세요.',
   },
   rejected: '메시지를 보내지 못했습니다. 1~1000자로 써 주세요.',
+};
+
+const CALL_LABELS: CallLabels = {
+  start: '전화 걸기',
+  accept: '받기',
+  decline: '거절',
+  hangup: '끊기',
+  mute: '음소거',
+  unmute: '음소거 해제',
+  calling: '거는 중… (30초 동안 받지 않으면 끊습니다)',
+  ringing: '근로자가 전화를 걸었습니다.',
+  connecting: '통화 연결 중…',
+  inCall: '통화 중',
+  ended: {
+    self: '통화를 끊었습니다.',
+    peer: '근로자가 통화를 끊었습니다.',
+    'peer-left': '근로자 화면이 닫혀 통화가 끝났습니다.',
+    declined: '근로자가 전화를 거절했습니다.',
+    'no-answer': '전화를 받지 않았습니다.',
+    failed: '통화를 연결하지 못했습니다. 네트워크를 확인해 주세요.',
+  },
+  peerAway: '근로자가 화면에 없어 걸 수 없습니다. 채팅으로 먼저 알려 주세요.',
+  micDenied: '마이크를 허용해야 통화할 수 있습니다. 브라우저 주소창의 권한 설정을 확인해 주세요.',
+  noCaption: '이 브라우저에서는 내 말의 자막을 만들 수 없습니다(Chrome 권장). 통화와 근로자 자막은 그대로 됩니다.',
+  unsupported: '이 브라우저나 주소에서는 통화를 쓸 수 없습니다(HTTPS 또는 localhost 필요).',
+  me: '센터',
+  other: '근로자',
+  translating: '번역 중…',
+  machineTranslated: '기계 번역',
+  socketConnecting: '통화 연결 준비 중…',
+  socketReconnecting: '통화 신호 연결이 끊겼습니다. 다시 연결하는 중…',
+  stopped: {
+    denied: '통화에 연결할 권한이 없습니다.',
+    missing: '서버에 이 사례가 없어 통화를 열 수 없습니다.',
+    reset: '데모 초기화로 통화가 끝났습니다.',
+    unauthorized: '로그인이 끝났습니다. 다시 로그인해 주세요.',
+    busy: '다른 창에서 이 사례 통화를 이미 열어 두었습니다. 그 창을 닫으면 여기서 이어집니다.',
+  },
 };
 
 const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -428,6 +472,20 @@ function CaseDetail({ c }: { c: CenterCase }) {
           </section>
         </div>
         <div>
+          {isCallAvailable() && (
+            <section className="panel">
+              <h2>{TEXT.callTitle}</h2>
+              <p className="footer-note">{c.live ? TEXT.callNote : TEXT.callMock}</p>
+              <CallPanel
+                caseId={c.id}
+                auth={{ role: 'center' }}
+                lang="ko"
+                labels={CALL_LABELS}
+                locale="ko-KR"
+                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+              />
+            </section>
+          )}
           {isChatAvailable() && (
             <section className="panel">
               <h2>{TEXT.chatTitle}</h2>

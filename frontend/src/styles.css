@@ -897,6 +897,119 @@ hr.divider {
   flex: none;
 }
 
+/* 통화 패널(backlog 26, design.md "통화"). 상담 채팅 바로 위, 같은 카드·패널 모양 안에 들어간다 */
+.call {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.call .notice {
+  margin-bottom: 0;
+}
+
+.call-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.call-state {
+  margin: 0;
+  font-size: var(--t5);
+  font-weight: 700;
+}
+
+.call-time {
+  font-size: var(--t5);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+/* 버튼은 줄 하나에 같은 폭으로 나눈다. 끊기는 .btn.danger, 걸기·받기는 .btn, 거절·음소거는 .btn.secondary */
+.call-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.call-actions .btn {
+  flex: 1 1 0;
+  min-width: 120px;
+}
+
+/* 자막 목록은 채팅 목록과 같은 들어간 홈이다 */
+.call-log {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+/* 자막 한 줄은 채팅 말풍선 규칙을 따른다. 상대는 시작 쪽 흰 면, 내 말은 끝 쪽 --brand-2 */
+.call-cap {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 90%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+}
+
+.call-cap.mine {
+  align-self: flex-end;
+  background: var(--brand-2);
+  color: var(--brand-ink);
+}
+
+.call-cap p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.call-main {
+  font-size: var(--t6);
+  line-height: 1.5;
+}
+
+.call-sub {
+  font-size: var(--t4);
+  color: var(--ink-2);
+}
+
+.call-meta {
+  font-size: var(--t2);
+  color: var(--ink-2);
+}
+
+.call-cap.mine .call-meta,
+.call-cap.mine .call-sub {
+  color: var(--brand-ink);
+}
+
+/* 번역 전(pending)·말하는 중(interim) 줄은 면 없이 1px 테두리와 흐린 글자로만 구분한다(움직임 없음) */
+.call-cap.pending,
+.call-cap.interim {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.call-cap.interim .call-main,
+.call-cap.pending .call-main {
+  color: var(--ink-2);
+}
+
 /* 단계 숫자 원. 현재는 브랜드색으로 떠 있고, 지난·남은 단계는 들어간 홈 + 흐린 숫자 */
 .steps {
   display: flex;
