@@ -1,6 +1,7 @@
 # 리포트 자유 입력 번역(backlog 05): 성공, 역번역 불일치 거부, 호출 실패, 금지어 거부, 원문 유지, 번역 건너뛰기.
 # LLM은 FakeLLMClient로 바꾸고 외부 네트워크를 쓰지 않는다.
 
+import asyncio
 import json
 
 import pytest
@@ -9,7 +10,17 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.routers.worker import llm_client
-from app.templates.translate import SYSTEM_COMPARE, SYSTEM_TRANSLATE, BackOutput, CompareOutput, TranslateOutput, system_back
+from app.templates.translate import (
+    SYSTEM_COMPARE,
+    SYSTEM_TRANSLATE,
+    BackOutput,
+    CompareOutput,
+    LineOutput,
+    LineTranslation,
+    TranslateOutput,
+    system_back,
+    translate_line,
+)
 
 FREE_TEXT = "Ngón tay bị kẹp vào máy dập, bị sưng."
 KO = "프레스 기계에 손가락이 끼여서 부었습니다."
@@ -170,3 +181,30 @@ def test_center_case_without_llm_is_unchanged():
         assert "근로자 메모(번역)" not in case["summaryKo"]
     finally:
         TestClient(app).post("/api/center/reset")
+
+
+# ---------------------------------------------------------------------------
+# 통화 자막 번역(backlog 16): 한 번만 부르고, 같은 언어는 부르지 않고, 한국어 번역만 guard를 거친다.
+# ---------------------------------------------------------------------------
+def line(text: str, source: str, target: str, client: FakeLLMClient) -> LineTranslation:
+    return asyncio.run(translate_line(text, source, target, client))
+
+
+def test_line_same_language_is_not_called():
+    fake = FakeLLMClient([])
+    assert line("손이 아파요", "ko", "ko", fake) == LineTranslation("skipped")
+    assert fake.prompts == []
+
+
+def test_line_is_called_once_and_falls_back():
+    fake = FakeLLMClient([provider_error(), LineOutput(text="손이 아파요").model_dump_json()])
+    assert line(FREE_TEXT, "vi", "ko", fake) == LineTranslation("skipped")
+    assert len(fake.prompts) == 1
+
+
+def test_line_to_worker_language_skips_korean_guard():
+    # 근로자 언어로 옮긴 문장에는 한국어 금지어 검사를 할 수 없다. 빈 값만 거른다.
+    ok = FakeLLMClient([LineOutput(text=" Hãy đến bệnh viện ").model_dump_json()])
+    assert line("병원에 오세요", "ko", "vi", ok) == LineTranslation("ok", "Hãy đến bệnh viện")
+    empty = FakeLLMClient([LineOutput(text=" ").model_dump_json()])
+    assert line("병원에 오세요", "ko", "vi", empty) == LineTranslation("rejected")
