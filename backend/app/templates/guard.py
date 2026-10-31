@@ -45,6 +45,9 @@ GUESSES = ["로 보임", "로 보입니다", "로 보인다", "것 같", "듯", 
 # 치료·행동 권고.
 ADVICE = ["치료", "처방", "수술", "입원", "복용하", "하세요", "해야", "권장", "권고", "필요합니다"]
 FORBIDDEN = [*DIAGNOSES, *GUESSES, *ADVICE]
+# 금지어를 품었지만 권고가 아닌 인사말. 채팅 번역문이 "안녕하세요"로 시작하면 "하세요"에 걸려 번역이 버려졌다.
+# 검사 전에 이 말만 지우고, 나머지 부분은 그대로 금지어를 본다.
+GREETINGS = ["안녕하세요", "수고하세요"]
 
 GuardFailure = Literal["empty", "multiline", "too_long", "not_korean", "forbidden"]
 
@@ -72,6 +75,9 @@ def check_ko_text(text: str) -> GuardFailure | None:
     letters = [ch for ch in s if ch.isalpha()]
     if sum(map(_is_hangul, letters)) * 2 < len(letters):
         return "not_korean"
-    if any(w in s for w in FORBIDDEN):
+    rest = s
+    for g in GREETINGS:
+        rest = rest.replace(g, " ")
+    if any(w in rest for w in FORBIDDEN):
         return "forbidden"
     return None

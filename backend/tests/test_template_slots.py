@@ -155,6 +155,11 @@ def test_blank_free_text_skips_llm():
         (SUMMARY, None),
         ("Zalo로 연락하던 중 프레스에 손가락이 끼었습니다.", None),
         ("손목 염좌가 의심됩니다.", "forbidden"),
+        # 인사말 속 "하세요"는 권고가 아니다. 인사 뒤의 금지어는 그대로 잡는다.
+        ("안녕하세요. 산업재해 보험에 대해 여쭤보고 싶습니다.", None),
+        ("네, 수고하세요.", None),
+        ("안녕하세요. 손목 염좌가 의심됩니다.", "forbidden"),
+        ("안녕하세요, 얼음찜질을 하세요.", "forbidden"),
         ("가" * MAX_LEN, None),
         ("가" * (MAX_LEN + 1), "too_long"),
         ("press machine 손가락", "not_korean"),
