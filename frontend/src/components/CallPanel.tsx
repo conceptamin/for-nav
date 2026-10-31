@@ -1,7 +1,7 @@
 // 통화 패널(backlog 26). 근로자 S-12 전송 완료 화면과 센터 C-02가 같이 쓴다.
 // 문구는 props로 받는다(근로자는 i18n, 센터는 한국어 고정). 신호·음성·받아쓰기는 api/call.ts의 useCall이 한다.
 // 단독 모드에서는 부르는 쪽이 isCallAvailable()로 이 패널을 그리지 않는다.
-// 센터 C-02는 채팅 시트와 같은 메신저 틀이라(backlog 49) 자막은 대화 줄기에, 상태·버튼은 아래 고정 칸(footer)에 그린다.
+// 센터 C-02 상담 카드(backlog 49)는 자막을 대화(스크립트)에, 상태·버튼은 대화 바깥 통화 줄(footer)에 그린다.
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
@@ -46,7 +46,7 @@ const mmss = (ms: number) => {
  * lang은 내가 말하는 언어(받아쓰기 언어)다. 근로자는 앱 언어, 센터는 ko.
  * `relogin`: 센터 세션이 끝나 멈췄을 때(4401) 멈춤 줄 안에 붙는 다시 로그인 링크
  * `scroller`: 새 자막이 오면 맨 아래로 옮길 스크롤 상자. 없으면 자막 목록 자신
- * `footer`: 상태 줄·안내·버튼 줄을 그릴 자리(카드 아래 고정 칸). 없으면 자막 목록 바로 위
+ * `footer`: 상태 줄·안내·버튼 줄을 그릴 자리(카드의 통화 줄). 없으면 자막 목록 바로 위
  */
 export function CallPanel({
   caseId,
