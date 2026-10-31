@@ -5,11 +5,12 @@
 // 하단 독의 채팅 아이콘은 페이지가 아니라 화면 위 시트를 연다(backlog 39).
 // 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 통화·채팅 대신 안내 한 줄을 보인다.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Chip, PolicyDisclaimer, SingleSelect, toggleIn, Worse119 } from '../../components/common';
 import { CallPanel } from '../../components/CallPanel';
-import { CenterHoursNotice, REQUEST_TYPES, useSendCenterRequest, workerCallLabels, workerChatLabels } from '../../components/CenterSheet';
+import { canResume, useCenterLink } from '../../components/centerLink';
+import { CenterHoursNotice, MyCaseStatus, REQUEST_TYPES, useSendCenterRequest, workerCallLabels, workerChatLabels } from '../../components/CenterSheet';
 import { ChatPanel } from '../../components/ChatPanel';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
@@ -18,6 +19,7 @@ import { useApp } from '../../state/AppState';
 import { logoutWorker } from '../../api/auth';
 import { isCallAvailable } from '../../api/call';
 import { isChatAvailable } from '../../api/chat';
+import { hasUnread } from '../../domain/centerCase';
 import type { RequestType } from '../../domain/templates';
 import type { Lang } from '../../domain/vocab';
 import { LOCALES, SEXES } from '../../domain/vocab';
@@ -138,6 +140,9 @@ function CenterTalk({ caseId, initial }: { caseId: string; initial: Talk }) {
   const { t, lang } = useT();
   const [talk, setTalk] = useState<Talk>(initial);
   const token = app.chatTokens[caseId];
+  // 이 화면에 채팅이 보이는 동안 읽은 센터 메시지 수를 올린다(backlog 43)
+  const { markCenterSeen } = app;
+  const onSeen = useMemo(() => (n: number) => markCenterSeen(caseId, n), [caseId, markCenterSeen]);
   if (!token || !isChatAvailable()) return <div className="notice info">{t('talkOffline')}</div>;
 
   return (
@@ -155,7 +160,7 @@ function CenterTalk({ caseId, initial }: { caseId: string; initial: Talk }) {
         <section className="card">
           <h2>{t('chatTitle')}</h2>
           <p className="small muted">{t('chatIntro')}</p>
-          <ChatPanel caseId={caseId} auth={{ role: 'worker', token }} me="worker" labels={workerChatLabels(t)} locale={LOCALES[lang]} />
+          <ChatPanel caseId={caseId} auth={{ role: 'worker', token }} me="worker" labels={workerChatLabels(t)} locale={LOCALES[lang]} onSeen={onSeen} />
         </section>
       )}
     </>
@@ -179,6 +184,7 @@ export function MyPage() {
     void logoutWorker();
   };
   const { t, term, lang } = useT();
+  const { feed, openCase } = useCenterLink();
   useScreenBar({ title: t('myTitle') });
   const profile = app.profile;
   // 같은 계정의 다른 프로필(backlog 34). 이름을 받지 않으므로 성별·생년월일로 구별한다
@@ -269,11 +275,41 @@ export function MyPage() {
       {app.myCaseIds.length > 0 && (
         <section className="card">
           <h2>{t('myCases')}</h2>
-          <ul style={{ margin: 0, paddingLeft: 20 }}>
-            {app.myCaseIds.map((id) => (
-              <li key={id}>{id}</li>
-            ))}
-          </ul>
+          {/* 줄마다 보낸 날·처리 상태·새 메시지(backlog 43). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
+              토큰이 없는 요청(backlog 43 이전에 세션이 끝나 열쇠를 잃은 것, 단독 모드)과 서버가 모르는 요청은 누를 수 없다 */}
+          <div className="stack my-cases">
+            {app.myCaseIds.map((id) => {
+              const view = feed.cases[id];
+              const sentAt = app.caseSentAt[id];
+              const body = (
+                <>
+                  <span>
+                    📨 <strong>{id}</strong>
+                    {sentAt && (
+                      <span className="small muted">
+                        {' '}
+                        · {t('myCaseSent')} {formatIsoDate(new Date(sentAt).toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }), lang)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="my-case-state">
+                    {view && <MyCaseStatus status={view.status} />}
+                    {hasUnread(view, app.seenCenterMessages[id]) && <span className="pill unread">{t('caseNewMsg')}</span>}
+                  </span>
+                </>
+              );
+              return canResume(feed, id, app.chatTokens[id]) ? (
+                <button key={id} type="button" className="row link my-case" onClick={() => openCase(id)}>
+                  {body}
+                </button>
+              ) : (
+                <div key={id} className="row link my-case">
+                  {body}
+                </div>
+              );
+            })}
+          </div>
+          {feed.failed && <div className="notice info">{t('caseStatusFailed')}</div>}
         </section>
       )}
       {/* 로그아웃·지우기는 로그인 화면으로 간다. 서버 세션은 기다리지 않고 지운다 */}

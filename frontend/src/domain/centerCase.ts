@@ -47,6 +47,27 @@ export interface NewCaseResponse {
   chatToken?: string;
 }
 
+/** 근로자가 자기 요청을 다시 읽을 때 보내는 열쇠(`POST /api/center/my-cases`, backend 26). 단독 모드는 토큰 없이 id로 읽는다 */
+export interface MyCaseRef {
+  id: string;
+  token: string | null;
+}
+
+/** 근로자가 보는 자기 요청의 처리 상태(backend 26). 사례 본문은 근로자 기기에 이미 있어 받지 않는다 */
+export interface MyCaseView {
+  id: string;
+  status: CaseStatus;
+  /** 센터가 보낸 채팅 메시지 수. 근로자 글은 세지 않는다. 단독 모드는 채팅이 없어 0 */
+  centerMessages: number;
+  /** 마지막 센터 메시지 시각(ISO). 없으면 null */
+  lastCenterAt: string | null;
+}
+
+/** 서버가 센 센터 메시지가 근로자가 채팅에서 본 수보다 많으면 새 메시지가 있다 */
+export function hasUnread(view: MyCaseView | undefined, seen: number | undefined): boolean {
+  return (view?.centerMessages ?? 0) > (seen ?? 0);
+}
+
 /** 상담 채팅에서 보낸 쪽. 연결할 때 서버가 확인한 역할이다 */
 export type ChatRole = 'worker' | 'center';
 

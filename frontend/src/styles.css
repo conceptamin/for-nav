@@ -657,6 +657,7 @@ a.brand-pill:active {
 
 /* 독 안의 센터 채팅 버튼(backlog 29·32·39): 56×44px, 평평한 투명 면 + 틸 말풍선. 시트가 열려 있거나 누르면 --brand-2로 들어간다 */
 .bar-chat {
+  position: relative;
   flex: none;
   display: grid;
   place-items: center;
@@ -693,6 +694,19 @@ a.brand-pill:active {
 .bar-chat-icon circle {
   fill: currentColor;
   stroke: none;
+}
+
+/* 읽지 않은 센터 메시지 점(backlog 43, SEED notification-badge Small). 숫자 없이 점 하나.
+   119와 헷갈리지 않게 빨강이 아니라 말풍선과 같은 진한 틸이고, 유리 위에서 떠 보이게 흰 테를 두른다 */
+.bar-chat-dot {
+  position: absolute;
+  top: 7px;
+  inset-inline-end: 13px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--brand-fg);
+  box-shadow: 0 0 0 2px var(--card-solid);
 }
 
 /* 센터 채팅 시트(backlog 39, design.md "센터 채팅 시트"). 하단 독 바로 위에 떠 있는 유리 면. 올라오는 움직임은 없다.
@@ -803,6 +817,10 @@ a.brand-pill:active {
 }
 
 .sheet-case {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   margin: 4px 0 0;
 }
 
@@ -865,6 +883,31 @@ a.brand-pill:active {
   min-height: 44px;
   color: inherit;
   text-decoration: none;
+}
+
+/* S-13 센터 요청 한 줄(backlog 43). 누르면 시트를 그 사례로 연다. 버튼 기본 모양을 지우고 .row.link처럼 보인다 */
+.my-case {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+}
+
+button.my-case {
+  cursor: pointer;
+}
+
+.stack.my-cases {
+  gap: 8px;
+}
+
+.my-case-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn {
@@ -2167,6 +2210,12 @@ table.cases tr.fresh {
 .pill.live {
   background: var(--accent);
   color: var(--ink);
+}
+
+/* 근로자 S-13 요청 줄의 "새 메시지"(backlog 43). 독의 점과 같은 틸 */
+.pill.unread {
+  background: var(--brand-2);
+  color: var(--brand-fg);
 }
 
 .filters {

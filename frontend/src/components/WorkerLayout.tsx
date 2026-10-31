@@ -6,9 +6,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import { useWorkerAuth } from '../api/auth';
+import { useMyCasesFeed } from '../api/center';
+import { hasUnread } from '../domain/centerCase';
 import { useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
+import { CenterLinkContext, type CenterLink } from './centerLink';
 import { CenterSheet } from './CenterSheet';
 import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
@@ -84,11 +87,33 @@ export function WorkerLayout() {
   // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다. 응급 화면에서는 숨긴다
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetMounted, setSheetMounted] = useState(false);
+  // S-13에서 고른 사례. 독 버튼으로 열면 비워 시트가 이어 볼 요청을 고른다(backlog 43)
+  const [sheetCase, setSheetCase] = useState<string | null>(null);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
   const toggleSheet = () => {
     setSheetMounted(true);
+    setSheetCase(null);
     setSheetOpen((o) => !o);
   };
+
+  // 내 센터 요청의 처리 상태(backlog 43). 로그인하고 프로필까지 있을 때만 읽는다
+  const refs = useMemo(
+    () => (app.ready ? app.myCaseIds.map((id) => ({ id, token: app.chatTokens[id] ?? null })) : []),
+    [app.ready, app.myCaseIds, app.chatTokens],
+  );
+  const feed = useMyCasesFeed(refs);
+  const unread = app.ready && app.myCaseIds.some((id) => hasUnread(feed.cases[id], app.seenCenterMessages[id]));
+  const centerLink = useMemo<CenterLink>(
+    () => ({
+      feed,
+      openCase: (caseId) => {
+        setSheetMounted(true);
+        setSheetCase(caseId);
+        setSheetOpen(true);
+      },
+    }),
+    [feed],
+  );
 
   const appName = app.lang ? t('appName') : 'for nav';
 
@@ -115,7 +140,7 @@ export function WorkerLayout() {
           <button
             type="button"
             className="bar-chat"
-            aria-label={t('chatTitle')}
+            aria-label={unread ? `${t('chatTitle')} · ${t('caseNewMsg')}` : t('chatTitle')}
             aria-expanded={sheetOpen}
             aria-controls="center-sheet"
             onClick={toggleSheet}
@@ -126,6 +151,7 @@ export function WorkerLayout() {
               <circle cx="12" cy="11" r="1" />
               <circle cx="15.5" cy="11" r="1" />
             </svg>
+            {unread && <span className="bar-chat-dot" aria-hidden="true" />}
           </button>
         )}
       </div>
@@ -162,6 +188,7 @@ export function WorkerLayout() {
 
   return (
     <ScreenBarContext.Provider value={setBarStable}>
+      <CenterLinkContext.Provider value={centerLink}>
       <div className="w-shell">
         {bar.hidden ? (
           <div className="w-corner-logo">
@@ -194,9 +221,12 @@ export function WorkerLayout() {
         <main className="w-main" ref={mainRef}>
           <Outlet />
         </main>
-        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen && pathname !== '/emergency'} onClose={closeSheet} />}
+        {app.ready && sheetMounted && (
+          <CenterSheet id="center-sheet" open={sheetOpen && pathname !== '/emergency'} onClose={closeSheet} focusCaseId={sheetCase} />
+        )}
         {bar119}
       </div>
+      </CenterLinkContext.Provider>
     </ScreenBarContext.Provider>
   );
 }

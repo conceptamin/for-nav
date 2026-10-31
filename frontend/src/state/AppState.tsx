@@ -1,6 +1,7 @@
 // 근로자 영역 상태.
-// - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과, 상담 채팅 토큰
-// - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필(여러 개, backlog 34)·리포트·보낸 센터 사례 id(`umn.device.<계정 키>`)
+// - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과
+// - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필(여러 개, backlog 34)·리포트·보낸 센터 사례 id와
+//   그 사례의 상담 채팅 토큰·보낸 시각·읽은 센터 메시지 수(backlog 43)(`umn.device.<계정 키>`)
 //   → 같은 휴대폰에서 다른 계정으로 들어오면 앞 계정의 프로필·리포트가 보이지 않는다(backlog 28).
 //   데모 로그인(단독 모드·서버 WORKER_AUTH=off)의 계정 키는 `demo`다. 서버 세션은 api/auth.ts가 보고, 여기에는 계정 키만 둔다.
 // - 메모리: 서버 설정값(정보 기준일·센터 운영 시간). 저장하지 않고 시작할 때마다 GET /api/meta로 받는다
@@ -37,8 +38,6 @@ interface SessionState {
   /** 이번 세션에서 응급 판정이 한 번이라도 있었는지(센터 긴급도에 사용) */
   emergencySeen: boolean;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
-  /** 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례 채팅에 붙는 열쇠라 탭을 닫으면 사라지는 세션에 둔다 */
-  chatTokens: Record<string, string>;
 }
 
 /** 한 계정에 여러 개 둘 수 있는 프로필 하나(backlog 34). 이름은 받지 않으므로 성별·생년월일로 구별해 보인다 */
@@ -53,6 +52,15 @@ interface DeviceState {
   activeProfileId: string | null;
   memberReports: ClinicianReport[];
   myCaseIds: string[];
+  /**
+   * 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례의 채팅·통화·상태 읽기에 붙는 열쇠다.
+   * 며칠 뒤 돌아와도 센터 답을 보도록 세션이 아니라 계정별 기기 저장소에 둔다(backlog 43)
+   */
+  chatTokens: Record<string, string>;
+  /** 사례 id → 보낸 시각(ISO). backlog 43 이전에 보낸 사례에는 없다 */
+  caseSentAt: Record<string, string>;
+  /** 사례 id → 근로자가 채팅에서 본 센터 메시지 수. 서버의 센터 메시지 수가 이보다 많으면 새 메시지다 */
+  seenCenterMessages: Record<string, number>;
 }
 
 const SESSION_KEY = 'umn.session';
@@ -74,9 +82,16 @@ const initialSession: SessionState = {
   triage: null,
   emergencySeen: false,
   coverage: null,
-  chatTokens: {},
 };
-const initialDevice: DeviceState = { profiles: [], activeProfileId: null, memberReports: [], myCaseIds: [] };
+const initialDevice: DeviceState = {
+  profiles: [],
+  activeProfileId: null,
+  memberReports: [],
+  myCaseIds: [],
+  chatTokens: {},
+  caseSentAt: {},
+  seenCenterMessages: {},
+};
 
 /** 프로필 id. http로 여는 같은 Wi-Fi 휴대폰에서는 crypto.randomUUID가 없어 시각과 난수로 만든다 */
 const newProfileId = () => `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -103,6 +118,22 @@ function readDevice(account: string | null): DeviceState {
 }
 
 /** 지금 쓰는 프로필. id가 가리키는 것이 없으면 첫 프로필이다 */
+/**
+ * 시작할 때 세션·계정·기기 저장소를 한 번에 읽는다. backlog 43 이전에는 채팅 토큰이 세션에 있었다.
+ * 그 토큰은 이 계정이 보낸 사례의 것만 기기 저장소로 옮기고 세션에서는 버린다
+ */
+function readBoot(): { session: SessionState; account: Account | null; device: DeviceState } {
+  const { chatTokens, ...stored } = readJson<Partial<SessionState> & { chatTokens?: Record<string, string> }>(sessionStorage, SESSION_KEY, {});
+  const a = readJson<Partial<Account> | null>(localStorage, ACCOUNT_KEY, null);
+  const account = isAccount(a) ? a : null;
+  const device = readDevice(account?.key ?? null);
+  if (account && chatTokens) {
+    const moved = Object.fromEntries(Object.entries(chatTokens).filter(([id]) => device.myCaseIds.includes(id)));
+    device.chatTokens = { ...moved, ...device.chatTokens };
+  }
+  return { session: { ...initialSession, ...stored }, account, device };
+}
+
 function activeEntry(d: DeviceState): ProfileEntry | null {
   return d.profiles.find((e) => e.id === d.activeProfileId) ?? d.profiles[0] ?? null;
 }
@@ -137,8 +168,10 @@ interface AppContextValue extends SessionState, Omit<DeviceState, 'activeProfile
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
   saveReport: (r: ClinicianReport) => void;
-  /** 보낸 사례 id는 기기에, 상담 채팅 토큰(있으면)은 세션에 둔다 */
-  addMyCase: (id: string, chatToken?: string) => void;
+  /** 보낸 사례 id·보낸 시각과 상담 채팅 토큰(있으면, API 모드)을 이 계정의 기기 저장소에 둔다 */
+  addMyCase: (id: string, sentAt: string, chatToken?: string) => void;
+  /** 근로자가 그 사례 채팅에서 센터 메시지를 `count`개 보았다. 줄어들지 않는다 */
+  markCenterSeen: (caseId: string, count: number) => void;
   reports: ClinicianReport[];
   clearMyData: () => void;
 }
@@ -146,12 +179,10 @@ interface AppContextValue extends SessionState, Omit<DeviceState, 'activeProfile
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<SessionState>(() => ({ ...initialSession, ...readJson(sessionStorage, SESSION_KEY, {}) }));
-  const [account, setAccount] = useState<Account | null>(() => {
-    const a = readJson<Partial<Account> | null>(localStorage, ACCOUNT_KEY, null);
-    return isAccount(a) ? a : null;
-  });
-  const [device, setDevice] = useState<DeviceState>(() => readDevice(account?.key ?? null));
+  const [boot] = useState(readBoot);
+  const [session, setSession] = useState<SessionState>(boot.session);
+  const [account, setAccount] = useState<Account | null>(boot.account);
+  const [device, setDevice] = useState<DeviceState>(boot.device);
   const [meta, setMeta] = useState<Meta>(DEFAULT_META);
 
   // API 모드에서만 서버를 부른다. 실패하면 loadMeta가 브라우저 상수를 돌려준다.
@@ -235,10 +266,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setSession((s) => ({ ...s, triage, emergencySeen: s.emergencySeen || Boolean(triage?.emergency) })),
       setCoverage: (coverage) => patch({ coverage }),
       saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
-      addMyCase: (id, chatToken) => {
-        setDevice((d) => ({ ...d, myCaseIds: [id, ...d.myCaseIds] }));
-        if (chatToken) setSession((s) => ({ ...s, chatTokens: { ...s.chatTokens, [id]: chatToken } }));
-      },
+      addMyCase: (id, sentAt, chatToken) =>
+        setDevice((d) => ({
+          ...d,
+          myCaseIds: [id, ...d.myCaseIds],
+          caseSentAt: { ...d.caseSentAt, [id]: sentAt },
+          chatTokens: chatToken ? { ...d.chatTokens, [id]: chatToken } : d.chatTokens,
+        })),
+      markCenterSeen: (caseId, count) =>
+        setDevice((d) =>
+          (d.seenCenterMessages[caseId] ?? 0) >= count ? d : { ...d, seenCenterMessages: { ...d.seenCenterMessages, [caseId]: count } },
+        ),
       reports: device.memberReports,
       clearMyData: () => {
         // 이 계정의 기기 저장소를 지우고 로그아웃한다(서버 세션은 화면이 api/auth.ts의 logoutWorker로 지운다)
