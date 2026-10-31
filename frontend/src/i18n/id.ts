@@ -8,6 +8,7 @@ export const id: Record<MessageKey, string> = {
   back: 'Kembali',
   next: 'Lanjut',
   home: 'Beranda',
+  menu: 'Menu',
   yes: 'Ya',
   no: 'Tidak',
   unknown: 'Tidak yakin',
