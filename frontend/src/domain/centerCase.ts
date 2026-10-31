@@ -77,6 +77,12 @@ export interface ChatMessage {
   caseId: string;
   from: ChatRole;
   text: string;
+  /** 번역(backend 30). 뜻은 Caption과 같다. 번역 전 서버·이전에 저장된 메시지는 없거나 null */
+  lang?: Lang | null;
+  /** translation이 ok일 때만 있다 */
+  translated?: string | null;
+  translatedLang?: Lang | null;
+  translation?: CaptionTranslation | null;
   /** ISO(UTC) */
   at: string;
 }
@@ -84,7 +90,7 @@ export interface ChatMessage {
 /** 서버가 받는 글 길이(앞뒤 공백을 지운 뒤). 넘으면 서버가 error 프레임을 보낸다 */
 export const CHAT_MAX_LEN = 1000;
 
-/** 통화 자막 번역 상태(backend 05·16). ok가 아니면 translated는 null이고 원문만 있다 */
+/** 통화 자막·채팅 메시지 번역 상태(backend 05·16·30). ok가 아니면 translated는 null이고 원문만 있다 */
 export type CaptionTranslation = 'ok' | 'skipped' | 'rejected';
 
 /** 통화 자막 한 줄. 받아쓴 확정 문장을 서버가 번역해 양쪽에 보낸다(backend 16). 서버는 저장하지 않는다 */

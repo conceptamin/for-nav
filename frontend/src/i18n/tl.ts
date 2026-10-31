@@ -236,7 +236,7 @@ export const tl: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'Makipag-chat sa center',
-  chatIntro: 'Sasagot dito ang counselor pagkatapos suriin ang iyong kahilingan. Ipinapadala ang mga mensahe kung paano isinulat, nang walang pagsasalin.',
+  chatIntro: 'Sasagot dito ang counselor pagkatapos suriin ang iyong kahilingan. Isinasalin ng makina ang mga mensahe sa wika ng kausap, at ipinapakita rin ang orihinal.',
   chatEmpty: 'Wala pang mensahe. Maaari kang maunang sumulat.',
   chatPlaceholder: 'Sumulat ng mensahe',
   chatSend: 'Ipadala',

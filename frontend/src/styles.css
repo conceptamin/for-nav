@@ -1617,6 +1617,42 @@ hr.divider {
   color: var(--ink-2);
 }
 
+/* 번역이 붙은 말풍선의 작은 줄(backlog 49): 가는 선 아래 "기계 번역" + 다른 쪽 글. 상대 글이면 원문, 내 글이면 번역 */
+.chat-msg .chat-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-msg .chat-sub p {
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+.chat-mt {
+  font-size: var(--t1);
+  color: var(--ink-2);
+}
+
+.chat-msg.mine .chat-sub {
+  border-top-color: var(--on-brand-soft);
+}
+
+.chat-msg.mine .chat-sub p,
+.chat-msg.mine .chat-mt {
+  color: var(--on-brand);
+}
+
+/* 보낸 뒤 번역을 거쳐 되돌아오기 전 내 글(backlog 49). 면 없이 1px 테두리와 흐린 글자(통화 번역 전 줄과 같다, 움직임 없음) */
+.chat-msg.mine.pending {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink-2);
+}
+
 /* 메시지 한 줄: 말풍선 + 옆의 읽음·시각. 같은 사람이 같은 분에 이어 보낸 글은 2px 간격으로 묶고,
    묶음 끝(.last)만 시각·읽음을 달고 꼬리 쪽 아래 모서리를 4px로 줄인다 */
 .chat-row {

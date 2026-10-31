@@ -236,7 +236,7 @@ export const fr: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'Discuter avec le centre',
-  chatIntro: 'Un conseiller répondra ici après avoir examiné votre demande. Les messages sont transmis tels quels, sans traduction.',
+  chatIntro: 'Un conseiller répondra ici après avoir examiné votre demande. Les messages sont traduits automatiquement dans la langue de l\'autre personne, avec le texte original.',
   chatEmpty: 'Aucun message pour l’instant. Vous pouvez écrire en premier.',
   chatPlaceholder: 'Écrire un message',
   chatSend: 'Envoyer',
