@@ -255,7 +255,7 @@ export function SignupPage() {
     return (
       <div className="w-screen">
         <div className="w-logo">
-          <img className="mark" src="/logo.png" width="64" height="64" alt="" />
+          <img className="mark" src="/mark.png" width="64" height="64" alt="" />
           <h1>
             <img className="wordmark" src="/wordmark.png" width="107" height="28" alt={t('appName')} />
           </h1>

@@ -20,7 +20,7 @@
   --ok-bg: #edfaf6; /* green-100 */
   --warn-bg: #fff7de; /* yellow-100 */
   --danger: #ca1d13; /* red-800. 역할 값 red-700은 흰 글자 대비가 모자라 한 단계 진하게 쓴다 */
-  --danger-top: #d42a1e; /* 하단 119 버튼 위쪽(backlog 32). 아래 --danger로 아주 옅게 짙어진다. 흰 글자 약 5.0:1 */
+  --danger-top: #d42a1e; /* 하단 119 버튼 위쪽(backlog 33). 아래 --danger로 아주 옅게 짙어진다. 흰 글자 약 5.0:1 */
   --danger-2: #921708; /* fg-critical-contrast, red-900 */
   --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #ffffff; /* 브랜드·위험색 같은 진한 바탕 위 글자 */
@@ -58,7 +58,7 @@
   --glass-color: 0 8px 24px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-sm: 0 4px 12px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-in: inset 0 2px 6px rgb(0 0 0 / 25%);
-  /* 유리 안에 놓인 색이 있는 버튼(하단 독의 119, backlog 32). 바깥 그림자 없이 위 빛 선과 아래 1px 음영만 */
+  /* 유리 안에 놓인 색이 있는 버튼(하단 독의 119, backlog 33). 바깥 그림자 없이 위 빛 선과 아래 1px 음영만 */
   --glass-color-flat: inset 0 1px 0 rgb(255 255 255 / 24%), inset 0 -1px 0 rgb(0 0 0 / 14%);
 
   /* 글자 크기 사다리 t1~t14(design.md "Typography"). rem이라 기기 글자 크기 설정을 따른다. --t5 = 16px */
@@ -148,45 +148,56 @@ p {
   color: var(--ink);
 }
 
-/* 고정 유리 띠. 스크롤되는 내용이 흐리게 비친다(design.md "흐림은 맨 위 유리에만").
-   흐림을 띠 자신이 아니라 ::before에 단다. 띠에 backdrop-filter가 있으면 안의 언어 목록(.lang-menu)이 띠 밖 내용을 흐리지 못한다 */
-.w-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+/* 앱 바는 띠(면) 없이 투명하다(backlog 32). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있고,
+   스크롤되는 내용은 두 버튼 사이로 지나간다 */
+
+/* 앱 바 왼쪽 알약(backlog 32). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
+   홈은 로고 + 워드마크(통째로 홈 링크), 그 밖은 ← + 로고, 앱 바를 숨기는 화면은 로고 하나 */
+.brand-pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  margin: -4px 0;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   background: var(--card);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  box-shadow: 0 1px 0 var(--glass-edge);
+  box-shadow: var(--glass-sm);
+  color: var(--ink);
+  text-decoration: none;
 }
 
-/* 앱 바의 로고 마크(backlog 25). 홈은 앱 이름 앞, 그 밖은 ← 오른쪽(회원·비회원이 정해졌으면 홈 링크) */
-.w-header .logo {
+a.brand-pill:active {
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+.brand-pill .logo {
   flex: none;
   display: block;
   width: 28px;
   height: 28px;
 }
 
-.w-header .logo-link {
+.brand-pill .wordmark {
+  margin-inline-end: 4px;
+}
+
+/* ← 오른쪽 로고(로그인하고 프로필까지 있으면 홈 링크). 알약 높이를 다 누르는 영역으로 쓴다 */
+.brand-pill .logo-link {
   flex: none;
   display: grid;
   place-items: center;
-  width: 44px;
+  width: 36px;
   height: 44px;
-  margin: -8px 0;
 }
 
-/* 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)의 좌측 상단 로고 하나. 누를 수 없다 */
+/* 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)의 좌측 상단 로고 알약. 누를 수 없다 */
 .w-corner-logo {
   padding: 12px 16px 0;
-}
-
-.w-corner-logo .logo {
-  display: block;
-  width: 28px;
-  height: 28px;
 }
 
 /* 스크롤 등장(backlog 25, src/components/reveal.ts). 들어오면 16px 올라오며 나타난다. 300ms(duration-d6), easing-enter.
@@ -230,22 +241,11 @@ p {
   }
 }
 
-.w-header .title {
-  flex: 1;
-  font-weight: 700;
-  font-size: var(--t5);
-  color: var(--ink);
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 앱 바의 ← 되돌아가기. 아이콘 24px, 누르는 영역 48px, 평평 */
+/* 앱 바의 ← 되돌아가기. 왼쪽 알약 안에 평평하게. 아이콘 24px, 누르는 영역은 알약 높이 44px */
 .w-header .back {
-  width: 48px;
-  height: 48px;
-  margin: -6px 0 -6px -12px;
+  width: 40px;
+  height: 44px;
+  margin: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -262,6 +262,7 @@ p {
 .lang-pick {
   position: relative;
   flex: none;
+  margin-inline-start: auto;
 }
 
 .lang-btn {
@@ -443,7 +444,7 @@ p {
   padding: 32px 0;
 }
 
-/* 팀 로고 마크(public/logo.png). 바탕이 투명이라 화살표 자리로 바닥색이 비친다 */
+/* 팀 로고 마크(public/mark.png). 바탕이 투명이라 화살표 자리로 바닥색이 비친다 */
 .w-logo .mark {
   display: block;
   width: 64px;
@@ -590,7 +591,7 @@ p {
   pointer-events: none; /* 띠 바탕이 없으므로 독 둘레의 빈자리는 아래 내용이 눌리게 한다 */
 }
 
-/* 하단 독(backlog 32): 119와 센터 채팅을 담는 떠 있는 유리 알약 하나. 안쪽 4px 여백이 두 버튼을 감싼다 */
+/* 하단 독(backlog 33): 119와 센터 채팅을 담는 떠 있는 유리 알약 하나. 안쪽 4px 여백이 두 버튼을 감싼다 */
 .bar-dock {
   display: flex;
   align-items: center;

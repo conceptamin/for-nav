@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 // - 별칭 @fe → ../frontend/src. tsconfig.json의 paths와 같은 값이다.
 // - dedupe: frontend/src 파일이 import하는 react·react-dom·react-router를 이 폴더의 node_modules 하나로 묶는다(React가 둘이면 훅이 깨진다).
 // - fs.allow: 개발 서버가 저장소 루트 아래(../frontend)를 서빙할 수 있게 한다.
-// - publicDir: 로고·국기(frontend/public)를 같은 절대 경로(/logo.png, /flags/*.svg)로 서빙·복사한다.
+// - publicDir: 로고·국기(frontend/public)를 같은 절대 경로(/mark.png, /wordmark.png, /flags/*.svg)로 서빙·복사한다.
 //
 // frontend/와 같은 두 모드로 돈다(README "API 연결").
 // - 단독 모드: VITE_API_BASE가 비어 있으면 브라우저 안의 규칙·mock만 쓰고 네트워크 요청이 없다.

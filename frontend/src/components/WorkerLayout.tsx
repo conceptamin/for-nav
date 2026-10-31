@@ -88,7 +88,7 @@ export function WorkerLayout() {
 
   // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
   // 채팅 버튼은 센터 연락(통화·채팅, backlog 29)으로 간다. 로그인하고 프로필까지 있을 때만 보인다.
-  // 두 버튼은 끝 쪽에 뜬 유리 독(.bar-dock) 하나에 담는다(backlog 32)
+  // 두 버튼은 끝 쪽에 뜬 유리 독(.bar-dock) 하나에 담는다(backlog 33)
   const bar119 = pathname !== '/emergency' && (
     <div className="bar-119">
       <div className="bar-dock">
@@ -118,7 +118,7 @@ export function WorkerLayout() {
     return (
       <div className="w-shell">
         <main className="w-main w-splash" onClick={endSplash}>
-          <img className="mark" src="/logo.png" width="96" height="96" alt="" />
+          <img className="mark" src="/mark.png" width="96" height="96" alt="" />
           <h1>
             <img className="wordmark" src="/wordmark.png" width="137" height="36" alt={appName} />
           </h1>
@@ -136,27 +136,28 @@ export function WorkerLayout() {
     return <Navigate to={`/signup?${new URLSearchParams({ next: pathname + search })}`} replace />;
   }
 
-  // 홈은 로고 + 앱 이름(홈 링크). 그 밖은 ← + 로고(로그인하고 프로필까지 있으면 홈 링크).
-  // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 하나를 둔다(backlog 25)
+  // 앱 바 왼쪽은 언어 버튼과 같은 유리 알약 하나(backlog 32). 홈은 로고 + 앱 이름(통째로 홈 링크, RTL에서도 로고가 앞),
+  // 그 밖은 ← + 로고(로그인하고 프로필까지 있으면 로고가 홈 링크).
+  // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 알약 하나를 둔다(backlog 25)
   const isRoot = pathname === '/' || pathname === '/home';
-  const logo = <img className="logo" src="/logo.png" width="28" height="28" alt="" />;
+  const logo = <img className="logo" src="/mark.png" width="28" height="28" alt="" />;
 
   return (
     <ScreenBarContext.Provider value={setBarStable}>
       <div className="w-shell">
         {bar.hidden ? (
-          <div className="w-corner-logo">{logo}</div>
+          <div className="w-corner-logo">
+            <span className="brand-pill">{logo}</span>
+          </div>
         ) : (
           <header className="w-header">
             {isRoot ? (
-              <>
+              <Link to={app.ready ? '/home' : '/'} className="brand-pill" dir="ltr">
                 {logo}
-                <Link to={app.ready ? '/home' : '/'} className="title">
-                  <img className="wordmark" src="/wordmark.png" width="76" height="20" alt={appName} />
-                </Link>
-              </>
+                <img className="wordmark" src="/wordmark.png" width="76" height="20" alt={appName} />
+              </Link>
             ) : (
-              <>
+              <div className="brand-pill">
                 <button type="button" className="back" aria-label={t('back')} onClick={bar.onBack ?? (() => navigate('/home'))}>
                   ←
                 </button>
@@ -167,8 +168,7 @@ export function WorkerLayout() {
                 ) : (
                   logo
                 )}
-                <span className="title" />
-              </>
+              </div>
             )}
             <LangMenu />
           </header>
