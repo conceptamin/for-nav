@@ -1601,14 +1601,14 @@ hr.divider {
 }
 
 /* 진행 막대(backlog 35). 들어간 트랙 8px 안에 브랜드색 채움, 끝 쪽에 `3 / 10`. 전환 효과 없이 바로 바뀐다 */
-.progress {
+.steps-progress {
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 0 0 20px;
 }
 
-.progress progress {
+.steps-progress progress {
   -webkit-appearance: none;
   appearance: none;
   flex: 1;
@@ -1622,21 +1622,21 @@ hr.divider {
   color: var(--brand);
 }
 
-.progress progress::-webkit-progress-bar {
+.steps-progress progress::-webkit-progress-bar {
   background: transparent;
 }
 
-.progress progress::-webkit-progress-value {
+.steps-progress progress::-webkit-progress-value {
   border-radius: 999px;
   background: var(--brand-paint);
 }
 
-.progress progress::-moz-progress-bar {
+.steps-progress progress::-moz-progress-bar {
   border-radius: 999px;
   background: var(--brand-paint);
 }
 
-.progress .count {
+.steps-progress .count {
   flex: none;
   font-size: var(--t4);
   font-weight: 700;
