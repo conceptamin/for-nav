@@ -921,13 +921,28 @@ S-04 `/home`(backlog 23). 심토미 홈의 배치를 빌려 네 덩어리로 나
 
 | 순서 | 조각 | 면 | 모양 |
 |---|---|---|---|
-| 1 | 나 줄 `.row.link.home-me` → 회원 `/my`, 비회원 `/signup` | 평평(바닥 위 글자) | `--t8` 굵게 `--ink` + 끝에 `›`(`--ink-2`). 높이 44px 이상. 회원은 `성별 · 출생 연도`, 비회원은 `비회원 · 프로필 만들기` |
+| 1 | 나 줄 `.row.link.home-me` → `/my` | 평평(바닥 위 글자) | `--t8` 굵게 `--ink` + 끝에 `›`(`--ink-2`). 높이 44px 이상. `성별 · 출생 연도`(홈에는 로그인하고 프로필이 있어야 들어온다, backlog 28) |
 | 2 | 시작 카드 `.home-hero` → `/intake` | 색이 있는 면 `--glass-color`, 누르면 `--glass-color-in`. 흐림 없음 | `--brand` 바탕, `--on-brand` 글자, `--radius`, 안쪽 여백 20px, 높이 168px 이상. 제목 `--t9` 굵게, 부제 `--t4`, 아래 알약 `.go`(`--on-brand-soft` 바탕, `--radius-sm`, 그림자 없음). 카드 전체가 링크 하나이고 알약은 모양만이다. 끝-아래 모서리에 장식 판 두 장(`::before`·`::after`, `--on-brand-soft`, `--radius`, 기울임)을 겹쳐 둔다. 장식은 `pointer-events: none`이고 논리 속성(`inset-inline-end`)으로 붙여 RTL에서 반대편으로 간다 |
 | 3 | 기능 목록 `.home-list` (`병원 이용 방법`, `보험과 지원`, `지원센터에 문의`, `내 정보`) | 판 하나가 떠 있음 `--glass` + 흐림. 안의 줄은 평평, 누르면 줄 바탕이 `--bg-2` | `--radius`, 줄 높이 64px 이상, 안쪽 여백 가로 16px. 줄 = 아이콘 칸 44px(`--brand-2`, `--radius-sm`, `--glass-in`) · 작은 부제(`--t3` `--ink-2`) 위 + 제목(`--t6` 굵게) 아래 · `›`(`--ink-2`, RTL에서 뒤집힘). 줄 사이에 구분선을 두지 않는다(SEED menu: Menu Item 사이 Divider 금지) |
 | 4 | `최근 메모` h2 + 카드 `a.card.home-recent` → `/report/:id` | 떠 있음 `--glass` + 흐림, 누르면 `--glass-in` | 첫 줄 증상(`--t6` 굵게), 둘째 줄 `부위: …`(`--t4`), 셋째 줄 🕓 날짜(`--t4` `--ink-2`). 메모가 없으면 h2째 없다. 판정·진료과는 보이지 않는다 |
 
 - 인사 h1은 두지 않는다. 시작 카드가 "무엇을 도와드릴까요"의 답이다.
 - 심토미의 프로필 목록 시트, 인기 키워드 칩, 근처 약국·병원, 하단 탭 바는 옮기지 않는다(backlog 23 "하지 않는 것").
+
+### 근로자 로그인
+
+S-03 `/signup`의 로그인 단계(backlog 10·28). 앱 바 없이 로고 골격(`.w-logo`: 🏥 자리의 로고 + 앱 이름 + 한 줄)이고, 바닥에 아래 하나와 각주가 쌓인다. 비회원 버튼은 없다.
+
+| 경우 | 조각 | 모양 |
+|---|---|---|
+| 실제 로그인(API 모드, 서버 `WORKER_AUTH=google`) | Google 공식 버튼 `.gsi-button` | Google Identity Services가 그리는 iframe(`outline`, `large`, `pill`, `signin_with`, 앱 언어). **우리 토큰을 쓰지 않는 유일한 예외**다(Google 브랜드 규정). 틀은 가운데 정렬, 높이 44px 이상만 잡는다. 서버로 보내는 동안은 버튼 대신 막힌 `.btn.secondary.block.big` 하나 |
+| 데모 로그인(단독 모드, 서버 `off`) | `.btn.secondary.block.big` + 왼쪽 `.mark` G 글자 원 | 지금처럼. 서버 확인 중에는 막혀 있다. 아래 각주 `loginDemoNote` |
+| 서버·Google을 확인하지 못함 | `notice.warn.with-retry` | 실패 문구 + `다시 시도`(`.btn.secondary`). 하단 119 띠는 그대로 |
+| 빌드에 클라이언트 ID가 없음 | `notice.warn` 한 줄 | 설정 실수가 바로 보이게 |
+
+- 각주는 `.footer-note` 둘이다: 실제 로그인이면 "Google 이름·이메일은 저장하지 않는다", 늘 "비자·이름을 묻지 않는다".
+- 로그인한 뒤 프로필이 없으면 같은 경로의 프로필 단계(앱 바 있음, ← 는 로그아웃하고 로그인 단계로)다.
+- S-13 `/my` 아래에 `로그아웃`(`.btn.secondary.block`)과 `내 데이터 지우기`(`.btn.ghost.block`)가 차례로 선다. 둘 다 누르면 로그인 화면으로 간다.
 
 ### 상담 채팅
 
