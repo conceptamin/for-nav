@@ -15,7 +15,7 @@ export const uz: Record<MessageKey, string> = {
   required: 'majburiy',
   skip: 'Oʻtkazib yuborish',
   call119: '119 ga qoʻngʻiroq qilish',
-  bar119: 'Shoshilinchmi? 119 ga qoʻngʻiroq qiling',
+  bar119: 'Koreyada tez yordam: 119',
   worse119: 'Ahvolingiz yomonlashsa, darhol 119 ga qoʻngʻiroq qiling.',
   changeLang: 'Til',
 

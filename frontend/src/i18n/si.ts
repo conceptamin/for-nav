@@ -15,7 +15,7 @@ export const si: Record<MessageKey, string> = {
   required: 'අනිවාර්යයි',
   skip: 'මඟ හරින්න',
   call119: '119 අමතන්න',
-  bar119: 'හදිසියක්ද? 119 අමතන්න',
+  bar119: 'කොරියාවේ හදිසි: 119',
   worse119: 'රෝග ලක්ෂණ වැඩි වුණොත් වහාම 119 අමතන්න.',
   changeLang: 'භාෂාව',
 

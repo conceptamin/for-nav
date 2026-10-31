@@ -15,7 +15,7 @@ export const zhCN: Record<MessageKey, string> = {
   required: '必填',
   skip: '跳过',
   call119: '拨打119',
-  bar119: '紧急情况？拨打119',
+  bar119: '韩国急救电话119',
   worse119: '如果症状加重，请马上拨打119。',
   changeLang: '语言',
 

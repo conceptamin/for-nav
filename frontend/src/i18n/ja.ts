@@ -15,7 +15,7 @@ export const ja: Record<MessageKey, string> = {
   required: '必須',
   skip: 'スキップ',
   call119: '119に電話',
-  bar119: '緊急ですか？119に電話',
+  bar119: '韓国の救急は119',
   worse119: '症状が悪くなったら、すぐに119に電話してください。',
   changeLang: '言語',
 

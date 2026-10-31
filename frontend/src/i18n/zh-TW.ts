@@ -15,7 +15,7 @@ export const zhTW: Record<MessageKey, string> = {
   required: '必填',
   skip: '略過',
   call119: '撥打119',
-  bar119: '緊急狀況？撥打119',
+  bar119: '韓國急救電話119',
   worse119: '如果症狀變嚴重，請馬上撥打119。',
   changeLang: '語言',
 
