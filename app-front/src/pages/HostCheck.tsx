@@ -2,7 +2,15 @@
 // 다리가 감지한 것, init으로 받은 값, 주고받은 메시지의 type만 보인다. 본문은 보이지 않는다.
 
 import { useEffect, useRef, useState } from 'react';
-import { GoogleSignInError, listenHostSpeech, onBack, PROTOCOL, requestGoogleIdToken } from '../bridge/host';
+import {
+  GoogleSignInError,
+  hasSeenPushOpen,
+  listenHostSpeech,
+  onBack,
+  PROTOCOL,
+  requestGoogleIdToken,
+  requestPushToken,
+} from '../bridge/host';
 import { useHost } from '../bridge/HostProvider';
 
 const API_BASE = (import.meta.env.VITE_API_BASE ?? '').trim();
@@ -47,6 +55,16 @@ export function HostCheckPage() {
     );
   };
 
+  // 푸시 시험(backlog 08). 결과 종류만 보인다. FCM 토큰은 보이지도 찍지도 않는다
+  const [pushResult, setPushResult] = useState<string>(host.present ? '—' : '호스트 없음 · no host');
+  const tryPush = () => {
+    setPushResult('기다리는 중 · waiting');
+    requestPushToken().then(
+      (token) => setPushResult(token ? 'token 받음 · received' : '거부 · denied'),
+      () => setPushResult('실패 · failed'),
+    );
+  };
+
   const rows: [string, string][] = [
     ['호스트 · Host', host.present ? `있음 (${host.transport})` : '없음 (브라우저 · browser)'],
     ['init 받음 · init received', host.ready ? '예 · yes' : '아니요 · not yet'],
@@ -58,6 +76,7 @@ export function HostCheckPage() {
     ['API 모드 · API mode', API_BASE === '' ? '단독 · standalone' : `API (${API_BASE})`],
     ['출처 · origin', window.location.origin],
     ['protocol', String(PROTOCOL)],
+    ['pushOpen 받음 · received', hasSeenPushOpen() ? '예 · yes' : '아니요 · no'],
   ];
 
   return (
@@ -111,6 +130,12 @@ export function HostCheckPage() {
           </button>
           <span className="muted">→ {speechResult}</span>
         </p>
+        <p className="links">
+          <button type="button" className="btn secondary" onClick={tryPush}>
+            푸시 시험 · Try push
+          </button>
+          <span className="muted">→ {pushResult}</span>
+        </p>
       </section>
 
       <section className="card">
@@ -130,10 +155,12 @@ export function HostCheckPage() {
 
       <section className="card">
         <h2>브라우저에서 호스트 흉내 · Fake a host</h2>
-        <p className="muted">개발자 도구 콘솔에 두 줄을 차례로 넣는다(새로고침 없음). 첫 줄이 통로, 둘째 줄이 호스트의 init이다. 셋째 줄은 Google 로그인 시험을 누른 뒤 넣는 응답이다. README "호스트 계약" · backlog 01 완료 기준.</p>
+        <p className="muted">개발자 도구 콘솔에 두 줄을 차례로 넣는다(새로고침 없음). 첫 줄이 통로, 둘째 줄이 호스트의 init이다. 셋째 줄은 Google 로그인 시험을 누른 뒤 넣는 응답이다. 넷째·다섯째 줄은 푸시 시험의 응답과 알림 탭이다. README "호스트 계약" · backlog 01·08 완료 기준.</p>
         <pre>{`window.ForNav = { postMessage: (s) => console.log('host<-', JSON.parse(s).type) }
-window.fornav.receive({ protocol: 1, type: 'init', platform: 'android', appVersion: '0.0.1', locale: 'vi-VN', insets: { top: 24, right: 0, bottom: 48, left: 0 }, features: ['googleSignIn', 'speech'] })
-window.fornav.receive({ protocol: 1, type: 'googleSignInResult', error: 'canceled' })`}</pre>
+window.fornav.receive({ protocol: 1, type: 'init', platform: 'android', appVersion: '0.0.1', locale: 'vi-VN', insets: { top: 24, right: 0, bottom: 48, left: 0 }, features: ['googleSignIn', 'speech', 'push'] })
+window.fornav.receive({ protocol: 1, type: 'googleSignInResult', error: 'canceled' })
+window.fornav.receive({ protocol: 1, type: 'pushToken', error: 'denied' })
+window.fornav.receive({ protocol: 1, type: 'pushOpen', caseId: 'C-251031-001' })`}</pre>
       </section>
     </div>
   );
