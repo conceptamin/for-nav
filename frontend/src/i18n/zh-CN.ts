@@ -260,6 +260,7 @@ export const zhCN: Record<MessageKey, string> = {
   talkNoCase: '请先向中心发送请求。之后可以在这里和中心通话或聊天。',
   talkOffline: '只有在应用连接到服务器时，才能和中心通话或聊天。',
   close: '关闭',
+  chatCallHint: '也可以语音交流：点击上方的 📞 即可与中心通话。',
   liveCallTitle: '给中心打电话',
   liveCallIntro: '通过网络与咨询员通话。双方说的话会以字幕形式显示在下方，并附有机器翻译。请使用耳机，以免对方的声音被记成你的字幕。',
   liveCallStart: '拨打',

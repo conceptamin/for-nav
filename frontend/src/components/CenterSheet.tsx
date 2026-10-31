@@ -3,6 +3,7 @@
 // 이미 보낸 요청(토큰이 있는 가장 최근 것)이 있으면 그 요청의 채팅만 보인다. 머리의 📞로 통화 패널과 오간다.
 // 부르는 쪽(WorkerLayout)은 한 번 연 시트를 닫아도 숨기기만 한다. 채팅 연결·통화가 끊기지 않게 하려는 것이다.
 // S-12 페이지(/center-request)와 전송·연락 문구를 같이 쓴다(useSendCenterRequest, workerChatLabels, workerCallLabels).
+// S-12에서 요청을 보내면 그 페이지도 이 시트를 연다(backlog 44). 시트는 가장 최근 요청의 채팅을 보이고, 📞로 통화로 바꿀 수 있다고 안내한다.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { isSessionEnded } from '../api/auth';
@@ -171,8 +172,10 @@ export function CenterSheet({ id, open, onClose }: { id: string; open: boolean; 
   const existing = app.myCaseIds.find((caseId) => app.chatTokens[caseId]) ?? null;
   // 시트를 연 뒤 요청을 보냈으면 그 대화를 이어 보인다. 아니면 이미 있는 요청의 채팅만
   const asking = !existing;
-  const { summary, sent, sending, failed, send } = useSendCenterRequest(types, open && asking);
-  const caseId = sent?.case.id ?? existing;
+  const { summary, sent: sentHere, sending, failed, send } = useSendCenterRequest(types, open && asking);
+  // S-12가 그 뒤에 새 요청을 보냈으면(backlog 44) 새 요청의 채팅을 보이고, 시트 안 요청 대화는 접는다
+  const caseId = existing ?? sentHere?.case.id ?? null;
+  const sent = sentHere && sentHere.case.id === caseId ? sentHere : null;
   const token = caseId ? app.chatTokens[caseId] : undefined;
   const online = Boolean(token) && isChatAvailable();
   const canCall = online && isCallAvailable();
@@ -301,6 +304,12 @@ export function CenterSheet({ id, open, onClose }: { id: string; open: boolean; 
               <p className="sheet-case small muted">
                 {t('cenCaseNo')}: <strong>{caseId}</strong>
               </p>
+              {/* 연락 방법을 따로 묻지 않으므로 통화로 바꾸는 머리의 📞을 알려 준다(backlog 44) */}
+              {canCall && talk === 'chat' && (
+                <div className="chat-msg">
+                  <p>{t('chatCallHint')}</p>
+                </div>
+              )}
               {!online || !token ? (
                 <div className="notice info">{t('talkOffline')}</div>
               ) : talk === 'call' && canCall ? (

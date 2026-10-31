@@ -259,6 +259,7 @@ export const en = {
   talkNoCase: 'Send a request to the centre first. Then you can call or chat with the centre here.',
   talkOffline: 'Calls and chat with the centre work only when the app is connected to the server.',
   close: 'Close',
+  chatCallHint: 'You can also talk by voice: tap 📞 at the top to call the centre.',
   liveCallTitle: 'Call the centre',
   liveCallIntro: 'Talk to a counsellor over the internet. What you both say appears below as captions with machine translation. Use earphones so the other voice is not captioned as yours.',
   liveCallStart: 'Call',

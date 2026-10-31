@@ -260,6 +260,7 @@ export const ja: Record<MessageKey, string> = {
   talkNoCase: 'まずセンターに依頼を送ってください。その後、ここでセンターと通話やチャットができます。',
   talkOffline: 'センターとの通話・チャットは、アプリがサーバーに接続しているときだけ使えます。',
   close: '閉じる',
+  chatCallHint: '音声でも話せます。上の📞を押すとセンターと通話します。',
   liveCallTitle: 'センターに電話',
   liveCallIntro: 'インターネットで相談員と通話します。二人の話した内容が下に字幕として表示され、機械翻訳が付きます。相手の声が自分の字幕にならないよう、イヤホンを使ってください。',
   liveCallStart: '電話をかける',

@@ -260,6 +260,7 @@ export const zhTW: Record<MessageKey, string> = {
   talkNoCase: '請先向中心送出請求。之後可以在這裡和中心通話或聊天。',
   talkOffline: '只有在應用程式連上伺服器時，才能和中心通話或聊天。',
   close: '關閉',
+  chatCallHint: '也可以語音交談：點選上方的 📞 即可與中心通話。',
   liveCallTitle: '打電話給中心',
   liveCallIntro: '透過網路與諮詢員通話。雙方說的話會以字幕顯示在下方，並附上機器翻譯。請使用耳機，以免對方的聲音被記成你的字幕。',
   liveCallStart: '撥打',

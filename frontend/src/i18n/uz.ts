@@ -260,6 +260,7 @@ export const uz: Record<MessageKey, string> = {
   talkNoCase: 'Avval markazga soʻrov yuboring. Keyin shu yerda markaz bilan qoʻngʻiroq yoki chat qilishingiz mumkin.',
   talkOffline: 'Markaz bilan qoʻngʻiroq va chat faqat ilova serverga ulangan paytda ishlaydi.',
   close: 'Yopish',
+  chatCallHint: 'Ovozli ham gaplashishingiz mumkin: markazga qo‘ng‘iroq qilish uchun yuqoridagi 📞 ni bosing.',
   liveCallTitle: 'Markazga qoʻngʻiroq',
   liveCallIntro: 'Maslahatchi bilan internet orqali gaplashing. Ikkalangiz aytgan soʻzlar quyida mashina tarjimasi bilan subtitr boʻlib chiqadi. Suhbatdosh ovozi sizning subtitringizga tushmasligi uchun quloqchin taqing.',
   liveCallStart: 'Qoʻngʻiroq qilish',
