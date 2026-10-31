@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-31T12:59:13.396Z",
+ "generatedAt": "2026-10-31T13:09:14.218Z",
  "now": "2026-10-26T01:00:00.000Z",
  "triage": [
   {
@@ -115800,6 +115800,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(북구, 조선 업종). 이·잇몸 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Боль — Зубы, десны (2–3 дня назад).\nСлучилось на работе: нет.\nРайон: Пук-гу.\nОтрасль: Судостроение.\nМои слова: \"Уже неделю болит зуб. Нужен переводчик у стоматолога.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -115832,6 +115833,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(울주군, 조선 업종). 배 통증, 구토·메스꺼움, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
    "originalNative": "Masalah: Nyeri, Mual, muntah — Perut (Kemarin).\nTerjadi di tempat kerja: tidak.\nWilayah: Ulju-gun.\nIndustri: Galangan kapal.\nCatatan saya: \"Sakit perut dan muntah sejak kemarin. Harus ke rumah sakit mana?\"\nPermintaan: Saran asuransi & bantuan.",
    "consentedItems": [
@@ -115866,6 +115868,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(동구, 기타 업종). 손·손가락 베인 상처, 출혈, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
    "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (2–3 hari lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Lainnya.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Lainnya.",
    "consentedItems": [
@@ -115898,6 +115901,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 배 통증, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Боль — Живот (Вчера).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Болит низ живота. Хочу к гинекологу с переводчиком.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -115933,6 +115937,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Tulong sa booking.",
    "consentedItems": [
@@ -115967,6 +115972,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 눈 눈의 이물감, 통증, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (2–3 дня назад).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Направление в учреждение.",
    "consentedItems": [
@@ -115999,6 +116005,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Температура, Кашель — Все тело (Сегодня).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Температура и кашель три дня. Карту медстраховки ещё не получил.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -116033,6 +116040,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Ожог — Рука, плечо (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Небольшой ожог руки от сварки.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -116067,6 +116075,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Masalah: Nyeri, Sulit bergerak — Kaki, lutut (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Lutut sakit, susah berjalan.\"\nPermintaan: Bantuan janji temu.",
    "consentedItems": [
@@ -116101,6 +116110,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 피부 발진·가려움, 어제 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Сыпь, зуд — Кожа (Вчера).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Зудящая сыпь на руках, возможно от краски.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -116135,6 +116145,7 @@
    "category": "cost",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 건설 업종). 머리 어지러움, 2~3일 전 시작. 업무 중 발생: 모름. 건강보험증: 없음. 제도 경로 결과: 울산 의료비 지원 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Головокружение — Голова (2–3 дня назад).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Строительство.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -116169,6 +116180,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "필리핀어 사용 근로자(동구, 건설 업종). 귀·코·목 기침, 통증, 2~3일 전 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
    "originalNative": "Problema: Ubo, Pananakit — Tainga, ilong, lalamunan (2–3 araw na ang nakaraan).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Konstruksyon.\nAking tala: \"Masakit ang lalamunan at may ubo, amoy kemikal sa trabaho.\"\nRequest: Iba pa.",
    "consentedItems": [
@@ -116203,6 +116215,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "싱할라어 사용 근로자(북구, 자동차 부품 업종). 이·잇몸 통증, 일주일 이상 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "ප්‍රශ්නය: වේදනාව — දත්, විදුරුමස් (සතියකට වඩා කලින්).\nවැඩේදී වුණා: නැහැ.\nප්‍රදේශය: බුක්-ගු (Buk-gu).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"සතියක් තිස්සේ දතේ කැක්කුමක් තියෙනවා. දන්ත වෛද්‍යවරයා ළඟ භාෂා පරිවර්තකයෙක් ඕනේ.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
    "consentedItems": [
@@ -116235,6 +116248,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(울주군, 건설 업종). 배 통증, 구토·메스꺼움, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Проблема: Боль, Тошнота, рвота — Живот (Сегодня).\nСлучилось на работе: нет.\nРайон: Ульджу-гун.\nОтрасль: Строительство.\nМои слова: \"Со вчерашнего дня болит живот и рвота. В какую больницу идти?\"\nЗапрос: Советы о страховке и помощи.",
    "consentedItems": [
@@ -116269,6 +116283,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 일주일 이상 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Saran asuransi & bantuan.",
    "consentedItems": [
@@ -116301,6 +116316,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 배 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "Masalah: Nyeri — Perut (2–3 hari lalu).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Perut bagian bawah sakit. Saya ingin ke dokter kandungan dengan penerjemah.\"\nPermintaan: Penerjemahan.",
    "consentedItems": [
@@ -116335,6 +116351,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Payo tungkol sa insurance at tulong.",
    "consentedItems": [
@@ -116369,6 +116386,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 화학 업종). 눈 눈의 이물감, 통증, 오늘 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Химическая промышленность.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -116401,6 +116419,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Masalah: Demam, Batuk — Seluruh badan (Hari ini).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Demam dan batuk tiga hari. Kartu asuransi kesehatan saya belum datang.\"\nPermintaan: Penerjemahan.",
    "consentedItems": [
@@ -116435,6 +116454,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "영어 사용 근로자(동구, 화학 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Problem: Burn — Arm, shoulder (Today).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Chemical.\nMy note: \"Small burn on my arm from welding.\"\nRequest: Interpretation.",
    "consentedItems": [
@@ -116469,6 +116489,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "영어 사용 근로자(동구, 자동차 부품 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Problem: Pain, Hard to move — Leg, knee (Over a week ago).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Auto parts.\nMy note: \"Knee hurts, hard to walk.\"\nRequest: Interpretation.",
    "consentedItems": [
@@ -116503,6 +116524,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "싱할라어 사용 근로자(동구, 화학 업종). 피부 발진·가려움, 오늘 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "ප්‍රශ්නය: කුෂ්ඨ, කැසීම — සම (අද).\nවැඩේදී වුණා: විශ්වාස නැහැ.\nප්‍රදේශය: දොං-ගු (Dong-gu).\nක්ෂේත්‍රය: රසායන.\nමගේ සටහන: \"අත්වල කසන බිබිලි, සමහරවිට තීන්ත නිසා වෙන්න ඇති.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
    "consentedItems": [
@@ -116535,6 +116557,7 @@
    "category": "insurance",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 머리 어지러움, 오늘 시작. 업무 중 발생: 모름. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Головокружение — Голова (Сегодня).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -116569,6 +116592,7 @@
    "category": "medical",
    "actions": [],
    "referredTo": [],
+   "nationality": null,
    "summaryKo": "싱할라어 사용 근로자(울주군, 자동차 부품 업종). 귀·코·목 기침, 통증, 오늘 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "ප්‍රශ්නය: කැස්ස, වේදනාව — කන, නාසය, උගුර (අද).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: උල්ජු-ගුන් (Ulju-gun).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"උගුරේ අමාරුවයි කැස්සයි, වැඩපොළේ රසායන ගඳක් තියෙනවා.\"\nඉල්ලීම: වෙන් කිරීමට සහාය.",
    "consentedItems": [
@@ -116592,221 +116616,265 @@
    "date": "2026-08-22T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-06-03T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-02T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "vi",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "VN"
   },
   {
    "date": "2026-07-03T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-07T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "en",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "TL"
   },
   {
    "date": "2026-08-19T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-29T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-17T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-13T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-18T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-05-07T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-14T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-01T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "tl",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-07-27T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "ar",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "MA"
   },
   {
    "date": "2026-06-11T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-26T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-04T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "si",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-18T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-09T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-13T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-19T01:00:00.000Z",
@@ -116816,117 +116884,141 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-15T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-28T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-07-21T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "si",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-19T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "nam",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "PH"
   },
   {
    "date": "2026-06-29T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "tl",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "si",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-03T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-02T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-04T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "ko",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KR"
   },
   {
    "date": "2026-09-30T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-24T01:00:00.000Z",
@@ -116936,17 +117028,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-03T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-14T01:00:00.000Z",
@@ -116956,117 +117052,141 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-12T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-04T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-11T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "tl",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-08T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "uz",
    "insurance": "no",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-21T01:00:00.000Z",
    "district": "buk",
    "industry": "chemical",
-   "language": "ru",
+   "language": "si",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-06T01:00:00.000Z",
    "district": "ulju",
    "industry": "construction",
-   "language": "si",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "id",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
    "district": "nam",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-11T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-09T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "tl",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-31T01:00:00.000Z",
@@ -117076,77 +117196,93 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-28T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-25T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-05-30T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-12T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "vi",
+   "language": "ru",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-14T01:00:00.000Z",
    "district": "nam",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-03T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-05-11T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-05-10T01:00:00.000Z",
@@ -117156,17 +117292,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-23T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-13T01:00:00.000Z",
@@ -117176,57 +117316,69 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-30T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-18T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-07-03T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-28T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-06-28T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-23T01:00:00.000Z",
@@ -117236,87 +117388,105 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-04T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-18T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-06-03T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-06T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-22T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-23T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "en",
+   "language": "si",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "en",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-14T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-03T01:00:00.000Z",
@@ -117326,17 +117496,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-14T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-11T01:00:00.000Z",
@@ -117346,7 +117520,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-13T01:00:00.000Z",
@@ -117356,37 +117532,45 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-19T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "en",
+   "language": "ru",
    "insurance": "no",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-24T01:00:00.000Z",
    "district": "ulju",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-21T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-13T01:00:00.000Z",
@@ -117396,17 +117580,21 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-05T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-22T01:00:00.000Z",
@@ -117416,47 +117604,57 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-23T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "vi",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-11T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-22T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-18T01:00:00.000Z",
@@ -117466,47 +117664,57 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-09T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-12T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-02T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-15T01:00:00.000Z",
@@ -117516,7 +117724,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-15T01:00:00.000Z",
@@ -117526,7 +117736,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-21T01:00:00.000Z",
@@ -117536,7 +117748,9 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "other",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-16T01:00:00.000Z",
@@ -117546,17 +117760,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-21T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-08T01:00:00.000Z",
@@ -117566,97 +117784,117 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-29T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-24T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ko",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-11T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "tl",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-05T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ko",
+   "language": "tl",
    "insurance": "no",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-05-06T01:00:00.000Z",
    "district": "nam",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-05-29T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-12T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-10-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-05T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
@@ -117666,57 +117904,69 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-06-25T01:00:00.000Z",
    "district": "ulju",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-05-26T01:00:00.000Z",
    "district": "ulju",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-25T01:00:00.000Z",
    "district": "buk",
    "industry": "construction",
-   "language": "id",
+   "language": "ky",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "KG"
   },
   {
    "date": "2026-08-27T01:00:00.000Z",
@@ -117726,97 +117976,117 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-30T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "tl",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-08-08T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-25T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-04T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-05T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-21T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "ky",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "KG"
   },
   {
    "date": "2026-10-13T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-05-09T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "tl",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-19T01:00:00.000Z",
@@ -117826,17 +118096,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-15T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-14T01:00:00.000Z",
@@ -117846,47 +118120,57 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "RU"
   },
   {
    "date": "2026-10-15T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-06T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "no",
    "afterHours": true,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "vi",
    "insurance": "no",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "VN"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
@@ -117896,27 +118180,33 @@
    "insurance": "no",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-16T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "tl",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-12T01:00:00.000Z",
@@ -117926,157 +118216,189 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-30T01:00:00.000Z",
    "district": "buk",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-22T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-22T01:00:00.000Z",
    "district": "ulju",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-12T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "en",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-12T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "en",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-31T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-06-17T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-10-16T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-14T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "en",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-07T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-29T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
    "district": "nam",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-05-17T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "en",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-16T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-16T01:00:00.000Z",
@@ -118086,67 +118408,81 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-25T01:00:00.000Z",
    "district": "nam",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-26T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-09T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "vi",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "VN"
   },
   {
    "date": "2026-07-23T01:00:00.000Z",
    "district": "nam",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-22T01:00:00.000Z",
    "district": "ulju",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-08T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-25T01:00:00.000Z",
@@ -118156,157 +118492,189 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-09T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-12T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-21T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-05-01T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "en",
+   "language": "ko",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "KR"
   },
   {
    "date": "2026-09-15T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-22T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "vi",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "LK"
   },
   {
    "date": "2026-06-02T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "ko",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KR"
   },
   {
    "date": "2026-08-18T01:00:00.000Z",
    "district": "ulju",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-16T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-19T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "en",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "RU"
   },
   {
    "date": "2026-06-19T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "en",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-19T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-02T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-25T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-15T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-12T01:00:00.000Z",
@@ -118316,7 +118684,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-21T01:00:00.000Z",
@@ -118326,77 +118696,93 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-06T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-02T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-26T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-12T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ko",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-08T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-07-16T01:00:00.000Z",
    "district": "buk",
    "industry": "construction",
-   "language": "si",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-13T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "en",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-05-14T01:00:00.000Z",
@@ -118406,7 +118792,9 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-30T01:00:00.000Z",
@@ -118416,77 +118804,93 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-12T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ko",
+   "language": "tl",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-08-14T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "tl",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-13T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "en",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-10T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-25T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-13T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-01T01:00:00.000Z",
@@ -118496,67 +118900,81 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "en",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-28T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "uz",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-10-16T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "tl",
+   "language": "id",
    "insurance": "no",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-31T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "en",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-09T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-10T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-26T01:00:00.000Z",
@@ -118566,27 +118984,33 @@
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-13T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "tl",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-30T01:00:00.000Z",
@@ -118596,7 +119020,9 @@
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-06-13T01:00:00.000Z",
@@ -118606,27 +119032,33 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-29T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-07-01T01:00:00.000Z",
    "district": "ulju",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-07-02T01:00:00.000Z",
@@ -118636,157 +119068,189 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-09T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-06T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-07-06T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "en",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-05-08T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-17T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-20T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "tl",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-04T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-20T01:00:00.000Z",
    "district": "buk",
    "industry": "other",
-   "language": "ru",
+   "language": "vi",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "VN"
   },
   {
    "date": "2026-07-20T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-29T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-27T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-17T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-27T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-23T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-22T01:00:00.000Z",
@@ -118796,67 +119260,81 @@
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-11T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "id",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-06-14T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-15T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-07T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-02T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-15T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-07-21T01:00:00.000Z",
@@ -118866,127 +119344,153 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-07T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "en",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-05-15T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "PH"
   },
   {
    "date": "2026-06-27T01:00:00.000Z",
    "district": "ulju",
    "industry": "autoparts",
-   "language": "en",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-07-26T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-11T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-07-25T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-05-03T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "tl",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-25T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-11T01:00:00.000Z",
    "district": "nam",
    "industry": "chemical",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-15T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-19T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "id",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "TL"
   },
   {
    "date": "2026-07-02T01:00:00.000Z",
@@ -118996,147 +119500,177 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-05-05T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-05T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-26T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "en",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-14T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-20T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-17T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-18T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-25T01:00:00.000Z",
    "district": "ulju",
    "industry": "other",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-16T01:00:00.000Z",
    "district": "ulju",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-05-13T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-10T01:00:00.000Z",
+   "district": "dong",
+   "industry": "autoparts",
+   "language": "en",
+   "insurance": "yes",
+   "afterHours": false,
+   "requestType": "interpret",
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
+  },
+  {
+   "date": "2026-07-20T01:00:00.000Z",
+   "district": "dong",
+   "industry": "shipbuilding",
+   "language": "kk",
+   "insurance": "yes",
+   "afterHours": false,
+   "requestType": "other",
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
+  },
+  {
+   "date": "2026-09-15T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
-  },
-  {
-   "date": "2026-07-20T01:00:00.000Z",
-   "district": "dong",
-   "industry": "shipbuilding",
-   "language": "id",
-   "insurance": "yes",
-   "afterHours": false,
-   "requestType": "other",
-   "workRelated": "yes"
-  },
-  {
-   "date": "2026-09-15T01:00:00.000Z",
-   "district": "dong",
-   "industry": "autoparts",
-   "language": "ko",
-   "insurance": "yes",
-   "afterHours": false,
-   "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-10T01:00:00.000Z",
@@ -119146,7 +119680,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-22T01:00:00.000Z",
@@ -119156,7 +119692,9 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-22T01:00:00.000Z",
@@ -119166,117 +119704,141 @@
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "cost",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-06T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "vi",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-18T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-27T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-08-16T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": true,
    "requestType": "policy",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "si",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-19T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "other",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-22T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-06T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-07T01:00:00.000Z",
    "district": "ulju",
    "industry": "other",
-   "language": "ru",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-02T01:00:00.000Z",
@@ -119286,47 +119848,57 @@
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-05-24T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-06-02T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "uz",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-21T01:00:00.000Z",
    "district": "buk",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-21T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "si",
+   "language": "en",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-24T01:00:00.000Z",
@@ -119336,117 +119908,141 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-28T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-09T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "si",
+   "language": "kk",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "cost",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "PH"
   },
   {
    "date": "2026-07-17T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "en",
    "insurance": "no",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-13T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-28T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-30T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "si",
+   "language": "en",
    "insurance": "no",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-08-24T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "en",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-25T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ko",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "UZ"
   },
   {
    "date": "2026-08-18T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "cost",
+   "nationality": "KZ"
   },
   {
    "date": "2026-07-29T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "en",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-10T01:00:00.000Z",
@@ -119456,17 +120052,21 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-16T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "en",
+   "language": "vi",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "VN"
   },
   {
    "date": "2026-05-01T01:00:00.000Z",
@@ -119476,7 +120076,9 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-08-07T01:00:00.000Z",
@@ -119486,17 +120088,21 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-09-02T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-10-05T01:00:00.000Z",
@@ -119506,37 +120112,45 @@
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-19T01:00:00.000Z",
    "district": "buk",
    "industry": "shipbuilding",
-   "language": "ru",
+   "language": "id",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "ID"
   },
   {
    "date": "2026-10-07T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-04T01:00:00.000Z",
    "district": "ulju",
    "industry": "construction",
-   "language": "id",
+   "language": "si",
    "insurance": "no",
    "afterHours": true,
    "requestType": "referral",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-07T01:00:00.000Z",
@@ -119546,157 +120160,189 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-11T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-06-03T01:00:00.000Z",
    "district": "ulju",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-15T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-07-29T01:00:00.000Z",
    "district": "nam",
    "industry": "shipbuilding",
-   "language": "vi",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-24T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "en",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-16T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "uz",
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-08T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "insurance",
+   "nationality": "TJ"
   },
   {
    "date": "2026-08-30T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "TJ"
   },
   {
    "date": "2026-09-05T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "uz",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "UZ"
   },
   {
    "date": "2026-09-20T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-15T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-11T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "si",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-06-26T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-09-02T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "en",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-10-06T01:00:00.000Z",
    "district": "buk",
    "industry": "autoparts",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-13T01:00:00.000Z",
@@ -119706,17 +120352,21 @@
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-08T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "id",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-01T01:00:00.000Z",
@@ -119726,27 +120376,33 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-17T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-08-22T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "en",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-10-17T01:00:00.000Z",
@@ -119756,57 +120412,69 @@
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-08-16T01:00:00.000Z",
    "district": "dong",
    "industry": "construction",
-   "language": "si",
+   "language": "id",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "ID"
   },
   {
    "date": "2026-07-19T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "ru",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "insurance",
+   "nationality": "RU"
   },
   {
    "date": "2026-05-28T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "tl",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "PH"
   },
   {
    "date": "2026-09-12T01:00:00.000Z",
    "district": "dong",
    "industry": "other",
-   "language": "ru",
+   "language": "ko",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KR"
   },
   {
    "date": "2026-09-25T01:00:00.000Z",
    "district": "ulju",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   },
   {
    "date": "2026-08-19T01:00:00.000Z",
@@ -119816,37 +120484,45 @@
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "interpret",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-07-08T01:00:00.000Z",
    "district": "dong",
    "industry": "shipbuilding",
-   "language": "id",
+   "language": "vi",
    "insurance": "no",
    "afterHours": false,
    "requestType": "referral",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "VN"
   },
   {
    "date": "2026-09-27T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "si",
+   "language": "ko",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "booking",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "KR"
   },
   {
    "date": "2026-06-14T01:00:00.000Z",
    "district": "dong",
    "industry": "chemical",
-   "language": "id",
+   "language": "si",
    "insurance": "yes",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "yes"
+   "workRelated": "yes",
+   "category": "medical",
+   "nationality": "LK"
   },
   {
    "date": "2026-06-26T01:00:00.000Z",
@@ -119856,27 +120532,33 @@
    "insurance": "yes",
    "afterHours": true,
    "requestType": "interpret",
-   "workRelated": "unknown"
+   "workRelated": "unknown",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-05-11T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "en",
+   "language": "ru",
    "insurance": "no",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "RU"
   },
   {
    "date": "2026-09-28T01:00:00.000Z",
    "district": "dong",
    "industry": "autoparts",
-   "language": "ru",
+   "language": "kk",
    "insurance": "unknown",
    "afterHours": false,
    "requestType": "policy",
-   "workRelated": "no"
+   "workRelated": "no",
+   "category": "medical",
+   "nationality": "KZ"
   }
  ]
 }

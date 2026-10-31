@@ -91,7 +91,8 @@ export async function getStats(days: 30 | 90 | 180, district: District | null): 
   const r = await call<Partial<CenterStats>>(`/center/stats?${q}`);
   const cells = [r.byIndustry, r.byLanguage, r.byInsurance, r.byAfterHours];
   if (!('total' in r) || !cells.every(Array.isArray)) throw bad();
-  return r as CenterStats;
+  // 월별·분야별·국적별을 아직 주지 않는 서버(backend 25 전)면 그 칸만 비운다
+  return { ...r, byMonth: r.byMonth ?? [], byCategory: r.byCategory ?? [], byNationality: r.byNationality ?? [] } as CenterStats;
 }
 
 // ---------------------------------------------------------------------------

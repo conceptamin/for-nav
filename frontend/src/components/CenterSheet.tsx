@@ -17,7 +17,7 @@ import { useCenterSummary } from '../api/worker';
 import { unreadCount, type CaseStatus, type NewCaseResponse } from '../domain/centerCase';
 import type { CenterSummaryInput, RequestType } from '../domain/templates';
 import { newIntake } from '../domain/triage';
-import { LOCALES } from '../domain/vocab';
+import { countryName, isNationality, LOCALES } from '../domain/vocab';
 import type { MessageKey } from '../i18n';
 import { formatIsoDate, useT } from '../i18n';
 import { useApp } from '../state/AppState';
@@ -162,6 +162,11 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
         }
       : null;
   const summary = useCenterSummary(input);
+  // 국적은 프로필에 있을 때만 묻고, 따로 동의해야 보낸다(기본 체크 없음, backlog 42)
+  const profileNationality = app.profile?.nationality;
+  const nationality = isNationality(profileNationality) ? profileNationality : null;
+  const [shareNationality, setShareNationality] = useState(false);
+  const sharedNationality = shareNationality && nationality ? nationality : null;
 
   const send = async () => {
     if (!types.length) return;
@@ -174,6 +179,7 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
       intake.district ? '구·군' : null,
       intake.industry ? '업종' : null,
       app.coverage ? '제도 경로 결과' : null,
+      sharedNationality ? '국적' : null,
     ].filter((x): x is string => Boolean(x));
     setSending(true);
     setFailed(false);
@@ -188,6 +194,8 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
           contactMethod: null,
           contact: null,
           consentedItems: consented,
+          // 동의하지 않았거나 고르지 않았으면 키째 보내지 않는다
+          ...(sharedNationality ? { nationality: sharedNationality } : {}),
         },
         app.meta.centerHours,
       );
@@ -212,7 +220,21 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
     setFailed(false);
   }, []);
 
-  return { summary, sent, sending, failed, send, reset };
+  return { summary, sent, sending, failed, send, reset, nationality, shareNationality, setShareNationality };
+}
+
+/** 센터 전송 동의 아래 국적 동의 한 줄. 프로필에 국적이 없으면 그리지 않는다 */
+export function NationalityConsent({ nationality, checked, onChange }: { nationality: string | null; checked: boolean; onChange: (v: boolean) => void }) {
+  const { t, lang } = useT();
+  if (!nationality) return null;
+  return (
+    <label className="check">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>
+        {t('consentNationality')} <strong>{countryName(nationality, LOCALES[lang])}</strong>
+      </span>
+    </label>
+  );
 }
 
 /** 운영 시간 안/밖 안내. 다음 운영일은 센터 날짜라 그날 정오(한국 시각)로 읽어 요일이 시간대에 따라 밀리지 않게 한다 */
@@ -252,7 +274,10 @@ export function CenterSheet({ id, open, onClose, focus }: { id: string; open: bo
   const shown = view === 'list' && !listed.length ? 'new' : view;
   // 마지막으로 연 요청. 목록·새 요청을 보는 동안에도 그 채팅·통화를 숨겨 둔 채 붙여 둔다
   const [current, setCurrent] = useState<string | null>(null);
-  const { summary, sent, sending, failed, send, reset } = useSendCenterRequest(types, open && shown === 'new');
+  const { summary, sent, sending, failed, send, reset, nationality, shareNationality, setShareNationality } = useSendCenterRequest(
+    types,
+    open && shown === 'new',
+  );
 
   const openCase = useCallback((caseId: string) => {
     setCurrent(caseId);
@@ -433,6 +458,7 @@ export function CenterSheet({ id, open, onClose, focus }: { id: string; open: bo
                     <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
                     <span>{t('cenConsent')}</span>
                   </label>
+                  <NationalityConsent nationality={nationality} checked={shareNationality} onChange={setShareNationality} />
                   {failed && (
                     <div className="notice danger with-retry" role="alert">
                       <span>{t('sendFailed')}</span>

@@ -1,6 +1,6 @@
 # 25. 센터 통계에 월별·분야별·국적별 집계를 더하고 언어를 20개로 세기
 
-상태: 대기
+상태: 완료
 의존: 24(분야), frontend 42(`nationality`, `StatRecord`의 날짜 분포·언어 가중치·분야·국적, `CenterStats` 모양)
 
 ## 목표
@@ -10,7 +10,7 @@
 - 하는 것
   - `app/schemas.py`: `CenterStats`에 `by_month: list[StatCell]`(`key`는 `YYYY-MM`, 최근 6개월, 오래된 달부터), `by_category`, `by_nationality`(`key`는 ISO 3166-1 alpha-2 또는 `unknown`, 많은 순). `CenterCase`·`POST /api/center/cases` 요청에 `nationality: str | None`(두 글자 대문자 또는 없음, 그 밖 422)
   - `app/routers/center.py` `stats`: 월별은 `days` 필터와 무관하게 서버 시각(Asia/Seoul) 기준 최근 6개월. `by_language`를 `LANGS` 전부로 센다. 5건 미만 칸은 지금처럼 `None`
-  - `app/data/mock.py`: 통계 원천 420건을 프론트 `data/mock.ts`와 같은 모양으로 — 같은 난수값으로 날짜를 센터 회신 월별 비율(16·25·41·85·97·65)로 옮기고, 언어는 `STAT_LANG_W`, `category`·`nationality`는 두 번째 시드(`rng(78)`)로 뒤에서 채운다. 첫 10개 난수값 비교 테스트는 그대로 통과해야 한다
+  - `app/data/mock.py`: 통계 원천 329건을 프론트 `data/mock.ts`와 같은 모양으로 — 국적은 회신 건수 그대로를 두 번째 시드(`rng(78)`)로 섞어 나누고, 언어는 국적의 모국어(frontend 42 메모의 사용자 결정), `category`도 두 번째 시드로 뒤에서 채운다. 첫 10개 난수값 비교 테스트는 그대로 통과해야 한다
   - `app/store.py`·`app/store_sqlite.py`: 사례에 `nationality` 추가. 통계 집계에 live 사례의 `category`·`nationality`도 들어간다(지금 live 사례가 집계에 들어가는 방식과 같게)
   - `tests/test_api.py`: 월별 키 형식과 개수, 분야·국적 칸, 5건 미만 마스킹, 언어 20개, `nationality` 검증
   - `README.md`: `GET /api/center/stats` 응답 예시, `POST /api/center/cases` 요청 예시
@@ -30,6 +30,16 @@
 - [ ] `nationality: "kr"`(소문자), `"KOR"`, `"Korea"`는 422, `"KR"`과 없음은 200
 
 ## 결과
+- `uv run ruff check . && uv run ruff format --check .` → 통과
+- `uv run pytest` → 3050개 통과(frontend 42가 만든 `parity.json`: 통계 원천 329건의 국적·분야·언어, mock 사례 `nationality`. 첫 10개 난수값 비교 그대로 통과)
+- 바뀐 API
+  - `GET /api/center/stats`: `byMonth`(최근 6개월 `YYYY-MM`, `days`와 무관, `district`는 따름)·`byCategory`·`byNationality`(있는 국적만 많은 순, 국적 없음 `unknown`) 추가. `byLanguage`는 이미 20개 언어였다(frontend 51 때)
+  - `POST /api/center/cases` 요청·`CenterCase` 응답: `nationality`(두 글자 대문자 또는 없음, 그 밖 422)
+- 테스트 추가: 서버 시각을 2026-10-26으로 고정한 월별 6칸·8~10월 봉우리·분야·국적 순서와 가림(`test_stats_report_cells`), 러시아어 레코드의 `ru` 칸(`test_stats_counts_russian_language`), 작은 칸 가림에 분야·국적, `nationality` 검증(`"kr"`·`"KOR"`·`"Korea"`·`"K"`·빈 문자열 422, `"KR"`·없음 201)
+- 결정
+  - 완료 기준 "러시아어 사례를 넣으면 `ru` 칸에 센다"는 원천 레코드로 확인했다. 통계는 지금처럼 원천 레코드만 세고 실제 전송 사례를 넣지 않는다(범위의 "live 사례가 집계에 들어가는 방식과 같게": 지금도 들어가지 않는다). 그래서 `store.py`에 집계용 변경은 없고, 사례 `nationality`는 `CenterCase`에 실려 그대로 저장된다(SQLite는 본문 JSON, 옛 본문은 `null`로 읽는다)
+  - 국적은 목록 응답(`GET /api/center/cases`)에서도 빼지 않았다. 프론트가 C-01 목록에 보이지 않는다(frontend 42)
+  - 통계 원천 수는 문서의 420건이 아니라 지금 329건(frontend 51 때 바뀜)이다
 
 ## 메모
 - 월별 칸은 기간 필터를 따르지 않는다. 센터 보고가 월 단위라 기간을 30일로 좁혀도 추이는 보여야 한다(frontend 42 결정)

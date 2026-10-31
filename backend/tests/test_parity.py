@@ -115,6 +115,8 @@ def test_stat_records():
             "afterHours": r.after_hours,
             "requestType": r.request_type,
             "workRelated": r.work_related,
+            "category": r.category,
+            "nationality": r.nationality,
         }
         for r in build_stat_records(now)
     ]

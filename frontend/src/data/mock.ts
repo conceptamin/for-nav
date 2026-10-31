@@ -2,7 +2,7 @@
 // - 센터 접수함 mock 사례 24건
 // - 통계 탭용 익명 집계 원천(개인 식별값 없음)
 
-import type { CaseStatus, CenterCase } from '../domain/centerCase';
+import type { CaseCategory, CaseStatus, CenterCase } from '../domain/centerCase';
 import { defaultCategory, rateUrgency } from '../domain/centerCase';
 import { isAfterHours, routeCoverage } from '../domain/coverage';
 import type { ContactMethod, RequestType } from '../domain/templates';
@@ -105,6 +105,8 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
       category: defaultCategory({ coveragePath: coverage.path, requestTypes }),
       actions: [],
       referredTo: [],
+      // mock 사례는 국적을 보내지 않은 것으로 둔다(국적 분포는 통계 원천이 맡는다)
+      nationality: null,
       summaryKo: summary.ko,
       originalNative: summary.native,
       consentedItems: ['증상', '부위', '시작 시점', '경위', '자유 입력 메모'],
@@ -121,15 +123,25 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
 }
 
 // ---------------------------------------------------------------------------
-// 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외)만 둔다.
-// 날짜·구군·언어·시간외·요청 종류 비율은 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)의 분포를 따른 합성값이다.
-// 업종·보험·업무 관련은 회신에 없어 이전 가중치 그대로다.
+// 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외·요청 종류·업무 관련·분야·국적)만 둔다.
+// 날짜·구군·시간외·요청 종류 비율과 국적 건수는 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)을 따른 합성값이다.
+// 국적은 회신 건수 그대로(329건을 섞어 나눈다)이고, 언어는 회신에 없어 국적의 모국어로 정한다(사용자 결정 2026-10-31, backlog 42).
+// 업종·보험·업무 관련·분야는 회신에 건수가 없어 가정한 가중치다.
 // ---------------------------------------------------------------------------
 const STAT_COUNT = 329;
 // 최근 6개월 월별 건수(오래된 달부터, 마지막이 이번 달)
 const STAT_MONTH_W = [16, 25, 41, 85, 97, 65];
-// 국적 → 언어: 러시아·카자흐스탄·우즈베키스탄·키르기스스탄·타지키스탄 → 러시아어, 인도네시아, 스리랑카 → 싱할라어, 필리핀 → 영어·필리핀어
-const STAT_LANG_W: [Lang, number][] = [['ru', 44], ['id', 25], ['si', 15], ['en', 8], ['tl', 4], ['vi', 2], ['ko', 2]];
+// 국적별 건수(합 329 = STAT_COUNT)
+const STAT_NATIONALITY_N: [string, number][] = [
+  ['ID', 81], ['RU', 61], ['KZ', 57], ['LK', 48], ['PH', 40], ['UZ', 24], ['VN', 6], ['KR', 5], ['KG', 2], ['TL', 2], ['TJ', 2], ['MA', 1],
+];
+// 국적 → 언어(모국어). 앱에 없는 언어는 가까운 앱 언어로: 타지키스탄 → 러시아어, 동티모르(테툼어) → 영어. 필리핀은 영어 2 : 필리핀어 1
+const STAT_NATIONALITY_LANG: Record<string, [Lang, number][]> = {
+  ID: [['id', 1]], RU: [['ru', 1]], KZ: [['kk', 1]], LK: [['si', 1]], PH: [['en', 2], ['tl', 1]], UZ: [['uz', 1]],
+  VN: [['vi', 1]], KR: [['ko', 1]], KG: [['ky', 1]], TL: [['en', 1]], TJ: [['ru', 1]], MA: [['ar', 1]],
+};
+// 분야: 회신은 세 분야로 집계한다고만 했고 건수는 없다. 요청 종류 가중치(제도 상담 15%)에 맞춘 가정값
+const STAT_CATEGORY_W: [CaseCategory, number][] = [['medical', 70], ['insurance', 20], ['cost', 10]];
 // 운영 시간 외 25건 + 주말 27건 = 52 / 329
 const STAT_AFTER_HOURS = 52 / 329;
 const KST_MS = 9 * 3600000;
@@ -160,22 +172,43 @@ export interface StatRecord {
   afterHours: boolean;
   requestType: RequestType;
   workRelated: YesNoUnknown;
+  category: CaseCategory;
+  /** 국적 코드. 근로자가 고르지 않으면 null(mock 원천에는 없다) */
+  nationality: string | null;
+}
+
+/** 회신 국적 건수를 레코드 수만큼 펼쳐 섞는다(Fisher–Yates, 끝에서부터). 건수가 회신과 정확히 같다 */
+function shuffledNationalities(r: () => number): string[] {
+  const list = STAT_NATIONALITY_N.flatMap(([code, n]) => Array.from({ length: n }, () => code));
+  for (let i = list.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(r() * (i + 1));
+    [list[i], list[j]] = [list[j]!, list[i]!];
+  }
+  return list;
 }
 
 export function buildStatRecords(now: Date = new Date()): StatRecord[] {
   const r = rng(77);
+  // 분야·국적·언어는 두 번째 시드로 뒤에서 채운다(첫 시드의 값 순서를 지킨다)
+  const r2 = rng(78);
+  const nationalities = shuffledNationalities(r2);
   const out: StatRecord[] = [];
   for (let n = 0; n < STAT_COUNT; n += 1) {
-    out.push({
-      date: statDate(now, r()),
-      district: weighted(r, DISTRICT_W),
-      industry: weighted(r, INDUSTRY_W),
-      language: weighted(r, STAT_LANG_W),
-      insurance: weighted(r, INS_W),
-      afterHours: r() < STAT_AFTER_HOURS,
-      requestType: weighted(r, REQ_W),
-      workRelated: weighted(r, [['yes', 48], ['no', 34], ['unknown', 18]] as [YesNoUnknown, number][]),
-    });
+    const date = statDate(now, r());
+    const district = weighted(r, DISTRICT_W);
+    const industry = weighted(r, INDUSTRY_W);
+    // 언어 자리: 언어는 국적에서 정하지만, 뒤 항목 값이 바뀌지 않게 이 자리의 난수 하나는 그대로 쓴다
+    r();
+    const insurance = weighted(r, INS_W);
+    const afterHours = r() < STAT_AFTER_HOURS;
+    const requestType = weighted(r, REQ_W);
+    const workRelated = weighted(r, [['yes', 48], ['no', 34], ['unknown', 18]] as [YesNoUnknown, number][]);
+    const nationality = nationalities[n]!;
+    const category = weighted(r2, STAT_CATEGORY_W);
+    const langs = STAT_NATIONALITY_LANG[nationality]!;
+    // 언어가 하나뿐인 국적은 난수를 뽑지 않는다
+    const language = langs.length > 1 ? weighted(r2, langs) : langs[0]![0];
+    out.push({ date, district, industry, language, insurance, afterHours, requestType, workRelated, category, nationality });
   }
   return out;
 }

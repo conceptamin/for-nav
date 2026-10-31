@@ -252,6 +252,8 @@ class CenterSummary(CamelModel):
 # ---------------------------------------------------------------------------
 # domain/centerCase.ts
 # ---------------------------------------------------------------------------
+# 국적: ISO 3166-1 alpha-2 두 글자 대문자만 받는다("kr", "KOR", "Korea"는 422). 코드 목록과 대조하지는 않는다
+Nationality = Annotated[str, StringConstraints(pattern=r"^[A-Z]{2}$")]
 CaseStatus = Literal["new", "progress", "done"]
 Urgency = Literal["high", "medium", "low"]
 
@@ -271,6 +273,8 @@ class CenterCase(CamelModel):
     # 직원이 기록한 조치와 연계 기관. 처음 []. referral이 없으면 referred_to는 비어 있다
     actions: list[CaseAction]
     referred_to: list[ReferralTarget]
+    # 국적(ISO 3166-1 alpha-2, frontend backlog 42). 근로자가 프로필에서 고르고 전송에 동의했을 때만 있다
+    nationality: Nationality | None
     summary_ko: str
     original_native: str
     # 근로자가 센터 전송에 동의한 항목(한국어 표시)
@@ -288,6 +292,8 @@ class CenterCase(CamelModel):
 class NewCaseRequest(CenterSummaryInput):
     contact: str | None = None
     consented_items: list[str] = []
+    # 동의하지 않았거나 고르지 않았으면 키째 없다
+    nationality: Nationality | None = None
 
 
 class NewCaseResponse(CamelModel):
@@ -459,6 +465,12 @@ class StatCell(CamelModel):
 
 class CenterStats(CamelModel):
     total: int | None
+    # 최근 6개월(오래된 달부터, 마지막이 이번 달, Asia/Seoul). key는 YYYY-MM. days 필터를 따르지 않고 district만 따른다
+    by_month: list[StatCell]
+    # key는 CaseCategory(CASE_CATEGORIES 순서)
+    by_category: list[StatCell]
+    # key는 국적 코드 또는 unknown. 있는 국적만 많은 순(같으면 코드 순)
+    by_nationality: list[StatCell]
     after_hours_rate: float | None
     work_related_rate: float | None
     no_insurance_rate: float | None

@@ -194,6 +194,37 @@ export const LANGUAGE_NAMES_KO: Record<Lang, string> = {
   id: '인도네시아어',
 };
 
+// ---------------------------------------------------------------------------
+// 국적(frontend backlog 42). ISO 3166-1 alpha-2 두 글자 대문자. 이름은 Intl.DisplayNames로 화면 언어에 맞춰 보인다(번역 표를 두지 않는다).
+// ---------------------------------------------------------------------------
+/** 센터 회신(2026-10-31) 의료 상담 329건의 국적 12개국, 많은 순 */
+export const CENTER_NATIONALITIES = ['ID', 'RU', 'KZ', 'LK', 'PH', 'UZ', 'VN', 'KR', 'KG', 'TL', 'TJ', 'MA'] as const;
+
+/** ISO 3166-1 alpha-2 공식 코드 전체(249개). S-03 "그 밖" 목록 */
+export const ISO_COUNTRIES =
+  'AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW'.split(' ');
+
+/** 국적 칸이 받는 값: 두 글자 대문자(서버도 같은 꼴만 받는다) */
+export const isNationality = (v: unknown): v is string => typeof v === 'string' && /^[A-Z]{2}$/.test(v);
+
+const regionNames = new Map<string, Intl.DisplayNames | null>();
+
+/** 국적 코드의 이름. 브라우저가 이름을 모르면 코드 그대로 */
+export function countryName(code: string, locale: string): string {
+  if (!regionNames.has(locale)) {
+    try {
+      regionNames.set(locale, new Intl.DisplayNames([locale], { type: 'region' }));
+    } catch {
+      regionNames.set(locale, null);
+    }
+  }
+  try {
+    return regionNames.get(locale)?.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 /** 한국어 단어 끝 받침 여부에 따라 조사를 고른다(이/가, 은/는 등). */
 export function josa(word: string, withBatchim: string, withoutBatchim: string): string {
   const last = word.trim().at(-1) ?? '';

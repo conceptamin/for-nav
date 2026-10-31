@@ -257,10 +257,11 @@ backend/
   "insurance": "no",
   "contactMethod": "zalo",
   "contact": "010-0000-0000",
-  "consentedItems": ["증상", "부위", "시작 시점"]
+  "consentedItems": ["증상", "부위", "시작 시점", "국적"],
+  "nationality": "KZ"                         // 선택. ISO 3166-1 alpha-2 두 글자 대문자("kr"·"KOR"·"Korea"는 422). 동의하지 않으면 키째 없다
 }
 // 응답 201
-{ "case": { /* CenterCase, live: true, status: "new", category: "medical", actions: [], referredTo: [] */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
+{ "case": { /* CenterCase, live: true, status: "new", category: "medical", actions: [], referredTo: [], nationality: "KZ" 또는 null */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
 ```
 
 `chatToken`은 서버 전용 선택 필드다(backlog 14). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
@@ -383,7 +384,7 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
 
 **`GET /api/center/stats`** — 익명 집계
 
-단독 모드 프론트는 원천 레코드 329건(센터 회신 분포를 따른 합성값)을 브라우저에서 센다. 서버는 **집계 결과만** 돌려주고, 5건 미만 칸은 서버에서 가린다(개인 단위 기록을 내보내지 않기 위해).
+단독 모드 프론트는 원천 레코드 329건(센터 회신 분포를 따른 합성값)을 브라우저에서 센다. 서버는 **집계 결과만** 돌려주고, 5건 미만 칸은 서버에서 가린다(개인 단위 기록을 내보내지 않기 위해). 원천의 국적은 회신 건수 그대로(12개국)이고 언어는 국적의 모국어다(frontend backlog 42). 실제 전송 사례는 통계에 넣지 않는다.
 
 ```jsonc
 {
@@ -391,6 +392,9 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
   "afterHoursRate": 0.41,             // total이 null이면 null
   "workRelatedRate": 0.47,
   "noInsuranceRate": 0.44,            // 보험 "없음" + "모름"
+  "byMonth": [{ "key": "2026-05", "n": 20 }, …, { "key": "2026-10", "n": 59 }],  // 최근 6개월, 오래된 달부터(Asia/Seoul). days는 따르지 않고 district만 따른다
+  "byCategory": [{ "key": "medical", "n": 155 }, { "key": "insurance", "n": 41 }, { "key": "cost", "n": 22 }],
+  "byNationality": [{ "key": "ID", "n": 52 }, …, { "key": "MA", "n": null }],  // 있는 국적만 많은 순(같으면 코드 순), 국적 없음은 "unknown"
   "byIndustry": [{ "key": "autoparts", "n": 68 }, { "key": "chemical", "n": null }],  // n < 5 → null
   "byLanguage": [ ... ],              // 20개 언어 전부(vocab LANGS 순서)
   "byInsurance": [ ... ],
