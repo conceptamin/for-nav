@@ -71,6 +71,7 @@ export const th: Record<MessageKey, string> = {
   intakeTitle: 'บอกอาการของคุณ',
   stepBody: 'มีปัญหาที่ส่วนไหน?',
   stepBodyHint: 'เลือกได้ทุกข้อที่ตรง',
+  stepSymptomHint: 'เลือกได้ทุกข้อที่ตรง',
   stepSymptom: 'เกิดอะไรขึ้น?',
   stepText: 'เล่าด้วยคำพูดของคุณเอง',
   stepTextHint: 'ไม่บังคับ ตัวอย่าง: "วันนี้นิ้วโดนเครื่องจักรหนีบที่ที่ทำงาน มันบวม"',

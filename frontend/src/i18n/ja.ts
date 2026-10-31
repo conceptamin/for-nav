@@ -76,6 +76,7 @@ export const ja: Record<MessageKey, string> = {
   intakeTitle: '症状を教えてください',
   stepBody: 'どこが悪いですか？',
   stepBodyHint: '当てはまるものをすべて選んでください。',
+  stepSymptomHint: '当てはまるものをすべて選んでください。',
   stepSymptom: 'どんな状態ですか？',
   stepText: '自分の言葉で書いてください',
   stepTextHint: '任意です。例：「今日、仕事中に機械に指をはさみました。腫れています。」',

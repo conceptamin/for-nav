@@ -76,6 +76,7 @@ export const zhTW: Record<MessageKey, string> = {
   intakeTitle: '請告訴我們您的症狀',
   stepBody: '哪裡不舒服？',
   stepBodyHint: '符合的都可以選。',
+  stepSymptomHint: '符合的都可以選。',
   stepSymptom: '發生了什麼狀況？',
   stepText: '用自己的話描述',
   stepTextHint: '選填。例如：「今天上班時手指被機器夾到，現在腫起來了。」',
