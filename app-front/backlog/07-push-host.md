@@ -1,6 +1,6 @@
 # 07. 앱 푸시 알림: 호스트의 FCM 등록과 알림으로 센터 채팅 열기
 
-상태: 진행 중 (코드 완료, Firebase 프로젝트와 실기기 알림 확인 남음)
+상태: 진행 중 (Android 확인 완료. 권한 거부·iOS 확인과 결정 6 남음)
 의존: 06(호스트의 `init.features`·요청-응답 메시지 모양), backend 28(기기 등록·FCM 발송), 08(같은 PR, 결정 1), frontend 46(센터 채팅 시트를 사례로 여는 `openCase`)
 
 ## 목표
@@ -29,6 +29,11 @@
 5. **앱이 열려 있을 때 온 알림.**
    - 권장: **시스템 알림을 띄우지 않는다**(FCM 기본: Android는 앞에 있을 때 알림 메시지를 보이지 않고, iOS도 `setForegroundNotificationPresentationOptions`를 켜지 않는다). 앱이 앞에 있으면 웹의 독 점이 15초 안에 뜬다. 서버도 근로자가 채팅에 붙어 있으면 보내지 않는다(backend 28 결정 3)
    - 대안: 앞에 있을 때 받은 알림을 웹에 넘겨(`pushReceived`) 곧바로 상태를 다시 읽기. 15초 주기로 충분해 이번에는 하지 않는다(메모)
+
+6. **꺼진 앱을 알림으로 열었는데 언어·동의가 아직 없으면(2026-10-31 확인 중 발견).** 앱을 완전히 끄면 세션의 언어·동의가 사라져 S-01부터 시작하지만 계정·프로필은 남는다.
+   - 권장: **시트 열기를 미뤘다가 언어·동의를 다시 고르면 그 사례로 연다.** 근로자는 알림을 누른 뒤 S-01 → S-02를 지나 곧바로 그 대화를 본다. 기기 등록도 같은 가드를 지난 뒤에만 한다(지금은 언어만 본다)
+   - 대안 A: 지금처럼 곧바로 S-01 위에 연다. 언어를 고르기 전이라 시트가 영어다
+   - 대안 B: 08 결정 1 글자 그대로 무시한다. 꺼진 앱에서는 알림을 눌러도 시트가 열리지 않는다
 
 ## 범위
 - 하는 것
@@ -92,13 +97,13 @@
 ## 완료 기준
 - [x] `cd app && fvm flutter analyze` 통과, `fvm flutter test` 통과(위 단위 테스트 포함). `cd app-front && npm run build` 통과(08과 같은 PR)
 - [x] Firebase 값 없이 빌드한 앱: `/__host`의 features에 `push`가 없고, 지금 앱과 똑같이 동작한다(권한 창 없음)
-- [ ] Android 에뮬레이터(Google Play 이미지, API 33 이상)·실기기, Firebase 값과 `PUSH=fcm` 서버(backend 28): 앱을 처음 열 때 권한 창이 뜨지 않는다. 센터 요청을 보내면 권한 창이 뜨고, 허용하면 서버에 기기가 등록된다(`/__host`의 "푸시 시험"이 `token 받음`, 토큰 값은 보이지 않는다)
-- [ ] 앱을 백그라운드로 보내고 센터가 C-02에서 채팅에 쓰면 근로자 언어의 알림 한 줄("for nav" + 등록한 문구)이 뜬다. 메시지 본문·상태·사례 번호가 알림에 없다
-- [ ] 그 알림을 누르면 앱이 앞으로 오고 센터 채팅 시트가 그 사례로 열려 센터 글이 보인다
-- [ ] 앱을 완전히 끈 뒤(최근 앱에서 지움) 상태를 진행으로 바꾸면 알림이 오고, 누르면 앱이 처음부터 열린 뒤 시트가 그 사례로 열린다(`ready`·`init` 뒤 `pushOpen` 한 번)
+- [x] Android 에뮬레이터(Google Play 이미지, API 33 이상)·실기기, Firebase 값과 `PUSH=fcm` 서버(backend 28): 앱을 처음 열 때 권한 창이 뜨지 않는다. 센터 요청을 보내면 권한 창이 뜨고, 허용하면 서버에 기기가 등록된다(`/__host`의 "푸시 시험"이 `token 받음`, 토큰 값은 보이지 않는다)
+- [x] 앱을 백그라운드로 보내고 센터가 C-02에서 채팅에 쓰면 근로자 언어의 알림 한 줄("for nav" + 등록한 문구)이 뜬다. 메시지 본문·상태·사례 번호가 알림에 없다
+- [x] 그 알림을 누르면 앱이 앞으로 오고 센터 채팅 시트가 그 사례로 열려 센터 글이 보인다
+- [x] 앱을 완전히 끈 뒤(최근 앱에서 지움) 상태를 진행으로 바꾸면 알림이 오고, 누르면 앱이 처음부터 열린 뒤 시트가 그 사례로 열린다(`ready`·`init` 뒤 `pushOpen` 한 번)
 - [ ] 권한을 거부하면 알림이 오지 않고, 앱을 다시 열면 15초 안에 독 점이 뜬다(frontend 46 그대로)
-- [ ] 로그아웃 뒤 같은 사례에 센터가 쓰면 알림이 오지 않는다(`pushUnregister` → `deleteToken`). 다른 계정으로 로그인해도 앞 계정 사례의 알림이 오지 않는다
-- [ ] `flutter run` 로그에 FCM 토큰·`caseId`·알림 본문이 없다
+- [x] 로그아웃 뒤 같은 사례에 센터가 쓰면 알림이 오지 않는다(`pushUnregister` → `deleteToken`). 다른 계정으로 로그인해도 앞 계정 사례의 알림이 오지 않는다
+- [x] `flutter run` 로그에 FCM 토큰·`caseId`·알림 본문이 없다
 - [ ] iOS: 결정 3대로 Developer 계정·APNs 키가 있으면 실기기에서 위 넷을 확인하고, 없으면 시뮬레이터에서 빌드·실행과 `pushToken`이 `failed`로 끝나 앱이 멈추지 않는 것만 확인했다고 `## 결과`에 적는다
 
 ## 결과
@@ -124,7 +129,19 @@
   - iOS: `Info.plist`에 `UIBackgroundModes` `remote-notification`, `ios/Runner/Runner.entitlements`(`aps-environment`)는 파일만 두었다. Xcode 프로젝트의 `CODE_SIGN_ENTITLEMENTS`로 연결하면 개인 팀(무료) 서명의 실기기 빌드가 Push Notifications capability 때문에 실패하므로, Developer 계정을 준비한 뒤 Xcode에서 capability를 켤 때 연결한다(`app/README.md` "푸시 알림" 5)
   - iOS는 `getToken()` 전에 APNs 토큰을 10초까지 기다리고, 없으면 `pushToken { error: failed }`로 끝낸다(앱은 그대로)
   - 토큰 갱신(`onTokenRefresh`)은 그 페이지가 `pushRegister`를 보낸 뒤에만 `pushToken`으로 넘긴다. 페이지가 다시 `ready`하거나 `pushUnregister`를 받으면 멈춘다
-- 확인하지 못한 것: Firebase 프로젝트·서비스 계정이 아직 없어 Android 실기기·에뮬레이터 알림 수신·탭, 권한 창·거부, 로그아웃 뒤 알림 없음, `flutter run` 로그 확인을 못 했다. 시뮬레이터에서 "푸시 시험"을 눌러 `failed`로 끝나는지도 화면을 누를 도구가 없어 보지 못했다. 위 완료 기준의 Android·iOS 줄은 값이 준비되면 확인해 여기에 덧붙인다
+- 실제 FCM 종단(2026-10-31, Android 에뮬레이터 `fornav_api36`, backend 28 서버 `PUSH=fcm`·서비스 계정 `fcm-sender`, 웹은 `VITE_API_BASE=http://10.0.2.2:8010/api`로 만든 **배포 빌드**(`vite preview`), 데모 계정에 사례 `C-45046`을 넣고 시작)
+  - 앱을 열면 `pushRegister` → `pushToken` → 서버 등록 200(권한은 앞서 허용해 창 없음)
+  - 백그라운드에서 상태 변경·센터 채팅 글 → 알림 "for nav" / "Có tin mới từ trung tâm"(vi). 내용·상태·사례 번호는 보이지 않는다(사례 id는 알림 `tag`에만)
+  - 알림을 누르면 앱이 앞으로 오고(`onMessageOpenedApp`) 센터 채팅 시트가 `C-45046`(상태 "Đã xong")으로 열렸다
+  - 프로세스를 죽인 뒤(`am kill`, 최근 앱에서 지운 것과 같음) 센터 글 → 알림 → 누르면 처음부터 열리고 `getInitialMessage` → `ready` → `init` → `pushOpen` 순서로 시트가 열려 센터 글 셋이 보였다
+  - S-13 로그아웃 → `remove` 204 → `pushUnregister`. 그 뒤 센터 글에는 알림이 없다
+  - `adb logcat`·`flutter run` 출력에 FCM 토큰·`caseId`·알림 본문이 없다
+- 확인 중 알게 된 것
+  - **개발 서버(`npm run dev`)로는 알림 탭을 확인할 수 없다.** 앱이 백그라운드에 있는 동안 Vite HMR 연결이 끊기고, 앞으로 돌아오면 Vite가 페이지를 다시 불러 방금 연 시트가 사라진다. 배포 빌드(`npm run build` + `vite preview`, 운영 `app.for-nav.com`)에는 HMR이 없어 그대로다. `app/README.md` 확인 방법에 적었다
+  - `am force-stop`으로 멈춘 앱에는 알림이 오지 않는다(Android가 사용자가 다시 열 때까지 FCM을 막는다). 최근 앱에서 지우거나 OS가 죽인 경우는 온다
+  - 앱을 완전히 껐다 켜면 세션의 언어·동의가 사라져 S-01부터 시작한다(README "상태의 경계"). 그때 영어 `pushNotice`로 다시 등록해 알림이 영어로 바뀌던 문제를 frontend 48에서 고쳤다(언어를 고르기 전에는 등록하지 않음). 고친 뒤 다시 켜자 등록 없음 → vi를 고르자 한 번 등록 → 다음 알림이 vi
+  - 같은 이유로 꺼진 앱을 알림으로 열면 시트가 S-01(언어 고르기) 위에 영어 화면으로 열린다. 08 결정 1은 "진입 순서 가드를 다 지나지 않았으면 무시"인데 그러면 꺼진 앱에서는 알림을 눌러도 시트가 열리지 않는다(결정 6)
+- 확인하지 못한 것: 권한 거부(이미 허용한 에뮬레이터라 창이 다시 뜨지 않음), iOS(Developer 계정·APNs 키 없음). 시뮬레이터 "푸시 시험"의 `failed`도 화면을 누를 도구가 없어 보지 못했다
 
 ## 메모
 - frontend 46 `## 메모`의 앱 몫(FCM 등록, 알림을 누르면 시트를 연 채 앱 열기)이다. 서버 몫은 backend 28

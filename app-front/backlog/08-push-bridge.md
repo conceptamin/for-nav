@@ -54,8 +54,8 @@
 - [x] `cd app-front && npm run build` 통과, `cd frontend && npm run build` 통과
 - [x] 브라우저(호스트 없음): `/__host`의 features에 `push`가 없고 "푸시 시험"이 `호스트 없음`이다. 근로자 화면에서 센터 요청을 보내도 `/api/center/push-devices` 요청이 없다
 - [x] 단독 모드(앱 안이어도): 등록 요청이 없다
-- [ ] 07의 Android 앱(API 모드, `PUSH=off` 서버로도 된다): 센터 요청을 보내면 `pushRegister` → `pushToken` → `POST /api/center/push-devices`가 한 번 나가고 응답의 `cases`에 그 사례가 있다. 앱을 다시 열면 한 번 더 나간다. 언어를 바꾸면 새 `notice`로 다시 나간다
-- [ ] 알림으로 앱을 열면(백그라운드·꺼진 상태 모두) 시트가 그 사례로 열린다. 다른 계정으로 로그인한 상태에서 받은 `pushOpen`(시험 버튼으로 흉내)은 아무것도 열지 않는다
+- [x] 07의 Android 앱(API 모드, `PUSH=off` 서버로도 된다): 센터 요청을 보내면 `pushRegister` → `pushToken` → `POST /api/center/push-devices`가 한 번 나가고 응답의 `cases`에 그 사례가 있다. 앱을 다시 열면 한 번 더 나간다. 언어를 바꾸면 새 `notice`로 다시 나간다
+- [x] 알림으로 앱을 열면(백그라운드·꺼진 상태 모두) 시트가 그 사례로 열린다. 다른 계정으로 로그인한 상태에서 받은 `pushOpen`(시험 버튼으로 흉내)은 아무것도 열지 않는다
 - [x] 로그아웃하면 `POST /api/center/push-devices/remove` → `pushUnregister` 순서로 나간다(흉내 낸 호스트)
 - [x] 웹 `console`, `localStorage`, `sessionStorage`에 FCM 토큰이 없다
 
@@ -70,7 +70,7 @@
   - S-13 로그아웃 → `POST /api/center/push-devices/remove`(서버 204) → 호스트에 `pushUnregister` 순서
   - `localStorage`·`sessionStorage`·`console`에 FCM 토큰·`caseId` 없음. 서버 접근 로그에는 경로·상태만 있다
 - 호스트 없음·단독 모드에서 등록이 나가지 않는 것은 frontend 48 `## 결과`에서 확인했다
-- 실제 Android 앱(07)에서의 등록·알림 탭은 Firebase 값이 준비되면 확인한다
+- 실제 Android 앱(07, 2026-10-31): 앱을 열 때마다 등록 1건(서버 200), 언어를 고르면 새 `notice`로 1건, 알림 탭(백그라운드·꺼진 상태)으로 시트가 그 사례로 열림, 로그아웃은 `remove` 204 → `pushUnregister`. 자세한 것은 07 `## 결과`. 꺼진 앱을 알림으로 열 때 언어·동의 전 시트를 여는 문제는 07 결정 6
 
 ## 메모
 - frontend 46 `## 메모`의 앱 몫 중 웹 다리 쪽이다. 호스트는 07, 서버는 backend 28
