@@ -49,7 +49,7 @@ interface Row {
  * `scroller`: 새 글이 오면 맨 아래로 옮길 스크롤 상자. 없으면 메시지 목록 자신
  * `footer`: 입력줄과 상태 줄을 그릴 자리(시트 아래 고정 칸). 없으면 목록 바로 아래
  * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 46)
- * `onPeerCount`: 받은 상대 메시지 수가 바뀔 때마다 알린다. 센터 상담 카드가 스크립트를 보는 사이 온 글을 표시한다(backlog 49)
+ * `onPeerCount`: 받은 상대 메시지 수가 바뀔 때마다 알린다. 센터 상담 카드가 스크립트를 보는 사이 온 글을 표시한다(backlog 51)
  */
 export function ChatPanel({
   caseId,

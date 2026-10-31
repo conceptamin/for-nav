@@ -1,7 +1,7 @@
 // 통화 패널(backlog 26). 근로자 S-12 전송 완료 화면과 센터 C-02가 같이 쓴다.
 // 문구는 props로 받는다(근로자는 i18n, 센터는 한국어 고정). 신호·음성·받아쓰기는 api/call.ts의 useCall이 한다.
 // 단독 모드에서는 부르는 쪽이 isCallAvailable()로 이 패널을 그리지 않는다.
-// 센터 C-02 상담 카드(backlog 49)는 자막을 대화(스크립트)에, 상태·버튼은 대화 바깥 통화 줄(footer)에 그린다.
+// 센터 C-02 상담 카드(backlog 51)는 자막을 대화(스크립트)에, 상태·버튼은 대화 바깥 통화 줄(footer)에 그린다.
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
