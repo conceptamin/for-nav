@@ -40,7 +40,8 @@ backend/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
     chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 데모 초기화 때 닫기
-    auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장)
+    auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장). 근로자 Google 로그인 계정 키·세션
+    google_id.py       근로자 Google ID 토큰 검증 — TokenVerifier 프로토콜, google-auth(서명·발급자·대상·만료), sub만 돌려준다
     mail.py            로그인 코드 메일 — Mailer 프로토콜, Resend(httpx), 로컬 개발용 console
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
@@ -59,12 +60,12 @@ backend/
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions 표)
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션, 근로자 세션
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
-      auth.py          /api/auth/* (센터 직원 로그인)
+      auth.py          /api/auth/* (센터 직원 로그인), /api/auth/worker/* (근로자 Google 로그인)
   deploy/
     deploy.sh          맥미니 배포 — 프론트 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
     ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, MODEL_DIR=../modeling/models, .env 있으면 읽기)
@@ -81,6 +82,7 @@ backend/
     test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
+    test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
@@ -112,7 +114,7 @@ backend/
 
 | 상태 | `code` | `message` |
 |---|---|---|
-| 401 | `UNAUTHORIZED` | 센터 직원 세션이 없거나 끝났다(`센터 로그인이 필요하다`), 로그인 코드가 틀렸다 |
+| 401 | `UNAUTHORIZED` | 센터 직원 세션이 없거나 끝났다(`센터 로그인이 필요하다`), 로그인 코드가 틀렸다, 근로자 세션이 없다(`근로자 로그인이 필요하다`), Google ID 토큰을 받아들이지 않았다 |
 | 404 | `NOT_FOUND` | 없는 경로·사례(`사례 C-0를 찾을 수 없다`) |
 | 422 | `VALIDATION` | 어긋난 필드 위치만 적는다(요청 값은 넣지 않는다). 경로 안 검사(`days`)도 이 코드 |
 | 429 | `RATE_LIMITED` | 로그인 코드 요청이 보내기 제한을 넘었다 |
@@ -148,8 +150,13 @@ backend/
 | `POST /api/auth/code` | — (프론트 미연결) | 센터 로그인 | `{ email }` | `202` (등록 여부와 관계없이 같다) / `429` |
 | `POST /api/auth/verify` | — (프론트 미연결) | 센터 로그인 | `{ email, code }` | `{ required, email }` + 세션 쿠키 / `401` |
 | `POST /api/auth/logout` | — (프론트 미연결) | 센터 헤더 | — | `204` + 쿠키 지우기 |
+| `GET /api/auth/worker/me` | — (프론트 미연결) | 근로자 화면 진입 | — | `{ required, account }` |
+| `POST /api/auth/worker/google` | — (프론트 미연결) | S-03 로그인 | `{ credential }` | `{ required, account }` + 근로자 세션 쿠키 / `401` |
+| `POST /api/auth/worker/logout` | — (프론트 미연결) | S-13 로그아웃 | — | `204` + 쿠키 지우기 |
 
 `CENTER_AUTH=email`이면 센터 읽기·쓰기(`GET /api/center/cases`, `GET`·`PATCH /api/center/cases/{id}`, `POST /api/center/reset`, `GET /api/center/stats`)와 채팅·통화의 `role=center`는 직원 세션 쿠키가 있어야 한다(없으면 401, WS는 `4401`). 근로자 전송(`POST /api/center/cases`)과 `role=worker`는 그대로 열려 있다. 기본값 `off`에서는 지금처럼 로그인 없이 열린다(backlog 17).
+
+`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
 
 ### 요청·응답 예시
 
@@ -378,6 +385,29 @@ backend/
 - 데모 초기화(`POST /api/center/reset`)는 직원·코드·세션을 지우지 않는다.
 - 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트(예: Vercel)에서 쿠키를 보내는 설정은 하지 않았다.
 
+**`/api/auth/worker/*`** — 근로자 Google 로그인(backlog 21, `WORKER_AUTH=google`일 때)
+
+프론트가 Google Identity Services로 받은 ID 토큰(`credential`)을 보내면 서버가 서명·발급자(`accounts.google.com`)·대상(`aud == GOOGLE_CLIENT_ID`)·만료를 확인하고 근로자 세션 쿠키를 준다. 서버는 Google 계정 고유 번호(`sub`)에서 만든 **계정 키**와 세션 해시만 저장한다. 이름·이메일·사진은 저장하지도 돌려주지도 않는다.
+
+```jsonc
+// GET /api/auth/worker/me — 근로자 화면이 들어올 때. 세션이 없어도 401이 아니다
+{ "required": true, "account": null }        // WORKER_AUTH=off이면 { "required": false, "account": null }
+
+// POST /api/auth/worker/google → 200 + Set-Cookie: fornav_worker=…; HttpOnly; SameSite=lax; Path=/; Max-Age=2592000; Secure
+{ "credential": "eyJhbGciOiJSUzI1NiIs…" }
+{ "required": true, "account": "3f9c0a5e…(32자 16진수)" }
+// 서명·발급자·대상·만료·형식이 틀리거나 Google 공개 키를 받지 못하면 이유를 나누지 않고 401
+{ "error": { "code": "UNAUTHORIZED", "message": "Google 로그인을 확인하지 못했다", "requestId": "…" } }
+
+// POST /api/auth/worker/logout → 204 + 쿠키 지우기(세션이 없어도 204)
+```
+
+- 계정 키는 `sha256("fornav-worker:" + sub)`의 앞 32자다. 같은 Google 계정이면 늘 같고 `sub`로 되돌릴 수 없다. 프론트는 이 값으로 기기 저장소를 계정마다 나눈다.
+- `WORKER_AUTH=off`(기본)이면 `/worker/me`만 응답하고 `/worker/google`은 404다. 프론트는 데모 로그인으로 동작한다.
+- ID 토큰·`sub`·계정 키·세션 토큰은 로그에 남기지 않는다. 확인 실패는 `Google 로그인 확인 실패 <종류> request_id=`만 남는다.
+- 세션은 `WORKER_SESSION_DAYS`(기본 30일) 뒤 끝나고 늘어나지 않는다. 데모 초기화는 근로자 세션을 지우지 않는다. 쿠키 `Secure`는 센터와 같은 `CENTER_COOKIE_SECURE`를 따른다.
+- 센터 세션 쿠키(`fornav_center`)와 근로자 세션 쿠키(`fornav_worker`)는 서로의 경로를 열지 않는다.
+
 ## mock 데이터
 
 - `data/mock.ts`의 시드 고정 난수 **mulberry32를 그대로 옮긴다**. 그래야 프론트 단독 데모와 같은 사례 24건(`C-1001`~`C-1024`), 같은 통계가 나온다.
@@ -424,7 +454,7 @@ backend/
 - `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:8000' }`를 추가한다. 배포·발표 때는 서버가 프론트 빌드를 같은 출처에서 서빙해 CORS를 피한다(`STATIC_DIR`, 아래 "발표용 실행"). 개발 중 직접 호출에 대비해 서버 CORS는 `http://localhost:5180`만 허용한다.
 - **응급 판정은 API 실패 시 브라우저 규칙으로 즉시 대체한다.** 네트워크 오류 때문에 119 안내가 늦어지면 안 된다. 자유 입력 추출(`/api/extract`)도 실패하면 브라우저 키워드 추출로 대체한다. 추출에서 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
 - 센터 접수함은 지금처럼 2초 주기로 `GET /api/center/cases`를 다시 부른다. 사례 수가 적어 전체 목록을 받아도 된다. 기존 `storage` 이벤트 갱신은 API 모드에서 끈다.
-- 근로자 세션 상태(언어, 동의, 현재 입력, 비회원 리포트)는 계속 브라우저에 둔다. 서버는 로그인·회원 정보를 저장하지 않는다.
+- 근로자 상태(언어, 동의, 현재 입력, 프로필, 리포트)는 계속 브라우저에 둔다. 근로자 Google 로그인(backlog 21)을 켜면 서버는 계정 키와 세션 해시만 저장하고 이름·이메일·프로필·리포트는 저장하지 않는다.
 
 ## 실행
 
@@ -467,7 +497,10 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `MAIL_API_KEY` | (없음) | Resend API 키 | `resend`이면 있어야 한다 |
 | `MAIL_FROM` | (없음) | 예: `for-nav 센터 <no-reply@for-nav.com>` | 보내는 사람. `resend`이면 있어야 한다(Resend에서 인증한 도메인) |
 | `CENTER_SESSION_DAYS` | `30` | 1 이상 정수 | 직원 세션 길이(일) |
-| `CENTER_COOKIE_SECURE` | `true` | `true` \| `false` | 세션 쿠키의 `Secure`. 로컬 http 개발에서만 `false` |
+| `CENTER_COOKIE_SECURE` | `true` | `true` \| `false` | 세션 쿠키의 `Secure`(센터·근로자 둘 다). 로컬 http 개발에서만 `false` |
+| `WORKER_AUTH` | `off` | `off` \| `google` | 근로자 Google 로그인(backlog 21). `google`이면 `DB_PATH`·`GOOGLE_CLIENT_ID`가 있어야 한다 |
+| `GOOGLE_CLIENT_ID` | (없음) | `….apps.googleusercontent.com` | Google OAuth 웹 클라이언트 ID. ID 토큰의 `aud`와 비교한다. 프론트 `VITE_GOOGLE_CLIENT_ID`와 같은 값(비밀값이 아니다) |
+| `WORKER_SESSION_DAYS` | `30` | 1 이상 정수 | 근로자 세션 길이(일) |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -563,6 +596,17 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅·통화 자막도 이 파일에 평문으로 남는다.
 3. 직원을 등록한다: `cd ~/srv/for-nav/backend && uv run --env-file .env python scripts/staff.py add staff@example.org` (`list`, `remove`도 같다). 서버를 다시 띄울 필요는 없다.
 4. `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 한 번 다시 띄운다(`.env`를 새로 읽는다).
+
+근로자 Google 로그인 켜기(backlog 21):
+
+1. Google Cloud 콘솔 → API 및 서비스 → OAuth 동의 화면을 만든다(외부. 게시 전에는 테스트 사용자로 등록한 계정만 로그인된다).
+2. 사용자 인증 정보 → OAuth 클라이언트 ID → **웹 애플리케이션**. 승인된 JavaScript 원본에 `http://localhost`, `http://localhost:5180`, 배포 출처(`https://app.for-nav.com`, `https://www.for-nav.com`, Funnel 주소를 쓰면 그 주소)를 넣는다. 리디렉션 URI와 클라이언트 보안 비밀번호는 쓰지 않는다.
+3. `~/srv/for-nav/backend/.env`에 넣고(센터 로그인과 같은 `DB_PATH`를 쓴다) 4번처럼 다시 띄운다.
+   ```sh
+   WORKER_AUTH=google
+   GOOGLE_CLIENT_ID=123-abc.apps.googleusercontent.com
+   ```
+4. 프론트 빌드에도 같은 값을 `VITE_GOOGLE_CLIENT_ID`로 넣는다(frontend 28).
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI

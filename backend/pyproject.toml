@@ -8,6 +8,9 @@ dependencies = [
     "fastapi[standard]>=0.162.0",
     # 응급도·진료과 모델(MODEL_DIR이 있을 때만 import). lightgbm·numpy 버전은 modeling/pyproject.toml이 고정한다(backlog 12)
     "for-nav-modeling",
+    # 근로자 Google 로그인 ID 토큰 검증(backlog 21). requests는 google-auth가 Google 공개 키를 받는 전송 계층이다
+    "google-auth>=2.40",
+    "requests>=2.32",
 ]
 
 [dependency-groups]

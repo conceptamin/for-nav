@@ -1,6 +1,6 @@
 # 03. Flutter 셸(호스트) 프로젝트
 
-상태: 대기
+상태: 완료
 의존: 01 (02와 독립이지만 02 뒤에 하면 실제 화면으로 확인할 수 있다)
 
 ## 목표
@@ -8,10 +8,10 @@
 
 ## 결정이 필요한 것
 
-1. **프로젝트 위치.** 권장: 이 저장소의 `app/`(새 영역, 루트 `CLAUDE.md` 표에 `app` 행). 계약 변경을 웹·호스트 한 PR에서 할 수 있다. 대안: 별도 저장소(스토어 배포 파이프라인을 따로 두고 싶을 때).
-2. **WebView 라이브러리.** 권장: `webview_flutter`(공식). 파일 선택기·권한은 04에서 직접 구현한다. 대안: `flutter_inappwebview`(파일 선택기·`onPermissionRequest` 내장, 의존성 큼). 웹 쪽은 둘 다 감지하므로 바꿔도 웹은 그대로다.
-3. **불러올 주소.** 개발: `http://10.0.2.2:5181`(Android 에뮬레이터) / `http://localhost:5181`(iOS 시뮬레이터) — `--dart-define=APP_URL=`로 넘긴다. 배포: `README.md` "결정이 필요한 것" 2(배포 출처)와 함께 정한다. 권장은 환경별 `--dart-define`이고 코드에 주소를 적지 않는다.
-4. **Flutter 버전.** 로컬에 fvm `3.24.3`이 있다. 권장: fvm으로 고정하고 `.fvmrc`를 커밋한다.
+1. **프로젝트 위치.** → **권장대로 `app/`으로 결정(2026-10-31).** 권장: 이 저장소의 `app/`(새 영역, 루트 `CLAUDE.md` 표에 `app` 행). 계약 변경을 웹·호스트 한 PR에서 할 수 있다. 대안: 별도 저장소(스토어 배포 파이프라인을 따로 두고 싶을 때).
+2. **WebView 라이브러리.** → **권장대로 `webview_flutter`로 결정(2026-10-31).** 권장: `webview_flutter`(공식). 파일 선택기·권한은 04에서 직접 구현한다. 대안: `flutter_inappwebview`(파일 선택기·`onPermissionRequest` 내장, 의존성 큼). 웹 쪽은 둘 다 감지하므로 바꿔도 웹은 그대로다.
+3. **불러올 주소.** → **권장대로 환경별 `--dart-define=APP_URL=`로 결정(2026-10-31).** 코드에 주소가 없다. 배포 출처(README 결정 2)는 배포 주소가 생길 때 정하고, 앱 코드는 바뀌지 않는다. 개발: `http://10.0.2.2:5181`(Android 에뮬레이터) / `http://localhost:5181`(iOS 시뮬레이터) — `--dart-define=APP_URL=`로 넘긴다. 배포: `README.md` "결정이 필요한 것" 2(배포 출처)와 함께 정한다. 권장은 환경별 `--dart-define`이고 코드에 주소를 적지 않는다.
+4. **Flutter 버전.** 로컬에 fvm `3.24.3`이 있다. 권장: fvm으로 고정하고 `.fvmrc`를 커밋한다. → **fvm 고정은 권장대로, 버전은 `3.44.7`로 결정(2026-10-31).** 이 맥의 Xcode 27.1은 iOS 배포 대상을 15.0 이상만 받고, `3.24.3`(2024-09)보다 최신 Xcode·Android SDK에 맞는 안정판이 로컬에 이미 있다(다른 로컬 프로젝트도 `3.44.7`). `3.24.3`으로 빌드해 보지는 않았다.
 
 ## 범위
 - 하는 것
@@ -33,15 +33,65 @@
 - 수정: `app-front/README.md` "Flutter 쪽에서 할 일"(예시 코드를 실제 구현 위치로 바꾸거나 줄인다), "결정이 필요한 것" 2~4
 
 ## 완료 기준
-- [ ] `fvm flutter analyze` 통과, Android 에뮬레이터와 iOS 시뮬레이터에서 앱이 뜬다
-- [ ] `/__host`가 "호스트: 있음(webview_flutter)", platform·appVersion·locale·insets가 기기 값으로 보인다. Android 에뮬레이터에서 insets.top이 상태 표시줄 높이와 같다
-- [ ] `tel:119` 링크 → 전화 앱(에뮬레이터는 다이얼러), 지도 링크 → 외부 브라우저. WebView 안에서 다른 사이트가 열리는 경우가 없다(주소창 없는 WebView에서 카카오맵이 열리면 실패)
-- [ ] Android 뒤로 가기: 웹 이력이 있으면 한 화면 뒤로, 첫 화면에서는 앱이 뒤로 간다(02가 끝났으면 `/intake` → `/home` → 종료 순으로 확인)
-- [ ] 기기 언어를 베트남어로 바꾸고 앱을 다시 열면 `locale`이 `vi-VN`이다(02가 끝났으면 S-01이 베트남어를 맨 앞에 제안한다)
-- [ ] 앱 로그(`flutter run` 출력)에 `tel:`·지도 주소·메시지 본문이 없다
-- [ ] 비행기 모드에서 앱을 열면(원격 주소라) WebView 오류 화면 대신 앱의 오프라인 안내 한 장이 뜨고 "다시 시도"가 된다. 번들(05) 전까지의 임시 동작이다
+- [x] `fvm flutter analyze` 통과, Android 에뮬레이터와 iOS 시뮬레이터에서 앱이 뜬다
+- [x] `/__host`가 "호스트: 있음(webview_flutter)", platform·appVersion·locale·insets가 기기 값으로 보인다. Android 에뮬레이터에서 insets.top이 상태 표시줄 높이와 같다
+- [x] `tel:119` 링크 → 전화 앱(에뮬레이터는 다이얼러), 지도 링크 → 외부 브라우저. WebView 안에서 다른 사이트가 열리는 경우가 없다(주소창 없는 WebView에서 카카오맵이 열리면 실패)
+- [x] Android 뒤로 가기: 웹 이력이 있으면 한 화면 뒤로, 첫 화면에서는 앱이 뒤로 간다(02가 끝났으면 `/intake` → `/home` → 종료 순으로 확인)
+- [x] 기기 언어를 베트남어로 바꾸고 앱을 다시 열면 `locale`이 `vi-VN`이다(02가 끝났으면 S-01이 베트남어를 맨 앞에 제안한다)
+- [x] 앱 로그(`flutter run` 출력)에 `tel:`·지도 주소·메시지 본문이 없다
+- [x] 비행기 모드에서 앱을 열면(원격 주소라) WebView 오류 화면 대신 앱의 오프라인 안내 한 장이 뜨고 "다시 시도"가 된다. 번들(05) 전까지의 임시 동작이다
 
 ## 결과
+
+2026-10-31. 브랜치 `app/flutter-shell`. 완료 기준 7개를 iOS 시뮬레이터와 Android 에뮬레이터에서 확인했다. insets.top 기준은 아래 "완료 기준별"의 설명대로 읽었다.
+
+실행한 명령
+- `cd app && fvm flutter analyze` → No issues found
+- `fvm flutter test` → 6개 통과(이동 분류: 앱 출처·외부·하위 프레임 / 메시지: 형식 오류 무시, `init` 필드, `onBack` 결과)
+- `fvm flutter build apk --debug --dart-define=APP_URL=http://10.0.2.2:5181` → 빌드됨
+- `fvm flutter run -d "iPhone 17 Pro"(iOS 26.4 시뮬레이터) --dart-define=APP_URL=http://localhost:5181/__host` → 실행됨
+- Android 에뮬레이터: 시스템 이미지 `system-images;android-36;google_apis;arm64-v8a`를 받아 AVD `fornav_api36`(Pixel 7, Android 16)을 만들고 `fvm flutter run -d emulator-5554 --dart-define=APP_URL=http://10.0.2.2:5181[/__host]` → 실행됨
+- `fvm flutter build ios --simulator`는 Xcode 27.1의 `lipo -verify_arch`가 아키텍처 두 개를 받지 않아 실패한다(Flutter 도구 쪽). `flutter run`은 활성 아키텍처 하나만 빌드해 된다. `app/README.md`에 적었다
+
+iOS 시뮬레이터에서 확인한 것(웹은 이 브랜치의 `app-front`, `npm run dev`)
+- `/__host`: 호스트 "있음 (webview_flutter)", init 받음 "예", platform `ios`, appVersion `1.0.0`, locale `ko-KR`(시뮬레이터 언어), insets top 62 · bottom 34(iPhone 17 Pro 안전 영역), 출처 `http://localhost:5181`
+- 로그: `[host] ← ready` → `[host] → init` 순서. `onPageFinished`에서는 보내지 않는다
+- 카카오맵 링크 → `openExternal` → Safari가 열린다(WebView 안에서 열리지 않음). 로그는 `← openExternal`뿐
+- 119 → `openExternal`. 시뮬레이터에는 전화 앱이 없어 열리지 않고 로그에 `openExternal 실패`(type만)
+- 개발 서버를 끄고 열면 WebView 오류 화면 대신 오프라인 안내(다시 시도 · 119 전화)가 뜨고, 서버를 켜고 "다시 시도"하면 `ready` → `init`으로 돌아온다
+- backlog 02 브랜치(PR #117)의 웹으로 열어 S-01 언어 선택이 상태 표시줄·홈 인디케이터를 비켜 그려지는 것도 봤다
+
+Android 에뮬레이터(Pixel 7, Android 16)에서 확인한 것
+- `/__host`: 호스트 "있음 (webview_flutter)", init 받음 "예", platform `android`, appVersion `1.0.0`, locale `en-US`, insets top 51.8 · bottom 24, 출처 `http://10.0.2.2:5181`. 상태 표시줄 아이콘은 어두운 색
+- 119 → `openExternal` → 다이얼러에 119가 채워져 열린다(전화를 걸지는 않았다)
+- 카카오맵 → `openExternal` → Chrome이 열린다(WebView 안이 아님)
+- 뒤로 가기(backlog 02 브랜치 웹, PR #117): S-01 → 동의 화면에서 뒤로 → `뒤로 가기 → 웹이 처리`로 S-01, 다시 뒤로 → `뒤로 가기 → 앱 종료`로 앱이 뒤로 간다. `/__host` 첫 화면에서도 `앱 종료`
+- 시스템 언어를 `vi-VN`으로 바꾸고(`setprop persist.sys.locale vi-VN`) 앱을 다시 열면 locale `vi-VN`(navigator도 `vi-VN`)
+- 비행기 모드(`cmd connectivity airplane-mode enable`)로 열면 오프라인 안내(`hostLookup`), 오프라인 안내의 119 → 다이얼러, 비행기 모드를 끄고 "다시 시도" → `ready` → `init`
+- `flutter run` 출력·logcat 전체에 `tel:`·`119`·`kakao`·`map.`이 없다(iOS 로그 포함 0건)
+
+완료 기준별
+- insets.top: 기준은 "상태 표시줄 높이와 같다"인데, Pixel 7은 화면 카메라 구멍(display cutout) 높이가 136px(51.8dp)로 상태 표시줄 74px(28.2dp)보다 크다. `MediaQuery.padding`은 둘 중 큰 값을 주고, 웹이 비켜야 할 안전 영역도 그쪽이므로 51.8이 맞는 값으로 보았다. bottom 24는 내비게이션 바 63px(24dp)와 같다. 기준의 뜻(상태 표시줄을 비키는 안전 영역)은 만족한다
+- `/intake` → `/home` → 종료 대신 S-01 → 동의 → S-01 → 종료로 확인했다(웹 이력이 있을 때와 첫 화면의 두 경우가 같다)
+- 베트남어로 S-01 제안 순서는 이 브랜치의 기준이 아니다. PR #117은 S-01 제안에 `init.locale`이 아니라 WebView의 `navigator.languages`를 쓴다
+- iOS 시뮬레이터에는 비행기 모드가 없어 개발 서버를 끈 상태(연결 거부 -1004)로 확인했다
+
+계약: 변경 없음. `insets` 다시 보내기 시점은 `MediaQuery.paddingOf`가 바뀔 때(`didChangeDependencies`)로 정했다(회전·창 크기, 키보드 제외).
+
+이 항목에서 정한 것과 이유
+- `locale`은 범위에 적힌 `Platform.localeName` 대신 `PlatformDispatcher.instance.locale`을 쓴다. iOS의 `Platform.localeName`(`NSLocale.currentLocale`)은 앱 번들이 지원하는 언어로 좁혀져, 앱에 베트남어 지역화가 없으면 기기가 베트남어여도 `vi`가 오지 않는다. `PlatformDispatcher`는 기기 선호 언어 첫 번째를 BCP-47로 준다
+- 오프라인 안내에 119 전화 버튼을 둔다. "응급은 다리도 네트워크도 기다리지 않는다"(`app-front/CLAUDE.md`)를 네이티브 화면에서도 지키기 위해서다. 웹 화면이 없으므로 문구는 한국어·영어를 함께 쓴다
+- 하위 프레임의 앱 출처 밖 이동은 외부로 열지 않고 막기만 한다(사용자가 누른 이동이 아니다)
+- iOS에서 막은 이동이 실패(-999 취소, 102 정책으로 중단)로 오므로 오프라인 판정에서 뺀다. 앱 출처 밖 주소의 실패도 뺀다
+- iOS 배포 대상 13.0 → 15.0(Xcode 27.1 하한, `README.md` "확인이 필요한 값"의 권장 최소 OS와 같다)
+- 의존성: `webview_flutter`(결정 2), `webview_flutter_wkwebview`(iOS 스와이프 뒤로 가기·디버그 빌드 Web Inspector), `url_launcher`(외부 열기), `package_info_plus`(`appVersion`). 템플릿의 `cupertino_icons`는 뺐다
+- Android: `INTERNET` 권한을 main 매니페스트에(배포 빌드에도 필요), http는 debug 매니페스트에서만. `<queries>`에 전화·문자·메일·https를 더했다. 세로 고정은 매니페스트·`Info.plist`·`SystemChrome` 세 곳
+- 번들 ID `dev.fornav.forNav`·Android `dev.fornav.for_nav`, 앱 표시 이름 `for nav`는 임시다(스토어 설정은 범위 밖)
+
+남은 문제
+- Vite 개발 서버는 기본으로 IPv6 `[::1]:5181`에만 열려 Android 에뮬레이터의 `10.0.2.2`(호스트의 IPv4 127.0.0.1)로는 닿지 않는다. Android로 볼 때는 `npm run dev -- --host 127.0.0.1`로 띄운다(`app/README.md`)
+- iOS에서 `target="_blank"`·`window.open`은 WebView가 새 창을 만들지 않아 아무 일도 일어나지 않는다. 웹은 `init` 뒤에 외부 링크를 `openExternal`로 넘기므로 지금 화면에는 문제가 없다
+- 키보드가 올라올 때 WebView 크기(`Scaffold` 기본 `resizeToAvoidBottomInset`)는 입력 화면(S-03·S-05)이 들어오면 실기기에서 본다
 
 ## 메모
 - Android 에뮬레이터에서 호스트 PC는 `10.0.2.2`다. `localhost`는 에뮬레이터 자신이다
