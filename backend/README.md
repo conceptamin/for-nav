@@ -61,7 +61,7 @@ backend/
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
     store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션, 근로자 세션
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions 표)
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, chat_reads, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
@@ -79,7 +79,7 @@ backend/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지
-    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 데모 초기화, 로그에 토큰·본문 없음)
+    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
@@ -142,6 +142,7 @@ backend/
 | `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
 | `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
+| `POST /api/center/my-cases` | — (frontend 46) | S-13·센터 채팅 시트 | `{ cases: [{ id, token }] }` (1~20개) | `MyCaseView[]` (토큰이 맞는 사례만) |
 | `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다) |
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
@@ -156,7 +157,7 @@ backend/
 
 `CENTER_AUTH=email`이면 센터 읽기·쓰기(`GET /api/center/cases`, `GET`·`PATCH /api/center/cases/{id}`, `POST /api/center/reset`, `GET /api/center/stats`)와 채팅·통화의 `role=center`는 직원 세션 쿠키가 있어야 한다(없으면 401, WS는 `4401`). 근로자 전송(`POST /api/center/cases`)과 `role=worker`는 그대로 열려 있다. 기본값 `off`에서는 지금처럼 로그인 없이 열린다(backlog 17).
 
-`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
+`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)과 내 요청 상태(`POST /api/center/my-cases`, backlog 27)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
 
 ### 요청·응답 예시
 
@@ -262,6 +263,19 @@ backend/
 
 긴급도는 `rateUrgency`와 같다(업무 중 발생 +2, 건강보험증 없음 +1, 3점 이상 높음·1점 이상 보통). 예: 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
 
+**`POST /api/center/my-cases`** — 근로자가 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27)
+
+```jsonc
+// 요청: 전송 응답의 chatToken. 토큰을 URL에 싣지 않으려고 본문으로 받는다
+{ "cases": [{ "id": "C-48213", "token": "kqr6VTRE…" }] }
+// 응답
+[{ "id": "C-48213", "status": "progress", "centerMessages": 2, "lastCenterAt": "2026-10-30T05:12:00.000Z" }]
+```
+
+- 토큰이 틀리거나 사례가 없으면(데모 초기화 포함) 그 항목만 빠진다. 사례가 있는지 드러내지 않으려고 403·404를 내지 않는다.
+- `centerMessages`는 센터가 보낸 채팅 메시지 수(근로자 글은 세지 않는다), `lastCenterAt`은 마지막 센터 메시지 시각이고 없으면 `null`이다. 사례 본문(요약·원문·긴급도)은 돌려주지 않는다.
+- 빈 목록, 21개 이상, 형식 오류는 422.
+
 **`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
 사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(`CENTER_AUTH=email`이면 직원 세션 쿠키도 있어야 한다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
@@ -276,14 +290,20 @@ backend/
 ```jsonc
 // 클라이언트 → 서버. text는 앞뒤 공백을 지운 뒤 1~1000자
 { "type": "message", "text": "Tay tôi vẫn còn chảy máu" }
+// 클라이언트 → 서버: 이 연결의 역할이 m-5까지 읽었다(backlog 28). 이 사례에 있는 메시지 id여야 한다
+{ "type": "read", "upTo": "m-5" }
 
-// 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다)
-{ "type": "history", "messages": [ /* ChatMessage, 보낸 순서 */ ] }
+// 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다). read는 역할별 마지막으로 읽은 메시지 id, 없으면 null
+{ "type": "history", "messages": [ /* ChatMessage, 보낸 순서 */ ], "read": { "worker": "m-3", "center": null } }
 // 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다
 { "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu", "at": "2026-10-30T11:50:47.646Z" } }
-// 서버 → 클라이언트: 잘못된 프레임(빈 글, 1000자 초과, JSON 아님, 다른 type, 바이너리). 연결은 끊지 않는다
+// 서버 → 클라이언트: 읽은 자리가 앞으로 옮겨졌다. 보낸 쪽을 포함해 방의 모든 연결에 간다
+{ "type": "read", "role": "center", "upTo": "m-5" }
+// 서버 → 클라이언트: 잘못된 프레임(빈 글, 1000자 초과, JSON 아님, 다른 type, 바이너리, 없는 메시지의 읽음). 연결은 끊지 않는다
 { "type": "error", "code": "invalid" }
 ```
+
+읽은 자리는 역할마다 하나이고 앞으로만 옮겨진다. 저장된 값보다 앞이거나 같은 `read`는 저장도 방송도 하지 않는다. 데모 초기화가 함께 지운다.
 
 `id`·`from`·`at`은 **서버가 정한다**. `id`는 사례 안에서 `m-1`, `m-2`…로 늘어나고, `from`은 연결 때 확인한 역할이다. 접근 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`만 남고 쿼리 문자열(토큰)과 메시지 본문은 남지 않는다. uvicorn이 따로 남기는 `"WebSocket <경로?쿼리>" [accepted]` 줄은 앱에서 버린다.
 

@@ -657,6 +657,7 @@ a.brand-pill:active {
 
 /* 독 안의 센터 채팅 버튼(backlog 29·32·39): 56×44px, 평평한 투명 면 + 틸 말풍선. 시트가 열려 있거나 누르면 --brand-2로 들어간다 */
 .bar-chat {
+  position: relative;
   flex: none;
   display: grid;
   place-items: center;
@@ -695,8 +696,22 @@ a.brand-pill:active {
   stroke: none;
 }
 
-/* 센터 채팅 시트(backlog 39, design.md "센터 채팅 시트"). 하단 독 바로 위에 떠 있는 유리 면. 올라오는 움직임은 없다.
-   뒤 화면은 --scrim 막이 덮고, 119 독(z-index 20)은 막 위라 그대로 보이고 눌린다 */
+/* 읽지 않은 센터 메시지 점(backlog 46, SEED notification-badge Small). 숫자 없이 점 하나.
+   119와 헷갈리지 않게 빨강이 아니라 말풍선과 같은 진한 틸이고, 유리 위에서 떠 보이게 흰 테를 두른다 */
+.bar-chat-dot {
+  position: absolute;
+  top: 7px;
+  inset-inline-end: 13px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--brand-fg);
+  box-shadow: 0 0 0 2px var(--card-solid);
+}
+
+/* 센터 채팅 시트(backlog 39·47, design.md "센터 채팅 시트"). 하단 독 바로 위에 떠 있는 유리 면. 올라오는 움직임은 없다.
+   뒤 화면은 --scrim 막이 덮고, 119 독(z-index 20)은 막 위라 그대로 보이고 눌린다.
+   흔한 메신저 틀: 머리 / 대화(이것만 스크롤) / 아래 고정 입력줄. 높이는 내용과 관계없이 남은 화면(최대 680px)이다 */
 .sheet-scrim {
   position: fixed;
   inset: 0;
@@ -714,7 +729,7 @@ a.brand-pill:active {
   flex-direction: column;
   width: calc(100% - 32px);
   max-width: 448px; /* .w-shell 480px - 좌우 16px */
-  max-height: calc(100dvh - var(--bar-119) - env(safe-area-inset-bottom) - 72px); /* 위는 앱 바 자리만큼 남긴다 */
+  height: min(680px, calc(100dvh - var(--bar-119) - env(safe-area-inset-bottom) - 72px)); /* 위는 앱 바 자리만큼 남긴다 */
   border-radius: var(--radius-lg);
   background: var(--card);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -730,19 +745,57 @@ a.brand-pill:active {
   display: none;
 }
 
-/* 머리: 시작 쪽 제목, 끝 쪽 📞/💬 전환과 ✕. 버튼은 독의 채팅 버튼과 같은 평평한 44px 원 */
+/* 머리: 시작 쪽 센터 마크·제목·요청 번호, 끝 쪽 통화/채팅 전환과 닫기. 버튼은 독의 채팅 버튼과 같은 평평한 44px 원.
+   대화와는 1px --line 한 줄로 나눈다 */
 .sheet-head {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 8px;
-  padding-inline-start: 16px;
+  padding-inline-start: 12px;
+  border-bottom: 1px solid var(--line);
 }
 
-.sheet-head h2 {
+.sheet-avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  margin-inline-end: 6px;
+  border-radius: 999px;
+  object-fit: contain;
+  background: var(--card-solid);
+  box-shadow: var(--glass-sm);
+}
+
+.sheet-title {
   flex: 1;
   min-width: 0;
+}
+
+.sheet-title h2 {
   margin: 0;
+  font-size: var(--t5);
+  line-height: 1.3;
+}
+
+/* 요청 번호 뒤 처리 상태 칩(backlog 46). 좁으면 칩이 다음 줄로 내려간다 */
+.sheet-title p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin: 0;
+  font-size: var(--t2);
+  color: var(--ink-2);
+}
+
+.sheet-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .sheet-btn {
@@ -772,24 +825,30 @@ a.brand-pill:active {
   }
 }
 
-/* 대화: 안내 말풍선(상대 모양)과 내 답, 그 사이에 칩·동의·보내기가 끼고, 보낸 뒤에는 채팅 패널이 이어진다.
-   유리 면 위라 상대 말풍선은 --card 대신 --bg-2로 한 단계 들어간다 */
+/* 대화: 안내 말풍선(상대 모양)과 내 답, 그 사이에 칩·동의·보내기가 끼고, 보낸 뒤에는 채팅 메시지가 같은 줄기로 이어진다.
+   글이 적으면 아래(입력줄 쪽)에 붙는다. 유리 면 위라 상대 말풍선은 --card-solid로 또렷하게 둔다 */
 .sheet-body {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 16px 16px;
+  padding: 12px 16px;
 }
 
-.sheet-body > .chat-msg:not(.mine) {
-  background: var(--bg-2);
+.sheet-body > :first-child {
+  margin-top: auto;
 }
 
-.sheet-body > .chat-msg .native-box {
+.sheet .chat-msg:not(.mine) {
+  background: var(--card-solid);
+}
+
+.sheet-body .chat-msg .native-box {
   margin: 4px 0;
-  background: var(--card);
+  background: var(--bg-2);
   box-shadow: none;
 }
 
@@ -802,12 +861,33 @@ a.brand-pill:active {
   margin: 0;
 }
 
-.sheet-case {
-  margin: 4px 0 0;
+/* 시트 안에서는 채팅 목록이 들어간 상자가 아니라 대화 줄기의 일부다. 스크롤은 .sheet-body가 한다 */
+.sheet .chat-log {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
 }
 
-.sheet .chat-log {
-  max-height: 45dvh;
+/* 아래 고정 칸: 채팅 상태 줄과 입력줄(ChatPanel이 포털로 그린다). 그릴 것이 없으면 칸째 없다 */
+.sheet-foot {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.sheet-foot:empty {
+  display: none;
+}
+
+.sheet-foot .notice {
+  margin: 0;
 }
 
 /* ---------- 공통 요소 ---------- */
@@ -865,6 +945,31 @@ a.brand-pill:active {
   min-height: 44px;
   color: inherit;
   text-decoration: none;
+}
+
+/* S-13 센터 요청 한 줄(backlog 46). 누르면 시트를 그 사례로 연다. 버튼 기본 모양을 지우고 .row.link처럼 보인다 */
+.my-case {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+}
+
+button.my-case {
+  cursor: pointer;
+}
+
+.stack.my-cases {
+  gap: 8px;
+}
+
+.my-case-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn {
@@ -1184,18 +1289,18 @@ hr.divider {
   margin: 12px 0 0;
 }
 
-/* 상담 채팅(backlog 25, design.md "상담 채팅"). 근로자 S-12 카드와 센터 C-02 패널 안에 같은 모양으로 들어간다 */
+/* 상담 채팅(backlog 25·47, design.md "상담 채팅"). 근로자 채팅 시트와 센터 C-02 패널 안에 같은 조각이 들어간다 */
 .chat {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* 메시지 목록은 들어간 홈이다. 높이를 묶고 안에서만 스크롤한다 */
+/* 메시지 목록은 들어간 홈이다. 높이를 묶고 안에서만 스크롤한다(시트 안에서는 홈을 없앤다) */
 .chat-log {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   min-height: 120px;
   max-height: 320px;
   overflow-y: auto;
@@ -1205,7 +1310,33 @@ hr.divider {
   box-shadow: var(--glass-in);
 }
 
-/* 말풍선은 평평하다. 상대는 시작 쪽 흰 면, 내 것은 끝 쪽 --brand-2. 좌우는 글 방향을 따른다(RTL이면 반대) */
+.chat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 날짜 줄: 날짜가 바뀌는 첫 글 위 가운데 알약 */
+.chat-day {
+  align-self: center;
+  margin: 8px 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: var(--t2);
+  color: var(--ink-2);
+}
+
+/* 시스템 줄: 보냈어요·통화 안내·빈 목록처럼 누가 한 말이 아닌 안내. 가운데 작은 글 */
+.chat-sys {
+  align-self: center;
+  max-width: 90%;
+  margin: 4px 0;
+  text-align: center;
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+/* 말풍선은 평평하다. 상대는 시작 쪽 흰 면, 내 것은 끝 쪽 --brand. 좌우는 글 방향을 따른다(RTL이면 반대) */
 .chat-msg {
   align-self: flex-start;
   display: flex;
@@ -1219,8 +1350,8 @@ hr.divider {
 
 .chat-msg.mine {
   align-self: flex-end;
-  background: var(--brand-2);
-  color: var(--brand-ink);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .chat-msg p {
@@ -1229,13 +1360,58 @@ hr.divider {
   overflow-wrap: anywhere;
 }
 
-.chat-meta {
+/* 말풍선 안 작은 설명(시트 안내 말풍선의 힌트·한국어 전송 안내) */
+.chat-msg .chat-meta {
   font-size: var(--t2);
   color: var(--ink-2);
 }
 
-.chat-msg.mine .chat-meta {
-  color: var(--brand-ink);
+/* 메시지 한 줄: 말풍선 + 옆의 읽음·시각. 같은 사람이 같은 분에 이어 보낸 글은 2px 간격으로 묶고,
+   묶음 끝(.last)만 시각·읽음을 달고 꼬리 쪽 아래 모서리를 4px로 줄인다 */
+.chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.chat-row.mine {
+  flex-direction: row-reverse;
+}
+
+.chat-row.last {
+  margin-bottom: 6px;
+}
+
+.chat-row .chat-msg {
+  max-width: 78%;
+}
+
+.chat-row.last .chat-msg {
+  border-end-start-radius: 4px;
+}
+
+.chat-row.last .chat-msg.mine {
+  border-end-start-radius: var(--radius-sm);
+  border-end-end-radius: 4px;
+}
+
+.chat-row > .chat-meta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: var(--t1);
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+
+.chat-row.mine > .chat-meta {
+  align-items: flex-end;
+}
+
+.chat-read {
+  font-weight: 700;
+  color: var(--brand-fg);
 }
 
 .chat-state {
@@ -1248,6 +1424,7 @@ hr.divider {
   margin-bottom: 0;
 }
 
+/* 입력줄: 둥근 한 줄 입력란(글이 길면 4줄까지 늘어난다) + 끝 쪽 44px 둥근 보내기 */
 .chat-input {
   display: flex;
   gap: 8px;
@@ -1256,12 +1433,58 @@ hr.divider {
 
 .chat-input textarea {
   flex: 1;
-  min-height: 48px;
+  min-height: 44px;
+  max-height: calc(6em + 20px);
+  padding: 10px 16px;
+  border-radius: 22px;
+  line-height: 1.5;
   resize: none;
+  field-sizing: content;
 }
 
-.chat-input .btn {
+.chat-send {
   flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand-paint);
+  color: var(--on-brand);
+  box-shadow: var(--glass-color-sm);
+  cursor: pointer;
+}
+
+.chat-send svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chat-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chat-send:not(:disabled):active {
+  box-shadow: var(--glass-color-in);
+}
+
+/* 화면에는 없고 화면 읽기 프로그램만 읽는 글(말풍선의 보낸 사람) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* 통화 패널(backlog 26, design.md "통화"). 상담 채팅 바로 위, 같은 카드·패널 모양 안에 들어간다 */
@@ -2061,6 +2284,12 @@ table.cases tr.fresh {
 .pill.live {
   background: var(--accent);
   color: var(--ink);
+}
+
+/* 근로자 S-13 요청 줄의 "새 메시지"(backlog 46). 독의 점과 같은 틸 */
+.pill.unread {
+  background: var(--brand-2);
+  color: var(--brand-fg);
 }
 
 .filters {

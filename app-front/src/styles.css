@@ -64,43 +64,43 @@ a {
 }
 
 /* 확인 화면(/__host). 근로자 화면 밖(WorkerLayout 없음)이라 안전 영역을 직접 띄운다 */
-.check {
+.host-check {
   max-width: 480px;
   margin: 0 auto;
   padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(16px + var(--safe-left));
 }
 
-.check h1 {
+.host-check h1 {
   font-size: var(--t9);
   margin: 0 0 4px;
 }
 
-.check h2 {
+.host-check h2 {
   font-size: var(--t6);
   margin: 0 0 8px;
 }
 
-.check p {
+.host-check p {
   margin: 0 0 8px;
 }
 
-.check .card {
+.host-check .card {
   margin: 12px 0;
 }
 
-.check .muted {
+.host-check .muted {
   color: var(--ink-2);
   font-size: var(--t4);
 }
 
-.check table {
+.host-check table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--t4);
 }
 
-.check th,
-.check td {
+.host-check th,
+.host-check td {
   text-align: left;
   vertical-align: top;
   padding: 6px 0;
@@ -108,48 +108,48 @@ a {
   word-break: break-word;
 }
 
-.check tr:last-child th,
-.check tr:last-child td {
+.host-check tr:last-child th,
+.host-check tr:last-child td {
   border-bottom: 0;
 }
 
-.check th {
+.host-check th {
   width: 42%;
   font-weight: 600;
   color: var(--ink-2);
   padding-right: 8px;
 }
 
-.check .links {
+.host-check .links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
 
-.check .log {
+.host-check .log {
   list-style: none;
   margin: 0;
   padding: 0;
   font-size: var(--t4);
 }
 
-.check .log li {
+.host-check .log li {
   padding: 4px 0;
   border-bottom: 1px solid var(--line);
 }
 
-.check .log li:last-child {
+.host-check .log li:last-child {
   border-bottom: 0;
 }
 
-.check code,
-.check pre {
+.host-check code,
+.host-check pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: var(--t3);
 }
 
-.check pre {
+.host-check pre {
   margin: 0;
   padding: 10px 12px;
   background: var(--bg-2);

@@ -1,4 +1,4 @@
-# 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그. 메모리·SQLite 두 저장소에 돌린다.
+# 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그, 읽음(backlog 28). 메모리·SQLite 두 저장소에 돌린다.
 
 import json
 import logging
@@ -16,6 +16,7 @@ from app.store_sqlite import SqliteStore
 
 MARKER = "MARKER-chat-do-not-log"
 AT = datetime(2026, 10, 30, 14, 12, 0, tzinfo=clock.SEOUL)
+EMPTY_HISTORY = {"type": "history", "messages": [], "read": {"worker": None, "center": None}}
 
 INTAKE = {
     "id": "in-test",
@@ -71,8 +72,8 @@ def close_code(client: TestClient, path: str) -> int:
 def test_worker_and_center_share_a_room(client):
     case_id, token = send_case(client)
     with client.websocket_connect(url(case_id, token=token)) as worker, client.websocket_connect(url(case_id, "center")) as staff:
-        assert worker.receive_json() == {"type": "history", "messages": []}
-        assert staff.receive_json() == {"type": "history", "messages": []}
+        assert worker.receive_json() == EMPTY_HISTORY
+        assert staff.receive_json() == EMPTY_HISTORY
 
         # 클라이언트가 보낸 id·from·at은 무시하고 서버 값을 쓴다.
         worker.send_json({"type": "message", "text": "  Tay tôi vẫn còn chảy máu ", "id": "m-99", "from": "center", "at": "2000-01-01"})
@@ -129,7 +130,7 @@ def test_bad_role_or_token_is_4403(client):
     # mock 사례에는 근로자 토큰이 없어 센터만 붙는다.
     assert close_code(client, url("C-1001", token="x")) == 4403
     with client.websocket_connect(url("C-1001", "center")) as ws:
-        assert ws.receive_json() == {"type": "history", "messages": []}
+        assert ws.receive_json() == EMPTY_HISTORY
 
 
 @pytest.mark.parametrize(
@@ -140,6 +141,10 @@ def test_bad_role_or_token_is_4403(client):
         {"type": "message", "text": "x" * 1001},
         {"type": "message", "text": 3},
         {"type": "typing"},
+        {"type": "read"},
+        {"type": "read", "upTo": "m-0"},
+        {"type": "read", "upTo": "c-1"},
+        {"type": "read", "upTo": 1},
         {"text": "hi"},
         "not json",
     ],
@@ -157,11 +162,69 @@ def test_invalid_frame_keeps_connection(client, frame):
         assert ws.receive_json()["message"]["id"] == "m-1"
 
 
+def test_read_goes_to_the_room_and_comes_back_in_history(client):
+    case_id, token = send_case(client)
+    with client.websocket_connect(url(case_id, token=token)) as worker, client.websocket_connect(url(case_id, "center")) as staff:
+        worker.receive_json()
+        staff.receive_json()
+        for text in ("하나", "둘"):
+            worker.send_json({"type": "message", "text": text})
+            worker.receive_json()
+            staff.receive_json()
+
+        staff.send_json({"type": "read", "upTo": "m-2"})
+        expected = {"type": "read", "role": "center", "upTo": "m-2"}
+        assert staff.receive_json() == expected
+        assert worker.receive_json() == expected
+
+        # 뒤로 가는 값·같은 값은 저장도 방송도 하지 않는다. 다음 프레임이 바로 온다
+        staff.send_json({"type": "read", "upTo": "m-1"})
+        staff.send_json({"type": "read", "upTo": "m-2"})
+        staff.send_json({"type": "message", "text": "셋"})
+        assert staff.receive_json()["message"]["id"] == "m-3"
+        assert worker.receive_json()["message"]["id"] == "m-3"
+
+        worker.send_json({"type": "read", "upTo": "m-3"})
+        assert staff.receive_json() == {"type": "read", "role": "worker", "upTo": "m-3"}
+
+    with client.websocket_connect(url(case_id, "center")) as ws:
+        assert ws.receive_json()["read"] == {"worker": "m-3", "center": "m-2"}
+
+
+def test_read_of_missing_message_is_invalid(client):
+    case_id, token = send_case(client)
+    with client.websocket_connect(url(case_id, token=token)) as ws:
+        ws.receive_json()
+        ws.send_json({"type": "read", "upTo": "m-1"})
+        assert ws.receive_json() == {"type": "error", "code": "invalid"}
+        ws.send_json({"type": "message", "text": "하나"})
+        ws.receive_json()
+        ws.send_json({"type": "read", "upTo": "m-2"})
+        assert ws.receive_json() == {"type": "error", "code": "invalid"}
+        ws.send_json({"type": "read", "upTo": "m-1"})
+        assert ws.receive_json() == {"type": "read", "role": "worker", "upTo": "m-1"}
+
+
+def test_read_marks_survive_sqlite_reopen(tmp_path):
+    path = str(tmp_path / "center.db")
+    s = SqliteStore(path)
+    assert s.mark_read("C-1", "center", 2)
+    assert not s.mark_read("C-1", "center", 1)
+    s.close()
+    s = SqliteStore(path)
+    assert s.read_marks("C-1") == {"worker": None, "center": "m-2"}
+    s.reset()
+    assert s.read_marks("C-1") == {"worker": None, "center": None}
+    s.close()
+
+
 def test_reset_closes_rooms_and_clears_history(client):
     case_id, token = send_case(client)
     with client.websocket_connect(url("C-1001", "center")) as ws:
         ws.receive_json()
         ws.send_json({"type": "message", "text": "남을까"})
+        ws.receive_json()
+        ws.send_json({"type": "read", "upTo": "m-1"})
         ws.receive_json()
 
         assert client.post("/api/center/reset").status_code == 204
@@ -170,7 +233,7 @@ def test_reset_closes_rooms_and_clears_history(client):
         assert exc.value.code == 4000
 
     with client.websocket_connect(url("C-1001", "center")) as ws:
-        assert ws.receive_json() == {"type": "history", "messages": []}
+        assert ws.receive_json() == EMPTY_HISTORY
     # live 사례도 지워졌으므로 그 토큰으로는 붙지 못한다.
     assert close_code(client, url(case_id, token=token)) == 4404
 
@@ -202,3 +265,68 @@ def test_uvicorn_websocket_line_is_dropped(caplog):
 
     messages = [r.getMessage() for r in caplog.records if r.name == "uvicorn.error"]
     assert messages == ["Application startup complete."]
+
+
+# ---------------------------------------------------------------------------
+# 근로자가 자기 요청의 상태와 센터 메시지 수를 읽기(backlog 27)
+# ---------------------------------------------------------------------------
+def my_cases(client: TestClient, *refs: tuple[str, str]) -> list[dict]:
+    r = client.post("/api/center/my-cases", json={"cases": [{"id": i, "token": t} for i, t in refs]})
+    assert r.status_code == 200
+    return r.json()
+
+
+def test_my_cases_counts_center_messages_only(client):
+    case_id, token = send_case(client)
+    assert my_cases(client, (case_id, token)) == [{"id": case_id, "status": "new", "centerMessages": 0, "lastCenterAt": None}]
+
+    with client.websocket_connect(url(case_id, token=token)) as worker, client.websocket_connect(url(case_id, "center")) as staff:
+        worker.receive_json()
+        staff.receive_json()
+        worker.send_json({"type": "message", "text": "도와주세요"})
+        worker.receive_json()
+        staff.receive_json()
+        for text in ("확인했습니다", "내일 연락드릴게요"):
+            staff.send_json({"type": "message", "text": text})
+            worker.receive_json()
+            staff.receive_json()
+
+    assert client.patch(f"/api/center/cases/{case_id}", json={"status": "progress"}).status_code == 200
+    assert my_cases(client, (case_id, token)) == [
+        {"id": case_id, "status": "progress", "centerMessages": 2, "lastCenterAt": clock.iso_utc(AT)}
+    ]
+
+
+def test_my_cases_drops_wrong_token_and_unknown_case(client):
+    a, token_a = send_case(client)
+    b, token_b = send_case(client)
+    out = my_cases(client, (a, "wrong"), ("C-0", token_a), ("C-1001", "x"), (b, token_b))
+    # 틀린 토큰·없는 사례·토큰 없는 mock 사례는 403·404 없이 빠진다.
+    assert [x["id"] for x in out] == [b]
+
+
+def test_my_cases_after_reset_is_empty(client):
+    case_id, token = send_case(client)
+    assert client.post("/api/center/reset").status_code == 204
+    assert my_cases(client, (case_id, token)) == []
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"cases": []},
+        {"cases": [{"id": f"C-{n}", "token": "t"} for n in range(21)]},
+        {"cases": [{"id": "C-1"}]},
+        {"cases": [{"id": "", "token": "t"}]},
+        {},
+    ],
+)
+def test_my_cases_bad_body_is_422(client, body):
+    assert client.post("/api/center/my-cases", json=body).status_code == 422
+
+
+def test_my_cases_log_has_no_token(client, caplog):
+    caplog.set_level(logging.INFO, logger="app")
+    case_id, token = send_case(client)
+    my_cases(client, (case_id, token))
+    assert token not in "\n".join(r.getMessage() for r in caplog.records)
