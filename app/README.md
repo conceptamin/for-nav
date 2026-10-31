@@ -73,13 +73,44 @@ fvm flutter run -d <기기> --dart-define=APP_URL=… \
 - 로그인 세션은 같은 출처 HttpOnly 쿠키라, 앱이 불러오는 웹 주소와 API가 같은 출처여야 한다(개발 서버 프록시, 운영 `https://app.for-nav.com`).
 - 로그에는 `googleSignIn`·`googleSignInResult`와 실패 종류(`canceled` 등)만 남는다. ID 토큰·이메일·이름은 찍지 않는다.
 
+## 푸시 알림
+
+센터가 채팅에 답하거나 요청 상태를 바꾸면 앱이 닫혀 있어도 알림 한 줄이 뜨고, 누르면 센터 채팅 시트가 그 사례로 열린다(`app-front/README.md` "호스트 계약" `pushRegister`·`pushToken`·`pushOpen`, app-front backlog 07·08, 서버 backend 28). Firebase 값을 넘기지 않은 빌드는 `init.features`에 `push`를 넣지 않고 지금처럼 동작한다(권한 창도 없다).
+
+준비(한 번). 근로자 Google 로그인 클라이언트가 있는 **같은 Google Cloud 프로젝트**에 Firebase를 붙인다(backend 28 결정 1).
+
+1. Firebase 콘솔 → 프로젝트 추가 → 기존 Google Cloud 프로젝트 선택
+2. Android 앱 등록: 패키지 `dev.fornav.for_nav`. `google-services.json`은 내려받지 않아도 된다(아래 값만 쓴다. Gradle `google-services` 플러그인을 쓰지 않는다)
+3. iOS 앱 등록: 번들 ID `dev.fornav.forNav`. `GoogleService-Info.plist`도 넣지 않는다
+4. 프로젝트 설정 → 일반에서 값을 옮겨 둔다: 웹 API 키, Android·iOS 앱 ID(`1:…:android:…`, `1:…:ios:…`), 프로젝트 번호(= 발신자 ID), 프로젝트 ID
+5. iOS만: 유료 Apple Developer 계정에서 APNs 인증 키(.p8)를 만들어 Firebase 콘솔 → 클라우드 메시징 → Apple 앱 구성에 올리고, Xcode의 Runner 타깃 → Signing & Capabilities에서 **Push Notifications**를 켠다(`ios/Runner/Runner.entitlements`가 연결된다. 개인 팀 서명으로는 이 capability를 켤 수 없어 아직 연결하지 않았다). Background Modes의 Remote notifications는 `Info.plist`에 이미 있다
+
+실행 때 값을 넘긴다. 비밀 키가 아니지만(앱 안에 들어간다) 프로젝트마다 달라 코드·`env/prod.json`에 적지 않는다.
+
+```sh
+fvm flutter run -d <기기> --dart-define=APP_URL=… \
+  --dart-define=FIREBASE_API_KEY=AIza… \
+  --dart-define=FIREBASE_APP_ID_ANDROID=1:123:android:abc \
+  --dart-define=FIREBASE_APP_ID_IOS=1:123:ios:def \
+  --dart-define=FIREBASE_SENDER_ID=123 \
+  --dart-define=FIREBASE_PROJECT_ID=for-nav-demo
+```
+
+- 다섯 값 중 그 플랫폼에 필요한 넷(API 키·그 플랫폼 앱 ID·발신자 ID·프로젝트 ID)이 다 있어야 켜진다. `Firebase.initializeApp`이 실패해도 `push` 없이 계속한다
+- 알림 권한은 앱을 처음 열 때 묻지 않는다. 근로자가 센터 요청을 처음 보내 웹이 `pushRegister`를 보낼 때 묻는다(Android 13+ `POST_NOTIFICATIONS`, iOS 시스템 창). 거부하면 다시 묻지 않고, 웹은 앱을 다시 열 때 15초 주기로 상태를 읽는다
+- 앱이 앞에 있을 때 온 알림은 띄우지 않는다. Android 에뮬레이터는 **Google Play** 시스템 이미지여야 FCM 토큰이 나온다
+- 서버는 `PUSH=fcm`과 FCM 발송 권한 서비스 계정 키가 있어야 실제로 보낸다(`backend/README.md`). `PUSH=off` 서버로도 등록 흐름(`/__host` "푸시 시험", `POST /api/center/push-devices`)은 확인된다
+- 로그에는 `pushRegister`·`pushToken`·`pushOpen`과 실패 종류(`denied`, Firebase 오류 코드)만 남는다. FCM 토큰·`caseId`·알림 본문은 찍지 않는다
+
 ## 검사
 
 ```sh
 cd app
 fvm flutter analyze
-fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
+fvm flutter test        # 이동 분류·메시지 형식·푸시 caseId 거르기·보관 단위 테스트
 ```
+
+`analysis_options.yaml`은 `build/**`를 보지 않는다. Flutter가 iOS Swift 패키지를 `build/ios/SourcePackages`에 풀어 두는데, firebase_messaging은 그 안에 자기 테스트 mock까지 있어 분석에 걸린다.
 
 ## 계약 구현 위치
 
@@ -98,12 +129,14 @@ fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
 | WebView 마이크 요청 | `_onPermissionRequest`: 마이크만 요청이면 Android는 `RECORD_AUDIO`를 받고 허용, 거부면 WebView 요청도 거부(웹 `micDenied`). iOS는 시스템 권한 창. 카메라 등은 거부 |
 | Android 파일 선택기 | `_onShowFileSelector` → `image_picker`(시스템 사진 선택기, 권한 없음). `accept`가 사진이 아니면 빈 목록 |
 | 통화 상대 음성 자동 재생 | iOS `mediaTypesRequiringUserAction: {}`·`allowsInlineMediaPlayback`, Android `setMediaPlaybackRequiresUserGesture(false)` |
+| `pushRegister` → `pushToken`, `pushUnregister`, `init.features`의 `push` | `lib/push.dart` `NativePush`. 시작 때 `--dart-define` Firebase 값으로 `Firebase.initializeApp`, 성공하면 `push`. `pushRegister`: `requestPermission()` → (iOS는 APNs 토큰을 10초까지 기다림) → `getToken()` → `pushToken`. 거부는 `denied`, 그 밖은 `failed`. 이 페이지가 `pushRegister`를 보낸 뒤에만 `onTokenRefresh`를 `pushToken`으로 다시 보낸다. `pushUnregister`: `deleteToken()` |
+| 알림 탭 → `pushOpen` | `onMessageOpenedApp`(백그라운드에서 돌아옴)·`getInitialMessage()`(꺼져 있다가 열림)의 `data.kind == "center"`이고 `data.caseId`가 사례 id 모양일 때만(`pushCaseIdOf`). `PushOpenGate`가 `init` 전에 누른 것 중 마지막 하나를 들고 있다가 `init` 바로 뒤에 한 번 보낸다. 페이지가 다시 `ready`하면 다음 `init`까지 다시 들고 있는다 |
 | 메시지 형식·스크립트 | `lib/bridge.dart` |
 
 - `locale`은 `PlatformDispatcher.instance.locale.toLanguageTag()`(기기 첫 번째 언어, BCP-47)다. `Platform.localeName`은 iOS에서 앱 번들이 지원하는 언어로 좁혀져 기기 언어가 그대로 오지 않는다.
 - 앱 주소를 못 불러오면(메인 프레임 실패) WebView 오류 화면 대신 `lib/offline_view.dart` 한 장(다시 시도, 119 전화)을 보인다. 번들(app-front backlog 05) 전까지의 임시 동작이다.
 - 로그(`flutter run` 출력)에는 `[host] ← ready`처럼 메시지 `type`만 남긴다. 주소·메시지 본문·받아쓴 글은 찍지 않는다(`speech`는 말하는 동안 계속 오므로 type도 찍지 않는다). 배포 빌드에서는 찍지 않는다.
-- 권한 문구: iOS `Info.plist`의 마이크·음성 인식·사진 보관함·카메라 설명은 한국어·영어 한 줄이다. Android는 `RECORD_AUDIO`·`MODIFY_AUDIO_SETTINGS`와 음성 인식 서비스 `<queries>`를 둔다.
+- 권한 문구: iOS `Info.plist`의 마이크·음성 인식·사진 보관함·카메라 설명은 한국어·영어 한 줄이다. Android는 `RECORD_AUDIO`·`MODIFY_AUDIO_SETTINGS`·`POST_NOTIFICATIONS`와 음성 인식 서비스 `<queries>`를 둔다. 알림 채널은 FCM 기본 채널이고 이름을 앱이 정하지 않는다.
 
 ## 확인 방법
 
@@ -115,8 +148,9 @@ fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
 6. 받아쓰기: `/__host`의 features에 `speech`가 있고, "받아쓰기 시험"을 누르면 처음에 권한 창(Android 마이크, iOS 음성 인식·마이크)이 뜬다. 거부하면 `speechError denied`, 허용하면 `듣는 중`이고 말하면 확정 문장 수가 오른다. 다시 누르면 끈다(`speechStop`). 에뮬레이터·시뮬레이터 마이크에는 소리가 들어오지 않을 수 있어 받아쓴 글은 실기기에서 본다.
 7. 사진(Android): S-05 "사진 추가" → 시스템 사진 선택기 → 미리보기. 취소하면 아무 일 없이 돌아온다.
 8. 통화: S-12에서 "통화" → 마이크 권한 → PC 센터 화면(`frontend/` C-02)이 받으면 양쪽 자막이 번역되어 보인다. 통화는 HTTPS 또는 `localhost`(Android는 `adb reverse`)에서만 된다.
-9. 비행기 모드로(iOS 시뮬레이터는 웹 개발 서버를 끄고) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
+9. 푸시(위 "푸시 알림"으로 실행, Android Google Play 이미지): 앱을 처음 열 때 권한 창이 뜨지 않는다. `/__host`의 features에 `push`가 있고 "푸시 시험"이 처음에 권한 창을 띄운 뒤 `token 받음`이다(토큰 값은 보이지 않는다). S-12로 센터 요청을 보낸 뒤 앱을 백그라운드로 보내고 PC 센터 화면 C-02에서 채팅에 쓰면 "for nav" + 근로자 언어 한 줄이 뜨고, 누르면 시트가 그 사례로 열린다. 앱을 최근 앱에서 지운 뒤 상태를 바꿔도 같다
+10. 비행기 모드로(iOS 시뮬레이터는 웹 개발 서버를 끄고) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
 
 ## 하지 않는 것(다른 항목)
 
-Android 파일 선택기의 카메라 촬영(2차), 번들(app-front backlog 05), 푸시, 스토어 배포 설정(서명·아이콘·앱 ID). 번들 ID `dev.fornav.forNav`·Android `dev.fornav.for_nav`는 임시다(`app-front/README.md` "확인이 필요한 값").
+Android 파일 선택기의 카메라 촬영(2차), 번들(app-front backlog 05), 통화 착신 알림(센터가 걸 때, 전체 화면 알림·CallKit), 앱이 앞에 있을 때의 알림 표시, 스토어 배포 설정(서명·아이콘·앱 ID). 번들 ID `dev.fornav.forNav`·Android `dev.fornav.for_nav`는 임시다(`app-front/README.md` "확인이 필요한 값").
