@@ -742,10 +742,11 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 | 흐림을 다는 것 | 흐림을 달지 않는 것 |
 |---|---|
 | 카드, 패널, KPI, 표 상자, 홈 기능 목록 판(`.home-list`), 다른 진료과 상자(`.dept.alt`) | 카드 안의 버튼·칩·체크·입력란·토글·필터, S-01 언어 타일, 들어간 면 전부 |
-| 근로자 앱 바(`.w-header`), 아래 주 동작 자리(`.w-footer`), 센터 헤더(`.c-header`) | 불투명한 면: 색이 있는 면(홈 시작 카드 `.home-hero` 포함), 첫 진료과 상자(`.dept`, `--brand-2`), 응급 전화 버튼(`--card-solid`) |
+| 근로자 앱 바(`.w-header`), 아래 주 동작 자리(`.w-footer`), 센터 헤더(`.c-header`), 앱 바 언어 버튼(`.lang-btn`)·언어 목록(`.lang-menu`) | 불투명한 면: 색이 있는 면(홈 시작 카드 `.home-hero` 포함), 첫 진료과 상자(`.dept`, `--brand-2`), 응급 전화 버튼(`--card-solid`) |
 
 - 유리 안에 유리를 겹쳐 흐리지 않는다. 겹친 흐림은 저가형 안드로이드에서 스크롤을 끊기게 하고, 이미 흐린 바탕을 한 번 더 흐려도 보이는 차이가 없다. 안쪽 조각은 같은 반투명 채움과 가장자리만 쓴다.
 - 색이 있는 면 위에 놓이는 흰 면(응급 히어로 안의 응급 전화 버튼)은 `--card` 대신 불투명한 `--card-solid`를 쓴다. 반투명 흰색은 빨간 바탕 위에서 분홍으로 비친다.
+- 근로자 앱 바는 흐림을 띠 자신이 아니라 `.w-header::before`에 단다. `backdrop-filter`가 걸린 상자 안의 자식은 그 상자 밖을 흐리지 못하므로(backdrop root), 띠 아래로 내려오는 언어 목록이 본문을 흐리려면 띠 자신에는 흐림이 없어야 한다. 보이는 모양은 같다(backlog 28).
 - 고정된 띠는 그림자 없이 `--card` 채움 + 흐림 + 아래(하단 띠는 위) 쪽 1px `--glass-edge` 선 하나다(`box-shadow: 0 1px 0 var(--glass-edge)`). 띠 아래로 지나가는 내용이 흐리게 비친다. `.w-footer`는 `.w-main`의 좌우 여백까지 넓혀(`margin: 16px -16px -16px; padding: 16px`) 띠가 화면 폭을 채운다. 하단 119(`.bar-119`)는 띠 바탕 없이 빨간 버튼만 바닥에 떠 있다(2026-10-30 사용자 결정). 버튼 둘레의 빈자리는 `pointer-events: none`이라 아래 내용이 눌린다.
 
 ### 대비를 지키는 규칙
@@ -774,6 +775,7 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 | `--bg-paint` | 아래 CSS | `body`의 `background`. 빛 번짐 둘 + `--bg`. `background-attachment: fixed`로 스크롤해도 바닥이 움직이지 않는다 |
 | `--card` | `rgb(255 255 255 / 62%)` | 유리 채움(카드·버튼·칩·띠의 바탕). 이 이름 그대로 둔다 |
 | `--card-solid` | `#f3f8f9` | 흐림을 쓸 수 없을 때의 `--card`, 색이 있는 면 위의 흰 면 |
+| `--card-hover` | `rgb(255 255 255 / 82%)` | 마우스를 올린 앱 바 언어 버튼(backlog 28). 터치 기기에는 없다 |
 | `--bg-2` | `rgb(18 35 46 / 5%)` | 들어간 홈의 바탕(모국어 원문 상자, 막대 트랙), 낮음 칩(`pill.low`, 홈의 회원 링크 포함). 어느 유리 위에서도 한 단계 어둡게 보이도록 틴트로 둔다 |
 | `--bg-3` | `rgb(18 35 46 / 4%)` | 표 머리, 행 강조 |
 
@@ -793,11 +795,11 @@ body { background: var(--bg-paint); background-attachment: fixed; }
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `--radius` | `20px` | 카드, 패널, KPI, 표 상자, 진료과 상자, 응급 히어로, 홈 시작 카드·기능 목록, S-01 언어 타일 |
-| `--radius-sm` | `16px` | 버튼, 칩, 입력란, 안내 상자, 체크 한 줄, 토글, 필터 |
+| `--radius` | `20px` | 카드, 패널, KPI, 표 상자, 진료과 상자, 응급 히어로, 홈 시작 카드·기능 목록, S-01 언어 타일, 앱 바 언어 목록 |
+| `--radius-sm` | `16px` | 버튼, 칩, 입력란, 안내 상자, 체크 한 줄, 토글, 필터, 앱 바 언어 버튼 |
 | `--radius-lg` | `28px` | 응급 전화 버튼, 하단 119 버튼 |
 | `999px` | 토큰 없음 | 긴급도·상태 칩(`pill`), 단계 숫자 원, 앱 바 ←, 사진 ✕, 슬라이더 트랙·손잡이, 막대 트랙·채움, 도넛 범례 점 |
-| `12px` | 토큰 없음 | 높이 36~38px로 낮은 것: 헤더 언어 선택, 센터 탭, 센터 필터 버튼·select |
+| `12px` | 토큰 없음 | 높이 36~38px로 낮은 것: 센터 탭, 센터 필터 버튼·select. 그리고 앱 바 언어 목록 안의 줄(목록 둘레 20px 안쪽에 6px 여백으로 들어가 둥글기를 맞춘다) |
 | `4px` | 토큰 없음 | S-01 언어 칸의 국기 그림(32×24) |
 
 둥글기 값은 클레이모피즘 때와 같다. SEED `rounded` 사다리로는 `--radius`가 `r5`(20px), `--radius-sm`이 `r4`(16px)이고, `--radius-lg` 28px은 사다리 밖 값이다. 면의 높이가 둥글기의 2배보다 작으면 알약 모양이 된다. 48px 버튼에 16px은 괜찮고, 36px 센터 필터에는 `--radius-sm` 대신 12px을 쓴다.
@@ -868,13 +870,13 @@ body { background: var(--bg-paint); background-attachment: fixed; }
 
 input[type='text'], textarea, select.input { background: var(--bg-2); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-in); }
 
-.w-header { background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 1px 0 var(--glass-edge); }
+.w-header::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 1px 0 var(--glass-edge); }
 ```
 
 - 입력란은 `--card`가 아니라 `--bg-2` 틴트 위에 둔다. 흰 반투명 채움은 떠 있는 면의 색이라, 입력란이 같은 색이면 들어간 면으로 읽히지 않는다.
 - 선택된 칩·토글의 `--brand-2`는 불투명하다. 선택 표시가 바닥 색에 따라 흔들리지 않게 한다.
 
-눌림은 `:active`에서 즉시 바뀌고 되돌아온다. `transition`을 달지 않는다. `:hover`에는 아무것도 하지 않는다. 근로자는 손가락으로 누르므로 호버가 없고, 센터 표의 행 강조만 예외다.
+눌림은 `:active`에서 즉시 바뀌고 되돌아온다. `transition`을 달지 않는다. `:hover`에는 아무것도 하지 않는다. 근로자는 손가락으로 누르므로 호버가 없고, 센터 표의 행 강조와 앱 바 언어 변경(`@media (hover: hover)` 안에서만, backlog 28)만 예외다.
 
 ### 스플래시
 
@@ -883,6 +885,21 @@ input[type='text'], textarea, select.input { background: var(--bg-2); border: 0;
 - `.w-splash`: 바닥 위 가운데에 로고(`/logo.png`, 96px)와 앱 이름(`--t11` 굵게) 둘뿐이다. 면·그림자 없음. 앱 바 없음
 - 하단 119 버튼도 그리지 않는다(2026-10-30 사용자 결정). 1.2초뿐이고 누르면 바로 넘어가며, 넘어간 화면에는 119가 있다. "119는 로딩과 관계없이 보인다"의 예외는 이 화면과 응급 화면 둘뿐이다
 - 1.2초 뒤 또는 화면을 누르면 원래 열려던 화면으로 바로 바뀐다. 스플래시 자체가 나타나고 사라지는 효과는 없다(넘어간 화면의 요소는 스크롤 등장으로 나타난다)
+
+### 앱 바 언어 변경
+
+근로자 앱 바 끝의 언어 변경(backlog 28, `src/components/LangMenu.tsx`). 예전 `select`(`한국어 ▾`)를 번역 아이콘 버튼 + 아래로 열리는 목록으로 바꿨다.
+
+| 조각 | 면 | 모양 |
+|---|---|---|
+| 버튼 `.lang-btn` | 떠 있음(작게) `--glass-sm` + 흐림. 누르거나 목록이 열려 있으면(`aria-expanded="true"`) `--glass-in`, 바탕 `--bg-2`. 마우스를 올리면 `--card-hover` | 높이 44px, 너비 44px 이상, `--radius-sm`, 안쪽 여백 0·8·0·10px. 위아래 바깥 여백 -4px로 앱 바 높이는 예전과 같은 56px. 안에 번역 아이콘(22px, `--brand` 외곽선 1.6px, 둥근 끝) + 언어 코드 배지 `.lang-code`(`KO`, `VI`, `ZH-CN`. `--brand-2` 바탕, `--brand-ink` `--t1` 굵게, 999px) |
+| 목록 `.lang-menu` | 떠 있음 `--glass` + 흐림 | 버튼 아래 10px, 끝 쪽에 붙는다(`inset-inline-end`, RTL이면 왼쪽). 너비 240px, 높이 `min(60dvh, 440px)`까지, 넘치면 목록 안에서만 스크롤. `--radius`, 안쪽 여백 6px. 20개 언어를 `LANGUAGE_OPTIONS` 순서로 |
+| 목록 줄 | 평평. 지금 언어는 `--brand-2` 바탕 + 끝에 `✓`(`--brand`). 누르면 `--glass-in`, 마우스를 올리면 `--bg-2` | 높이 48px 이상, 12px 둥글기. 모국어 이름(`--t4` 굵게) 위 + 영어 이름(`--t2` `--ink-2`) 아래. 이름은 글자 방향과 관계없이 화면 글 방향의 시작 쪽에 붙는다 |
+
+- 번역 아이콘은 두 장의 카드가 겹친 모양이다. 앞 카드(오른쪽 변이 기울어짐)에 `A`, 뒤 카드에 `文`, 아래에 접힌 모서리. 인라인 SVG이고 의존성·그림 파일이 없다
+- 버튼과 목록은 앱 바 위에 겹쳐 놓이는 유리라 흐림을 단다(위 "흐림은 맨 위 유리에만" 표). 앱 바 자신의 흐림은 `::before`로 옮겨, 목록이 띠 밖 본문을 흐릴 수 있다
+- 나타나고 사라지는 효과는 없다. 열고 닫기는 바로 바뀐다
+- 키보드: 메뉴 버튼 패턴. Enter·Space·↓로 열면 지금 언어, ↑로 열면 마지막 줄에 포커스. ↑↓·Home·End로 옮기고, Esc는 닫고 버튼으로, Tab과 바깥 누름은 닫기만 한다. 줄은 `menuitemradio`이고 지금 언어가 `aria-checked="true"`다. 버튼 이름은 `언어: 한국어`처럼 i18n `changeLang` + 지금 언어 이름이다
 
 ### 언어 격자
 

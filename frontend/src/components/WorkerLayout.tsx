@@ -1,13 +1,13 @@
-// 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 로고 + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드, 스크롤 등장.
+// 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 로고 + 언어 변경 LangMenu),하단 119 고정 버튼, 진입 순서 가드, 스크롤 등장.
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
 // title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
-import { LANGUAGE_OPTIONS, useT } from '../i18n';
+import { useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
-import type { Lang } from '../domain/vocab';
+import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
 
 export interface ScreenBar {
@@ -134,19 +134,7 @@ export function WorkerLayout() {
                 <span className="title" />
               </>
             )}
-            {app.lang && (
-              <select
-                aria-label={t('changeLang')}
-                value={app.lang}
-                onChange={(e) => app.setLang(e.target.value as Lang)}
-              >
-                {LANGUAGE_OPTIONS.map((o) => (
-                  <option key={o.lang} value={o.lang}>
-                    {o.native}
-                  </option>
-                ))}
-              </select>
-            )}
+            <LangMenu />
           </header>
         )}
         <main className="w-main" ref={mainRef}>
