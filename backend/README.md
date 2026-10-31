@@ -60,7 +60,7 @@ backend/
       translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시. 통화 자막 한 문장 번역(translate_line), 채팅 메시지 번역(translate_message)
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
-    data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
+    data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 329건)
     store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션, 근로자 세션, 푸시 기기 묶음(30일·기기당 사례 20·사례당 기기 5)
     store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, chat_reads, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions, push_devices 표)
     routers/
@@ -369,7 +369,7 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
 
 **`GET /api/center/stats`** — 익명 집계
 
-프론트는 지금 원천 레코드 420건을 받아 브라우저에서 센다. 서버는 **집계 결과만** 돌려주고, 5건 미만 칸은 서버에서 가린다(개인 단위 기록을 내보내지 않기 위해).
+단독 모드 프론트는 원천 레코드 329건(센터 회신 분포를 따른 합성값)을 브라우저에서 센다. 서버는 **집계 결과만** 돌려주고, 5건 미만 칸은 서버에서 가린다(개인 단위 기록을 내보내지 않기 위해).
 
 ```jsonc
 {
@@ -378,7 +378,7 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
   "workRelatedRate": 0.47,
   "noInsuranceRate": 0.44,            // 보험 "없음" + "모름"
   "byIndustry": [{ "key": "autoparts", "n": 68 }, { "key": "chemical", "n": null }],  // n < 5 → null
-  "byLanguage": [ ... ],
+  "byLanguage": [ ... ],              // 20개 언어 전부(vocab LANGS 순서)
   "byInsurance": [ ... ],
   "byAfterHours": [{ "key": "after", "n": 89 }, { "key": "within", "n": 138 }]  // 운영 시간 외 도넛용
 }
