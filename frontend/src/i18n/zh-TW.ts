@@ -296,7 +296,6 @@ export const zhTW: Record<MessageKey, string> = {
   profileDeleteConfirm: '要刪除此個人檔案嗎？',
   reportDelete: '刪除此報告',
   reportDeleteConfirm: '要刪除此報告嗎？',
-  mySettings: '設定',
   myReports: '我的報告',
   myEmpty: '還沒有報告。',
   myCases: '傳送給中心的請求',

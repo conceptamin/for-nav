@@ -283,7 +283,6 @@ export const ko: Record<MessageKey, string> = {
   profileDeleteConfirm: '이 프로필을 삭제할까요?',
   reportDelete: '이 메모 삭제',
   reportDeleteConfirm: '이 메모를 삭제할까요?',
-  mySettings: '설정',
   myReports: '내 메모',
   myEmpty: '아직 메모가 없습니다.',
   myCases: '센터로 보낸 요청',

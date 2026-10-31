@@ -282,7 +282,6 @@ export const ar: Record<MessageKey, string> = {
   profileDeleteConfirm: 'هل تريد حذف هذا الملف الشخصي؟',
   reportDelete: 'حذف هذا التقرير',
   reportDeleteConfirm: 'هل تريد حذف هذا التقرير؟',
-  mySettings: 'الإعدادات',
   myReports: 'تقاريري',
   myEmpty: 'لا توجد تقارير بعد.',
   myCases: 'الطلبات المرسلة إلى المركز',

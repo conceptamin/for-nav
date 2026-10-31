@@ -296,7 +296,6 @@ export const ru: Record<MessageKey, string> = {
   profileDeleteConfirm: 'Удалить этот профиль?',
   reportDelete: 'Удалить этот отчет',
   reportDeleteConfirm: 'Удалить этот отчет?',
-  mySettings: 'Настройки',
   myReports: 'Мои отчеты',
   myEmpty: 'Отчетов пока нет.',
   myCases: 'Запросы, отправленные в центр',

@@ -12,12 +12,11 @@ import { canResume, useCenterLink } from '../../components/centerLink';
 import { CenterHoursNotice, MyCaseRow, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
-import { LANGUAGE_OPTIONS, formatIsoDate, useT } from '../../i18n';
+import { formatIsoDate, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { logoutWorker } from '../../api/auth';
 import { isChatAvailable } from '../../api/chat';
 import type { RequestType } from '../../domain/templates';
-import type { Lang } from '../../domain/vocab';
 import { LOCALES, SEXES } from '../../domain/vocab';
 
 export function CenterRequestPage() {
@@ -139,7 +138,7 @@ function CenterTalk({ caseId }: { caseId: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// S-13 내 정보: 프로필 → 설정(언어) → 내 메모 → 센터로 보낸 요청 → 로그아웃 → 전체 지우기.
+// S-13 내 정보: 프로필 → 내 메모 → 센터로 보낸 요청 → 로그아웃 → 전체 지우기.
 // 배치는 backlog/12-home-my.md. 프로필·메모는 이 기기의 계정별 저장소(AppState)에 있고 서버에는 없다(backlog 28).
 // ---------------------------------------------------------------------------
 const DRINK_KEY = { none: 'drinkNone', sometimes: 'drinkSometimes', often: 'drinkOften' } as const;
@@ -210,19 +209,6 @@ export function MyPage() {
               {t('profileDelete')}
             </button>
           )}
-        </div>
-      </section>
-      <section className="card">
-        <h2>{t('mySettings')}</h2>
-        <div className="field">
-          <label htmlFor="my-lang">{t('changeLang')}</label>
-          <select id="my-lang" className="input" value={app.lang ?? 'en'} onChange={(e) => app.setLang(e.target.value as Lang)}>
-            {LANGUAGE_OPTIONS.map((o) => (
-              <option key={o.lang} value={o.lang}>
-                {o.native}
-              </option>
-            ))}
-          </select>
         </div>
       </section>
       <section className="card">

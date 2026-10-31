@@ -295,7 +295,6 @@ export const en = {
   profileDeleteConfirm: 'Delete this profile?',
   reportDelete: 'Delete this report',
   reportDeleteConfirm: 'Delete this report?',
-  mySettings: 'Settings',
   myReports: 'My reports',
   myEmpty: 'No reports yet.',
   myCases: 'Requests sent to the centre',

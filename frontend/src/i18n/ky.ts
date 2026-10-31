@@ -296,7 +296,6 @@ export const ky: Record<MessageKey, string> = {
   profileDeleteConfirm: 'Бул профилди өчүрөсүзбү?',
   reportDelete: 'Бул отчетту өчүрүү',
   reportDeleteConfirm: 'Бул отчетту өчүрөсүзбү?',
-  mySettings: 'Жөндөөлөр',
   myReports: 'Менин отчетторум',
   myEmpty: 'Азырынча отчет жок.',
   myCases: 'Борборго жөнөтүлгөн өтүнүчтөр',

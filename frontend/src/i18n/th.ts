@@ -282,7 +282,6 @@ export const th: Record<MessageKey, string> = {
   profileDeleteConfirm: 'ลบโปรไฟล์นี้หรือไม่?',
   reportDelete: 'ลบรายงานนี้',
   reportDeleteConfirm: 'ลบรายงานนี้หรือไม่?',
-  mySettings: 'การตั้งค่า',
   myReports: 'รายงานของฉัน',
   myEmpty: 'ยังไม่มีรายงาน',
   myCases: 'คำขอที่ส่งไปยังศูนย์',

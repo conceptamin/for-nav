@@ -296,7 +296,6 @@ export const mn: Record<MessageKey, string> = {
   profileDeleteConfirm: 'Энэ профайлыг устгах уу?',
   reportDelete: 'Энэ тайланг устгах',
   reportDeleteConfirm: 'Энэ тайланг устгах уу?',
-  mySettings: 'Тохиргоо',
   myReports: 'Миний тайлангууд',
   myEmpty: 'Одоогоор тайлан алга.',
   myCases: 'Төв рүү илгээсэн хүсэлтүүд',
