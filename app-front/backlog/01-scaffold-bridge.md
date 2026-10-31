@@ -55,3 +55,4 @@ Flutter WebView 안에서 돌 근로자 앱의 웹 쪽 뼈대를 만든다. Vite
 - `webview_flutter`의 JavaScript 채널은 Android·iOS 모두 `window.<채널 이름>.postMessage(문자열)`을 만든다. iOS에서는 `window.webkit.messageHandlers`를 감싼 것이라 직접 쓰지 않는다
 - `flutter_inappwebview`는 `callHandler`가 Promise를 돌려주지만 계약은 응답을 쓰지 않으므로 무시한다
 - 확인 화면 문구는 한국어·영어 고정이다. 개발 확인용이라 i18n 키를 만들지 않는다(`design.md` "호스트 확인 화면")
+- 확인 화면 바깥 클래스는 `.host-check`다(2026-10-31). 처음 이름 `.check`가 backlog 02로 함께 불러오는 `frontend/src/styles.css`의 동의 체크박스 `.check { display: flex }`와 겹쳐 카드가 세로로 좁게 늘어섰다. 이 폴더의 확인 화면 클래스는 `frontend/` 클래스와 겹치지 않게 `host-` 접두사를 붙인다

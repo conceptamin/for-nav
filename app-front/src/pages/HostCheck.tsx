@@ -61,7 +61,7 @@ export function HostCheckPage() {
   ];
 
   return (
-    <div className="check">
+    <div className="host-check">
       <h1>호스트 연결 확인</h1>
       <p className="muted">Host bridge check · 이 화면은 개발 확인용이다. 근로자 화면은 backlog 02부터다.</p>
 
