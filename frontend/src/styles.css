@@ -1626,6 +1626,26 @@ a.card.home-recent:active {
   min-height: 44px;
 }
 
+/* 앱 안 네이티브 Google 로그인 버튼(backlog 35). Google 브랜드 규정(라이트: 흰 바탕, #747775 1px 테두리, #1F1F1F 글자)이라
+   GIS 버튼처럼 우리 토큰을 쓰지 않는다(design.md "근로자 로그인"). 높이는 GIS large(44px)보다 큰 .btn 기본 48px */
+.btn.google {
+  background: #fff;
+  color: #1f1f1f;
+  border: 1px solid #747775;
+  border-radius: 999px;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.btn.google:not(:disabled):active {
+  background: #f2f2f2;
+  box-shadow: none;
+}
+
+.btn.google .g-logo {
+  flex: none;
+}
+
 /* 버튼 왼쪽의 글자 아이콘(데모 Google 로그인의 G) */
 .btn .mark {
   width: 28px;

@@ -948,6 +948,7 @@ S-03 `/signup`의 로그인 단계(backlog 10·28). 앱 바 없이 로고 골격
 | 경우 | 조각 | 모양 |
 |---|---|---|
 | 실제 로그인(API 모드, 서버 `WORKER_AUTH=google`) | Google 공식 버튼 `.gsi-button` | Google Identity Services가 그리는 iframe(`outline`, `large`, `pill`, `signin_with`, 앱 언어). **우리 토큰을 쓰지 않는 유일한 예외**다(Google 브랜드 규정). 틀은 가운데 정렬, 높이 44px 이상만 잡는다. 서버로 보내는 동안은 버튼 대신 막힌 `.btn.secondary.block.big` 하나 |
+| 앱 안 실제 로그인(앱이 네이티브 로그인을 등록함, backlog 35) | `.btn.google.block` + 왼쪽 공식 G 로고(`public/google-g.svg`, 20px) | GIS 버튼 대신 선다. Google 브랜드 규정(라이트)이라 GIS처럼 **우리 토큰을 쓰지 않는다**: 흰 바탕, `#747775` 1px 테두리, `#1F1F1F` 글자, 알약 모양, 높이 48px. 문구는 같은 `loginGoogle`. 계정 선택·서버로 보내는 동안은 같은 막힌 `.btn.secondary.block.big`. 계정 선택을 닫으면 문구 없이 버튼으로 돌아온다. 빌드에 클라이언트 ID가 없어도 설정 경고를 보이지 않는다 |
 | 데모 로그인(단독 모드, 서버 `off`) | `.btn.secondary.block.big` + 왼쪽 `.mark` G 글자 원 | 지금처럼. 서버 확인 중에는 막혀 있다. 아래 각주 `loginDemoNote` |
 | 서버·Google을 확인하지 못함 | `notice.warn.with-retry` | 실패 문구 + `다시 시도`(`.btn.secondary`). 하단 119 띠는 그대로 |
 | 빌드에 클라이언트 ID가 없음 | `notice.warn` 한 줄 | 설정 실수가 바로 보이게 |
