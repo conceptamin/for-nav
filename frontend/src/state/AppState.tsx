@@ -1,7 +1,8 @@
 // 근로자 영역 상태.
-// - 세션(sessionStorage): 언어, 동의, 이용 방식, 현재 증상 입력·판정, 제도 경로 결과, 비회원 리포트, 상담 채팅 토큰
-//   → 비회원 입력은 브라우저 세션이 끝나면 사라진다.
-// - 기기(localStorage): 회원 프로필, 회원 리포트, 회원이 보낸 센터 사례 id
+// - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과, 상담 채팅 토큰
+// - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필·리포트·보낸 센터 사례 id(`umn.device.<계정 키>`)
+//   → 같은 휴대폰에서 다른 계정으로 들어오면 앞 계정의 프로필·리포트가 보이지 않는다(backlog 28).
+//   데모 로그인(단독 모드·서버 WORKER_AUTH=off)의 계정 키는 `demo`다. 서버 세션은 api/auth.ts가 보고, 여기에는 계정 키만 둔다.
 // - 메모리: 서버 설정값(정보 기준일·센터 운영 시간). 저장하지 않고 시작할 때마다 GET /api/meta로 받는다
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -20,16 +21,22 @@ export interface Consents {
   ai: boolean;
 }
 
+export type LoginKind = 'demo' | 'google';
+
+/** 이 기기에서 로그인한 계정. 서버가 꺼져 있어도 이 값으로 계속 쓴다(backlog 28 결정 2) */
+interface Account {
+  key: string;
+  kind: LoginKind;
+}
+
 interface SessionState {
   lang: Lang | null;
   consents: Consents;
-  mode: 'guest' | 'member' | null;
   intake: Intake | null;
   triage: TriageResult | null;
   /** 이번 세션에서 응급 판정이 한 번이라도 있었는지(센터 긴급도에 사용) */
   emergencySeen: boolean;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
-  guestReports: ClinicianReport[];
   /** 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례 채팅에 붙는 열쇠라 탭을 닫으면 사라지는 세션에 둔다 */
   chatTokens: Record<string, string>;
 }
@@ -41,28 +48,58 @@ interface DeviceState {
 }
 
 const SESSION_KEY = 'umn.session';
-const DEVICE_KEY = 'umn.device';
+const ACCOUNT_KEY = 'umn.account';
+/** 계정별 기기 저장소. 계정 키를 뒤에 붙인다 */
+const DEVICE_PREFIX = 'umn.device.';
+/** 계정을 나누기 전(backlog 28 이전)의 기기 저장소. 처음 읽을 때 데모 계정으로 옮긴다 */
+const LEGACY_DEVICE_KEY = 'umn.device';
+export const DEMO_ACCOUNT = 'demo';
+
+const deviceKey = (account: string) => `${DEVICE_PREFIX}${account}`;
+const isAccount = (a: Partial<Account> | null): a is Account =>
+  Boolean(a && typeof a.key === 'string' && a.key && (a.kind === 'demo' || a.kind === 'google'));
 
 const initialSession: SessionState = {
   lang: null,
   consents: { terms: false, sensitive: false, ai: false },
-  mode: null,
   intake: null,
   triage: null,
   emergencySeen: false,
   coverage: null,
-  guestReports: [],
   chatTokens: {},
 };
 const initialDevice: DeviceState = { profile: null, memberReports: [], myCaseIds: [] };
 
+function readDevice(account: string | null): DeviceState {
+  if (!account) return initialDevice;
+  if (account === DEMO_ACCOUNT) {
+    // 계정을 나누기 전에 이 기기에 쌓인 프로필·리포트는 데모 계정 것이다. 한 번만 옮긴다
+    const legacy = readJson<Partial<DeviceState> | null>(localStorage, LEGACY_DEVICE_KEY, null);
+    if (legacy && readJson(localStorage, deviceKey(DEMO_ACCOUNT), null) === null) {
+      writeJson(localStorage, deviceKey(DEMO_ACCOUNT), legacy);
+    }
+    if (legacy) removeKey(localStorage, LEGACY_DEVICE_KEY);
+  }
+  return { ...initialDevice, ...readJson(localStorage, deviceKey(account), {}) };
+}
+
 interface AppContextValue extends SessionState, DeviceState {
   /** 정보 기준일·센터 운영 시간. 단독 모드와 서버 실패 시에는 브라우저 상수다 */
   meta: Meta;
+  /** 로그인한 계정 키. 없으면 로그인 화면으로 간다 */
+  account: string | null;
+  loginKind: LoginKind | null;
+  /** 로그인했고 프로필(생년월일·성별)까지 있다. 홈 이후 화면은 이것이 참일 때만 열린다 */
+  ready: boolean;
   setLang: (lang: Lang) => void;
   setConsents: (c: Consents) => void;
-  startGuest: () => void;
-  signUp: (p: Profile) => void;
+  /** 로그인. 그 계정의 기기 저장소(프로필·리포트)로 바꾼다 */
+  signIn: (account: string, kind: LoginKind) => void;
+  /** 로그아웃. 계정과 현재 입력·판정을 비운다(언어·동의는 남긴다). 계정의 프로필·리포트는 기기에 남는다 */
+  signOut: () => void;
+  /** 서버 세션이 끝났다(401·서버 확인). 계정만 비우고 현재 입력은 남긴다(다시 로그인하면 이어서 쓴다) */
+  endSession: () => void;
+  saveProfile: (p: Profile) => void;
   setIntake: (intake: Intake | null) => void;
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
@@ -77,7 +114,11 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionState>(() => ({ ...initialSession, ...readJson(sessionStorage, SESSION_KEY, {}) }));
-  const [device, setDevice] = useState<DeviceState>(() => ({ ...initialDevice, ...readJson(localStorage, DEVICE_KEY, {}) }));
+  const [account, setAccount] = useState<Account | null>(() => {
+    const a = readJson<Partial<Account> | null>(localStorage, ACCOUNT_KEY, null);
+    return isAccount(a) ? a : null;
+  });
+  const [device, setDevice] = useState<DeviceState>(() => readDevice(account?.key ?? null));
   const [meta, setMeta] = useState<Meta>(DEFAULT_META);
 
   // API 모드에서만 서버를 부른다. 실패하면 loadMeta가 브라우저 상수를 돌려준다.
@@ -90,7 +131,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => writeJson(sessionStorage, SESSION_KEY, session), [session]);
-  useEffect(() => writeJson(localStorage, DEVICE_KEY, device), [device]);
+  useEffect(() => {
+    if (account) writeJson(localStorage, ACCOUNT_KEY, account);
+    else removeKey(localStorage, ACCOUNT_KEY);
+  }, [account]);
+  // 계정이 바뀔 때는 아래 switchAccount가 저장소를 함께 바꾼다. 여기서는 지금 계정의 값만 쓴다
+  useEffect(() => {
+    if (account) writeJson(localStorage, deviceKey(account.key), device);
+  }, [account, device]);
 
   useEffect(() => {
     document.documentElement.lang = session.lang ?? 'ko';
@@ -99,42 +147,51 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const patch = useCallback((p: Partial<SessionState>) => setSession((s) => ({ ...s, ...p })), []);
 
+  const switchAccount = useCallback((next: Account | null) => {
+    setAccount(next);
+    setDevice(readDevice(next?.key ?? null));
+  }, []);
+
   const value = useMemo<AppContextValue>(() => {
-    // 회원 정보가 기기에 있으면 회원으로 이어서 쓴다.
-    const mode = session.mode ?? (device.profile ? 'member' : null);
+    const clearInputs = () =>
+      setSession((s) => ({ ...initialSession, lang: s.lang, consents: s.consents }));
     return {
       ...session,
       ...device,
       meta,
-      mode,
+      account: account?.key ?? null,
+      loginKind: account?.kind ?? null,
+      ready: Boolean(account && device.profile),
       setLang: (lang) => patch({ lang }),
       setConsents: (consents) => patch({ consents }),
-      startGuest: () => patch({ mode: 'guest' }),
-      signUp: (profile) => {
-        setDevice((d) => ({ ...d, profile }));
-        patch({ mode: 'member' });
+      signIn: (key, kind) => {
+        if (account?.key === key && account.kind === kind) return;
+        switchAccount({ key, kind });
       },
+      signOut: () => {
+        switchAccount(null);
+        clearInputs();
+      },
+      endSession: () => switchAccount(null),
+      saveProfile: (profile) => setDevice((d) => ({ ...d, profile })),
       setIntake: (intake) => patch({ intake }),
       setTriage: (triage) =>
         setSession((s) => ({ ...s, triage, emergencySeen: s.emergencySeen || Boolean(triage?.emergency) })),
       setCoverage: (coverage) => patch({ coverage }),
-      saveReport: (r) => {
-        if (mode === 'member') setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] }));
-        else setSession((s) => ({ ...s, guestReports: [r, ...s.guestReports] }));
-      },
+      saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
       addMyCase: (id, chatToken) => {
         setDevice((d) => ({ ...d, myCaseIds: [id, ...d.myCaseIds] }));
         if (chatToken) setSession((s) => ({ ...s, chatTokens: { ...s.chatTokens, [id]: chatToken } }));
       },
-      reports: mode === 'member' ? device.memberReports : session.guestReports,
+      reports: device.memberReports,
       clearMyData: () => {
-        removeKey(localStorage, DEVICE_KEY);
-        setDevice(initialDevice);
-        // 언어·동의는 남기고 비회원으로 돌아간다. 로그인 화면으로 되돌리지 않는다(S-13에서 지운 뒤 그 자리에 머문다)
-        setSession((s) => ({ ...initialSession, lang: s.lang, consents: s.consents, mode: 'guest' }));
+        // 이 계정의 기기 저장소를 지우고 로그아웃한다(서버 세션은 화면이 api/auth.ts의 logoutWorker로 지운다)
+        if (account) removeKey(localStorage, deviceKey(account.key));
+        switchAccount(null);
+        clearInputs();
       },
     };
-  }, [session, device, meta, patch]);
+  }, [session, device, meta, account, patch, switchAccount]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

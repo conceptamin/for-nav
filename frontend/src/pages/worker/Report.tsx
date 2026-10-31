@@ -139,9 +139,7 @@ export function ReportViewPage() {
         </p>
       </section>
       <p className="small muted">👩‍⚕️ {t('repShowDoctor')}</p>
-      <div className={app.mode === 'member' ? 'notice ok' : 'notice warn'}>
-        {app.mode === 'member' ? `✓ ${t('repSaved')}` : t('repSavedGuest')}
-      </div>
+      <div className="notice ok">✓ {t('repSaved')}</div>
       <Worse119 />
       <Link className="btn secondary block" to="/result">
         {t('back')}

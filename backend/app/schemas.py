@@ -415,3 +415,15 @@ class AuthMe(CamelModel):
     required: bool
     # 로그인한 직원 이메일. 세션이 없으면 null
     email: str | None
+
+
+class WorkerGoogleIn(CamelModel):
+    # Google Identity Services 콜백의 ID 토큰(JWT). 검증은 app/google_id.py가 한다
+    credential: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4096)]
+
+
+class WorkerMe(CamelModel):
+    # 서버가 근로자 Google 로그인을 쓰는지(WORKER_AUTH=google). false면 근로자 화면은 데모 로그인이다
+    required: bool
+    # 로그인한 근로자 계정 키(32자 16진수). 세션이 없으면 null. 이름·이메일은 주지 않는다
+    account: str | None

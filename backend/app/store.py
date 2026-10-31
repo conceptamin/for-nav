@@ -1,6 +1,7 @@
 # 센터 사례 저장소. DB_PATH가 비면 메모리(재시작하면 mock 시드 상태로 돌아간다), 있으면 SQLite 파일(store_sqlite.py)이다.
 # 어느 쪽이든 mock 사례·통계 레코드는 서버 시작 시 한 번 메모리에서 만들고, 근로자가 실제로 보낸 사례(live)와 상태 변경만 따로 둔다.
-# 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 통화 자막(backlog 18), 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션도 같은 저장소에 둔다.
+# 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 통화 자막(backlog 18), 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션,
+# 근로자 Google 로그인(backlog 21)의 세션(계정 키만, 이름·이메일 없음)도 같은 저장소에 둔다.
 # 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
 from collections.abc import Callable, Iterable
@@ -117,9 +118,18 @@ class CenterStore(Protocol):
 
     def delete_session(self, token_hash: str) -> None: ...
 
+    # 근로자 Google 로그인(backlog 21). 계정 키는 app/auth.py가 sub에서 만든다.
+    def add_worker_session(self, token_hash: str, account: str, created_at: datetime, expires_at: datetime) -> None: ...
+
+    def worker_account(self, token_hash: str, now: datetime) -> str | None:
+        """만료되지 않은 근로자 세션의 계정 키."""
+        ...
+
+    def delete_worker_session(self, token_hash: str) -> None: ...
+
     def reset(self) -> None:
         """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지, 통화 자막을 지운다. mock은 처음 상태로 돌아간다.
-        직원 목록·로그인 코드·세션은 그대로 둔다(초기화한 직원이 로그아웃되지 않게)."""
+        직원 목록·로그인 코드·세션과 근로자 세션은 그대로 둔다(초기화한 직원과 근로자가 로그아웃되지 않게)."""
         ...
 
     def close(self) -> None: ...
@@ -171,6 +181,7 @@ class MemoryStore:
         self._code_requests: list[tuple[str, str, bool]] = []
         self._codes: dict[str, AuthCode] = {}
         self._sessions: dict[str, tuple[str, str]] = {}
+        self._worker_sessions: dict[str, tuple[str, str]] = {}
 
     def all(self) -> list[CenterCase]:
         with self._lock:
@@ -319,6 +330,19 @@ class MemoryStore:
     def delete_session(self, token_hash: str) -> None:
         with self._lock:
             self._sessions.pop(token_hash, None)
+
+    def add_worker_session(self, token_hash: str, account: str, created_at: datetime, expires_at: datetime) -> None:
+        with self._lock:
+            self._worker_sessions[token_hash] = (account, clock.iso_utc(expires_at))
+
+    def worker_account(self, token_hash: str, now: datetime) -> str | None:
+        with self._lock:
+            s = self._worker_sessions.get(token_hash)
+        return s[0] if s and s[1] > clock.iso_utc(now) else None
+
+    def delete_worker_session(self, token_hash: str) -> None:
+        with self._lock:
+            self._worker_sessions.pop(token_hash, None)
 
     def reset(self) -> None:
         with self._lock:
