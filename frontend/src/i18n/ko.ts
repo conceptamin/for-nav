@@ -224,7 +224,7 @@ export const ko: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: '센터와 대화',
-  chatIntro: '상담원이 요청을 확인한 뒤 여기에 답합니다. 메시지는 번역 없이 그대로 전달됩니다.',
+  chatIntro: '상담원이 요청을 확인한 뒤 여기에 답합니다. 메시지는 상대 언어로 기계 번역되고 원문도 함께 보입니다.',
   chatEmpty: '아직 메시지가 없습니다. 먼저 써도 됩니다.',
   chatPlaceholder: '메시지 입력',
   chatSend: '보내기',

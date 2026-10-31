@@ -224,7 +224,7 @@ export const vi: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'Trò chuyện với trung tâm',
-  chatIntro: 'Tư vấn viên sẽ trả lời tại đây sau khi xem yêu cầu của bạn. Tin nhắn được gửi nguyên văn, không dịch.',
+  chatIntro: 'Tư vấn viên sẽ trả lời tại đây sau khi xem yêu cầu của bạn. Tin nhắn được dịch máy sang ngôn ngữ của người kia, kèm theo bản gốc.',
   chatEmpty: 'Chưa có tin nhắn. Bạn có thể nhắn trước.',
   chatPlaceholder: 'Nhập tin nhắn',
   chatSend: 'Gửi',

@@ -236,7 +236,7 @@ export const zhCN: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: '与中心聊天',
-  chatIntro: '咨询员查看您的请求后会在这里回复。消息按原文发送，不会翻译。',
+  chatIntro: '咨询员查看您的请求后会在这里回复。消息会机器翻译成对方的语言，并同时显示原文。',
   chatEmpty: '还没有消息。您可以先发消息。',
   chatPlaceholder: '输入消息',
   chatSend: '发送',

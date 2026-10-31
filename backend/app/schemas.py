@@ -356,6 +356,12 @@ class ChatMessage(CamelModel):
     case_id: str
     from_: ChatRole = Field(alias="from")
     text: str
+    # 번역(backlog 30). 뜻은 Caption과 같다. 이 항목 전에 저장된 메시지는 넷 다 None
+    lang: Lang | None = None
+    # translation이 ok일 때만 있다
+    translated: str | None = None
+    translated_lang: Lang | None = None
+    translation: TranslationStatus | None = None
     at: str
 
 

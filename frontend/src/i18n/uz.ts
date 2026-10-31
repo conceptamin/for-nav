@@ -236,7 +236,7 @@ export const uz: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'Markaz bilan suhbat',
-  chatIntro: 'Maslahatchi soʻrovingizni koʻrib chiqqach, shu yerda javob beradi. Xabarlar tarjimasiz, yozilganidek yuboriladi.',
+  chatIntro: 'Maslahatchi soʻrovingizni koʻrib chiqqach, shu yerda javob beradi. Xabarlar suhbatdoshning tiliga mashina orqali tarjima qilinadi, asl matn ham koʻrsatiladi.',
   chatEmpty: 'Hali xabar yoʻq. Birinchi boʻlib yozishingiz mumkin.',
   chatPlaceholder: 'Xabar yozing',
   chatSend: 'Yuborish',

@@ -235,7 +235,7 @@ export const en = {
 
   // S-12 상담 채팅(backlog 25)
   chatTitle: 'Chat with the centre',
-  chatIntro: 'A counsellor will reply here after checking your request. Messages are sent as written, without translation.',
+  chatIntro: 'A counsellor will reply here after checking your request. Messages are machine-translated into the other person\'s language, and the original is shown too.',
   chatEmpty: 'No messages yet. You can write first.',
   chatPlaceholder: 'Write a message',
   chatSend: 'Send',

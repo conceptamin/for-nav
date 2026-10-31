@@ -1,5 +1,5 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
-# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)과 통화 시그널링·자막 번역(backlog 16)을 연다.
+# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14, 메시지 번역 backlog 30)과 통화 시그널링·자막 번역(backlog 16)을 연다.
 # CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17).
 # 근로자 전송(POST /cases)은 직원 세션을 보지 않고, WORKER_AUTH=google일 때만 근로자 세션이 있어야 한다(backlog 21).
 # 근로자 앱 푸시(backlog 28): 채팅 토큰으로 기기를 사례에 묶고, 센터 채팅 글·상태 변경 뒤 응답을 막지 않고 백그라운드로 보낸다.
@@ -46,9 +46,9 @@ from app.schemas import (
     StatusPatch,
 )
 from app.settings import settings
-from app.store import message_number, store
+from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
-from app.templates.translate import translate_line, translate_note
+from app.templates.translate import translate_line, translate_message, translate_note
 from app.vocab import INDUSTRIES, District, Lang
 
 logger = logging.getLogger(__name__)
@@ -265,7 +265,7 @@ def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | No
 @router.websocket("/cases/{case_id}/chat")
 async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
     """근로자·센터 상담 채팅. 연결 직후 이전 메시지와 역할별 읽은 자리(history)를 한 번 보내고,
-    이후 메시지와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
+    이후 메시지(상대 언어 번역을 붙여, backlog 30)와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
     await ws.accept()
     denied = _chat_denied(ws, case_id, role, token)
     if denied:
@@ -273,6 +273,10 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
         return
     sender: ChatRole = "center" if role == "center" else "worker"
     hub: ChatHub = ws.app.state.chat
+    # 번역 방향은 통화 자막과 같다. 근로자 언어는 클라이언트 값이 아니라 사례의 언어다(backlog 30).
+    case_lang = store.get(case_id).language
+    source, target = (case_lang, "ko") if sender == "worker" else ("ko", case_lang)
+    llm: LLMClient | None = ws.app.state.llm_limiter.wrap(getattr(ws.app.state, "llm", None), ws)
     # join과 이전 메시지 읽기 사이에 await가 없어야 그 사이 메시지를 놓치거나 두 번 받지 않는다.
     hub.join(case_id, ws, sender)
     history = [m.model_dump(by_alias=True) for m in store.messages(case_id)]
@@ -295,7 +299,11 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
                 elif store.mark_read(case_id, sender, n):
                     await hub.broadcast(case_id, {"type": "read", "role": sender, "upTo": frame.up_to})
                 continue
-            m = store.add_message(case_id, sender, frame.text, clock.now())
+            # 번역이 끝난 뒤 저장·방송한다. 번역 전 상태가 없어 번호·읽음·history가 그대로다(보낸 쪽에도 그만큼 늦게 돌아간다).
+            tr = await translate_message(frame.text, source, target, llm, timeout_s=settings.llm_timeout_s)
+            logger.info("chat translation=%s", tr.status)
+            translation = MessageTranslation(source, target, tr.status, tr.text)
+            m = store.add_message(case_id, sender, frame.text, clock.now(), translation)
             await hub.broadcast(case_id, {"type": "message", "message": m.model_dump(by_alias=True)})
             if sender == "center":
                 _notify(ws.app.state, case_id)

@@ -48,6 +48,8 @@ export function workerChatLabels(t: T): ChatLabels {
     reconnecting: t('chatReconnecting'),
     stopped: { denied: t('chatStopped'), missing: t('chatStopped'), reset: t('chatStopped') },
     rejected: t('chatRejected'),
+    translating: t('liveCallTranslating'),
+    machineTranslated: t('liveCallMachineTranslated'),
   };
 }
 
