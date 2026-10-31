@@ -114,7 +114,7 @@ export const ru: Record<MessageKey, string> = {
   photosTitle: 'Фото',
   photoAdd: 'Добавить фото',
   photoRemove: 'Удалить фото',
-  photosNote: 'Фото остаются только на этом экране. Они не отправляются и не сохраняются.',
+  photosNote: 'Фото добавляются только в вашу заметку для врача. Они никуда не отправляются.',
   analyzingTitle: 'Проверяем ваши ответы',
   analyzingSub: 'Подождите немного.',
 

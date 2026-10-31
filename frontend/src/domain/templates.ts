@@ -233,6 +233,8 @@ export interface ClinicianReport {
   /** 서버 전용 선택 필드(backend 04·05). 브라우저 결과에는 없다 */
   llmSlots?: string[];
   translation?: TranslationInfo;
+  /** 근로자가 붙인 사진(JPEG data URL). 서버로 보내지 않고 이 기기에서 리포트를 만든 뒤 붙인다 */
+  photos?: string[];
 }
 
 const FIELD_LABEL_KO: Record<ReportField, string> = {

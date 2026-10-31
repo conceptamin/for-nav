@@ -114,7 +114,7 @@ export const tl: Record<MessageKey, string> = {
   photosTitle: 'Mga larawan',
   photoAdd: 'Magdagdag ng larawan',
   photoRemove: 'Alisin ang larawan',
-  photosNote: 'Mananatili lang ang mga larawan sa screen na ito. Hindi ito ipinapadala o sine-save.',
+  photosNote: 'Idinadagdag lang ang mga larawan sa tala mo para sa doktor. Hindi ito ipinapadala kahit saan.',
   analyzingTitle: 'Sinusuri ang mga sagot mo',
   analyzingSub: 'Sandali lang po.',
 

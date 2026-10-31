@@ -114,7 +114,7 @@ export const id: Record<MessageKey, string> = {
   photosTitle: 'Foto',
   photoAdd: 'Tambah foto',
   photoRemove: 'Hapus foto',
-  photosNote: 'Foto hanya ada di layar ini. Foto tidak dikirim atau disimpan.',
+  photosNote: 'Foto hanya ditambahkan ke catatan untuk dokter. Foto tidak dikirim ke mana pun.',
   analyzingTitle: 'Memeriksa jawaban Anda',
   analyzingSub: 'Mohon tunggu sebentar.',
 

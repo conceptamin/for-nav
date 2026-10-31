@@ -114,7 +114,7 @@ export const fr: Record<MessageKey, string> = {
   photosTitle: 'Photos',
   photoAdd: 'Ajouter une photo',
   photoRemove: 'Supprimer la photo',
-  photosNote: 'Les photos restent seulement sur cet écran. Elles ne sont ni envoyées ni enregistrées.',
+  photosNote: 'Les photos sont ajoutées seulement à votre note pour le médecin. Elles ne sont envoyées nulle part.',
   analyzingTitle: 'Vérification de vos réponses',
   analyzingSub: 'Patientez un instant, s’il vous plaît.',
 

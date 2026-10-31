@@ -108,7 +108,7 @@ export const ar: Record<MessageKey, string> = {
   photosTitle: 'الصور',
   photoAdd: 'أضف صورة',
   photoRemove: 'احذف الصورة',
-  photosNote: 'تبقى الصور على هذه الشاشة فقط. لا يتم إرسالها أو حفظها.',
+  photosNote: 'تُضاف الصور فقط إلى ملاحظتك للطبيب. لا يتم إرسالها إلى أي مكان.',
   analyzingTitle: 'نراجع إجاباتك',
   analyzingSub: 'يرجى الانتظار قليلا.',
 

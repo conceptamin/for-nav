@@ -114,7 +114,7 @@ export const zhCN: Record<MessageKey, string> = {
   photosTitle: '照片',
   photoAdd: '添加照片',
   photoRemove: '删除照片',
-  photosNote: '照片只显示在这个画面上，不会发送，也不会保存。',
+  photosNote: '照片只会附在给医生看的备忘里，不会发送到任何地方。',
   analyzingTitle: '正在检查您的回答',
   analyzingSub: '请稍等。',
 

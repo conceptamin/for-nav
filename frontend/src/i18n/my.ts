@@ -114,7 +114,7 @@ export const my: Record<MessageKey, string> = {
   photosTitle: 'ဓာတ်ပုံ',
   photoAdd: 'ဓာတ်ပုံ ထည့်ပါ',
   photoRemove: 'ဓာတ်ပုံ ဖယ်ပါ',
-  photosNote: 'ဓာတ်ပုံတွေက ဒီမျက်နှာပြင်မှာသာ ရှိပါတယ်။ မပို့၊ မသိမ်းပါ။',
+  photosNote: 'ဓာတ်ပုံတွေကို ဆရာဝန်ပြမယ့် မှတ်စုထဲမှာသာ ထည့်ပါတယ်။ ဘယ်ကိုမှ မပို့ပါ။',
   analyzingTitle: 'သင့်အဖြေတွေကို စစ်ဆေးနေပါတယ်',
   analyzingSub: 'ခဏစောင့်ပေးပါ။',
 

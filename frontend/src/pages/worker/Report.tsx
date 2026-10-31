@@ -1,6 +1,7 @@
 // S-11 의료진용 리포트: 항목 선택(기본값 모두 포함) → 동의 → 리포트(/report/:id)
 // 한국어·모국어 두 벌을 미리 만들어 두어 토글 전환이 즉시 된다.
 // 리포트는 버튼을 누를 때 api/worker.ts가 만든다. 기다리는 동안 버튼만 막는다 (README.md "비동기 UX 규칙").
+// 증상 입력에서 붙인 사진은 서버에 보내지 않고, 만들어진 리포트에 이 기기에서 붙인다.
 
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
@@ -20,6 +21,7 @@ export function ReportBuilderPage() {
   const navigate = useNavigate();
   const [included, setIncluded] = useState<ReportField[]>([...REPORT_FIELDS]);
   const [meds, setMeds] = useState('');
+  const [withPhotos, setWithPhotos] = useState(true);
   const [agreed, setAgreed] = useState(false);
   /** 서버 응답을 기다리는 중. 만들기 버튼을 막아 리포트가 두 번 만들어지지 않게 한다 */
   const [busy, setBusy] = useState(false);
@@ -43,7 +45,8 @@ export function ReportBuilderPage() {
     setBusy(true);
     try {
       const report = await buildClinicianReport(intake, included.filter((f) => available.includes(f)), app.profile, meds.trim());
-      app.saveReport(report);
+      const photos = withPhotos ? app.photos.map((p) => p.url) : [];
+      app.saveReport(photos.length ? { ...report, photos } : report);
       navigate(`/report/${report.id}`);
     } finally {
       setBusy(false);
@@ -63,6 +66,14 @@ export function ReportBuilderPage() {
             <span>{t(`field.${f}` as MessageKey)}</span>
           </label>
         ))}
+        {app.photos.length > 0 && (
+          <label className="check">
+            <input type="checkbox" checked={withPhotos} onChange={(e) => setWithPhotos(e.target.checked)} />
+            <span>
+              {t('photosTitle')} ({app.photos.length})
+            </span>
+          </label>
+        )}
         {included.includes('meds') && (
           <div className="field">
             <label htmlFor="meds">
@@ -134,6 +145,18 @@ export function ReportViewPage() {
             <div className="val">{showKo ? row.valueKo : row.valueNative}</div>
           </div>
         ))}
+        {report.photos && report.photos.length > 0 && (
+          <div className="report-row">
+            <div className="lbl">{showKo ? '사진' : t('photosTitle')}</div>
+            <div className="photos">
+              {report.photos.map((src, i) => (
+                <div className="photo" key={i}>
+                  <img src={src} alt={`${showKo ? '사진' : t('photosTitle')} ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <p className="footer-note">
           {showKo ? `작성 ${new Date(report.createdAt).toLocaleString('ko-KR')} · 사용 언어: ${LANGUAGE_NAMES_KO[report.language]}` : new Date(report.createdAt).toLocaleString(LOCALES[report.language])}
         </p>
