@@ -6,17 +6,24 @@
 # 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지·자막이 평문으로 남는다(데모 범위, README "센터 저장소").
+# live_cases 본문은 저장할 때의 계약 그대로 남는다. 읽을 때 옛 계약을 지금 계약으로 바꾸고, 그래도 못 읽는 본문은 건너뛴다(backlog 29).
 
+import json
+import logging
 import sqlite3
 from collections.abc import Callable
 from datetime import datetime
 from threading import Lock
+
+from pydantic import ValidationError
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
 from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
 from app.store import CODE_REQUEST_KEEP, AuthCode, caption_number, latest_first, make_message, next_case_id, read_ids, with_status
 from app.vocab import Lang
+
+logger = logging.getLogger(__name__)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS live_cases (
@@ -104,6 +111,25 @@ def caption_row(row: tuple) -> Caption:
     )
 
 
+def _case_from_body(body: str) -> CenterCase | None:
+    """live_cases 본문 하나를 읽는다. 읽을 수 없으면 None이고, 본문은 로그에 남기지 않는다."""
+    try:
+        data = json.loads(body)
+    except ValueError:
+        data = None
+    if not isinstance(data, dict):
+        logger.warning("live case skipped id=None error=NotObject")
+        return None
+    # backlog 23 전 본문은 요청 종류가 하나(requestType)다. 한 칸 배열로 읽는다
+    if "requestTypes" not in data and "requestType" in data:
+        data["requestTypes"] = [data.pop("requestType")]
+    try:
+        return CenterCase.model_validate(data)
+    except ValidationError as exc:
+        logger.warning("live case skipped id=%s error=%s", data.get("id"), type(exc).__name__)
+        return None
+
+
 class SqliteStore:
     def __init__(self, path: str, now: datetime | None = None) -> None:
         started = now or clock.now()
@@ -118,7 +144,8 @@ class SqliteStore:
     def _live(self) -> list[CenterCase]:
         # 같은 접수 시각이면 나중에 넣은 것이 앞(메모리 저장소의 insert(0)과 같다).
         rows = self._db.execute("SELECT body FROM live_cases ORDER BY rowid DESC").fetchall()
-        return [CenterCase.model_validate_json(body) for (body,) in rows]
+        # 사례 하나를 못 읽어도 접수함 전체가 500이 되지 않게 그 사례만 뺀다
+        return [c for (body,) in rows if (c := _case_from_body(body)) is not None]
 
     def _status(self) -> dict[str, CaseStatus]:
         return dict(self._db.execute("SELECT id, status FROM case_status").fetchall())
@@ -132,7 +159,7 @@ class SqliteStore:
     def get(self, case_id: str) -> CenterCase | None:
         with self._lock:
             row = self._db.execute("SELECT body FROM live_cases WHERE id = ?", (case_id,)).fetchone()
-            c = CenterCase.model_validate_json(row[0]) if row else next((m for m in self._mock if m.id == case_id), None)
+            c = _case_from_body(row[0]) if row else next((m for m in self._mock if m.id == case_id), None)
             if c is None:
                 return None
             status = self._db.execute("SELECT status FROM case_status WHERE id = ?", (case_id,)).fetchone()
