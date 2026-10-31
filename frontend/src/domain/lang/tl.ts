@@ -59,7 +59,6 @@ export const tl: LangPack = {
       assembly: 'Assembly',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: 'Wala pang 30', '30to44': '30–44', '45to64': '45–64', '65plus': '65 pataas' },
     sexes: { female: 'Babae', male: 'Lalaki' },
   },
   templates: {
@@ -131,23 +130,5 @@ export const tl: LangPack = {
       referral: 'Referral sa ahensya',
       other: 'Iba pa',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['nahimatay', 'hinimatay', 'nawalan ng malay', 'walang malay'],
-      breathing: ['hindi makahinga', 'di makahinga', 'hirap huminga', 'hindi humihinga'],
-      chest: ['sakit sa dibdib', 'masakit ang dibdib', 'sumasakit ang dibdib', 'naninikip ang dibdib', 'paninikip ng dibdib'],
-      heavyBleeding: ['maraming dugo', 'malakas ang pagdurugo', 'ayaw tumigil ang dugo', 'hindi tumitigil ang dugo', 'dumudugo nang malakas'],
-      amputation: ['naputulan', 'putol ang daliri', 'putol ang kamay', 'putol ang braso', 'putol ang paa'],
-      fall: ['nahulog mula', 'nahulog galing', 'bumagsak mula', 'nalaglag mula', 'nahulog sa hagdan'],
-      seizure: ['nangingisay', 'kombulsyon', 'kumbulsyon', 'kinukumbulsyon'],
-      stroke: ['paralis', 'ngiwi ang bibig', 'kalahati ng katawan', 'hindi maigalaw ang isang'],
-      severeBurn: ['nakuryente', 'nakoryente', 'grabeng paso', 'malubhang paso', 'matinding paso'],
-      chemicalEye: ['kemikal sa mata', 'kemikal sa aking mata', 'kemikal sa mga mata', 'kemikal ang mata', 'kemikal ang mga mata'],
-      poisoning: ['nalason', 'pagkalason', 'tagas ng gas', 'tumagas ang gas', 'nakalanghap ng gas'],
-    },
-    headInjury: ['nauntog', 'nabagok', 'tinamaan ang ulo', 'tumama ang ulo', 'pinsala sa ulo'],
-    vomit: ['nagsuka', 'nagsusuka', 'sumuka', 'pagsusuka'],
-    severity: ['grabe', 'sobrang sakit', 'matindi', 'hindi ko matiis', 'malala'],
   },
 };

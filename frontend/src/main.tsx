@@ -8,7 +8,7 @@ import { CaseDetailPage, CenterLayout, InboxPage, StatsPage } from './pages/cent
 import { CenterLoginPage } from './pages/center/Login';
 import { CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
 import { CoveragePage } from './pages/worker/Coverage';
-import { EmergencyPage, IntakePage, ResultPage } from './pages/worker/Intake';
+import { IntakePage, ResultPage } from './pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from './pages/worker/Onboarding';
 import { ReportBuilderPage, ReportViewPage } from './pages/worker/Report';
 import { CallPage, DeskPage } from './pages/worker/Visit';
@@ -25,7 +25,6 @@ const routes: RouteObject[] = [
       { path: '/signup', element: <SignupPage /> }, // S-03
       { path: '/home', element: <HomePage /> }, // S-04
       { path: '/intake', element: <IntakePage /> }, // S-05
-      { path: '/emergency', element: <EmergencyPage /> }, // S-06
       { path: '/result', element: <ResultPage /> }, // S-07
       { path: '/coverage', element: <CoveragePage /> }, // S-08
       { path: '/visit/desk', element: <DeskPage /> }, // S-09
