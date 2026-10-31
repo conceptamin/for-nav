@@ -10,11 +10,11 @@ from app.settings import settings
 # 제도 정보 기준일(설정값 INFO_DATE). 실제 운영 시 담당자가 확인한 날짜로 바꾼다.
 INFO_DATE = settings.info_date
 
-# 대표번호는 공개된 기관 대표번호만 둔다. 센터·울산시 지원사업 연락처는 미확인(PRD Q1·Q6).
+# 대표번호는 확인된 기관 대표번호만 둔다.
 KCOMWEL = Institution(id="kcomwel", phone="1588-0075")
 NHIS = Institution(id="nhis", phone="1577-1000")
-CENTER = Institution(id="center", phone=None)
-ULSAN = Institution(id="ulsan", phone=None)
+CENTER = Institution(id="center", phone="1577-2818")
+ULSAN = Institution(id="ulsan", phone="052-235-7100")
 
 
 def route_coverage(i: CoverageInput) -> CoverageResult:

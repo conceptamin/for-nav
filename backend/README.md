@@ -262,7 +262,7 @@ backend/
 
 ```json
 { "infoDate": "2026-10-24", "alsoIndustrial": true, "path": "ulsanSupport",
-  "institutions": [{ "id": "center", "phone": null }, { "id": "ulsan", "phone": null }],
+  "institutions": [{ "id": "center", "phone": "1577-2818" }, { "id": "ulsan", "phone": "052-235-7100" }],
   "docs": ["arc", "receipts"] }
 ```
 
@@ -672,5 +672,5 @@ backend:
 
 - 센터 운영 시간: 일~목 09:00~18:00(센터 확인 2026-10-31). 시간은 `CENTER_HOURS`, 요일은 `app/settings.py`의 `WORKDAYS`
 - 정보 기준일 → `INFO_DATE`. 발표 전 재확인
-- 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
-- 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지
+- 기관 대표번호(`KCOMWEL`, `NHIS`, `CENTER`, `ULSAN`)는 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
+- 미확인 연락처는 `phone: null`로 두고 프론트가 "센터 상담으로 확인하세요"를 보인다

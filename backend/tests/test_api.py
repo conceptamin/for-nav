@@ -182,7 +182,7 @@ def test_route_readme_example():
         "infoDate": "2026-10-24",
         "alsoIndustrial": True,
         "path": "ulsanSupport",
-        "institutions": [{"id": "center", "phone": None}, {"id": "ulsan", "phone": None}],
+        "institutions": [{"id": "center", "phone": "1577-2818"}, {"id": "ulsan", "phone": "052-235-7100"}],
         "docs": ["arc", "receipts"],
     }
 
