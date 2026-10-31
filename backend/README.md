@@ -650,7 +650,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    FCM_PROJECT_ID=<Firebase 프로젝트 id>
    FCM_CREDENTIALS_FILE=/Users/<사용자>/keys/fcm-sender.json
    ```
-5. `pm2 logs for-nav`에 `push off: …`가 없으면 발송기가 켜진 것이다. 값이 빠졌거나 키를 못 읽으면 이 경고 한 줄을 남기고 보내지 않은 채 뜬다.
+5. 배포 로그(GitHub Actions "Deploy backend (Mac mini)" 또는 `deploy.sh` 출력)의 `▶ 푸시 발송:` 줄을 본다. `켜짐(FCM)`이면 발송기가 켜진 것이다. `꺼짐(PUSH=off)`은 `.env`에 `PUSH=fcm`이 없는 것이고, `꺼짐(push off: …)`은 값이 빠졌거나 키를 못 읽은 것이다(서버가 시작할 때 남긴 경고 한 줄, 값 이름·예외 종류만). 맥미니에서는 `pm2 logs for-nav`의 같은 줄로도 본다. `.env`만 바꿨으면 Actions에서 이 워크플로를 수동 실행(`workflow_dispatch`)해 다시 띄운다.
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI

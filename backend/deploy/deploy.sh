@@ -27,12 +27,14 @@ done
 
 echo "▶ $(git -C "$ROOT" log -1 --format='%h %s')"
 
-# 근로자 Google 로그인(backlog 21): 서버가 aud와 비교하는 웹 클라이언트 ID를 두 빌드에도 같은 값으로 넣는다.
-# backend/.env는 공백이 든 값(MAIL_FROM 등)이 있어 source하지 않고 이 줄만 읽는다. 없거나 비면 지금처럼 빈 값이다
-GOOGLE_CLIENT_ID=""
-if [ -f "$ROOT/backend/.env" ]; then
-  GOOGLE_CLIENT_ID="$(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?GOOGLE_CLIENT_ID[[:space:]]*=[[:space:]]*//p' "$ROOT/backend/.env" | tail -n 1 | sed -E "s/[[:space:]]+\$//; s/^[\"'](.*)[\"']\$/\\1/")"
-fi
+# backend/.env에서 값 하나를 읽는다. 공백이 든 값(MAIL_FROM 등)이 있어 source하지 않고 그 줄만 읽는다. 없거나 비면 빈 값이다
+env_value() {
+  [ -f "$ROOT/backend/.env" ] || return 0
+  sed -nE "s/^[[:space:]]*(export[[:space:]]+)?$1[[:space:]]*=[[:space:]]*//p" "$ROOT/backend/.env" | tail -n 1 | sed -E "s/[[:space:]]+\$//; s/^[\"'](.*)[\"']\$/\\1/"
+}
+
+# 근로자 Google 로그인(backlog 21): 서버가 aud와 비교하는 웹 클라이언트 ID를 두 빌드에도 같은 값으로 넣는다
+GOOGLE_CLIENT_ID="$(env_value GOOGLE_CLIENT_ID)"
 echo "▶ Google 클라이언트 ID: $([ -n "$GOOGLE_CLIENT_ID" ] && echo 있음 || echo 없음)"
 
 echo "▶ 프론트 빌드(API 모드)"
@@ -61,6 +63,28 @@ for name in static static-app; do
   mv "$DEPLOY_DIR/$name.next" "$DEPLOY_DIR/$name"
 done
 
+# 푸시 발송(backend 28)이 켜졌는지 Actions 로그에서 보이게, 재시작 전 pm2 로그의 줄 수를 적어 둔다.
+# 서버는 PUSH=fcm인데 값이 빠졌거나 키 파일을 못 읽으면 시작할 때 "push off: …" 한 줄(값 이름·예외 종류만)을 남긴다
+PM2_LOGS=("$HOME/.pm2/logs/for-nav-out.log" "$HOME/.pm2/logs/for-nav-error.log")
+log_lines() { if [ -f "$1" ]; then wc -l <"$1" | tr -d ' '; else echo 0; fi; }
+LOG_START=("$(log_lines "${PM2_LOGS[0]}")" "$(log_lines "${PM2_LOGS[1]}")")
+
+# 이번에 띄운 서버의 푸시 발송 상태. .env의 PUSH와, 재시작 뒤 새로 쌓인 로그의 "push off" 줄로 본다
+push_status() {
+  local mode off=""
+  mode="$(env_value PUSH)"
+  if [ "$mode" != "fcm" ]; then
+    echo "꺼짐(PUSH=${mode:-off})"
+    return
+  fi
+  for i in 0 1; do
+    [ -f "${PM2_LOGS[$i]}" ] || continue
+    off="$(tail -n +"$((LOG_START[i] + 1))" "${PM2_LOGS[$i]}" | grep -m 1 -o 'push off: .*' || true)"
+    [ -n "$off" ] && break
+  done
+  if [ -n "$off" ]; then echo "꺼짐($off)"; else echo "켜짐(FCM)"; fi
+}
+
 echo "▶ 서버 재시작(pm2 for-nav, 포트 $PORT)"
 # 설정 파일의 인자·환경 변수가 바뀌어도 반영되게 지우고 새로 띄운다
 pm2 delete for-nav >/dev/null 2>&1 || true
@@ -70,6 +94,8 @@ pm2 save >/dev/null
 echo "▶ 상태 확인"
 for _ in $(seq 1 30); do
   if curl -fsS "http://127.0.0.1:$PORT/api/health" >/dev/null 2>&1; then
+    sleep 1 # pm2가 시작 로그를 파일에 쓸 틈
+    echo "▶ 푸시 발송: $(push_status)"
     echo "배포 완료: http://127.0.0.1:$PORT/"
     exit 0
   fi
