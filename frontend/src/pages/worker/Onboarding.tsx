@@ -176,7 +176,9 @@ export function SignupPage() {
       <div className="w-screen">
         <div className="w-logo">
           <img className="mark" src="/logo.png" width="64" height="64" alt="" />
-          <h1>{t('appName')}</h1>
+          <h1>
+            <img className="wordmark" src="/wordmark.png" width="107" height="28" alt={t('appName')} />
+          </h1>
           <p className="muted">{t('appTag')}</p>
         </div>
         <div className="stack">
