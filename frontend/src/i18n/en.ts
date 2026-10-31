@@ -282,7 +282,7 @@ export const en = {
   cenSentBody: 'A counsellor will check your request and contact you.',
   cenAfterHours: 'The centre is closed now. We will contact you on the next working day:',
   cenInHours: 'The centre is open now. Please wait for contact.',
-  cenHoursNote: 'Centre hours (to be confirmed): weekdays 09:00–18:00',
+  cenHoursNote: 'Centre hours: Sunday–Thursday 09:00–18:00',
   cenCaseNo: 'Request number',
 
   // S-13

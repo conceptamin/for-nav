@@ -725,7 +725,7 @@ function StatsView({ s }: { s: CenterStats }) {
         <section className="panel">
           <h2>운영 시간 외 요청 비율</h2>
           <Donut parts={byAfter} total={s.total} label="운영 시간 외 요청 비율" />
-          <p className="footer-note">운영 시간 가정: 평일 09:00~18:00 (센터 확인 후 설정값으로 변경)</p>
+          <p className="footer-note">센터 운영 시간: 일~목 09:00~18:00</p>
         </section>
       </div>
     </>

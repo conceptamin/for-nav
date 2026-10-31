@@ -283,7 +283,7 @@ export const ja: Record<MessageKey, string> = {
   cenSentBody: '相談員が依頼を確認して連絡します。',
   cenAfterHours: '今センターは閉まっています。次の営業日に連絡します：',
   cenInHours: '今センターは開いています。連絡をお待ちください。',
-  cenHoursNote: 'センターの受付時間（確認が必要）：平日 09:00–18:00',
+  cenHoursNote: 'センターの受付時間：日曜〜木曜 09:00–18:00',
   cenCaseNo: '依頼番号',
 
   // S-13

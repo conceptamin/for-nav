@@ -478,7 +478,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 
 | 환경 변수 | 기본값 | 형식 | 쓰는 곳 |
 |---|---|---|---|
-| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(평일, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
+| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(일~목 고정, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
 | `INFO_DATE` | `2026-10-24` | `YYYY-MM-DD` | `/api/meta`, `/api/route`의 `infoDate` |
 | `CORS_ORIGINS` | `http://localhost:5180` | 쉼표 구분 출처 목록 | CORS 허용 출처 |
 | `LLM_PROVIDER` | `anthropic` | `anthropic`만 지원 | LLM 어댑터 선택 |
@@ -670,7 +670,7 @@ backend:
 
 프론트 `README.md`의 미결 사항을 그대로 따른다. 코드를 고치지 않고 바꿀 수 있도록 환경 변수로 빼 두었다("실행"의 환경 변수 표).
 
-- 센터 운영 시간(평일 09:00~18:00 가정) → `CENTER_HOURS`
+- 센터 운영 시간: 일~목 09:00~18:00(센터 확인 2026-10-31). 시간은 `CENTER_HOURS`, 요일은 `app/settings.py`의 `WORKDAYS`
 - 정보 기준일 → `INFO_DATE`. 발표 전 재확인
 - 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
 - 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지

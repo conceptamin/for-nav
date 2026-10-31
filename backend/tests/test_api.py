@@ -56,7 +56,7 @@ def test_health():
 def test_meta():
     assert client.get("/api/meta").json() == {
         "infoDate": "2026-10-24",
-        "centerHours": {"openHour": 9, "closeHour": 18, "workdays": [1, 2, 3, 4, 5]},
+        "centerHours": {"openHour": 9, "closeHour": 18, "workdays": [0, 1, 2, 3, 4]},
     }
 
 
