@@ -17,8 +17,8 @@ TEST_READERS = {"src/fornav_modeling/data/split.py", "scripts/make_splits.py", "
 
 
 def synthetic_table(n=200):
-    labels = ["emergency"] * (n // 5) + ["today"] * (2 * n // 5) + ["outpatient"] * (n - n // 5 - 2 * n // 5)
-    return pd.DataFrame({"id": [f"triage_{i:04d}" for i in range(1, n + 1)], "acuity": labels})
+    labels = ["d0"] * (n // 5) + ["d1"] * (2 * n // 5) + ["d2"] * (n - n // 5 - 2 * n // 5)
+    return pd.DataFrame({"id": [f"symptom_{i:04d}" for i in range(1, n + 1)], "disease": labels})
 
 
 def test_split_is_deterministic_disjoint_and_complete():
@@ -33,15 +33,15 @@ def test_split_is_deterministic_disjoint_and_complete():
 
 def test_split_is_stratified():
     table = synthetic_table()
-    labels = dict(zip(table["id"], table["acuity"], strict=True))
+    labels = dict(zip(table["id"], table["disease"], strict=True))
     for name, ids in split.split_ids(table).items():
-        share = sum(labels[i] == "emergency" for i in ids) / len(ids)
+        share = sum(labels[i] == "d0" for i in ids) / len(ids)
         assert share == pytest.approx(0.2, abs=0.02), name
 
 
 def test_committed_splits_are_disjoint():
     ids = {name: split.read_split_ids(MODELING / "data" / "splits", name) for name in split.SPLITS}
-    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 1267
+    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 292
     assert all(v == sorted(v) for v in ids.values())
 
 
@@ -55,12 +55,12 @@ def written(tmp_path):
     dirs = {name: tmp_path / name for name in ("processed", "splits", "test")}
     for d in dirs.values():
         d.mkdir()
-    table[table["split"] != "test"].reset_index(drop=True).to_parquet(dirs["processed"] / split.PROCESSED_FILE, index=False)
-    table[table["split"] == "test"].reset_index(drop=True).to_parquet(dirs["test"] / split.TEST_FILE, index=False)
+    table[table["split"] != "test"].reset_index(drop=True).to_parquet(dirs["processed"] / split.SYMPTOM_PROCESSED_FILE, index=False)
+    table[table["split"] == "test"].reset_index(drop=True).to_parquet(dirs["test"] / split.SYMPTOM_TEST_FILE, index=False)
     for name, v in ids.items():
         split.split_path(dirs["splits"], name).write_text("\n".join(v) + "\n")
-    test_hash = split.sha256_file(dirs["test"] / split.TEST_FILE)
-    (dirs["splits"] / split.TEST_HASH_FILE).write_text(f"{test_hash}  {split.TEST_FILE}\n")
+    test_hash = split.sha256_file(dirs["test"] / split.SYMPTOM_TEST_FILE)
+    (dirs["splits"] / split.SYMPTOM_TEST_HASH_FILE).write_text(f"{test_hash}  {split.SYMPTOM_TEST_FILE}\n")
     return dirs, ids
 
 
@@ -70,7 +70,7 @@ def test_load_dev_does_not_open_test_dir(written):
     dirs["test"].chmod(0)  # 열려고 하면 PermissionError
     try:
         for name in split.DEV_SPLITS:
-            rows = split.load_dev(dirs["processed"], dirs["splits"], name)
+            rows = split.load_symptom_dev(dirs["processed"], dirs["splits"], name)
             assert rows["id"].tolist() == ids[name]
             assert not set(rows["id"]) & set(ids["test"])
     finally:
@@ -80,21 +80,21 @@ def test_load_dev_does_not_open_test_dir(written):
 def test_load_dev_refuses_test(written):
     dirs, _ = written
     with pytest.raises(ValueError):
-        split.load_dev(dirs["processed"], dirs["splits"], "test")
+        split.load_symptom_dev(dirs["processed"], dirs["splits"], "test")
 
 
 def test_processed_has_no_test_rows(written):
     dirs, ids = written
-    processed = pd.read_parquet(dirs["processed"] / split.PROCESSED_FILE)
+    processed = pd.read_parquet(dirs["processed"] / split.SYMPTOM_PROCESSED_FILE)
     assert not set(processed["id"]) & set(ids["test"])
 
 
 def test_load_test_stops_on_hash_mismatch(written):
     dirs, ids = written
-    assert split.load_test(dirs["test"], dirs["splits"])["id"].tolist() == ids["test"]
-    (dirs["test"] / split.TEST_FILE).write_bytes(b"changed")
+    assert split.load_symptom_test(dirs["test"], dirs["splits"])["id"].tolist() == ids["test"]
+    (dirs["test"] / split.SYMPTOM_TEST_FILE).write_bytes(b"changed")
     with pytest.raises(SplitError):
-        split.load_test(dirs["test"], dirs["splits"])
+        split.load_symptom_test(dirs["test"], dirs["splits"])
 
 
 def test_only_evaluation_code_references_test_data():

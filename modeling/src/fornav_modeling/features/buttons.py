@@ -1,22 +1,26 @@
-# 버튼 입력 → 피처 벡터. 학습(kaggle_triage 표준 테이블의 행)과 서빙(predict.py)이 이 함수 하나를 쓴다.
-# 입력은 백엔드 Intake 필드 이름(snake_case)의 dict다. 통증 점수·의식 상태·나이대·성별·손상 여부는 백엔드 Intake의 선택 필드다
-# (백엔드 backlog 10). 프론트는 아직 보내지 않아 대개 비어 있다.
+# 버튼 입력 → 피처 벡터. 학습(kaggle_symptom 표준 테이블·버튼 조합 표의 행)과 서빙(predict.py)이 이 함수 하나를 쓴다.
+# 입력은 백엔드 Intake 필드 이름(snake_case)의 dict다. 손상 여부는 백엔드 Intake의 선택 필드다(백엔드 backlog 10).
+# 통증 점수·의식 상태·나이대·성별은 지운 응급도 모델의 피처였다(backlog 15). 백엔드 Intake에 없어 서빙에서는 늘 NaN이지만,
+# 진료과 모델 A가 이 순서로 학습했으므로 자리와 인코딩을 그대로 둔다(줄이려면 다시 학습해 버전을 올린다).
 # 피처 순서는 FEATURE_NAMES로 고정한다. 순서나 인코딩을 바꾸면 학습한 모델과 맞지 않으므로 모델 버전을 올린다.
 # 값을 모르면(키가 없거나 None) NaN으로 둔다. 원본에 없는 발생 시점(onset)은 학습 데이터 전체가 NaN이다.
 
 import math
 from collections.abc import Iterable, Mapping
-from typing import Any, get_args
+from typing import Any, Literal, get_args
 
 import numpy as np
 
-from fornav_modeling.schema import BODY_PARTS, ONSETS, SYMPTOMS, AgeGroup, Mental, Sex
+from fornav_modeling.schema import BODY_PARTS, ONSETS, SYMPTOMS
 
-# 순서 있는 값은 튜플 순서가 곧 피처 값(0, 1, 2, …)이다. 열거값은 schema.py(백엔드 vocab.py와 같은 값)에 있다.
+# 순서 있는 값은 튜플 순서가 곧 피처 값(0, 1, 2, …)이다. 부위·증상·발생 시점은 schema.py(백엔드 vocab.py와 같은 값)에 있다.
+# 아래 셋은 백엔드에서 지운 값이라(backend 26) 인코딩만 여기에 둔다.
+AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
+Sex = Literal["female", "male"]
+Mental = Literal["alert", "verbal", "pain", "unresponsive"]  # AVPU
 MENTALS: tuple[Mental, ...] = get_args(Mental)
 AGE_GROUPS: tuple[AgeGroup, ...] = get_args(AgeGroup)
 SEXES: tuple[Sex, ...] = get_args(Sex)
-_AGE_GROUP_LOWER = (0, 30, 45, 65)  # AGE_GROUPS 각 구간의 하한(이상)
 
 FEATURE_NAMES: tuple[str, ...] = (
     *(f"body_{b}" for b in BODY_PARTS),  # 여러 개 선택 → 0/1
@@ -28,12 +32,6 @@ FEATURE_NAMES: tuple[str, ...] = (
     "sex_male",  # female 0, male 1
     "injury",  # 손상(외상) 여부 0/1
 )
-
-
-def age_to_group(age: float) -> AgeGroup:
-    if math.isnan(age) or age < 0:
-        raise ValueError(f"나이가 올바르지 않다: {age!r}")
-    return next(g for g, lower in zip(reversed(AGE_GROUPS), reversed(_AGE_GROUP_LOWER), strict=True) if age >= lower)
 
 
 def featurize(intake: Mapping[str, Any]) -> list[float]:

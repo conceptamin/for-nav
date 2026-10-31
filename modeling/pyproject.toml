@@ -1,7 +1,7 @@
 [project]
 name = "for-nav-modeling"
 version = "0.1.0"
-description = "울산 외국인 의료 내비게이터 응급도·진료과 모델과 학습 데이터"
+description = "울산 외국인 의료 내비게이터 진료과 모델과 학습 데이터"
 requires-python = ">=3.12"
 # 백엔드가 경로 의존성으로 설치할 때 받는 것은 predict가 import하는 것뿐이다(backlog 11).
 # 학습·평가 의존성은 train 그룹에 둔다. 의존성 그룹은 이 폴더에서 uv sync할 때만 설치된다
@@ -12,11 +12,9 @@ dependencies = [
 
 [dependency-groups]
 train = [
-    "openpyxl==3.1.5",
     "pandas==3.1.0",
     "pyarrow==26.0.0",
     "scikit-learn==1.9.1",
-    "shap==0.54.1",
 ]
 dev = [
     "pytest==9.1.1",
