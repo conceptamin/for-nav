@@ -12,8 +12,8 @@
 불러올 주소는 코드에 적지 않고 `--dart-define=APP_URL=`로 넘긴다. 이 주소의 **출처**(scheme·host·port)가 "앱 안"이고, 그 밖은 모두 외부 앱으로 연다.
 
 ```sh
-# 다른 터미널: 웹 개발 서버(http://localhost:5181)
-cd app-front && npm run dev
+# 다른 터미널: 웹 개발 서버. Android 에뮬레이터는 IPv4로 붙으므로 127.0.0.1에 연다
+cd app-front && npm run dev -- --host 127.0.0.1
 
 cd app
 fvm install          # 처음 한 번
@@ -26,6 +26,7 @@ fvm flutter run -d <시뮬레이터> --dart-define=APP_URL=http://localhost:5181
 fvm flutter run -d <에뮬레이터> --dart-define=APP_URL=http://10.0.2.2:5181
 ```
 
+- Vite는 기본으로 `localhost`를 IPv6 `[::1]`에만 열 수 있다. 그러면 iOS 시뮬레이터는 되지만 Android 에뮬레이터는 `10.0.2.2`(호스트의 127.0.0.1)로 닿지 않아 오프라인 안내가 뜬다. 위처럼 `--host 127.0.0.1`로 띄우면 둘 다 된다.
 - 확인 화면을 바로 열려면 `APP_URL=http://localhost:5181/__host`처럼 경로를 붙인다. 출처는 같으므로 동작은 같다.
 - 같은 Wi-Fi의 실기기는 웹을 `npm run dev -- --host`로 띄우고 `APP_URL=http://<맥 IP>:5181`.
 - `APP_URL`을 빠뜨리면 앱이 안내 문구 한 장만 보인다.
@@ -60,11 +61,11 @@ fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
 
 ## 확인 방법
 
-1. 위 "실행"으로 `APP_URL=…/__host`를 연다. "호스트: 있음 (webview_flutter)", "init 받음: 예", platform·appVersion·locale·insets가 기기 값인지 본다.
+1. 위 "실행"으로 `APP_URL=…/__host`를 연다. "호스트: 있음 (webview_flutter)", "init 받음: 예", platform·appVersion·locale·insets가 기기 값인지 본다. insets.top은 상태 표시줄과 화면 카메라 구멍 중 큰 쪽이다(Pixel 7 에뮬레이터는 51.8).
 2. "119" → 전화 앱(Android 에뮬레이터는 다이얼러. iOS 시뮬레이터에는 전화 앱이 없어 열리지 않고 로그에 `openExternal 실패`가 남는다).
 3. "카카오맵" → 외부 브라우저. WebView 안에 카카오맵이 뜨면 실패다.
 4. Android 뒤로 가기: 웹 이력이 있으면 한 화면 뒤로, 첫 화면에서는 앱이 뒤로 간다.
-5. 웹 개발 서버를 끄고(또는 비행기 모드로) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
+5. 비행기 모드로(iOS 시뮬레이터는 웹 개발 서버를 끄고) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
 
 ## 하지 않는 것(다른 항목)
 
