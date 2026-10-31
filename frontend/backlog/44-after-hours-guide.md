@@ -67,10 +67,12 @@ S-07 `/result`에서 밤·휴일 안내는 노랑 상자의 "지도에서 진료
 
 ### 후속 변경: 접힌 버튼으로 바꾸고 E-Gen을 뺀다 (2026-10-31 사용자 결정)
 - 이유: 펼친 카드가 `/result`를 다시 복잡하게 만든다(36과 같은 문제). 사용자가 "밤이나 휴일이라면"을 버튼으로 두고 누르면 설명만 나오게, E-Gen은 빼라고 정했다
-- `/result`: 카드 대신 `🌙 밤이나 휴일이라면 ›` 보조 버튼(`.btn.secondary.block`) 하나. 누르면 `⌄`로 바뀌고 바로 아래 카드에 두 줄(📞 `ah119`, 🏪 `ahStore`)이 나온다. 다시 누르면 접힌다. 처음에는 접혀 있다. 동의 화면(S-02)의 "전문 보기" 펼치기와 같은 방식(`aria-expanded`, `›`/`⌄`, 움직임 없음)이라 새 클래스·`design.md` 변경이 없다
+- `/result`: 카드 대신 `🌙 밤이나 휴일이라면` 보조 버튼(`.btn.secondary.block`) 하나. 처음에는 같은 화면에서 펼치는 버튼(동의 화면 "전문 보기" 방식)으로 만들었다가, 사용자가 "전화 예약 문장처럼 페이지를 띄워 달라"고 해서 새 경로 `/after-hours`로 옮기는 링크로 바꿨다(같은 날)
+- `/after-hours`(새 경로, 화면 ID 없음. `/guide`와 같은 고정 문구 화면): 제목(`ahTitle`), 카드 둘(📞 `ah119`, 🏪 `ahStore`), 아래 `심해지면 119`(`Worse119`). 새 문구 키는 없다. `GuidePage` 옆(`pages/worker/CenterRequest.tsx`)에 `AfterHoursPage`로 두고, `frontend/src/main.tsx`와 `app-front/src/main.tsx`(공유 import) 경로 표에 함께 더했다. 앱 바 ←는 기본(`/home`) 대신 `/result`로 돌아간다(`useScreenBar`의 `onBack`. 이 화면은 S-07에서만 연다)
+- 확인(페이지일 때): `npm run build`·`cd app-front && npm run build` 통과. 360px 단독 모드에서 ko `/result` 버튼 → `/after-hours`(제목·카드 2개·심해지면 119, 탭 제목 "밤이나 휴일이라면 · for nav") → ← → `/result`. vi·ar(RTL)에서 `/after-hours` 가로 넘침 없음, ar `/result` 버튼 높이 48px 한 줄·글자 잘림 없음
 - E-Gen: `EGEN_HOSPITAL_URL`, 문구 키 `ahEgen`·`ahEgenBtn`(20개 언어), `guide6b`의 E-Gen 문장, `README.md`의 E-Gen 주소를 뺐다. 위 "사실 근거"의 E-Gen 확인 기록은 남겨 둔다(다시 넣을 때 쓴다)
 - `/guide` 6단계는 그대로 펼친 단락이다(다른 단계와 같은 모양)
-- 확인: `npm run build`·`cd app-front && npm run build` 통과. 360px 단독 모드 `/result`에서 ko는 처음에 접혀 있고(`aria-expanded="false"`, 설명 없음), 누르면 `⌄`와 두 줄이 나오고, 다시 누르면 접힌다. vi·ar(RTL)에서 버튼 높이 48px 한 줄, 글자 잘림·가로 넘침 없음. 화면 어디에도 E-Gen 링크·문구가 없다. `/guide`(ar) 6단계에 E-Gen 문장이 없다
+- 확인(펼치는 버튼일 때): `npm run build`·`cd app-front && npm run build` 통과. 360px `/result` ko·vi·ar(RTL)에서 펼치기·접기, 글자 잘림·가로 넘침 없음. 화면 어디에도 E-Gen 링크·문구가 없다. `/guide`(ar) 6단계에 E-Gen 문장이 없다
 
 ## 메모
 - 43(응급 판정 제거)과의 관계: 이 묶음은 판정 결과와 관계없이 늘 보이는 고정 안내다. "어디로 갈지 모르겠으면 119에 물어보세요"로 판단을 119 상담 인력(의사·간호사·응급구조사)에게 넘긴다. 43이 빼는 `emInterpret`("119는 통역을 연결해 줄 수 있습니다")를 `ah119`에 다시 담을지는 119 외국어 통역(3자 통화) 운영을 확인한 뒤 정한다
