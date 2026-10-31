@@ -9,14 +9,13 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Chip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
 import { canResume, useCenterLink } from '../../components/centerLink';
-import { CenterHoursNotice, MyCaseStatus, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
-import { useOpenCenterSheet, useScreenBar } from '../../components/WorkerLayout';
+import { CenterHoursNotice, MyCaseRow, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
+import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, formatIsoDate, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { logoutWorker } from '../../api/auth';
 import { isChatAvailable } from '../../api/chat';
-import { hasUnread } from '../../domain/centerCase';
 import type { RequestType } from '../../domain/templates';
 import type { Lang } from '../../domain/vocab';
 import { LOCALES, SEXES } from '../../domain/vocab';
@@ -122,14 +121,15 @@ export function CenterRequestPage() {
 }
 
 /**
- * 보낸 요청 하나의 센터 연락(backlog 44). 버튼을 눌러야 하단 채팅 시트를 연다(보낸 직후 저절로 열지 않는다, backlog 52).
+ * 보낸 요청 하나의 센터 연락(backlog 44). 버튼을 눌러야 하단 채팅 시트를 그 요청의 대화로 연다(보낸 직후 저절로 열지 않는다, backlog 52·53).
  * 채팅·통화는 시트가 맡아 페이지에는 패널을 두지 않는다(같은 요청의 연결이 둘 생기지 않게). 단독 모드(토큰 없음)면 안내 한 줄
  */
 function CenterTalk({ caseId }: { caseId: string }) {
   const app = useApp();
   const { t } = useT();
-  const openSheet = useOpenCenterSheet();
+  const { openCase } = useCenterLink();
   const online = Boolean(app.chatTokens[caseId]) && isChatAvailable();
+  const openSheet = () => openCase(caseId);
   if (!online) return <div className="notice info">{t('talkOffline')}</div>;
   return (
     <button type="button" className="btn block" onClick={openSheet}>
@@ -246,39 +246,12 @@ export function MyPage() {
       {app.myCaseIds.length > 0 && (
         <section className="card">
           <h2>{t('myCases')}</h2>
-          {/* 줄마다 보낸 날·처리 상태·새 메시지(backlog 46). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
+          {/* 줄마다 보낸 날·처리 상태·안 읽은 수(backlog 46·53). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
               토큰이 없는 요청(backlog 46 이전에 세션이 끝나 열쇠를 잃은 것, 단독 모드)과 서버가 모르는 요청은 누를 수 없다 */}
           <div className="stack my-cases">
-            {app.myCaseIds.map((id) => {
-              const view = feed.cases[id];
-              const sentAt = app.caseSentAt[id];
-              const body = (
-                <>
-                  <span>
-                    📨 <strong>{id}</strong>
-                    {sentAt && (
-                      <span className="small muted">
-                        {' '}
-                        · {t('myCaseSent')} {formatIsoDate(new Date(sentAt).toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }), lang)}
-                      </span>
-                    )}
-                  </span>
-                  <span className="my-case-state">
-                    {view && <MyCaseStatus status={view.status} />}
-                    {hasUnread(view, app.seenCenterMessages[id]) && <span className="pill unread">{t('caseNewMsg')}</span>}
-                  </span>
-                </>
-              );
-              return canResume(feed, id, app.chatTokens[id]) ? (
-                <button key={id} type="button" className="row link my-case" onClick={() => openCase(id)}>
-                  {body}
-                </button>
-              ) : (
-                <div key={id} className="row link my-case">
-                  {body}
-                </div>
-              );
-            })}
+            {app.myCaseIds.map((id) => (
+              <MyCaseRow key={id} id={id} onOpen={canResume(feed, id, app.chatTokens[id]) ? () => openCase(id) : undefined} />
+            ))}
           </div>
           {feed.failed && <div className="notice info">{t('caseStatusFailed')}</div>}
         </section>
