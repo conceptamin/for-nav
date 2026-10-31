@@ -320,9 +320,9 @@ export const id: Record<MessageKey, string> = {
   guide3b: 'Tunjukkan layar "Laporan untuk dokter". Katakan kapan mulainya dan apakah terjadi di tempat kerja.',
   guide4t: '4. Bayar dan ambil obat',
   guide4b: 'Bayar di resepsionis. Bawa resep ke apotek (약국) terdekat. Simpan kuitansinya.',
-  guide5t: '5. Jika terjadi di tempat kerja',
+  guide5t: 'Jika terjadi di tempat kerja',
   guide5b: 'Catat kapan, di mana, dan bagaimana kejadiannya. Anda bisa bertanya tentang asuransi kecelakaan kerja. Tanya pusat bantuan jika perlu bantuan.',
-  guide6t: '6. Pada malam hari atau hari libur',
+  guide6t: 'Pada malam hari atau hari libur',
   guide6b: 'Jika klinik di dekat Anda tutup, telepon 119 dan tanyakan harus ke mana. Siang dan malam, 119 memberi tahu rumah sakit dan apotek yang buka sekarang serta memberi konsultasi medis lewat telepon. Banyak minimarket 24 jam menjual obat dasar.',
   guideCheck: 'Detail bisa berbeda di setiap rumah sakit. Silakan tanyakan ke rumah sakit atau pusat bantuan.',
 };

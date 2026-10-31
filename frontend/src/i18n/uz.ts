@@ -320,9 +320,9 @@ export const uz: Record<MessageKey, string> = {
   guide3b: '"Shifokor uchun hisobot" ekranini koʻrsating. Qachon boshlanganini va ishda yuz berganini ayting.',
   guide4t: '4. Toʻlov va dori olish',
   guide4b: 'Qabulxonada toʻlang. Retseptni yaqin dorixonaga (약국) olib boring. Cheklarni saqlab qoʻying.',
-  guide5t: '5. Agar ishda yuz bergan boʻlsa',
+  guide5t: 'Agar ishda yuz bergan boʻlsa',
   guide5b: 'Qachon, qayerda va qanday boʻlganini yozib qoʻying. Ishlab chiqarishdagi baxtsiz hodisa sugʻurtasi haqida soʻrashingiz mumkin. Yordam kerak boʻlsa, markazdan soʻrang.',
-  guide6t: '6. Kechasi yoki dam olish kunida',
+  guide6t: 'Kechasi yoki dam olish kunida',
   guide6b: 'Yaqin atrofdagi klinikalar yopiq boʻlsa, 119 ga qoʻngʻiroq qilib, qayerga borishni soʻrang. 119 kechayu kunduz hozir ochiq kasalxona va dorixonalarni aytib beradi va telefonda tibbiy maslahat beradi. 24 soat ishlaydigan koʻp doʻkonlarda oddiy dorilar sotiladi.',
   guideCheck: 'Tafsilotlar shifoxonaga qarab farq qilishi mumkin. Shifoxona yoki markazdan aniqlang.',
 };

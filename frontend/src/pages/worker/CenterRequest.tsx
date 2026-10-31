@@ -305,20 +305,24 @@ export function MyPage() {
 // ---------------------------------------------------------------------------
 export function GuidePage() {
   const { t } = useT();
-  const sections: [MessageKey, MessageKey][] = [
+  // 1~4는 차례(번호는 문구 안), 5·6은 차례가 아니라 덧붙이는 안내라 번호 대신 아이콘을 앞에 둔다(backlog 53)
+  const sections: [MessageKey, MessageKey, string?][] = [
     ['guide1t', 'guide1b'],
     ['guide2t', 'guide2b'],
     ['guide3t', 'guide3b'],
     ['guide4t', 'guide4b'],
-    ['guide5t', 'guide5b'],
-    ['guide6t', 'guide6b'],
+    ['guide5t', 'guide5b', '🦺'],
+    ['guide6t', 'guide6b', '🌙'],
   ];
   return (
     <div>
       <h1>{t('guideTitle')}</h1>
-      {sections.map(([title, body]) => (
+      {sections.map(([title, body, icon]) => (
         <section className="card" key={title}>
-          <h2>{t(title)}</h2>
+          <h2>
+            {icon && `${icon} `}
+            {t(title)}
+          </h2>
           <p>{t(body)}</p>
         </section>
       ))}

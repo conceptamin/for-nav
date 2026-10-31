@@ -320,9 +320,9 @@ export const fr: Record<MessageKey, string> = {
   guide3b: 'Montrez l’écran « Rapport pour le médecin ». Dites quand ça a commencé et si c’est arrivé au travail.',
   guide4t: '4. Payer et prendre les médicaments',
   guide4b: 'Payez à l’accueil. Apportez l’ordonnance à une pharmacie (약국) proche. Gardez vos reçus.',
-  guide5t: '5. Si c’est arrivé au travail',
+  guide5t: 'Si c’est arrivé au travail',
   guide5b: 'Notez quand, où et comment c’est arrivé. Vous pouvez demander l’assurance accident du travail. Demandez au centre si vous avez besoin d’aide.',
-  guide6t: '6. La nuit ou un jour férié',
+  guide6t: 'La nuit ou un jour férié',
   guide6b: 'Si les cliniques du quartier sont fermées, appelez le 119 et demandez où aller. Jour et nuit, le 119 vous indique les hôpitaux et pharmacies ouverts maintenant et donne des conseils médicaux par téléphone. Beaucoup de supérettes ouvertes 24 h/24 vendent des médicaments de base.',
   guideCheck: 'Cela peut changer selon l’hôpital. Vérifiez auprès de l’hôpital ou du centre, s’il vous plaît.',
 };

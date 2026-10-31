@@ -321,9 +321,9 @@ export const en = {
   guide3b: 'Show the "Report for the doctor" screen. Tell them when it started and if it happened at work.',
   guide4t: '4. Pay and get medicine',
   guide4b: 'Pay at reception. Take the prescription to a pharmacy (약국) nearby. Keep your receipts.',
-  guide5t: '5. If it happened at work',
+  guide5t: 'If it happened at work',
   guide5b: 'Write down when, where and how it happened. You can ask about industrial accident insurance. Ask the centre if you need help.',
-  guide6t: '6. At night or on a holiday',
+  guide6t: 'At night or on a holiday',
   guide6b: 'If local clinics are closed, call 119 and ask where to go. Day and night, 119 tells you which hospitals and pharmacies are open now and gives medical advice by phone. Many 24-hour convenience stores sell basic medicine.',
   guideCheck: 'Details may differ by hospital. Please check with the hospital or the centre.',
 };
