@@ -159,6 +159,8 @@ def _case_from_body(body: str) -> CenterCase | None:
         data["category"] = default_category(data.get("coveragePath"), request_types if isinstance(request_types, list) else [])
     data.setdefault("actions", [])
     data.setdefault("referredTo", [])
+    # frontend backlog 42 전 본문에는 국적이 없다
+    data.setdefault("nationality", None)
     try:
         return CenterCase.model_validate(data)
     except ValidationError as exc:

@@ -49,7 +49,7 @@ from app.settings import settings
 from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
 from app.templates.translate import translate_line, translate_message, translate_note
-from app.vocab import INDUSTRIES, LANGS, District, Lang
+from app.vocab import CASE_CATEGORIES, INDUSTRIES, LANGS, District, Lang
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +104,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
             category=default_category(coverage_path, req.request_types),
             actions=[],
             referred_to=[],
+            nationality=req.nationality,
             summary_ko=summary.ko,
             original_native=summary.native,
             consented_items=req.consented_items,
@@ -424,6 +425,26 @@ def _count_by[K](recs: list[StatRecord], keys: list[K], get: Callable[[StatRecor
     return [StatCell(key=str(k), n=_mask(sum(1 for r in recs if get(r) == k))) for k in keys]
 
 
+def _last_six_months(now: datetime) -> list[str]:
+    """지금부터 거슬러 최근 6개월 키(YYYY-MM, Asia/Seoul, 오래된 달부터)."""
+    k = now.astimezone(clock.SEOUL)
+    base = k.year * 12 + k.month - 1
+    return [f"{m // 12:04d}-{m % 12 + 1:02d}" for m in range(base - 5, base + 1)]
+
+
+def _month_key(d: datetime) -> str:
+    return d.astimezone(clock.SEOUL).strftime("%Y-%m")
+
+
+def _count_nationalities(recs: list[StatRecord]) -> list[StatCell]:
+    """있는 국적만 많은 순(같으면 코드 순). 국적이 없는 레코드는 unknown. 가린 칸은 수가 작아 끝에 온다."""
+    counts: dict[str, int] = {}
+    for r in recs:
+        key = r.nationality or "unknown"
+        counts[key] = counts.get(key, 0) + 1
+    return [StatCell(key=k, n=_mask(n)) for k, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
+
+
 STATS_DAYS = (30, 90, 180)
 
 
@@ -432,8 +453,10 @@ def stats(days: int = 90, district: District | None = None) -> CenterStats:
     """C-03: 기간(30·90·180일)·구군별 익명 집계."""
     if days not in STATS_DAYS:
         raise HTTPException(status_code=422, detail=f"days는 {STATS_DAYS} 중 하나여야 한다")
-    since = clock.now() - timedelta(days=days)
-    recs = [r for r in store.stat_records if r.date >= since and (district is None or r.district == district)]
+    now = clock.now()
+    since = now - timedelta(days=days)
+    in_district = [r for r in store.stat_records if district is None or r.district == district]
+    recs = [r for r in in_district if r.date >= since]
     total = len(recs)
     after = sum(1 for r in recs if r.after_hours)
     shown = total >= MIN_CELL
@@ -446,6 +469,10 @@ def stats(days: int = 90, district: District | None = None) -> CenterStats:
         after_hours_rate=rate(after),
         work_related_rate=rate(sum(1 for r in recs if r.work_related == "yes")),
         no_insurance_rate=rate(sum(1 for r in recs if r.insurance != "yes")),
+        # 월별은 기간 필터와 무관하게 최근 6개월(구·군 필터는 따른다)
+        by_month=_count_by(in_district, _last_six_months(now), lambda r: _month_key(r.date)),
+        by_category=_count_by(recs, CASE_CATEGORIES, lambda r: r.category),
+        by_nationality=_count_nationalities(recs),
         by_industry=_count_by(recs, list(INDUSTRIES), lambda r: r.industry),
         by_language=_count_by(recs, LANGS, lambda r: r.language),
         by_insurance=_count_by(recs, ["yes", "no", "unknown"], lambda r: r.insurance),

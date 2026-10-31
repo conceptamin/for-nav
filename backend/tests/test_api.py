@@ -352,6 +352,64 @@ def test_unknown_case_is_404():
 
 
 @both_stores
+def test_send_case_nationality():
+    """국적은 두 글자 대문자만 받고, 보내지 않으면 null이다(frontend backlog 42)."""
+    assert _send().json()["case"]["nationality"] is None
+    case = _send(nationality="KR").json()["case"]
+    assert case["nationality"] == "KR"
+    assert client.get(f"/api/center/cases/{case['id']}").json()["nationality"] == "KR"
+    for bad in ["kr", "KOR", "Korea", "K", ""]:
+        assert _send(nationality=bad).status_code == 422, bad
+
+
+def test_stats_report_cells(monkeypatch):
+    """월별 6칸(오래된 달부터, 8~10월 봉우리), 분야·국적 칸. 서버 시각과 원천을 고정한다."""
+    fixed = datetime(2026, 10, 26, 10, 0, tzinfo=clock.SEOUL)
+    monkeypatch.setattr(clock, "now", lambda: fixed)
+    monkeypatch.setattr(center, "store", MemoryStore(fixed))
+    out = client.get("/api/center/stats", params={"days": 30}).json()
+    months = {c["key"]: c["n"] for c in out["byMonth"]}
+    assert list(months) == ["2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"]
+    # 기간을 30일로 좁혀도 월별은 최근 6개월 전체이고, 합은 원천 329건
+    assert sum(months.values()) == 329
+    assert min(months["2026-08"], months["2026-09"], months["2026-10"]) > max(months["2026-05"], months["2026-06"], months["2026-07"])
+
+    out = client.get("/api/center/stats", params={"days": 180}).json()
+    assert [c["key"] for c in out["byCategory"]] == ["medical", "insurance", "cost"]
+    nat = out["byNationality"]
+    assert nat[0]["key"] == "ID"
+    counts = [c["n"] for c in nat if c["n"] is not None]
+    assert counts == sorted(counts, reverse=True)
+    # 5건 미만 국적은 가리고 끝에 온다
+    assert {c["key"] for c in nat if c["n"] is None} >= {"KG", "TL", "TJ", "MA"}
+    assert all(c["n"] is None for c in nat[nat.index(next(c for c in nat if c["n"] is None)) :])
+    # 언어는 국적의 모국어: 카자흐어·우즈베크어도 센다
+    langs = {c["key"]: c["n"] for c in out["byLanguage"]}
+    assert langs["kk"] and langs["uz"] and langs["ru"]
+
+
+def test_stats_counts_russian_language(monkeypatch, center_store):
+    """러시아어 레코드는 byLanguage의 ru 칸에 센다(20개 언어 전부를 센다)."""
+    now = clock.now()
+    rec = StatRecord(
+        date=now,
+        district="dong",
+        industry="other",
+        language="ru",
+        insurance="yes",
+        after_hours=False,
+        request_type="interpret",
+        work_related="no",
+        category="medical",
+        nationality=None,
+    )
+    monkeypatch.setattr(center_store, "stat_records", [rec] * 5)
+    out = client.get("/api/center/stats", params={"days": 30}).json()
+    assert {c["key"]: c["n"] for c in out["byLanguage"]}["ru"] == 5
+    assert out["byNationality"] == [{"key": "unknown", "n": 5}]
+
+
+@both_stores
 def test_stats_shape():
     out = client.get("/api/center/stats", params={"days": 180}).json()
     # 통계 원천 329건은 최근 6개월에 걸쳐 있어 180일 밖으로 나가는 날이 몇 건 있을 수 있다
@@ -375,6 +433,8 @@ def test_stats_hides_small_cells(monkeypatch, center_store):
         after_hours=True,
         request_type="booking",
         work_related="yes",
+        category="insurance",
+        nationality="VN",
     )
     monkeypatch.setattr(center_store, "stat_records", [rec] * 6 + [StatRecord(**{**rec.__dict__, "industry": "other"})])
     out = client.get("/api/center/stats", params={"days": 30}).json()
@@ -386,6 +446,9 @@ def test_stats_hides_small_cells(monkeypatch, center_store):
         "construction": None,
         "other": None,
     }
+
+    assert {c["key"]: c["n"] for c in out["byCategory"]} == {"medical": None, "insurance": 7, "cost": None}
+    assert out["byNationality"] == [{"key": "VN", "n": 7}]
 
     out = client.get("/api/center/stats", params={"days": 30, "district": "nam"}).json()
     assert out["total"] is None

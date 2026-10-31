@@ -12,7 +12,7 @@ from app.rules.coverage import is_after_hours, route_coverage
 from app.rules.urgency import default_category, rate_urgency
 from app.schemas import CaseStatus, CenterCase, CenterSummaryInput, ContactMethod, CoverageInput, Intake, RequestType
 from app.templates.reports import build_center_summary
-from app.vocab import BodyPart, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
+from app.vocab import BodyPart, CaseCategory, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
 
 MASK = 0xFFFFFFFF
 
@@ -306,6 +306,8 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
                 category=default_category(coverage.path, request_types),
                 actions=[],
                 referred_to=[],
+                # mock 사례는 국적을 보내지 않은 것으로 둔다(국적 분포는 통계 원천이 맡는다)
+                nationality=None,
                 summary_ko=summary.ko,
                 original_native=summary.native,
                 consented_items=["증상", "부위", "시작 시점", "경위", "자유 입력 메모"],
@@ -322,15 +324,25 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
 
 
 # ---------------------------------------------------------------------------
-# 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외)만 둔다. API로 원천을 내보내지 않는다.
-# 날짜·구군·언어·시간외·요청 종류 비율은 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)의 분포를 따른 합성값이다.
-# 업종·보험·업무 관련은 회신에 없어 이전 가중치 그대로다.
+# 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외·요청 종류·업무 관련·분야·국적)만 둔다. API로 원천을 내보내지 않는다.
+# 날짜·구군·시간외·요청 종류 비율과 국적 건수는 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)을 따른 합성값이다.
+# 국적은 회신 건수 그대로(329건을 섞어 나눈다)이고, 언어는 회신에 없어 국적의 모국어로 정한다(사용자 결정 2026-10-31, frontend backlog 42).
+# 업종·보험·업무 관련·분야는 회신에 건수가 없어 가정한 가중치다.
 # ---------------------------------------------------------------------------
 STAT_COUNT = 329
 # 최근 6개월 월별 건수(오래된 달부터, 마지막이 이번 달)
 STAT_MONTH_W = [16, 25, 41, 85, 97, 65]
-# 국적 → 언어: 러시아·카자흐스탄·우즈베키스탄·키르기스스탄·타지키스탄 → 러시아어, 인도네시아, 스리랑카 → 싱할라어, 필리핀 → 영어·필리핀어
-STAT_LANG_W: list[tuple[Lang, float]] = [("ru", 44), ("id", 25), ("si", 15), ("en", 8), ("tl", 4), ("vi", 2), ("ko", 2)]
+# 국적별 건수(합 329 = STAT_COUNT)
+STAT_NATIONALITY_N: list[tuple[str, int]] = [
+    ("ID", 81), ("RU", 61), ("KZ", 57), ("LK", 48), ("PH", 40), ("UZ", 24), ("VN", 6), ("KR", 5), ("KG", 2), ("TL", 2), ("TJ", 2), ("MA", 1),
+]  # fmt: skip
+# 국적 → 언어(모국어). 앱에 없는 언어는 가까운 앱 언어로: 타지키스탄 → 러시아어, 동티모르(테툼어) → 영어. 필리핀은 영어 2 : 필리핀어 1
+STAT_NATIONALITY_LANG: dict[str, list[tuple[Lang, float]]] = {
+    "ID": [("id", 1)], "RU": [("ru", 1)], "KZ": [("kk", 1)], "LK": [("si", 1)], "PH": [("en", 2), ("tl", 1)], "UZ": [("uz", 1)],
+    "VN": [("vi", 1)], "KR": [("ko", 1)], "KG": [("ky", 1)], "TL": [("en", 1)], "TJ": [("ru", 1)], "MA": [("ar", 1)],
+}  # fmt: skip
+# 분야: 회신은 세 분야로 집계한다고만 했고 건수는 없다. 요청 종류 가중치(제도 상담 15%)에 맞춘 가정값
+STAT_CATEGORY_W: list[tuple[CaseCategory, float]] = [("medical", 70), ("insurance", 20), ("cost", 10)]
 # 운영 시간 외 25건 + 주말 27건 = 52 / 329
 STAT_AFTER_HOURS = 52 / 329
 
@@ -360,22 +372,53 @@ class StatRecord:
     after_hours: bool
     request_type: RequestType
     work_related: YesNoUnknown
+    category: CaseCategory
+    # 국적 코드. 근로자가 고르지 않으면 None(mock 원천에는 없다)
+    nationality: str | None
+
+
+def shuffled_nationalities(r: Callable[[], float]) -> list[str]:
+    """회신 국적 건수를 레코드 수만큼 펼쳐 섞는다(Fisher–Yates, 끝에서부터). 건수가 회신과 정확히 같다."""
+    out = [code for code, n in STAT_NATIONALITY_N for _ in range(n)]
+    for i in range(len(out) - 1, 0, -1):
+        j = int(r() * (i + 1))
+        out[i], out[j] = out[j], out[i]
+    return out
 
 
 def build_stat_records(now: datetime) -> list[StatRecord]:
     r = rng(77)
+    # 분야·국적·언어는 두 번째 시드로 뒤에서 채운다(첫 시드의 값 순서를 지킨다)
+    r2 = rng(78)
+    nationalities = shuffled_nationalities(r2)
     out: list[StatRecord] = []
-    for _ in range(STAT_COUNT):
+    for n in range(STAT_COUNT):
+        date = stat_date(now, r())
+        district = weighted(r, DISTRICT_W)
+        industry = weighted(r, INDUSTRY_W)
+        # 언어 자리: 언어는 국적에서 정하지만, 뒤 항목 값이 바뀌지 않게 이 자리의 난수 하나는 그대로 쓴다
+        r()
+        insurance = weighted(r, INS_W)
+        after_hours = r() < STAT_AFTER_HOURS
+        request_type = weighted(r, REQ_W)
+        work_related = weighted(r, [("yes", 48), ("no", 34), ("unknown", 18)])
+        nationality = nationalities[n]
+        category = weighted(r2, STAT_CATEGORY_W)
+        langs = STAT_NATIONALITY_LANG[nationality]
+        # 언어가 하나뿐인 국적은 난수를 뽑지 않는다
+        language = weighted(r2, langs) if len(langs) > 1 else langs[0][0]
         out.append(
             StatRecord(
-                date=stat_date(now, r()),
-                district=weighted(r, DISTRICT_W),
-                industry=weighted(r, INDUSTRY_W),
-                language=weighted(r, STAT_LANG_W),
-                insurance=weighted(r, INS_W),
-                after_hours=r() < STAT_AFTER_HOURS,
-                request_type=weighted(r, REQ_W),
-                work_related=weighted(r, [("yes", 48), ("no", 34), ("unknown", 18)]),
+                date=date,
+                district=district,
+                industry=industry,
+                language=language,
+                insurance=insurance,
+                after_hours=after_hours,
+                request_type=request_type,
+                work_related=work_related,
+                category=category,
+                nationality=nationality,
             )
         )
     return out
