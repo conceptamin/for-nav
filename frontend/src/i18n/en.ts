@@ -237,6 +237,8 @@ export const en = {
   chatSend: 'Send',
   chatMe: 'Me',
   chatCenter: 'Centre',
+  chatRead: 'Read',
+  chatUnread: 'Not read',
   chatConnecting: 'Connecting…',
   chatReconnecting: 'Connection lost. Reconnecting…',
   chatStopped: 'This chat has ended. Please contact the centre another way.',

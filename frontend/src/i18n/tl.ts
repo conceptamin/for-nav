@@ -238,6 +238,8 @@ export const tl: Record<MessageKey, string> = {
   chatSend: 'Ipadala',
   chatMe: 'Ako',
   chatCenter: 'Center',
+  chatRead: 'Nabasa na',
+  chatUnread: 'Hindi pa nababasa',
   chatConnecting: 'Kumokonekta…',
   chatReconnecting: 'Naputol ang koneksyon. Muling kumokonekta…',
   chatStopped: 'Natapos na ang chat na ito. Pakikontak ang center sa ibang paraan.',

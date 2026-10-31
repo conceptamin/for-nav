@@ -225,6 +225,8 @@ export const ar: Record<MessageKey, string> = {
   chatSend: 'إرسال',
   chatMe: 'أنا',
   chatCenter: 'المركز',
+  chatRead: 'تمت القراءة',
+  chatUnread: 'لم تُقرأ',
   chatConnecting: 'جارٍ الاتصال…',
   chatReconnecting: 'انقطع الاتصال. جارٍ إعادة الاتصال…',
   chatStopped: 'انتهت هذه الدردشة. يرجى التواصل مع المركز بطريقة أخرى.',

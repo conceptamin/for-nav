@@ -238,6 +238,8 @@ export const zhCN: Record<MessageKey, string> = {
   chatSend: '发送',
   chatMe: '我',
   chatCenter: '中心',
+  chatRead: '已读',
+  chatUnread: '未读',
   chatConnecting: '正在连接…',
   chatReconnecting: '连接已断开，正在重新连接…',
   chatStopped: '此聊天已结束。请通过其他方式联系中心。',

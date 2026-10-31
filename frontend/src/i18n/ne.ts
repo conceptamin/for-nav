@@ -238,6 +238,8 @@ export const ne: Record<MessageKey, string> = {
   chatSend: 'पठाउनुहोस्',
   chatMe: 'म',
   chatCenter: 'केन्द्र',
+  chatRead: 'पढियो',
+  chatUnread: 'पढिएको छैन',
   chatConnecting: 'जोडिँदै…',
   chatReconnecting: 'जडान टुट्यो। फेरि जोडिँदै…',
   chatStopped: 'यो कुराकानी समाप्त भयो। कृपया अर्को तरिकाले केन्द्रलाई सम्पर्क गर्नुहोस्।',

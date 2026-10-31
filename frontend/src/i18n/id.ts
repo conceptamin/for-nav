@@ -238,6 +238,8 @@ export const id: Record<MessageKey, string> = {
   chatSend: 'Kirim',
   chatMe: 'Saya',
   chatCenter: 'Pusat',
+  chatRead: 'Dibaca',
+  chatUnread: 'Belum dibaca',
   chatConnecting: 'Menghubungkan…',
   chatReconnecting: 'Koneksi terputus. Menghubungkan ulang…',
   chatStopped: 'Obrolan ini telah berakhir. Silakan hubungi pusat dengan cara lain.',

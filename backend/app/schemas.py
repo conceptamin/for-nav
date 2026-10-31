@@ -298,11 +298,21 @@ class ChatMessage(CamelModel):
     at: str
 
 
-class ChatIn(CamelModel):
-    """클라이언트가 보내는 프레임. id·보낸 사람·시각은 서버가 정한다."""
+class ChatMessageIn(CamelModel):
+    """클라이언트가 보내는 글. id·보낸 사람·시각은 서버가 정한다."""
 
     type: Literal["message"]
     text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+
+
+class ChatReadIn(CamelModel):
+    """이 연결의 역할이 up_to(메시지 id)까지 읽었다(backlog 27)."""
+
+    type: Literal["read"]
+    up_to: Annotated[str, StringConstraints(pattern=r"^m-[1-9][0-9]{0,8}$")]
+
+
+ChatIn = Annotated[ChatMessageIn | ChatReadIn, Field(discriminator="type")]
 
 
 # ---------------------------------------------------------------------------

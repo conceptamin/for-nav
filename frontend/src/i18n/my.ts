@@ -238,6 +238,8 @@ export const my: Record<MessageKey, string> = {
   chatSend: 'ပို့ရန်',
   chatMe: 'ကျွန်ုပ်',
   chatCenter: 'စင်တာ',
+  chatRead: 'ဖတ်ပြီး',
+  chatUnread: 'မဖတ်ရသေး',
   chatConnecting: 'ချိတ်ဆက်နေသည်…',
   chatReconnecting: 'ချိတ်ဆက်မှု ပြတ်သွားသည်။ ပြန်ချိတ်ဆက်နေသည်…',
   chatStopped: 'ဤစကားပြောမှု ပြီးဆုံးသွားပါပြီ။ စင်တာကို အခြားနည်းဖြင့် ဆက်သွယ်ပါ။',

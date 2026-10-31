@@ -226,6 +226,8 @@ export const ko: Record<MessageKey, string> = {
   chatSend: '보내기',
   chatMe: '나',
   chatCenter: '센터',
+  chatRead: '읽음',
+  chatUnread: '안 읽음',
   chatConnecting: '연결 중…',
   chatReconnecting: '연결이 끊겼습니다. 다시 연결하는 중…',
   chatStopped: '대화를 이어갈 수 없습니다. 다른 방법으로 센터에 연락해 주세요.',
