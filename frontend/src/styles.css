@@ -27,7 +27,7 @@
   --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #0a1c1c; /* 민트 채움 위 글자. #73e1dc 위 11.3:1 · Lc 76.9. 흰 글자는 1.6:1이라 쓰지 않는다 */
   --on-danger: #ffffff; /* 빨강 바탕(119, 끊기) 위 글자 */
-  --on-brand-fg: #ffffff; /* 진한 틸(--brand-fg) 채움 위 글자. 안 읽은 수 배지(backlog 52). 7.5:1 */
+  --on-brand-fg: #ffffff; /* 진한 틸(--brand-fg) 채움 위 글자. 안 읽은 수 배지(backlog 53). 7.5:1 */
   --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
   --info: #0b4596; /* fg-informative-contrast, blue-900. 신규 상태 칩 글자 */
   --info-bg: #eff6ff; /* blue-100 */
@@ -731,7 +731,7 @@ a.brand-pill:active {
   stroke: none;
 }
 
-/* 안 읽은 센터 메시지 수 배지(backlog 52, SEED notification-badge Large). 말풍선 끝 쪽 위에 걸친다 */
+/* 안 읽은 센터 메시지 수 배지(backlog 53, SEED notification-badge Large). 말풍선 끝 쪽 위에 걸친다 */
 .bar-chat-badge {
   position: absolute;
   top: 2px;
@@ -881,7 +881,7 @@ a.brand-pill:active {
   margin-top: auto;
 }
 
-/* 채팅 목록(backlog 52)은 대화와 달리 위에서부터 쌓는다 */
+/* 채팅 목록(backlog 53)은 대화와 달리 위에서부터 쌓는다 */
 .sheet-body.list > :first-child {
   margin-top: 0;
 }
@@ -896,7 +896,7 @@ a.brand-pill:active {
   display: none;
 }
 
-/* 목록으로 ← (backlog 52). RTL에서는 끝 쪽을 가리킨다 */
+/* 목록으로 ← (backlog 53). RTL에서는 끝 쪽을 가리킨다 */
 :root[dir='rtl'] .sheet-back .sheet-icon {
   transform: scaleX(-1);
 }
@@ -1301,7 +1301,7 @@ button.my-case {
   gap: 4px;
 }
 
-/* 안 읽은 센터 메시지 수(backlog 52, SEED notification-badge Large): 독 채팅 아이콘과 요청 줄이 같이 쓴다.
+/* 안 읽은 센터 메시지 수(backlog 53, SEED notification-badge Large): 독 채팅 아이콘과 요청 줄이 같이 쓴다.
    119와 헷갈리지 않게 빨강이 아니라 진한 틸 바탕 + 흰 숫자이고, 유리 위에서 떠 보이게 흰 테를 두른다. 10 이상은 9+ */
 .count-badge {
   display: inline-grid;

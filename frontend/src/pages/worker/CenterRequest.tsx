@@ -1,11 +1,11 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기와 전송은 components/CenterSheet.tsx의 useSendCenterRequest가 한다(하단 채팅 시트와 같이 쓴다).
 // 브라우저 요약을 먼저 그리고 API 모드면 서버 결과로 바꾼다. 전송이 API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
-// 센터 연락 방법은 앱 안 통화(backlog 26)와 채팅(backlog 25) 둘뿐이다(backlog 29). 연락 방법은 묻지 않고, 보내면 하단 독의 채팅 아이콘과
-// 같은 화면 위 시트(backlog 39)를 열어 그 요청의 채팅을 보인다. 통화는 시트 머리의 📞로 바꾼다(backlog 44).
-// 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 시트를 열지 않고 안내 한 줄을 보인다.
+// 센터 연락 방법은 앱 안 통화(backlog 26)와 채팅(backlog 25) 둘뿐이다(backlog 29). 연락 방법은 묻지 않고, 보내면 전송 완료 화면을 보이고
+// 거기서 `💬 센터와 대화`를 눌러야 하단 독의 채팅 아이콘과 같은 화면 위 시트(backlog 39)가 그 요청의 채팅으로 열린다(backlog 44·52).
+// 통화는 시트 머리의 📞로 바꾼다. 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 버튼 대신 안내 한 줄을 보인다.
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Chip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
 import { canResume, useCenterLink } from '../../components/centerLink';
@@ -121,7 +121,7 @@ export function CenterRequestPage() {
 }
 
 /**
- * 보낸 요청 하나의 센터 연락(backlog 44). 보낸 직후 하단 채팅 시트를 그 요청의 대화로 열고(backlog 52), 닫은 뒤에는 버튼으로 다시 연다.
+ * 보낸 요청 하나의 센터 연락(backlog 44). 버튼을 눌러야 하단 채팅 시트를 그 요청의 대화로 연다(보낸 직후 저절로 열지 않는다, backlog 52·53).
  * 채팅·통화는 시트가 맡아 페이지에는 패널을 두지 않는다(같은 요청의 연결이 둘 생기지 않게). 단독 모드(토큰 없음)면 안내 한 줄
  */
 function CenterTalk({ caseId }: { caseId: string }) {
@@ -130,10 +130,6 @@ function CenterTalk({ caseId }: { caseId: string }) {
   const { openCase } = useCenterLink();
   const online = Boolean(app.chatTokens[caseId]) && isChatAvailable();
   const openSheet = () => openCase(caseId);
-  // 보낸 직후 한 번만 연다. openCase는 상태(feed)가 바뀔 때마다 새 함수라 의존에 넣지 않는다
-  useEffect(() => {
-    if (online) openCase(caseId);
-  }, [online, caseId]);
   if (!online) return <div className="notice info">{t('talkOffline')}</div>;
   return (
     <button type="button" className="btn block" onClick={openSheet}>
@@ -250,7 +246,7 @@ export function MyPage() {
       {app.myCaseIds.length > 0 && (
         <section className="card">
           <h2>{t('myCases')}</h2>
-          {/* 줄마다 보낸 날·처리 상태·안 읽은 수(backlog 46·52). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
+          {/* 줄마다 보낸 날·처리 상태·안 읽은 수(backlog 46·53). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
               토큰이 없는 요청(backlog 46 이전에 세션이 끝나 열쇠를 잃은 것, 단독 모드)과 서버가 모르는 요청은 누를 수 없다 */}
           <div className="stack my-cases">
             {app.myCaseIds.map((id) => (

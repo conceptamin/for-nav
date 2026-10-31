@@ -90,7 +90,7 @@ export function WorkerLayout() {
   // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetMounted, setSheetMounted] = useState(false);
-  // S-13·S-12·푸시가 고른 사례. 독 버튼으로 열면 비워 시트가 채팅 목록부터 보인다(backlog 46·52).
+  // S-13·S-12·푸시가 고른 사례. 독 버튼으로 열면 비워 시트가 채팅 목록부터 보인다(backlog 46·53).
   // 여는 차례마다 새 값이라 같은 사례를 다시 골라도 시트가 그 대화로 돌아간다
   const [sheetCase, setSheetCase] = useState<{ id: string | null }>({ id: null });
   const closeSheet = useCallback(() => setSheetOpen(false), []);
@@ -119,7 +119,7 @@ export function WorkerLayout() {
     [app.ready, app.myCaseIds, app.chatTokens],
   );
   const feed = useMyCasesFeed(refs);
-  // 독 채팅 아이콘의 숫자 배지(backlog 52): 사례마다 아직 보지 않은 센터 메시지 수를 더한다
+  // 독 채팅 아이콘의 숫자 배지(backlog 53): 사례마다 아직 보지 않은 센터 메시지 수를 더한다
   const unread = app.ready ? app.myCaseIds.reduce((n, id) => n + unreadCount(feed.cases[id], app.seenCenterMessages[id]), 0) : 0;
   const centerLink = useMemo<CenterLink>(
     () => ({

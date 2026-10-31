@@ -1,11 +1,11 @@
 // 센터 채팅 시트(backlog 39). 하단 독의 채팅 아이콘이 지금 화면 위에 연다. 페이지를 옮기지 않는다.
 // 보낸 요청이 없으면 요청(종류 → 보낼 내용 → 전송 동의 → 보내기)을 대화로 묻고, 보내면 같은 시트가 센터 채팅으로 이어진다.
-// 다시 붙을 수 있는 요청이 하나라도 있으면 독 아이콘으로 열 때 채팅 목록(새 요청 버튼 + 요청 줄)부터 보이고, 줄을 누르면 그 요청의 대화다(backlog 52).
+// 다시 붙을 수 있는 요청이 하나라도 있으면 독 아이콘으로 열 때 채팅 목록(새 요청 버튼 + 요청 줄)부터 보이고, 줄을 누르면 그 요청의 대화다(backlog 53).
 // S-13 요청 줄·S-12 전송·푸시 알림은 목록을 건너뛰고 그 요청의 대화를 연다. 머리의 ←로 목록, 📞로 통화 패널과 오간다.
 // 목록을 보는 동안에도 마지막으로 연 요청의 채팅·통화는 숨겨 둔 채 붙어 있다.
 // 부르는 쪽(WorkerLayout)은 한 번 연 시트를 닫아도 숨기기만 한다. 채팅 연결·통화가 끊기지 않게 하려는 것이다.
 // S-12 페이지(/center-request)와 전송·연락 문구를 같이 쓴다(useSendCenterRequest, workerChatLabels, workerCallLabels).
-// S-12에서 요청을 보내면 그 페이지도 이 시트를 연다(backlog 44). 시트는 가장 최근 요청의 채팅을 보이고, 📞로 통화로 바꿀 수 있다고 안내한다.
+// S-12 전송 완료 화면의 `💬 센터와 대화` 버튼도 이 시트를 그 요청의 대화로 연다(backlog 44·52·53). 시트는 📞로 통화로 바꿀 수 있다고 안내한다.
 // 흔한 메신저 틀이다(backlog 47): 머리(센터 마크·제목·요청 번호) / 대화 한 줄기 / 아래 고정 입력줄. 채팅 입력줄은 ChatPanel이 아래 칸에 그린다.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -34,7 +34,7 @@ export function MyCaseStatus({ status }: { status: CaseStatus }) {
   return <span className={`pill ${status}`}>{t(`caseStatus.${status}` as MessageKey)}</span>;
 }
 
-/** 안 읽은 센터 메시지 수 배지(backlog 52, SEED notification-badge Large). 10 이상은 9+. label은 화면 읽기 프로그램만 읽는다 */
+/** 안 읽은 센터 메시지 수 배지(backlog 53, SEED notification-badge Large). 10 이상은 9+. label은 화면 읽기 프로그램만 읽는다 */
 export function CountBadge({ n, label, className }: { n: number; label?: string; className?: string }) {
   return (
     <span className={className ? `count-badge ${className}` : 'count-badge'} aria-hidden={label ? undefined : true}>
@@ -45,7 +45,7 @@ export function CountBadge({ n, label, className }: { n: number; label?: string;
 }
 
 /**
- * 내 센터 요청 한 줄(backlog 46·52): 요청 번호·보낸 날·처리 상태·안 읽은 수. S-13 목록과 시트의 채팅 목록이 같이 쓴다.
+ * 내 센터 요청 한 줄(backlog 46·53): 요청 번호·보낸 날·처리 상태·안 읽은 수. S-13 목록과 시트의 채팅 목록이 같이 쓴다.
  * onOpen이 없으면(토큰이 없거나 서버가 모르는 요청) 누를 수 없다
  */
 export function MyCaseRow({ id, onOpen }: { id: string; onOpen?: () => void }) {
@@ -206,7 +206,7 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
     }
   };
 
-  // 시트에서 새 요청을 다시 시작할 때 앞 전송 결과를 비운다(backlog 52)
+  // 시트에서 새 요청을 다시 시작할 때 앞 전송 결과를 비운다(backlog 53)
   const reset = useCallback(() => {
     setSent(null);
     setFailed(false);
