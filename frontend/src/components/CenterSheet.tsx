@@ -240,7 +240,7 @@ function Icon({ children }: { children: ReactNode }) {
 export function CenterSheet({ id, open, onClose, focus }: { id: string; open: boolean; onClose: () => void; focus: { id: string | null } }) {
   const app = useApp();
   const { t, lang } = useT();
-  const { feed } = useCenterLink();
+  const { feed, openCase: openLinkedCase } = useCenterLink();
   const [types, setTypes] = useState<RequestType[]>([]);
   const [agreed, setAgreed] = useState(false);
   const [talk, setTalk] = useState<'chat' | 'call'>('chat');
@@ -298,6 +298,12 @@ export function CenterSheet({ id, open, onClose, focus }: { id: string; open: bo
   const { markCenterSeen } = app;
   const seeing = open && paneVisible;
   const onSeen = useMemo(() => (seeing && paneCase ? (n: number) => markCenterSeen(paneCase, n) : undefined), [seeing, paneCase, markCenterSeen]);
+  // 센터가 걸면 그 요청의 통화 보기로 시트를 연다. 닫아 두었거나 목록을 보고 있어도 전화 온 것을 놓치지 않게 한다
+  const onRing = () => {
+    if (!paneCase) return;
+    setTalk('call');
+    openLinkedCase(paneCase);
+  };
 
   const sheet = useRef<HTMLElement>(null);
   const body = useRef<HTMLDivElement>(null);
@@ -462,11 +468,15 @@ export function CenterSheet({ id, open, onClose, focus }: { id: string; open: bo
             <div className="sheet-pane" key={paneCase} hidden={!paneVisible}>
               {/* 연락 방법을 따로 묻지 않으므로 통화로 바꾸는 머리의 📞을 알려 준다(backlog 44) */}
               {canCall && talk === 'chat' && <p className="chat-sys">{t('chatCallHint')}</p>}
+              {/* 통화는 채팅을 보는 동안에도 숨긴 채 붙여 둔다. 그래야 센터에 근로자가 화면에 있는 것으로 보이고, 센터가 걸면 통화 보기로 바뀐다(backlog 55) */}
+              {online && token && canCall && (
+                <div hidden={talk !== 'call'}>
+                  <CallPanel caseId={paneCase} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} onRing={onRing} />
+                </div>
+              )}
               {!online || !token ? (
                 <p className="chat-sys">{t('talkOffline')}</p>
-              ) : talk === 'call' && canCall ? (
-                <CallPanel caseId={paneCase} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} />
-              ) : (
+              ) : talk === 'call' && canCall ? null : (
                 <ChatPanel
                   caseId={paneCase}
                   auth={{ role: 'worker', token }}
