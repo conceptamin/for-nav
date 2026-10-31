@@ -310,7 +310,6 @@ export function ResultPage() {
   const app = useApp();
   const { t, term, lang } = useT();
   const tri = app.triage;
-  const [afterHoursOpen, setAfterHoursOpen] = useState(false);
   if (!app.intake || !tri) return <Navigate to="/intake" replace />;
   if (!tri.department) return <Navigate to="/intake" replace />;
 
@@ -358,22 +357,10 @@ export function ResultPage() {
         ☎️ {t('mapNotice')}
         <div className="small">{t('mapOpens')}</div>
       </div>
-      {/* 누르면 펼치는 고정 안내(backlog 44 after-hours-guide). 갈 곳을 고르는 판단은 119에 맡긴다 */}
-      <button
-        type="button"
-        className="btn secondary block"
-        aria-expanded={afterHoursOpen}
-        aria-controls="after-hours"
-        onClick={() => setAfterHoursOpen(!afterHoursOpen)}
-      >
-        🌙 {t('ahTitle')} {afterHoursOpen ? '⌄' : '›'}
-      </button>
-      {afterHoursOpen && (
-        <section className="card" id="after-hours">
-          <p>📞 {t('ah119')}</p>
-          <p>🏪 {t('ahStore')}</p>
-        </section>
-      )}
+      {/* 밤·휴일 안내는 따로 연다(backlog 44 after-hours-guide) */}
+      <Link className="btn secondary block" to="/after-hours">
+        🌙 {t('ahTitle')}
+      </Link>
       <div className="stack">
         <Link className="btn block" to="/visit/call">
           📞 {t('toCall')}
