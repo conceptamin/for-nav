@@ -165,6 +165,8 @@ interface AppContextValue extends SessionState, Omit<DeviceState, 'activeProfile
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
   saveReport: (r: ClinicianReport) => void;
+  /** 리포트 하나를 이 계정의 기기 저장소에서 지운다(backlog 52) */
+  deleteReport: (id: string) => void;
   /** 보낸 사례 id·보낸 시각과 상담 채팅 토큰(있으면, API 모드)을 이 계정의 기기 저장소에 둔다 */
   addMyCase: (id: string, sentAt: string, chatToken?: string) => void;
   /** 근로자가 그 사례 채팅에서 센터 메시지를 `count`개 보았다. 줄어들지 않는다 */
@@ -262,6 +264,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setTriage: (triage) => patch({ triage }),
       setCoverage: (coverage) => patch({ coverage }),
       saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
+      deleteReport: (id) => setDevice((d) => ({ ...d, memberReports: d.memberReports.filter((r) => r.id !== id) })),
       addMyCase: (id, sentAt, chatToken) =>
         setDevice((d) => ({
           ...d,

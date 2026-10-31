@@ -294,6 +294,8 @@ export const ne: Record<MessageKey, string> = {
   profileOthers: 'अन्य प्रोफाइल (बदल्न थिच्नुहोस्)',
   profileDelete: 'यो प्रोफाइल मेटाउनुहोस्',
   profileDeleteConfirm: 'यो प्रोफाइल मेटाउने?',
+  reportDelete: 'यो रिपोर्ट मेटाउनुहोस्',
+  reportDeleteConfirm: 'यो रिपोर्ट मेटाउने?',
   mySettings: 'सेटिङ',
   myReports: 'मेरा रिपोर्ट',
   myEmpty: 'अहिलेसम्म रिपोर्ट छैन।',

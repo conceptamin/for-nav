@@ -280,6 +280,8 @@ export const km: Record<MessageKey, string> = {
   profileOthers: 'ប្រវត្តិរូបផ្សេងទៀត (ចុចដើម្បីប្ដូរ)',
   profileDelete: 'លុបប្រវត្តិរូបនេះ',
   profileDeleteConfirm: 'លុបប្រវត្តិរូបនេះមែនទេ?',
+  reportDelete: 'លុបរបាយការណ៍នេះ',
+  reportDeleteConfirm: 'លុបរបាយការណ៍នេះមែនទេ?',
   mySettings: 'ការកំណត់',
   myReports: 'របាយការណ៍របស់ខ្ញុំ',
   myEmpty: 'មិនទាន់មានរបាយការណ៍ទេ។',

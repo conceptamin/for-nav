@@ -2148,15 +2148,32 @@ hr.divider {
   margin: 8px 0 0;
 }
 
-a.card.home-recent {
-  display: block;
+/* 카드 = 본문 링크 + 끝 쪽 삭제 버튼(backlog 52). 누르면 들어가는 면은 본문 링크만이다 */
+.card.home-recent {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0;
+  padding: 0;
+}
+
+.home-recent a {
+  display: block;
+  padding: 16px 16px 4px;
+  border-radius: var(--radius);
   color: var(--ink);
   text-decoration: none;
 }
 
-a.card.home-recent:active {
+.home-recent a:active {
   box-shadow: var(--glass-in);
+}
+
+.home-recent .btn.ghost {
+  align-self: flex-end;
+  min-height: 44px;
+  margin: 0 8px 8px;
+  padding: 0 8px;
+  font-size: var(--t4);
 }
 
 .home-recent strong {

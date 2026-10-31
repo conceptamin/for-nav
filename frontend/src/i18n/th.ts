@@ -280,6 +280,8 @@ export const th: Record<MessageKey, string> = {
   profileOthers: 'โปรไฟล์อื่น (แตะเพื่อสลับ)',
   profileDelete: 'ลบโปรไฟล์นี้',
   profileDeleteConfirm: 'ลบโปรไฟล์นี้หรือไม่?',
+  reportDelete: 'ลบรายงานนี้',
+  reportDeleteConfirm: 'ลบรายงานนี้หรือไม่?',
   mySettings: 'การตั้งค่า',
   myReports: 'รายงานของฉัน',
   myEmpty: 'ยังไม่มีรายงาน',

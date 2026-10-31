@@ -294,6 +294,8 @@ export const ja: Record<MessageKey, string> = {
   profileOthers: 'ほかのプロフィール（タップで切り替え）',
   profileDelete: 'このプロフィールを削除',
   profileDeleteConfirm: 'このプロフィールを削除しますか？',
+  reportDelete: 'このレポートを削除',
+  reportDeleteConfirm: 'このレポートを削除しますか？',
   mySettings: '設定',
   myReports: 'マイレポート',
   myEmpty: 'まだレポートがありません。',
