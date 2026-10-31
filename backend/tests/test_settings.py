@@ -51,6 +51,14 @@ def test_llm_client_only_with_key():
     assert client.model == "claude-sonnet-5-5"
 
 
+def test_llm_limit_env():
+    """LLM 호출 제한(backlog 20). 기본은 꺼져 있고, 헤더 이름은 소문자로 맞춘다."""
+    s = load_settings({})
+    assert (s.llm_rate_per_min, s.llm_daily_limit, s.llm_client_ip_header) == (0, 0, "")
+    s = load_settings({"LLM_RATE_PER_MIN": "60", "LLM_DAILY_LIMIT": "3000", "LLM_CLIENT_IP_HEADER": " CF-Connecting-IP "})
+    assert (s.llm_rate_per_min, s.llm_daily_limit, s.llm_client_ip_header) == (60, 3000, "cf-connecting-ip")
+
+
 @pytest.mark.parametrize(
     "env",
     [
@@ -66,6 +74,10 @@ def test_llm_client_only_with_key():
         {"LLM_TIMEOUT_S": "ten"},
         {"LLM_ATTEMPTS": "0"},
         {"LLM_ATTEMPTS": "1.5"},
+        {"LLM_RATE_PER_MIN": "-1"},
+        {"LLM_RATE_PER_MIN": "ten"},
+        {"LLM_DAILY_LIMIT": "-5"},
+        {"LLM_DAILY_LIMIT": "1.5"},
     ],
 )
 def test_rejects_bad_values(env):

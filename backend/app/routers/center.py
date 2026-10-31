@@ -260,7 +260,8 @@ async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
     # 근로자 언어는 클라이언트 값이 아니라 사례의 언어다.
     case_lang = store.get(case_id).language
     source, target = (case_lang, "ko") if me == "worker" else ("ko", case_lang)
-    llm: LLMClient | None = getattr(ws.app.state, "llm", None)
+    # 자막 번역도 근로자 경로와 같은 호출 제한을 탄다(backlog 20).
+    llm: LLMClient | None = ws.app.state.llm_limiter.wrap(getattr(ws.app.state, "llm", None), ws)
     # 번역을 기다리는 동안에도 시그널링을 계속 중계하도록 자막은 따로 돌린다. 값은 그 작업이 채울 자막 번호다.
     tasks: dict[asyncio.Task, str] = {}
     try:
