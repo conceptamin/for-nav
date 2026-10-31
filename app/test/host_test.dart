@@ -97,4 +97,40 @@ void main() {
     });
   });
 });
+
+  group('통화 매체(backlog 04)', () {
+    test('speechStart의 lang이 없거나 비면 무시한다', () {
+      expect(speechLangOf({'type': 'speechStart', 'lang': 'vi-VN'}), 'vi-VN');
+      expect(speechLangOf({'type': 'speechStart', 'lang': '  '}), isNull);
+      expect(speechLangOf({'type': 'speechStart'}), isNull);
+    });
+
+    test('speech·speechError 형식', () {
+      expect(speechMessage('xin chào', isFinal: true), {'protocol': 1, 'type': 'speech', 'text': 'xin chào', 'final': true});
+      expect(speechErrorMessage(SpeechErrorKind.denied), {'protocol': 1, 'type': 'speechError', 'error': 'denied'});
+    });
+
+    test('권한·언어 오류는 바로 끄고, 말 없음은 세지 않고, 그 밖은 이어지면 끈다', () {
+      expect(speechErrorKind('error_permission', errorsInRow: 1), SpeechErrorKind.denied);
+      expect(speechErrorKind('error_language_not_supported', errorsInRow: 1), SpeechErrorKind.unsupported);
+      expect(speechErrorKind('error_no_match', errorsInRow: 99), isNull);
+      expect(speechErrorKind('error_network', errorsInRow: 1), isNull);
+      expect(speechErrorKind('error_network', errorsInRow: speechMaxErrorsInRow), SpeechErrorKind.unsupported);
+      expect(speechErrorCounts('error_no_match'), isFalse);
+      expect(speechErrorCounts('error_client'), isTrue);
+    });
+
+    test('WebView 권한 요청은 마이크만 허용한다', () {
+      expect(isMicrophoneOnlyRequest({'microphone'}), isTrue);
+      expect(isMicrophoneOnlyRequest({'microphone', 'camera'}), isFalse);
+      expect(isMicrophoneOnlyRequest({}), isFalse);
+    });
+
+    test('파일 선택기는 사진을 받는 input에서만 연다', () {
+      expect(acceptsImages(['image/*']), isTrue);
+      expect(acceptsImages(['']), isTrue);
+      expect(acceptsImages(['image/png,image/jpeg']), isTrue);
+      expect(acceptsImages(['application/pdf']), isFalse);
+    });
+  });
 }

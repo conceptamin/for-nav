@@ -69,6 +69,14 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>센터와 통화하고 통화 자막을 만들 때 마이크를 씁니다. / Used for calls with the center and call captions.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>통화 중 내 말을 자막으로 받아써 센터에 번역해 보냅니다. / Turns your speech into captions translated for the center during a call.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>증상 사진을 고를 때 사진 보관함을 엽니다. / Used to choose photos of your symptoms.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>증상 사진을 찍을 때 카메라를 씁니다. / Used to take photos of your symptoms.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>

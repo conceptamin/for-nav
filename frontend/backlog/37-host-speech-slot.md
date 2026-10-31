@@ -4,7 +4,7 @@
 의존: 26 (통화 자막), app-front 03 (Flutter 셸)
 
 ## 목표
-통화 자막(backlog 26)은 브라우저 Web Speech API로 받아쓴다. Flutter 앱의 WebView에는 이것이 없다(iOS WKWebView에는 없고, Android WebView는 음성 인식 서비스를 잇지 않는다). app-front 04가 호스트의 네이티브 음성 인식을 다리로 이어 오는데, 받아쓰기를 고르는 `src/api/speech.ts`는 `@fe` 안의 파일이라 app-front에서 고칠 수 없다. 이 항목은 앱이 호스트 음성 인식을 등록할 자리를 `speech.ts`에 둔다.
+통화 자막(backlog 26)은 브라우저 Web Speech API로 받아쓴다. Flutter 앱의 WebView에서는 이것으로 받아쓸 수 없다(iOS WKWebView에는 없고, Android WebView에는 `webkitSpeechRecognition`이 있지만 켜자마자 `not-allowed`로 끝난다. app-front 04 결과). app-front 04가 호스트의 네이티브 음성 인식을 다리로 이어 오는데, 받아쓰기를 고르는 `src/api/speech.ts`는 `@fe` 안의 파일이라 app-front에서 고칠 수 없다. 이 항목은 앱이 호스트 음성 인식을 등록할 자리를 `speech.ts`에 둔다.
 
 ## 결정이 필요한 것
 1. **등록 자리의 모양.** backlog 35(`setNativeGoogleSignIn`)와 같게 `setHostSpeech(fn)`. `fn(lang, handlers)`는 `startSpeech`와 같은 모양으로 끄는 함수를 돌려주고, 다시 켜기·오류 처리는 등록한 쪽이 맡는다. `isSpeechSupported()`는 등록이 있으면 참이다.
