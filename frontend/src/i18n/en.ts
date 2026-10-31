@@ -14,7 +14,7 @@ export const en = {
   required: 'required',
   skip: 'Skip',
   call119: 'Call 119',
-  bar119: 'Emergency? Call 119',
+  bar119: 'Emergency in Korea: 119',
   worse119: 'If symptoms get worse, call 119 right away.',
   changeLang: 'Language',
 

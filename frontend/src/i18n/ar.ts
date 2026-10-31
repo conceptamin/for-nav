@@ -15,7 +15,7 @@ export const ar: Record<MessageKey, string> = {
   required: 'إلزامي',
   skip: 'تخطي',
   call119: 'اتصل بـ 119',
-  bar119: 'حالة طارئة؟ اتصل بـ 119',
+  bar119: 'الطوارئ في كوريا: 119',
   worse119: 'إذا ساءت الأعراض، اتصل بـ 119 فورا.',
   changeLang: 'اللغة',
 

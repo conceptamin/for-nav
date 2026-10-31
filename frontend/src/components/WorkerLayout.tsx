@@ -98,7 +98,7 @@ export function WorkerLayout() {
               <path d="M6.6 3.5h2.2l1.4 4-2 1.3a11 11 0 0 0 7 7l1.3-2 4 1.4v2.2a2.1 2.1 0 0 1-2.3 2.1A15.6 15.6 0 0 1 4.5 5.8a2.1 2.1 0 0 1 2.1-2.3Z" />
             </svg>
           </span>
-          <span className="call-119-text">{app.lang ? t('bar119') : '119 · Emergency · Khẩn cấp'}</span>
+          <span className="call-119-text">{app.lang ? t('bar119') : '119 · Korea Emergency · Cấp cứu'}</span>
         </a>
         {app.ready && (
           <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>

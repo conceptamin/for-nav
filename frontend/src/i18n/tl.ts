@@ -15,7 +15,7 @@ export const tl: Record<MessageKey, string> = {
   required: 'kailangan',
   skip: 'Laktawan',
   call119: 'Tumawag sa 119',
-  bar119: 'Emergency? Tumawag sa 119',
+  bar119: 'Emergency sa Korea: 119',
   worse119: 'Kapag lumala ang sintomas, tumawag agad sa 119.',
   changeLang: 'Wika',
 
