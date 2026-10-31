@@ -203,7 +203,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 ## 결정이 필요한 것
 
 1. **근로자 화면을 어떻게 가져오나(backlog 02).** → **공유 import로 결정(2026-10-31).** `frontend/src`를 별칭 `@fe`로 import한다("폴더 구조"). `tsconfig.json`의 `paths`가 react·react-dom·react-router를 이 폴더의 `node_modules`로 고정하므로 `frontend/node_modules` 없이 빌드된다. `frontend/` 쪽 파일 이동이 이 앱 빌드를 깨뜨릴 수 있는 것은 `frontend/CLAUDE.md` "경계"에 적었고, CI 잡은 `chore/` 별도다.
-2. **배포 출처.** 같은 출처(`/app/` 경로로 백엔드가 서빙, backend 항목 필요) / 다른 출처(Vercel 등 + `CORS_ORIGINS`) / 앱 안 번들. 1차 권장은 다른 출처(지금 `frontend/`와 같은 방식, 서버 코드 변경 없음)이고, 발표가 맥미니 한 대라면 같은 출처가 낫다. Flutter 앱은 주소를 `--dart-define=APP_URL=`로 받으므로(backlog 03, 2026-10-31) 어느 쪽을 골라도 앱 코드는 바뀌지 않는다. 배포 주소가 생길 때 정한다.
+2. **배포 출처.** 같은 출처(`/app/` 경로로 백엔드가 서빙, backend 항목 필요) / 다른 출처(Vercel 등 + `CORS_ORIGINS`) / 앱 안 번들. 1차 권장은 다른 출처(지금 `frontend/`와 같은 방식, 서버 코드 변경 없음)이고, 발표가 맥미니 한 대라면 같은 출처가 낫다. Flutter 앱은 주소를 `--dart-define=APP_URL=`로 받으므로(backlog 03, 2026-10-31) 어느 쪽을 골라도 앱 코드는 바뀌지 않는다. → **같은 출처, 하위 경로 대신 호스트로 결정(2026-10-31, backend 22).** 맥미니가 `app.for-nav.com`으로 온 요청에 이 앱의 빌드를, `www.for-nav.com`에는 `frontend/` 빌드를 준다. `/api`는 같은 출처다. Flutter 앱의 운영 주소는 `app/env/prod.json`이다.
 3. **Flutter 프로젝트 위치.** → **이 저장소의 `app/`으로 결정(2026-10-31, backlog 03).** 계약 문서와 웹·호스트를 같은 PR에서 고칠 수 있다.
 4. **WebView 라이브러리.** → **`webview_flutter`로 결정(2026-10-31, backlog 03).** 공식이고 가볍다. 파일 선택기·권한은 backlog 04에서 직접 붙인다. 웹은 `flutter_inappwebview`도 감지하므로 바꿔도 웹은 그대로다.
 
