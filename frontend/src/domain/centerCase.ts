@@ -25,7 +25,6 @@ export interface CenterCase {
   contactMethod: ContactMethod | null;
   contact: string | null;
   afterHours: boolean;
-  emergencyFlag: boolean;
   workRelated: YesNoUnknown | null;
   insurance: YesNoUnknown | null;
   /** 데모에서 실제로 전송한 사례(mock과 구분) */
@@ -108,16 +107,11 @@ export interface CenterStats {
 }
 
 export function rateUrgency(input: {
-  emergencyFlag: boolean;
   workRelated: YesNoUnknown | null;
   insurance: YesNoUnknown | null;
 }): { urgency: Urgency; reasons: string[] } {
   let score = 0;
   const reasons: string[] = [];
-  if (input.emergencyFlag) {
-    score += 3;
-    reasons.push('응급 판정 이력');
-  }
   if (input.workRelated === 'yes') {
     score += 2;
     reasons.push('업무 중 발생');

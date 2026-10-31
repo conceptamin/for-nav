@@ -142,6 +142,28 @@ def test_sqlite_survives_restart(tmp_path: Path):
         second.close()
 
 
+def test_sqlite_opens_old_cases_with_emergency_flag(tmp_path: Path):
+    # backlog 26 전에 저장한 사례 본문에는 emergencyFlag가 있다. 읽을 때 버린다.
+    import json
+    import sqlite3
+
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    c = live_case(first)
+    first.close()
+    db = sqlite3.connect(path)
+    db.execute("UPDATE live_cases SET body = ? WHERE id = ?", (json.dumps({**c.model_dump(by_alias=True), "emergencyFlag": True}), c.id))
+    db.commit()
+    db.close()
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert second.get(c.id) == c
+        assert len(second.all()) == 25
+    finally:
+        second.close()
+
+
 def test_sqlite_reset_keeps_file(tmp_path: Path):
     path = tmp_path / "center.db"
     s = SqliteStore(str(path), STARTED)

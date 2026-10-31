@@ -1,103 +1,15 @@
 # 증상 분류(POST /api/triage)와 자유 입력 추출(POST /api/extract). frontend/src/domain/triage.ts와 1:1.
-# - 응급 감지: 키워드 규칙 OR 보조 점수(모델이 있으면 응급도 모델, backlog 06). 둘 중 하나라도 응급이면 응급.
+# - 응급 여부는 판정하지 않는다(backlog 26). 틀린 판정이 헛된 확신을 주지 않게, 119는 프론트가 판정 없이 늘 보이는 버튼으로만 안내한다.
 # - 증상 추출: LLM 자리. 목업에서는 다국어 키워드 사전으로 추출하고, 못 찾은 항목은 버튼으로 다시 묻는다.
 # - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과. 모델이 있으면 규칙표의 막연한 분기(GENERIC)만 모델 상위 2개로 바꾼다.
 
-from collections.abc import Callable
-
-from app.schemas import DepartmentPair, EmergencyReason, Extraction, Intake, ModelPrediction, TriageResult
-from app.vocab import PACKS, BodyPart, LangPack, Onset, Symptom, WorkType, YesNoUnknown
-
-# ---------------------------------------------------------------------------
-# 응급 키워드 규칙. 한국어는 여기에, 다른 언어는 vocab.PACKS 언어 묶음의 emergency에 있고 합쳐 쓴다. 소문자 부분 일치.
-# ---------------------------------------------------------------------------
-EMERGENCY_KEYWORDS_KO: dict[EmergencyReason, list[str]] = {
-    "unconscious": ["의식", "기절", "쓰러"],
-    "breathing": ["숨을 못", "숨이 안", "호흡곤란", "호흡 곤란"],
-    "chest": ["가슴 통증", "가슴이 아", "가슴이 조"],
-    "heavyBleeding": ["피가 멈추지", "피가 안 멈", "피가 많이", "출혈이 심"],
-    "amputation": ["절단됐", "절단되", "잘렸", "잘려"],
-    "fall": ["추락", "높은 곳에서 떨어"],
-    "seizure": ["경련", "발작"],
-    "stroke": ["마비", "말이 어눌", "한쪽이 저"],
-    "severeBurn": ["큰 화상", "전신 화상", "감전"],
-    "chemicalEye": ["눈에 화학", "눈에 약품", "눈에 약물"],
-    "poisoning": ["가스를 마", "가스 마셨", "중독"],
-}
-
-# 머리 부상은 구토·어지러움이 함께 있을 때만 응급으로 본다.
-HEAD_INJURY_KO = ["머리를 부딪", "머리를 다쳐", "머리를 맞"]
-VOMIT_KO = ["토했", "구토"]
-
-# 보조 점수에 쓰는 심각도 표현
-SEVERITY_KO = ["심하", "심해", "너무", "매우"]
-
-
-def _with_packs(ko: list[str], pick: Callable[[LangPack], list[str]]) -> list[str]:
-    return [*ko, *(w for pack in PACKS.values() for w in pick(pack))]
-
-
-EMERGENCY_KEYWORDS: dict[EmergencyReason, list[str]] = {
-    reason: _with_packs(words, lambda p, r=reason: p["emergency"]["keywords"][r]) for reason, words in EMERGENCY_KEYWORDS_KO.items()
-}
-HEAD_INJURY = _with_packs(HEAD_INJURY_KO, lambda p: p["emergency"]["headInjury"])
-VOMIT = _with_packs(VOMIT_KO, lambda p: p["emergency"]["vomit"])
-SEVERITY = _with_packs(SEVERITY_KO, lambda p: p["emergency"]["severity"])
+from app.schemas import DepartmentPair, Extraction, Intake, ModelPrediction, TriageResult
+from app.vocab import BodyPart, Onset, Symptom, WorkType, YesNoUnknown
 
 
 def includes_any(text: str, words: list[str]) -> bool:
     return any(w in text for w in words)
 
-
-def rule_reasons(intake: Intake) -> list[EmergencyReason]:
-    """키워드 규칙 + 버튼 조합 규칙. 순서는 프론트 Set 삽입 순서와 같다."""
-    text = intake.free_text.lower()
-    reasons: dict[EmergencyReason, None] = {}
-    for reason, words in EMERGENCY_KEYWORDS.items():
-        if includes_any(text, words):
-            reasons[reason] = None
-    s = set(intake.symptoms)
-    b = set(intake.body_parts)
-    if "breath" in s:
-        reasons["breathing"] = None
-    if "chest" in b and "pain" in s:
-        reasons["chest"] = None
-    if "eye" in b and "chemical" in s:
-        reasons["chemicalEye"] = None
-    if includes_any(text, HEAD_INJURY) and ("nausea" in s or "dizzy" in s or includes_any(text, VOMIT)):
-        reasons["headInjury"] = None
-    return list(reasons)
-
-
-def model_score(intake: Intake) -> int:
-    """
-    보조 점수: 실서비스에서는 자체 응급 감지 모델이 이 자리에 들어간다.
-    목업에서는 재현율을 우선해 위험 신호를 가산하는 단순 점수로 대신한다.
-    """
-    text = intake.free_text.lower()
-    s = set(intake.symptoms)
-    b = set(intake.body_parts)
-    score = 0
-    if includes_any(text, SEVERITY):
-        score += 1
-    if "bleeding" in s:
-        score += 1
-    if "cut" in s and "bleeding" in s:
-        score += 1
-    if "burn" in s and ("whole" in b or "head" in b):
-        score += 2
-    if "head" in b and "dizzy" in s and "nausea" in s:
-        score += 3
-    if "cantmove" in s and ("back" in b or "whole" in b):
-        score += 1
-    if "chemical" in s:
-        score += 1
-    if "fever" in s and "dizzy" in s and "nausea" in s:
-        score += 1
-    return score
-
-
-MODEL_THRESHOLD = 3
 
 # ---------------------------------------------------------------------------
 # 진료과 규칙표
@@ -140,42 +52,31 @@ def rule_department(body_parts: list[BodyPart], symptoms: list[Symptom]) -> tupl
     return DepartmentPair(primary="family", alt="internal"), True
 
 
-def department_for(intake: Intake, model: ModelPrediction | None, emergency: bool) -> DepartmentPair:
-    """규칙표가 명시적으로 정한 조합은 규칙표, 막연한 분기만 모델 앙상블 상위 2개다.
+# 진료과를 모델에 맡기지 않고 규칙표로 고정하는 조합. 예전 응급 조합(가슴 통증, 숨참)이 막연한 분기로 떨어지는 경우다.
+# 모델은 가슴 통증에 정형외과를 먼저 내기도 한다(backlog 06 결과, backlog 26).
+def rule_fixed(intake: Intake) -> bool:
+    s = set(intake.symptoms)
+    return "breath" in s or ("chest" in intake.body_parts and "pain" in s)
 
-    응급이면 분기와 관계없이 규칙표다. 모델은 가슴 통증 같은 응급 조합에 정형외과를 먼저 내기도 한다(backlog 06 결과).
-    """
+
+def department_for(intake: Intake, model: ModelPrediction | None) -> DepartmentPair:
+    """규칙표가 명시적으로 정한 조합은 규칙표, 막연한 분기만 모델 앙상블 상위 2개다. 고정 조합(rule_fixed)은 분기와 관계없이 규칙표다."""
     pair, generic = rule_department(intake.body_parts, intake.symptoms)
-    if model is None or not generic or emergency:
+    if model is None or not generic or rule_fixed(intake):
         return pair
     primary, alt = model.department_top2
     return DepartmentPair(primary=primary, alt=alt)
 
 
 def triage(intake: Intake, model: ModelPrediction | None = None) -> TriageResult:
-    """규칙이 먼저다. 규칙이 응급이면 모델과 관계없이 응급이다.
-
-    `model`은 응급도·진료과 모델 예측(app/model.py)이다. 있으면 보조 점수 대신 모델 응급도로 byModel을 정하고,
-    없으면 프론트와 같다. modelScore는 모델 유무와 관계없이 보조 점수 그대로다.
-    """
-    reasons = rule_reasons(intake)
-    by_rule = len(reasons) > 0
-    score = model_score(intake)
-    by_model = model.acuity == "emergency" if model else score >= MODEL_THRESHOLD
-    if by_model and not reasons:
-        reasons.append("riskScore")
+    """진료과 추천. `model`은 진료과 모델 예측(app/model.py)이고, 없으면 프론트와 같다."""
     missing: list = []
     if not intake.body_parts:
         missing.append("bodyParts")
     if not intake.symptoms:
         missing.append("symptoms")
     return TriageResult(
-        emergency=len(reasons) > 0,
-        reasons=reasons,
-        by_rule=by_rule,
-        by_model=by_model,
-        model_score=score,
-        department=department_for(intake, model, emergency=len(reasons) > 0) if not missing else None,
+        department=department_for(intake, model) if not missing else None,
         missing=missing,
         model=model,
     )
@@ -298,20 +199,3 @@ def filled_by_extraction(before: Intake, merged: Intake) -> bool:
         or merged.work_related != before.work_related
         or merged.work_type != before.work_type
     )
-
-
-REASON_KO: dict[EmergencyReason, str] = {
-    "unconscious": "의식 저하·쓰러짐",
-    "breathing": "호흡 곤란",
-    "chest": "가슴 통증",
-    "heavyBleeding": "지혈되지 않는 출혈",
-    "amputation": "신체 절단 의심",
-    "fall": "높은 곳에서 추락",
-    "seizure": "경련",
-    "stroke": "마비·말 어눌함",
-    "severeBurn": "심한 화상·감전",
-    "chemicalEye": "눈에 화학물질",
-    "headInjury": "머리 부상 후 구토·어지러움",
-    "poisoning": "가스·약물 중독 의심",
-    "riskScore": "위험 신호 점수 높음",
-}

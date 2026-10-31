@@ -1,4 +1,4 @@
-# 응급도·진료과 모델 연결(backlog 06). modeling의 predict()를 부르는 얇은 층이다.
+# 진료과 모델 연결(backlog 06). modeling의 predict()를 부르는 얇은 층이다.
 # 피처 계산·임계값·버전은 modeling 쪽(predict.py, metadata.json)을 그대로 쓰고 여기에 다시 적지 않는다.
 # 모델링 코드는 ../modeling 경로 의존성(editable)으로 설치된다(backlog 12). MODEL_DIR이 비면 import하지 않는다(CI·기본 실행은 모델 없음).
 # 아티팩트는 LightGBM 텍스트 모델과 JSON만 읽는다(modeling read_verified가 sha256을 확인한다).
@@ -31,7 +31,7 @@ def load_model(model_dir: str) -> Predictor | None:
 
 
 def run_model(model: Predictor | None, intake: Intake) -> ModelPrediction | None:
-    """모델 예측. 모델이 없거나 예측 중 오류가 나면 None이고, 응급 판정은 규칙·보조 점수로 돌아간다."""
+    """모델 예측. 모델이 없거나 예측 중 오류가 나면 None이고, 진료과는 규칙표로 돌아간다."""
     if model is None:
         return None
     try:

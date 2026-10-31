@@ -13,7 +13,7 @@ LANGS: list[Lang] = list(get_args(Lang))
 NATIVE_LANGS: list[Lang] = [lang for lang in LANGS if lang != "ko"]
 
 
-# 근로자 모국어 묶음(한국어 제외). 언어마다 어휘 표기(terms)·문장 틀(templates)·응급 키워드(emergency)를 가진다.
+# 근로자 모국어 묶음(한국어 제외). 언어마다 어휘 표기(terms)·문장 틀(templates)을 가진다.
 # 구조는 frontend/src/domain/lang/types.ts의 LangPack이다. lang/packs.json은 frontend/scripts/dump-lang-packs.ts로 만들고 손으로 고치지 않는다.
 # 이 파일은 modeling 테스트가 파일로 직접 읽으므로 표준 라이브러리만 쓴다.
 type LangPack = dict[str, Any]
@@ -159,15 +159,6 @@ _DISTRICTS_KO: dict[District, KoTerm] = {
 DISTRICTS = with_native(_DISTRICTS_KO, "districts")
 
 YesNoUnknown = Literal["yes", "no", "unknown"]
-
-# 응급도 모델 입력(backlog 10). 프론트 화면에는 아직 없어 다국어 표기(Term)는 두지 않는다.
-# 값과 순서는 modeling/src/fornav_modeling/features/buttons.py와 같다. 순서가 모델 피처 값(0, 1, 2, …)이다.
-AgeGroup = Literal["under30", "30to44", "45to64", "65plus"]
-Sex = Literal["female", "male"]
-# AVPU 의식 상태
-Mental = Literal["alert", "verbal", "pain", "unresponsive"]
-# 응급도 모델 출력(backlog 06). 값과 순서는 modeling/src/fornav_modeling/predict.py의 ACUITIES와 같다.
-Acuity = Literal["emergency", "today", "outpatient"]
 
 LANGUAGE_NAMES_KO: dict[Lang, str] = {
     "en": "영어",

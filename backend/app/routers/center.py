@@ -78,7 +78,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
         req.intake.free_text, req.intake.language, llm, timeout_s=settings.llm_timeout_s, attempts=settings.llm_attempts
     )
     summary = build_center_summary(req, note_translation=tr.ko)
-    urgency, reasons = rate_urgency(req.emergency_flag, req.intake.work_related, req.insurance)
+    urgency, reasons = rate_urgency(req.intake.work_related, req.insurance)
     contact = (req.contact or "").strip() or None
 
     def make(case_id: str) -> CenterCase:
@@ -99,7 +99,6 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
             contact_method=req.contact_method,
             contact=contact,
             after_hours=is_after_hours(now),
-            emergency_flag=req.emergency_flag,
             work_related=req.intake.work_related,
             insurance=req.insurance,
             live=True,

@@ -26,7 +26,7 @@
   --danger-2: #921708; /* fg-critical-contrast, red-900 */
   --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #0a1c1c; /* 민트 채움 위 글자. #73e1dc 위 11.3:1 · Lc 76.9. 흰 글자는 1.6:1이라 쓰지 않는다 */
-  --on-danger: #ffffff; /* 빨강 바탕(119, 응급 히어로, 끊기) 위 글자 */
+  --on-danger: #ffffff; /* 빨강 바탕(119, 끊기) 위 글자 */
   --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
   --info: #0b4596; /* fg-informative-contrast, blue-900. 신규 상태 칩 글자 */
   --info-bg: #eff6ff; /* blue-100 */
@@ -59,7 +59,7 @@
   --glass-sm: 0 4px 12px var(--glass-drop), inset 0 1px 0 var(--glass-shine), inset 0 0 0 1px var(--glass-edge);
   /* 들어감: 입력란·눌린 것·선택된 칩·트랙 */
   --glass-in: inset 0 2px 4px var(--glass-shade), inset 0 0 0 1px rgb(18 35 46 / 6%);
-  /* 색이 있는 면(불투명): 브랜드 버튼·응급 히어로·119 띠 */
+  /* 색이 있는 면(불투명): 브랜드 버튼·119 띠 */
   --glass-color: 0 8px 24px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-sm: 0 4px 12px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-in: inset 0 2px 6px rgb(0 0 0 / 25%);
@@ -946,9 +946,8 @@ a.brand-pill:active {
   color: var(--ink-2);
 }
 
-/* 질문 제목(h1) 아래 바로 오는 선택지·슬라이더는 제목과 띄운다 */
-.w-screen > h1 + .options,
-.w-screen > h1 + .range {
+/* 질문 제목(h1) 아래 바로 오는 선택지는 제목과 띄운다 */
+.w-screen > h1 + .options {
   margin-top: 16px;
 }
 
@@ -1718,38 +1717,6 @@ a.card.home-recent:active {
   word-break: keep-all;
 }
 
-.em-hero {
-  background: var(--danger);
-  color: var(--on-danger);
-  border-radius: var(--radius);
-  box-shadow: var(--glass-color);
-  padding: 20px 16px;
-  margin-bottom: 16px;
-}
-
-.em-hero h1 {
-  font-size: var(--t9);
-}
-
-.em-call {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 76px;
-  border-radius: var(--radius-lg);
-  background: var(--card-solid); /* 불투명한 응급 히어로 위라 비치면 분홍이 된다 */
-  box-shadow: var(--glass);
-  color: var(--danger);
-  font-size: var(--t11);
-  font-weight: 700;
-  text-decoration: none;
-  margin-top: 12px;
-}
-
-.em-call:active {
-  box-shadow: var(--glass-in);
-}
-
 .footer-note {
   font-size: var(--t3);
   color: var(--ink-2);
@@ -1884,79 +1851,6 @@ a.card.home-recent:active {
 
 .photo .rm:active {
   box-shadow: var(--glass-in);
-}
-
-/* 슬라이더(통증 점수): 얼굴 → 단계 이름 → 숫자 크게 → range → 양 끝 레이블. 트랙은 들어감, 손잡이는 떠 있음 */
-.range {
-  text-align: center;
-}
-
-.range .face {
-  font-size: var(--t13);
-  line-height: 1;
-}
-
-.range .level {
-  font-weight: 700;
-  color: var(--ink-2);
-  margin: 8px 0 0;
-}
-
-.range .num {
-  font-size: var(--t13);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.range input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 44px;
-  margin: 8px 0 0;
-  background: transparent;
-  accent-color: var(--brand-fg);
-}
-
-.range input[type='range']::-webkit-slider-runnable-track {
-  height: 12px;
-  border-radius: 999px;
-  background: var(--bg-2);
-  box-shadow: var(--glass-in);
-}
-
-.range input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 28px;
-  height: 28px;
-  margin-top: -8px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--brand-fg);
-  box-shadow: var(--glass-color-sm);
-}
-
-.range input[type='range']::-moz-range-track {
-  height: 12px;
-  border-radius: 999px;
-  background: var(--bg-2);
-  box-shadow: var(--glass-in);
-}
-
-.range input[type='range']::-moz-range-thumb {
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--brand-fg);
-  box-shadow: var(--glass-color-sm);
-}
-
-.range .ends {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--t4);
-  color: var(--ink-2);
 }
 
 /* ---------- 센터 레이아웃 ---------- */

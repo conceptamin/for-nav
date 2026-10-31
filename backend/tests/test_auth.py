@@ -37,7 +37,6 @@ INTAKE = {
 }
 NEW_CASE = {
     "intake": INTAKE,
-    "emergencyFlag": False,
     "requestTypes": ["booking"],
     "coverage": None,
     "insurance": "yes",
