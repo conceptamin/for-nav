@@ -1,4 +1,4 @@
-"""테스트용 가짜 LLM·메일·Google ID 토큰 검증. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일, 확인한 토큰을 기록한다."""
+"""테스트용 가짜 LLM·메일·Google ID 토큰 검증·푸시 발송. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일, 확인한 토큰, 보낸 알림을 기록한다."""
 
 import asyncio
 import re
@@ -8,6 +8,7 @@ from typing import Any
 from app.google_id import GoogleIdError
 from app.llm import LLMError, LLMPrompt
 from app.mail import MailError
+from app.push import UNREGISTERED, PushError
 
 # 차례마다 돌려줄 값. 문자열은 응답 본문, 예외는 그대로 올리고, None이면 시간 초과까지 기다린다.
 Reply = str | Exception | None
@@ -70,3 +71,28 @@ class FakeVerifier:
         if credential not in self.tokens:
             raise GoogleIdError("ValueError")
         return self.tokens[credential]
+
+
+class FakePushSender:
+    """테스트용 가짜 푸시 발송(backlog 28). 보낸 알림을 `sent`에, 시도한 기기 토큰을 `attempts`에 쌓는다.
+
+    `unregistered`의 토큰은 FCM이 없는 토큰이라고 답한 것처럼 PushError(UNREGISTERED)로, `fail`이 있으면 그 예외로 실패한다.
+    `hang`이면 시간 제한까지 기다린다.
+    """
+
+    def __init__(self, unregistered: Iterable[str] = (), fail: Exception | None = None, hang: bool = False) -> None:
+        self.unregistered = set(unregistered)
+        self.fail = fail
+        self.hang = hang
+        self.sent: list[dict[str, Any]] = []
+        self.attempts: list[str] = []
+
+    async def send(self, device_token: str, platform: str, title: str, body: str, data: dict[str, str], collapse: str) -> None:
+        self.attempts.append(device_token)
+        if self.hang:
+            await asyncio.Event().wait()
+        if device_token in self.unregistered:
+            raise PushError(UNREGISTERED)
+        if self.fail is not None:
+            raise self.fail
+        self.sent.append({"token": device_token, "platform": platform, "title": title, "body": body, "data": data, "collapse": collapse})

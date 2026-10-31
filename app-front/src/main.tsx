@@ -4,7 +4,7 @@ import type { RouteObject } from 'react-router';
 import { createBrowserRouter, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { WorkerLayout } from '@fe/components/WorkerLayout';
-import { CenterRequestPage, GuidePage, MyPage } from '@fe/pages/worker/CenterRequest';
+import { AfterHoursPage, CenterRequestPage, GuidePage, MyPage } from '@fe/pages/worker/CenterRequest';
 import { CoveragePage } from '@fe/pages/worker/Coverage';
 import { IntakePage, ResultPage } from '@fe/pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from '@fe/pages/worker/Onboarding';
@@ -107,6 +107,7 @@ const routes: RouteObject[] = [
       { path: '/center-request', element: <CenterRequestPage /> }, // S-12
       { path: '/my', element: <MyPage /> }, // S-13
       { path: '/guide', element: <GuidePage /> },
+      { path: '/after-hours', element: <AfterHoursPage /> }, // S-07에서 여는 밤·휴일 안내
     ],
   },
   { path: '/__host', element: <HostCheckPage /> }, // 호스트 연결 확인(개발용, 메뉴에 없다)
