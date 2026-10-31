@@ -46,7 +46,7 @@ export function Chip({ pressed, onClick, children }: { pressed: boolean; onClick
  */
 export function Progress({ current, total, label }: { current: number; total: number; label: string }) {
   return (
-    <div className="progress">
+    <div className="steps-progress">
       <progress value={current} max={total} aria-label={label} />
       {/* RTL에서 `9 / 6`으로 뒤집히지 않게 숫자 묶음만 왼→오 */}
       <span className="count" dir="ltr" aria-hidden>
