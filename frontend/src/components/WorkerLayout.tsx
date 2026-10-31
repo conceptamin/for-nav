@@ -41,6 +41,13 @@ export function useScreenBar(bar: ScreenBar) {
   useEffect(() => () => set({}), [set]);
 }
 
+const OpenCenterSheetContext = createContext<() => void>(() => {});
+
+/** 하단 채팅 아이콘과 같은 센터 채팅 시트를 연다(backlog 44, S-12에서 대화로 보낸 뒤) */
+export function useOpenCenterSheet() {
+  return useContext(OpenCenterSheetContext);
+}
+
 export function WorkerLayout() {
   const app = useApp();
   const { t } = useT();
@@ -85,6 +92,10 @@ export function WorkerLayout() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetMounted, setSheetMounted] = useState(false);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
+  const openSheet = useCallback(() => {
+    setSheetMounted(true);
+    setSheetOpen(true);
+  }, []);
   const toggleSheet = () => {
     setSheetMounted(true);
     setSheetOpen((o) => !o);
@@ -192,7 +203,9 @@ export function WorkerLayout() {
           </header>
         )}
         <main className="w-main" ref={mainRef}>
-          <Outlet />
+          <OpenCenterSheetContext.Provider value={openSheet}>
+            <Outlet />
+          </OpenCenterSheetContext.Provider>
         </main>
         {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} />}
         {bar119}
