@@ -32,10 +32,18 @@ async function call<T>(path: string, options: { method?: 'GET' | 'POST' | 'PATCH
 /**
  * S-12 전송(`POST /api/center/cases`). 요약·긴급도·운영 시간 외 여부는 서버가 계산한 값을 그대로 쓴다.
  * `hours`는 단독 모드에서 운영 시간 외 판정에만 쓴다(API 모드는 서버 설정값).
+ * 서버가 근로자 로그인을 쓰면(backend 21) 근로자 세션이 끝났을 때 401이다. 이것은 센터 직원 세션 끝이 아니므로
+ * 위 `call`(센터 401 처리)을 거치지 않고 그대로 던진다. 화면이 `isSessionEnded`로 보고 로그인으로 보낸다.
  */
 export async function sendCase(req: NewCaseRequest, hours: CenterHours): Promise<NewCaseResponse> {
   if (!isApiMode()) return sendCaseLocal(req, hours);
-  const r = await call<Partial<NewCaseResponse>>('/center/cases', { body: req });
+  let r: Partial<NewCaseResponse>;
+  try {
+    r = await requestJson<Partial<NewCaseResponse>>('/center/cases', { body: req, timeoutMs: CENTER_TIMEOUT_MS });
+  } catch (e) {
+    if (!isSessionEnded(e)) logFailure('/center/cases', e);
+    throw e;
+  }
   if (!isCase(r.case) || typeof r.nextOpenDate !== 'string') throw bad();
   // chatToken은 선택 필드다(backend 14). 문자열이 아니면 채팅 없이 전송 완료로 둔다
   if (typeof r.chatToken !== 'string') delete r.chatToken;

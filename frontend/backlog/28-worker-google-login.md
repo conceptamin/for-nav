@@ -1,6 +1,6 @@
 # 28. 근로자 Google 로그인 연결·비회원 없애기
 
-상태: 대기
+상태: 진행 중(실제 Google 계정 로그인 확인 남음: 사용자 클라이언트 ID 필요)
 의존: backend 21 (근로자 Google 로그인 API), 10 (S-03 로그인 화면), 27 (`src/api/auth.ts`)
 
 ## 목표
@@ -60,24 +60,66 @@ S-03 로그인 화면의 Google 버튼은 지금 서버를 부르지 않고 프�
 - 수정: `src/api/auth.ts`, `src/api/center.ts`, `src/vite-env.d.ts`, `src/state/AppState.tsx`, `src/state/storage.ts`(필요하면 키 옮기기 도우미), `src/components/WorkerLayout.tsx`, `src/pages/worker/Onboarding.tsx`, `src/pages/worker/CenterRequest.tsx`, `src/pages/worker/Report.tsx`, `src/i18n/*.ts`(20개), `README.md`, `design.md`, `CLAUDE.md`, `../app-front/README.md`
 
 ## 완료 기준
-- [ ] `npm run build` 통과. `app-front`도 `npm run build`가 통과한다(근로자 화면을 공유 import하므로).
-- [ ] 단독 모드: `/signup`에 비회원 버튼이 없고, G 버튼(데모) → 프로필 → `/home`이 된다. `/api/*` 요청이 없다. 새로고침해도 로그인이 유지된다. 지금 `umn.device`에 있던 프로필·리포트가 `umn.device.demo`로 옮겨져 그대로 보인다.
-- [ ] API 모드 + 서버 `WORKER_AUTH=off`: 단독 모드와 같다. `/api/auth/worker/me`는 한 번만 부른다.
-- [ ] API 모드 + 서버 `WORKER_AUTH=google`(`CENTER_COOKIE_SECURE=false`, 사용자가 만든 클라이언트 ID), `VITE_GOOGLE_CLIENT_ID` 같은 값:
+- [x] `npm run build` 통과. `app-front`도 `npm run build`가 통과한다(근로자 화면을 공유 import하므로).
+- [x] 단독 모드: `/signup`에 비회원 버튼이 없고, G 버튼(데모) → 프로필 → `/home`이 된다. `/api/*` 요청이 없다. 새로고침해도 로그인이 유지된다. 지금 `umn.device`에 있던 프로필·리포트가 `umn.device.demo`로 옮겨져 그대로 보인다.
+- [x] API 모드 + 서버 `WORKER_AUTH=off`: 단독 모드와 같다. `/api/auth/worker/me`는 한 번만 부른다.
+- [x] API 모드 + 서버 `WORKER_AUTH=google`(`CENTER_COOKIE_SECURE=false`, 사용자가 만든 클라이언트 ID), `VITE_GOOGLE_CLIENT_ID` 같은 값:
   - [ ] `/signup`에 공식 Google 버튼만 있다. 실제 Google 계정으로 로그인하면 `fornav_worker` 쿠키가 생기고 프로필 단계 → `/home`으로 간다.
-  - [ ] 로그인 전에 `/intake`·`/home`으로 바로 들어가면 `/signup`으로 간다. 하단 119 띠는 `/signup`에서도 보인다.
-  - [ ] 다른 Google 계정으로 다시 로그인하면 앞 계정의 프로필·리포트가 보이지 않는다. 원래 계정으로 돌아오면 다시 보인다.
-  - [ ] `/my` 로그아웃 → 서버 `/me`가 `account: null`이 되고 로그인 화면으로 간다.
-  - [ ] S-12 센터 요청이 201이다. 서버 세션을 지우고(`/logout`을 직접 부름) 보내면 로그인 화면으로 가고, 다시 로그인하면 쓰던 입력이 남아 있다.
-  - [ ] 로그인한 뒤 서버를 끄면 앱을 계속 쓸 수 있다(증상 입력 → 결과는 브라우저 함수로 대체). 로그인한 적 없는 새 시크릿 창에서는 로그인 실패 문구 + 다시 시도 + 119 띠가 보인다.
-  - [ ] Google 스크립트를 막으면(개발자 도구 요청 차단) 로그인 실패 문구가 보이고 화면이 멈추지 않는다.
-- [ ] `VITE_GOOGLE_CLIENT_ID`를 비우고 `WORKER_AUTH=google` 서버에 붙이면 "로그인 설정이 없습니다"가 보인다.
-- [ ] 360px에서 en·vi·ko·ar(RTL)로 `/signup`·`/my`를 보고 가로 스크롤이 없다. 공식 버튼 문구가 앱 언어로 나온다.
-- [ ] 저장소와 콘솔에 ID 토큰이 없다(`sessionStorage`·`localStorage`·콘솔 검색). 화면 코드가 전역 `google`과 `fetch`를 직접 쓰지 않는다(`grep`).
-- [ ] i18n 20개 파일에서 `loginGuest`·`modeGuest`·`repSavedGuest`가 사라지고 새 키가 모두 있다(타입 검사).
+  - [x] 로그인 전에 `/intake`·`/home`으로 바로 들어가면 `/signup`으로 간다. 하단 119 띠는 `/signup`에서도 보인다.
+  - [x] 다른 Google 계정으로 다시 로그인하면 앞 계정의 프로필·리포트가 보이지 않는다. 원래 계정으로 돌아오면 다시 보인다.
+  - [x] `/my` 로그아웃 → 서버 `/me`가 `account: null`이 되고 로그인 화면으로 간다.
+  - [x] S-12 센터 요청이 201이다. 서버 세션을 지우고(`/logout`을 직접 부름) 보내면 로그인 화면으로 가고, 다시 로그인하면 쓰던 입력이 남아 있다.
+  - [x] 로그인한 뒤 서버를 끄면 앱을 계속 쓸 수 있다(증상 입력 → 결과는 브라우저 함수로 대체). 로그인한 적 없는 새 시크릿 창에서는 로그인 실패 문구 + 다시 시도 + 119 띠가 보인다.
+  - [x] Google 스크립트를 막으면(개발자 도구 요청 차단) 로그인 실패 문구가 보이고 화면이 멈추지 않는다.
+- [x] `VITE_GOOGLE_CLIENT_ID`를 비우고 `WORKER_AUTH=google` 서버에 붙이면 "로그인 설정이 없습니다"가 보인다.
+- [x] 360px에서 en·vi·ko·ar(RTL)로 `/signup`·`/my`를 보고 가로 스크롤이 없다. 공식 버튼 문구가 앱 언어로 나온다.
+- [x] 저장소와 콘솔에 ID 토큰이 없다(`sessionStorage`·`localStorage`·콘솔 검색). 화면 코드가 전역 `google`과 `fetch`를 직접 쓰지 않는다(`grep`).
+- [x] i18n 20개 파일에서 `loginGuest`·`modeGuest`·`repSavedGuest`가 사라지고 새 키가 모두 있다(타입 검사).
 
 ## 결과
-(구현 후 작성)
+
+```sh
+cd frontend && npm ci && npm run build      # tsc --noEmit + vite build 통과(기존 500kB 청크 경고만)
+cd app-front && npm ci && npm run build     # 통과(공유 import)
+```
+
+브라우저 확인. Chrome 확장이 연결되지 않아 Playwright(`playwright-core` + 캐시된 Chromium headless shell)로 360px 화면을 돌렸다. 확인 스크립트는 저장소 밖(작업용 폴더)에 두고 커밋하지 않았다.
+- 단독 모드: `npx vite --port 5195`
+- API 모드: backend 21 브랜치 서버를 `STATIC_DIR`로 프론트 빌드(`VITE_API_BASE=/api VITE_GOOGLE_CLIENT_ID=test-client…`)와 같은 출처로 띄웠다(8767). 설정은 `WORKER_AUTH=google CENTER_COOKIE_SECURE=false DB_PATH=<임시 파일>`이다.
+- 실제 Google 팝업은 쓸 수 없어서 두 가지를 바꿔 끼웠다. 서버의 ID 토큰 검증기만 가짜(`dev-token-a`·`dev-token-b` → 서로 다른 sub)로 바꿨고, 브라우저에서는 `window.google.accounts.id`를 미리 넣어 공식 버튼 자리에 "Google A/B/틀린 토큰" 버튼을 그리게 했다. 그 밖의 코드 경로(`googleId.ts` → `loginWithGoogle` → `/api/auth/worker/google` → 쿠키 → `AppState`)는 실제와 같다.
+
+| 점검 | 결과 |
+|---|---|
+| 단독 모드 | `/intake`로 바로 가면 `/signup?next=/intake`로 간다. 비회원 버튼이 없다. 데모 G 버튼 + 데모 각주 + 119 띠. G → 프로필 → `/home`. `umn.account`={key:demo,kind:demo}, `umn.device.demo`에 프로필. 새로고침해도 `/home`. `/api/*` 요청 0 |
+| 옛 기기 저장소 | `umn.device`(1985년생 프로필, 사례 id 하나)를 넣고 데모 로그인 → `umn.device`가 없어지고 `umn.device.demo`로 옮겨졌다. 홈 나 줄에 1985 |
+| 서버 `WORKER_AUTH=off` | 단독과 같은 데모 로그인 → `/home`. `/api/auth/worker/me`는 페이지를 열 때마다 한 번 |
+| `google`: 로그인 | 데모 G 없이 `.gsi-button`만. 틀린 토큰 → "Could not sign in", 화면 그대로. 계정 A → `fornav_worker`(HttpOnly), `umn.account`={32자 키, google} → 프로필 → `/home` |
+| `google`: 계정 바꾸기 | A 로그아웃 → 서버 `/me` `account: null` → `/signup`(next 없음). B 로그인 → 빈 프로필 단계(A의 생년월일 없음). B 저장 → 홈에 B 프로필. 다시 A → 프로필 단계 없이 `/home`에 A 프로필. 계정별 저장소 2개 |
+| `google`: 센터 요청 | 201 전송 완료. 화면에 머문 채 서버 세션만 지우고 보내기 → `/signup?next=/center-request?type=interpret`. 다시 로그인 → S-12로 돌아오고 "통역"이 골라져 있다 |
+| 서버 꺼짐 | 로그인한 기기는 `/api/*`를 모두 막아도 `/home`·`/intake`가 열린다. 처음 기기는 "Could not sign in" + 다시 시도 + 119 띠. 서버를 되살리고 다시 시도 → Google 버튼 |
+| Google 스크립트 막힘 | `accounts.google.com` 차단 → 10초 안에 실패 문구 + 다시 시도 |
+| 클라이언트 ID 없는 빌드 | "Sign-in is not set up for this app yet." Google 스크립트 요청 0 |
+| 실제 Google 스크립트 | 가짜 없이 테스트 클라이언트 ID로 열면 Google이 공식 버튼을 그린다(ko에서 "Google 계정으로 로그인", 알약 모양, 폭 328px). 로그인 자체는 실제 클라이언트 ID가 있어야 해서 하지 않았다 |
+| 언어·폭 | 360px에서 en·vi·ko·ar·my·ru로 `/signup`(단독·API)과 `/my`를 열었고 가로 스크롤이 없다. 공식 버튼 locale은 앱 언어(en-GB, vi-VN, ko-KR, ar-AE, my-MM, ru-RU) |
+| 토큰 노출 | `localStorage`·`sessionStorage`에 `dev-token` 문자열이 없다. 화면(`pages/`·`components/`)에 `window.google`·`fetch(`가 없다(grep) |
+
+- 바뀐 화면·경로: S-03 `/signup`(비회원 없음, 실제·데모 로그인, 실패·설정 없음 안내), S-04 나 줄(비회원 줄 없음), S-11 저장 안내(늘 저장됨), S-12(회원만 안내 카드 없음, 세션 끝 401 → 로그인), S-13(로그아웃 버튼, 비회원 안내 없음). 진입 가드가 로그인 → 프로필까지 본다. 경로 추가 없음
+
+정한 것
+- **진입 가드가 가던 주소를 `next`에 담는다.** 처음에는 S-12가 401을 받으면 직접 `/signup?next=…`로 보냈다. 그런데 계정을 비우는 상태 변경이 라우터 이동보다 먼저 그려져서, 가드가 `next` 없이 한 번 더 보냈다. 그래서 가드가 `pathname + search`를 `next`로 붙이게 했다. S-12는 고른 요청 종류를 주소(`?type=`)에도 두고, 401이면 `endSession`만 부른다. 직접 주소로 들어온 사람(`/intake`)도 로그인 뒤 그리로 간다
+- **로그아웃·지우기는 먼저 로그인 화면으로 옮기고(`navigate(…, { flushSync: true })`) 계정을 비운다.** 순서가 바뀌면 가드가 `/my`를 `next`로 달아, 다시 로그인한 사람이 `/my`로 간다
+- **프로필 단계 판단**: 로그인하고 프로필까지 있는 채로 `/signup`에 들어오면 수정 단계다(`/my`의 프로필 수정). 이 판단은 들어올 때 하고, 계정이 비면 푼다. 계정이 바뀌면 입력칸을 그 계정의 프로필(없으면 빈 값)로 다시 채워 앞 계정 값이 남지 않게 한다
+- **센터 요청 401은 센터 직원 세션 처리(`center.ts`의 `call`)를 거치지 않는다.** `sendCase`가 `requestJson`을 직접 부르고 401을 그대로 던진다. 근로자 세션 끝이 센터 접수함 목록을 비우지 않게 하기 위해서다
+- **세션이 끝나 로그인하고 돌아와도 연락처는 다시 적는다.** README "상태의 경계"(연락처는 브라우저에 남기지 않는다) 때문이다. 증상 입력은 세션에, 요청 종류는 주소에 남는다
+- 서버 로그인 상태는 `api/auth.ts`의 작은 저장소(`useWorkerAuth`, `useSyncExternalStore`)에 둔다. `WorkerLayout`이 이 상태를 기기 계정과 맞춘다. 서버 세션이 없으면 `endSession`, 계정이 다르거나 데모 계정이면 서버 계정으로 바꾼다. 서버를 확인하지 못하면 아무것도 바꾸지 않는다
+- 공식 버튼은 iframe이라 서버로 보내는 동안 막을 수 없다. 그동안은 버튼 대신 막힌 `.btn.secondary.block.big`을 보인다
+- 새 키 `loginRetry`는 만들지 않고 기존 `retry`("다시 시도")를 쓴다
+- 비회원 흐름이 없어져 쓰이지 않게 된 키도 지웠다: `cenNeedMember`, `cenMakeProfile`, `myProfileGuestHint`, `myProfileCreate`, `myDeleted`. 지운 뒤에는 로그인 화면으로 가므로 "지웠습니다" 안내가 보일 자리가 없다
+- 새 클래스는 `.gsi-button`(가운데 정렬, 높이 44px 이상) 하나다. `design.md`에 "근로자 로그인" 절을 더했다
+- `/my`에 "로그아웃"(`.btn.secondary`)을 두고, "내 데이터 지우기"는 `.btn.ghost`로 낮췄다. 지우기는 그 계정의 기기 저장소를 지우고 로그아웃한다
+
+남은 것
+- 사용자가 만든 웹 클라이언트 ID로 실제 Google 계정 로그인(위 완료 기준에서 열려 있는 줄). backend 21의 남은 확인과 같은 일이다
 
 ## 메모
 - 백엔드 문서가 말하는 근로자 로그인 API는 backend 21이다. 이 항목은 21이 병합된 뒤 시작한다.

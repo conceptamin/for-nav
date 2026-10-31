@@ -1,9 +1,11 @@
 // 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 로고 + 언어 변경), 하단 119 고정 버튼, 진입 순서 가드, 스크롤 등장.
+// 들어올 때 서버 로그인 상태(api/auth.ts useWorkerAuth)를 한 번 보고 기기의 계정과 맞춘다(backlog 28).
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
 // title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
+import { useWorkerAuth } from '../api/auth';
 import { LANGUAGE_OPTIONS, useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
@@ -41,10 +43,20 @@ export function useScreenBar(bar: ScreenBar) {
 export function WorkerLayout() {
   const app = useApp();
   const { t } = useT();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [bar, setBar] = useState<ScreenBar>({});
   const setBarStable = useMemo(() => setBar, []);
+
+  // 서버가 Google 로그인을 쓰는데 기기의 계정이 서버 세션과 다르면(세션 만료·데모 계정) 서버를 따른다.
+  // 서버를 확인하지 못하면(꺼짐) 기기의 계정으로 계속 쓴다. 처음 로그인만 서버가 있어야 한다(backlog 28 결정 2)
+  const workerAuth = useWorkerAuth();
+  const { account, loginKind, signIn, endSession } = app;
+  useEffect(() => {
+    if (workerAuth.status !== 'ready' || !workerAuth.required || !account) return;
+    if (workerAuth.account === null) endSession();
+    else if (workerAuth.account !== account || loginKind !== 'google') signIn(workerAuth.account, 'google');
+  }, [workerAuth, account, loginKind, signIn, endSession]);
 
   // 스플래시: 이 세션에서 처음 열 때 한 번, 1.2초 또는 누를 때까지(backlog 24). 경로가 아니라 화면 대신 그린다
   const [splash, setSplash] = useState(() => !splashSeen());
@@ -92,15 +104,16 @@ export function WorkerLayout() {
     );
   }
 
-  // 진입 순서: 언어 → 동의 → 로그인/비회원. 앞 단계를 건너뛰면 되돌린다.
+  // 진입 순서: 언어 → 동의 → 로그인 → 프로필. 앞 단계를 건너뛰면 되돌린다. 로그인과 프로필은 둘 다 /signup이고,
+  // 가던 화면(세션이 끝난 S-12 등)을 next에 담아 로그인 뒤 그리로 돌아간다
   const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
   if (!app.lang && pathname !== '/') return <Navigate to="/" replace />;
   if (app.lang && !consented && !['/', '/consent'].includes(pathname)) return <Navigate to="/consent" replace />;
-  if (app.lang && consented && !app.mode && !['/', '/consent', '/signup'].includes(pathname)) {
-    return <Navigate to="/signup" replace />;
+  if (app.lang && consented && !app.ready && !['/', '/consent', '/signup'].includes(pathname)) {
+    return <Navigate to={`/signup?${new URLSearchParams({ next: pathname + search })}`} replace />;
   }
 
-  // 홈은 로고 + 앱 이름(홈 링크). 그 밖은 ← + 로고(회원·비회원이 정해졌으면 홈 링크).
+  // 홈은 로고 + 앱 이름(홈 링크). 그 밖은 ← + 로고(로그인하고 프로필까지 있으면 홈 링크).
   // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 하나를 둔다(backlog 25)
   const isRoot = pathname === '/' || pathname === '/home';
   const logo = <img className="logo" src="/logo.png" width="28" height="28" alt="" />;
@@ -115,7 +128,7 @@ export function WorkerLayout() {
             {isRoot ? (
               <>
                 {logo}
-                <Link to={app.mode ? '/home' : '/'} className="title">
+                <Link to={app.ready ? '/home' : '/'} className="title">
                   {appName}
                 </Link>
               </>
@@ -124,7 +137,7 @@ export function WorkerLayout() {
                 <button type="button" className="back" aria-label={t('back')} onClick={bar.onBack ?? (() => navigate('/home'))}>
                   ←
                 </button>
-                {app.mode ? (
+                {app.ready ? (
                   <Link to="/home" className="logo-link" aria-label={appName}>
                     {logo}
                   </Link>
