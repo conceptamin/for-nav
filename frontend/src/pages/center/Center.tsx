@@ -763,7 +763,10 @@ export function StatsPage() {
 
 function StatsView({ s }: { s: CenterStats }) {
   const byIndustry = cellsBy<Industry>(s.byIndustry, (k) => INDUSTRIES[k]?.ko ?? k);
-  const byLang = cellsBy<Lang>(s.byLanguage, (k) => LANGUAGE_NAMES_KO[k] ?? k);
+  // 20개 언어 중 5건 이상인 언어만 많은 순으로 보인다
+  const byLang = cellsBy<Lang>(s.byLanguage, (k) => LANGUAGE_NAMES_KO[k] ?? k)
+    .filter((c) => c.n !== null)
+    .sort((a, b) => b.n! - a.n!);
   const byIns = cellsBy<YesNoUnknown>(s.byInsurance, (k) => ({ yes: '있음', no: '없음', unknown: '모름' })[k] ?? k);
   const byAfter = cellsBy<'after' | 'within'>(s.byAfterHours, (k) => ({ after: '운영 시간 외', within: '운영 시간 내' })[k] ?? k);
   return (

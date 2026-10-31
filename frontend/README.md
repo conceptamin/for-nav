@@ -92,7 +92,7 @@ src/
   i18n/             근로자 고정 문구. en이 키의 기준이고 나머지 19개 언어는 같은 키를 타입으로 강제한다
     suggest.ts      S-01 언어 순서(폰 언어 → 지원 언어 하나를 맨 앞에)
   state/            AppState(세션·기기 상태), centerStore(단독 모드의 센터 접수함), splash(이 세션에서 스플래시를 봤는지), storage(실패해도 멈추지 않는 저장소 래퍼)
-  data/             mock 사례 24건·통계 레코드 420건(시드 고정 합성 데이터)
+  data/             mock 사례 24건·통계 레코드 329건(시드 고정 합성 데이터, 통계는 센터 회신 분포)
   styles.css        스타일 한 파일. 그리는 규칙은 design.md
 scripts/
   dump-fixtures.ts  백엔드 동기화 테스트 입력. 프론트 규칙·템플릿 출력을 backend/tests/fixtures/parity.json으로 내보낸다
