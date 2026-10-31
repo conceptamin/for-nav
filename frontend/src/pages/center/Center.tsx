@@ -123,12 +123,14 @@ function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; b
   );
 }
 
-/** 센터 머리글. 로그인 화면(C-00)도 같은 머리글에 로고·이름만 쓴다 */
+/** 센터 머리글. 로그인 화면(C-00)도 같은 머리글에 로고·이름만 쓴다. 로고·이름을 누르면 센터 홈(C-01 접수함)으로 간다 */
 export function CenterHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="c-header">
-      <img className="logo" src="/mark.png" width="24" height="24" alt="" />
-      <span className="brand">울산외국인주민·근로자통합지원센터 · 의료지원</span>
+      <Link to="/center" className="home">
+        <img className="logo" src="/mark.png" width="24" height="24" alt="" />
+        <span className="brand">울산외국인주민·근로자통합지원센터 · 의료지원</span>
+      </Link>
       {children}
     </header>
   );

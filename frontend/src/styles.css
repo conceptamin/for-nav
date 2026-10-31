@@ -2523,13 +2523,21 @@ hr.divider {
   z-index: 10;
 }
 
-/* 센터 머리글 로고(backlog 25). 머리글 칸 사이(24px)보다 브랜드 글자에 붙여 둔다 */
+/* 로고·브랜드를 한 링크로 묶어 센터 홈으로 보낸다. 로고와 브랜드 글자 사이는 머리글 칸 사이보다 좁은 10px */
+.c-header .home {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* 센터 머리글 로고(backlog 25) */
 .c-header .logo {
   flex: none;
   display: block;
   width: 24px;
   height: 24px;
-  margin-inline-end: -14px;
 }
 
 .c-header .brand {
@@ -2921,11 +2929,6 @@ table.cases tr.fresh {
   .c-header {
     gap: 12px;
     padding: 0 16px;
-  }
-
-  /* 칸 사이가 12px로 줄어도 로고와 브랜드 글자 사이는 넓을 때와 같은 10px */
-  .c-header .logo {
-    margin-inline-end: -2px;
   }
 
   /* 좁으면 머리글 칸이 모자라 직원 이메일은 숨기고 로그아웃만 남긴다 */
