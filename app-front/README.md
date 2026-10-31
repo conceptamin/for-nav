@@ -92,6 +92,8 @@ app-front/
 | `ready` | `path` | 다리가 준비됐을 때 한 번(첫 렌더 직후) | 이 뒤에 `init`을 보낸다. 스플래시(네이티브)가 있다면 여기서 걷는다 |
 | `openExternal` | `url` | `tel:`·`mailto:`·`sms:` 링크, 그리고 앱 출처 밖의 `http(s)` 링크(카카오맵 등)를 눌렀을 때 | 기본 전화 앱·브라우저로 연다. WebView 안에서 열지 않는다 |
 | `googleSignIn` | 없음 | S-03에서 앱 로그인 버튼을 눌렀을 때. `init.features`에 `googleSignIn`이 있을 때만 보낸다(backlog 06) | `signOut()` 뒤 `authenticate()`로 네이티브 계정 선택을 띄우고, 끝나면 `googleSignInResult`를 한 번 보낸다. 앞 요청이 끝나기 전에 또 오면 앞 요청을 `failed`로 끝낸다 |
+| `speechStart` | `lang`(받아쓰기 언어 BCP-47, `frontend/src/api/speech.ts`의 `SPEECH_LANGS` 값) | 통화가 붙어 자막을 켤 때(음소거를 풀 때 포함). `init.features`에 `speech`가 있을 때만 보낸다(backlog 04) | 네이티브 음성 인식을 켜고, `speechStop`이 올 때까지 플랫폼이 스스로 멈추면 다시 켠다. 받아쓴 글은 `speech`로 보낸다. 이미 켜져 있으면 앞 것을 버리고 새 `lang`으로 켠다. 처음 켤 때 마이크·음성 인식 권한을 묻는다 |
+| `speechStop` | 없음 | 통화가 끝나거나 음소거할 때 | 음성 인식을 끄고 듣던 말은 버린다. 이 뒤에는 `speech`를 보내지 않는다 |
 
 **호스트 → 웹** (`window.fornav.receive(message)`를 부른다. `message`는 객체 또는 JSON 문자열)
 
@@ -100,13 +102,18 @@ app-front/
 | `init` | `platform`(`android`·`ios`), `appVersion`, `locale`(BCP-47), `insets`(아래), `features`(문자열 배열, 예: `["googleSignIn"]`. 없으면 빈 배열로 본다) | `ready`를 받은 뒤 한 번 | `useHost()`의 값이 채워진다. `locale`은 확인 화면에 보이기만 한다. S-01의 "폰 언어" 제안은 `frontend/`와 같이 `navigator.languages`를 쓰는데, WebView의 `navigator.languages`가 기기 언어를 그대로 주므로 따로 넘길 필요가 없다 |
 | `insets` | `insets: { top, right, bottom, left }`(CSS px) | 안전 영역이 바뀔 때(회전, 키보드는 제외) | `:root`의 `--inset-*` 변수를 바꾼다 |
 | `googleSignInResult` | 성공: `idToken`(Google ID 토큰 JWT). 실패: `error`(`canceled` \| `failed`) | `googleSignIn`의 응답으로 한 번 | 기다리던 `requestGoogleIdToken()`을 끝낸다. 기다리는 요청이 없으면 무시한다. 토큰을 저장하거나 로그에 찍지 않는다 |
+| `speech` | `text`(받아쓴 글), `final`(`true`면 확정 문장, `false`면 말하는 중) | `speechStart`와 `speechStop` 사이, 인식 결과가 올 때마다 | 통화 자막으로 넘긴다(`setHostSpeech`, frontend 37). 확정 문장 뒤에는 말하는 중 글을 빈 글로 지운다. 켜 둔 받아쓰기가 없으면 무시한다. 글을 저장하거나 로그에 찍지 않는다 |
+| `speechError` | `error`(`denied`: 마이크·음성 인식 권한 거부 \| `unsupported`: 이 기기·언어로 인식할 수 없음) | 받아쓰기를 계속할 수 없을 때 한 번. 호스트는 이 뒤 음성 인식을 끈다 | 이 통화에서는 다시 켜지 않고 "받아쓰기를 못 하는 브라우저" 안내 줄을 보인다(통화는 그대로다) |
 
-`init.features`의 모르는 값은 무시한다. 호스트는 빌드에 Google 클라이언트 ID가 없으면 `googleSignIn`을 넣지 않는다(그러면 웹은 GIS 버튼을 그리고, 앱 안에서는 `disallowed_useragent`로 실패해 설정 실수가 바로 보인다).
+`init.features`의 모르는 값은 무시한다. 호스트는 빌드에 Google 클라이언트 ID가 없으면 `googleSignIn`을 넣지 않는다(그러면 웹은 GIS 버튼을 그리고, 앱 안에서는 `disallowed_useragent`로 실패해 설정 실수가 바로 보인다). `speech`는 호스트가 음성 인식을 이을 수 있으면 늘 넣는다. 기기에 인식기가 없거나 권한이 거부된 것은 켜 봐야 알므로 `speechError`로 알린다. WebView에서는 Web Speech API로 받아쓸 수 없어서(iOS WKWebView에는 없고, Android WebView에는 `webkitSpeechRecognition`이 있지만 앱이 마이크 권한을 가져도 켜자마자 `not-allowed`로 끝난다, backlog 04 결과) 앱 안 통화 자막은 이 메시지로만 된다.
 
 ```json
 { "protocol": 1, "type": "googleSignIn" }
 { "protocol": 1, "type": "googleSignInResult", "idToken": "eyJhbGciOiJSUzI1NiIs…" }
 { "protocol": 1, "type": "googleSignInResult", "error": "canceled" }
+{ "protocol": 1, "type": "speechStart", "lang": "vi-VN" }
+{ "protocol": 1, "type": "speech", "text": "tôi bị đau", "final": false }
+{ "protocol": 1, "type": "speechError", "error": "denied" }
 ```
 
 **호스트 → 웹, 동기 호출**
@@ -144,7 +151,7 @@ app-front/
 
 ### 다리로 보내지 않는 것
 
-- 증상 입력·자유 입력·연락처·리포트 본문. 다리는 열고 닫는 신호만 나른다. 호스트 로그(Flutter `print`)와 웹 `console`에 메시지 본문을 찍지 않는다(`url`은 `tel:`·지도 검색어가 들어 있으므로 호스트도 찍지 않는다).
+- 증상 입력·자유 입력·연락처·리포트 본문. 다리는 열고 닫는 신호만 나른다. 예외는 통화 자막의 `speech.text`다(backlog 04): 근로자가 통화에서 소리 내 말한 것을 받아쓴 글로, 브라우저에서도 Web Speech API 공급자를 거쳐 서버(`caption`)로 가는 글이다. 양쪽 모두 저장하거나 로그에 찍지 않는다. 호스트 로그(Flutter `print`)와 웹 `console`에 메시지 본문을 찍지 않는다(`url`은 `tel:`·지도 검색어가 들어 있으므로 호스트도 찍지 않는다).
 - 인증 토큰. 근로자 Google 로그인(frontend 28)은 서버 HttpOnly 쿠키(`fornav_worker`)라 세션 토큰은 다리를 타지 않는다. **예외는 `googleSignInResult.idToken` 하나다**(backlog 06): Google이 WebView 안 웹 로그인을 막아(`disallowed_useragent`) 네이티브 로그인으로 받은 ID 토큰을 웹에 한 번 넘긴다. 호스트·웹 모두 저장하거나 로그에 찍지 않고, 웹은 받은 토큰을 서버(`POST /api/auth/worker/google`)에 한 번 보내고 버린다. 센터 직원 로그인은 이 앱 범위 밖이다.
 
 ## API 연결
@@ -181,12 +188,18 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 - `openExternal`과, `NavigationDelegate`에 걸린 앱 출처 밖 이동(`tel:`·`mailto:`·`sms:` 포함)은 막고 외부 앱으로 연다. 앱 출처는 `--dart-define=APP_URL`의 출처 하나다.
 - Android 뒤로 가기는 `window.fornav?.onBack?.() ?? false`를 동기로 묻고, `false`면 앱을 뒤로 보낸다. iOS는 WebView의 가장자리 스와이프를 켠다.
 - `googleSignIn`은 `google_sign_in`(7.x)으로 받는다. `initialize(clientId: <iOS 클라이언트 ID>, serverClientId: <웹 클라이언트 ID>)`로 ID 토큰의 `aud`가 웹 클라이언트 ID(서버 `GOOGLE_CLIENT_ID`)가 되게 한다. 두 값은 `--dart-define`(`GOOGLE_WEB_CLIENT_ID`, `GOOGLE_IOS_CLIENT_ID`)이고, 있을 때만 `init.features`에 `googleSignIn`을 넣는다. iOS는 역방향 클라이언트 ID URL 스킴도 등록한다(`app/README.md` "Google 로그인").
+- `speechStart`·`speechStop`은 `speech_to_text`로 받는다(backlog 04). 플랫폼 인식기는 말이 끊기면 스스로 멈추므로(Android는 몇 초, iOS는 약 1분) `speechStop` 전까지 다시 켠다. 권한 거부·인식기 없음은 `speechError` 한 번으로 알리고 끈다.
 - 로그에는 메시지 `type`만 남긴다.
 
 호스트가 더 챙겨야 하는 것(웹은 관여하지 않는다):
 
-- **권한**: 마이크(통화), 카메라·사진(S-05 사진 선택), 파일 선택기. Android WebView는 앱이 권한 요청과 파일 선택기를 구현해야 동작한다. 계약에는 없고 backlog 04에서 다룬다.
-- **받아쓰기**: 통화 자막은 브라우저 Web Speech API를 쓰는데 iOS WKWebView에는 없다. 네이티브 음성 인식을 다리로 잇는 것은 backlog 04의 결정 사항이다.
+- **권한**: 계약에는 없다(backlog 04).
+
+  | 무엇 | Android | iOS |
+  |---|---|---|
+  | 마이크(통화 `getUserMedia`) | `RECORD_AUDIO`. WebView의 권한 요청(`onPermissionRequest`)이 오면 앱 권한을 먼저 받고 허용한다. 거부하면 WebView 요청도 거부해 웹이 `micDenied` 안내를 보인다 | `NSMicrophoneUsageDescription`. 시스템이 권한 창을 띄운다. WebView 요청은 앱 출처일 때만 허용한다 |
+  | 음성 인식(받아쓰기) | `RECORD_AUDIO`와 같은 권한. 기기의 음성 인식 서비스(Google 앱)를 쓴다 | `NSSpeechRecognitionUsageDescription` |
+  | 사진 선택(S-05 `<input type=file accept=image/*>`) | 앱이 파일 선택기를 구현한다(`setOnShowFileSelector` → 시스템 사진 선택기). 권한이 필요 없다 | WKWebView가 스스로 띄운다. `NSPhotoLibraryUsageDescription`, "사진 찍기"를 고르면 `NSCameraUsageDescription` |
 - **HTTPS**: 마이크·WebRTC는 안전한 출처에서만 열린다. 앱이 불러오는 주소는 HTTPS여야 한다(`localhost` 개발 제외).
 - 상태 표시줄 색, 화면 방향(세로 고정), 텍스트 크기 배율은 앱 설정이다.
 
@@ -196,7 +209,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 |---|---|---|
 | 하단 119 띠의 안전 영역 | `frontend/`의 `env()` 위에 호스트 `--inset-bottom`을 더한다(`src/styles.css`) | Android 실기기에서 값 확인(backlog 03) |
 | 번들 배포 | 원격 주소를 불러온다 | 앱 안에 빌드를 넣어 네트워크 없이 단독 모드(backlog 05). `base`를 상대 경로로 빌드할 수 있게 해 둔다 |
-| 받아쓰기 | 브라우저 Web Speech API(Android WebView는 됨, iOS는 없음) | 호스트 음성 인식 → `type: "speech"` 메시지(backlog 04) |
+| 사진 선택의 카메라 촬영 | Android는 사진 선택기만(iOS는 WKWebView가 "사진 찍기"도 준다) | Android 파일 선택기에 카메라 촬영 더하기(2차) |
 | 푸시 | 없음. 통화는 S-12 화면을 열어 두어야 받는다 | 센터가 걸 때 알림. 호스트·백엔드 양쪽 항목이 필요하다(미정) |
 | 앱 스토어 | 없음 | 심사용 개인정보 처리방침·권한 설명 문구(미정) |
 
@@ -220,6 +233,6 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 | 호스트 | `../app/`(개발 주소를 `--dart-define`으로 불러온다. 번들·서명·스토어 설정 없음) | Android·iOS 앱 |
 | 화면 | 근로자 화면 전부(`frontend/` 공유 import) + `/__host` | 같음. 푸시·네이티브 화면은 없다 |
 | 근로자 로그인 | 앱 안에서는 네이티브 Google 로그인(backlog 06). Android 디버그 키 SHA-1만 등록했다. 스토어 배포 키 SHA-1·Apple 로그인(심사 지침 4.8)은 없다 | 배포 키 등록, Apple 로그인 여부는 스토어 배포 항목에서 정한다 |
-| 받아쓰기 | 브라우저 공급자 | 호스트 음성 인식 또는 서버 음성 인식(미정) |
+| 받아쓰기 | 호스트 음성 인식(`speech_to_text`: Android는 기기의 음성 인식 서비스, iOS는 Apple 음성 인식). 지원 언어는 기기마다 다르다 | 같음 또는 서버 음성 인식(미정) |
 | 테스트 | `npm run build`(타입 검사)뿐. 다리는 `/__host` 화면에서 눈으로 확인. 근로자 화면의 규칙은 `frontend/`의 백엔드 동기화 테스트가 지킨다 | — |
 | CI | `.github/workflows/ci.yml`에 이 폴더 잡이 아직 없다(`chore/` 영역 별도 작업) | PR마다 `npm run build` |

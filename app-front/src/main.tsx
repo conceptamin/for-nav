@@ -10,11 +10,21 @@ import { EmergencyPage, IntakePage, ResultPage } from '@fe/pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from '@fe/pages/worker/Onboarding';
 import { ReportBuilderPage, ReportViewPage } from '@fe/pages/worker/Report';
 import { setNativeGoogleSignIn, type NativeGoogleSignIn } from '@fe/api/googleId';
+import { setHostSpeech, type HostSpeech } from '@fe/api/speech';
 import { CallPage, DeskPage } from '@fe/pages/worker/Visit';
 import { AppStateProvider } from '@fe/state/AppState';
 import '@fe/styles.css';
 import { installBackPolicy } from './bridge/back';
-import { FEATURE_GOOGLE_SIGN_IN, getHostState, GoogleSignInError, installHost, requestGoogleIdToken, subscribeHost } from './bridge/host';
+import {
+  FEATURE_GOOGLE_SIGN_IN,
+  FEATURE_SPEECH,
+  getHostState,
+  GoogleSignInError,
+  installHost,
+  listenHostSpeech,
+  requestGoogleIdToken,
+  subscribeHost,
+} from './bridge/host';
 import { HostProvider } from './bridge/HostProvider';
 import { installLinkInterceptor } from './bridge/links';
 import { HostCheckPage } from './pages/HostCheck';
@@ -38,6 +48,16 @@ const syncNativeGoogleSignIn = () => {
 };
 subscribeHost(syncNativeGoogleSignIn);
 syncNativeGoogleSignIn();
+
+// 통화 자막 받아쓰기(backlog 04, frontend 37). WebView에는 Web Speech API가 없으므로, 호스트가 init.features로 알리면
+// 통화가 호스트 음성 인식을 쓰게 등록한다. 오류는 종류와 관계없이 "받아쓰기를 못 함"(onUnsupported)이다. 브라우저에서는 등록하지 않는다
+const hostSpeech: HostSpeech = (lang, on) => listenHostSpeech(lang, { onText: on.onText, onError: () => on.onUnsupported() });
+const syncHostSpeech = () => {
+  const host = getHostState();
+  setHostSpeech(host.present && host.features.includes(FEATURE_SPEECH) ? hostSpeech : null);
+};
+subscribeHost(syncHostSpeech);
+syncHostSpeech();
 
 // 근로자 화면은 frontend/src/main.tsx의 근로자 경로와 같은 순서·같은 화면 ID다(공유 import, backlog 02).
 // 센터 화면(/center*)은 이 앱에 없다. 알 수 없는 경로는 /로 보낸다.

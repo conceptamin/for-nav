@@ -5,6 +5,8 @@
 // - 호스트가 없으면 send()는 false를 돌려주고 아무 일도 하지 않는다. 화면은 그때 브라우저 기본 동작에 맡긴다.
 // - 네이티브 Google 로그인(backlog 06): requestGoogleIdToken()이 googleSignIn을 보내고 googleSignInResult 하나를 기다린다.
 //   ID 토큰은 반환값으로만 지나가고 상태·기록·console에 남기지 않는다.
+// - 호스트 음성 인식(backlog 04): listenHostSpeech()가 speechStart를 보내고 speech·speechError를 받는다.
+//   받아쓴 글은 핸들러로만 지나가고 상태·기록·console에 남기지 않는다.
 
 export const PROTOCOL = 1;
 
@@ -43,10 +45,25 @@ export interface HostState {
 }
 
 /** 웹 → 호스트 */
-export type Outgoing = { type: 'ready'; path: string } | { type: 'openExternal'; url: string } | { type: 'googleSignIn' };
+export type Outgoing =
+  | { type: 'ready'; path: string }
+  | { type: 'openExternal'; url: string }
+  | { type: 'googleSignIn' }
+  | { type: 'speechStart'; lang: string }
+  | { type: 'speechStop' };
 
 /** 호스트가 네이티브 Google 로그인을 할 수 있다는 init.features 값 */
 export const FEATURE_GOOGLE_SIGN_IN = 'googleSignIn';
+
+/** 호스트가 네이티브 음성 인식(통화 자막 받아쓰기)을 할 수 있다는 init.features 값 */
+export const FEATURE_SPEECH = 'speech';
+
+/** listenHostSpeech()의 핸들러. 받아쓴 글은 기록하지 않는다 */
+export interface HostSpeechHandlers {
+  onText: (text: string, final: boolean) => void;
+  /** denied: 권한 거부, unsupported: 이 기기·언어로 인식할 수 없음. 호스트는 이미 껐다 */
+  onError: (error: 'denied' | 'unsupported') => void;
+}
 
 /** requestGoogleIdToken()의 실패. canceled는 사용자가 계정 선택을 닫은 것이다 */
 export class GoogleSignInError extends Error {
@@ -59,7 +76,9 @@ export class GoogleSignInError extends Error {
 type Incoming =
   | { type: 'init'; platform?: unknown; appVersion?: unknown; locale?: unknown; insets?: unknown; features?: unknown }
   | { type: 'insets'; insets?: unknown }
-  | { type: 'googleSignInResult'; idToken?: unknown; error?: unknown };
+  | { type: 'googleSignInResult'; idToken?: unknown; error?: unknown }
+  | { type: 'speech'; text?: unknown; final?: unknown }
+  | { type: 'speechError'; error?: unknown };
 
 interface HostWindow {
   ForNav?: { postMessage?: (message: string) => void };
@@ -88,6 +107,8 @@ let backHandler: (() => boolean | undefined) | null = null;
 /** 기다리는 googleSignIn 요청. 응답(googleSignInResult)은 이것 하나만 끝낸다 */
 let pendingSignIn: { promise: Promise<string>; resolve: (idToken: string) => void; reject: (e: GoogleSignInError) => void } | null =
   null;
+/** 켜 둔 받아쓰기. speech·speechError는 이것 하나에만 간다 */
+let speechListener: HostSpeechHandlers | null = null;
 
 function hostWindow(): HostWindow {
   return window as unknown as HostWindow;
@@ -216,6 +237,23 @@ export function receive(raw: unknown): void {
       else pending.reject(new GoogleSignInError(m.error === 'canceled' ? 'canceled' : 'failed'));
       break;
     }
+    case 'speech': {
+      if (!speechListener || typeof m.text !== 'string') break; // 켜 둔 받아쓰기가 없으면 무시한다
+      const text = m.text.trim();
+      if (m.final === true) {
+        if (text) speechListener.onText(text, true);
+        speechListener.onText('', false);
+      } else {
+        speechListener.onText(text, false);
+      }
+      break;
+    }
+    case 'speechError': {
+      const listener = speechListener;
+      speechListener = null;
+      listener?.onError(m.error === 'denied' ? 'denied' : 'unsupported');
+      break;
+    }
     default:
       return; // 모르는 type: 기록도 남기지 않는다
   }
@@ -242,6 +280,29 @@ export function requestGoogleIdToken(): Promise<string> {
     reject(new GoogleSignInError('failed'));
   }
   return promise;
+}
+
+/**
+ * 호스트 음성 인식으로 받아쓴다(backlog 04). init.features에 speech가 있을 때만 보낸다. 끄는 함수를 돌려준다.
+ * 다시 켜기는 호스트가 맡는다. 이미 켜 둔 것이 있으면 그것을 대신한다(호스트도 앞 것을 버린다).
+ */
+export function listenHostSpeech(lang: string, handlers: HostSpeechHandlers): () => void {
+  if (!state.ready || !state.features.includes(FEATURE_SPEECH)) {
+    handlers.onError('unsupported');
+    return () => {};
+  }
+  const listener = { ...handlers };
+  speechListener = listener;
+  if (!send({ type: 'speechStart', lang })) {
+    speechListener = null;
+    handlers.onError('unsupported');
+    return () => {};
+  }
+  return () => {
+    if (speechListener !== listener) return; // 이미 오류로 끝났거나 새 받아쓰기가 대신했다
+    speechListener = null;
+    send({ type: 'speechStop' });
+  };
 }
 
 /**

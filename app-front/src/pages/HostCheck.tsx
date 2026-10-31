@@ -1,8 +1,8 @@
 // 호스트 연결 확인 화면(/__host). 개발 확인용이라 문구는 한국어·영어 고정이고 i18n 키를 만들지 않는다(design.md "호스트 확인 화면").
 // 다리가 감지한 것, init으로 받은 값, 주고받은 메시지의 type만 보인다. 본문은 보이지 않는다.
 
-import { useState } from 'react';
-import { GoogleSignInError, onBack, PROTOCOL, requestGoogleIdToken } from '../bridge/host';
+import { useEffect, useRef, useState } from 'react';
+import { GoogleSignInError, listenHostSpeech, onBack, PROTOCOL, requestGoogleIdToken } from '../bridge/host';
 import { useHost } from '../bridge/HostProvider';
 
 const API_BASE = (import.meta.env.VITE_API_BASE ?? '').trim();
@@ -11,6 +11,32 @@ export function HostCheckPage() {
   const host = useHost();
   const [backResult, setBackResult] = useState<string>('—');
   const [signInResult, setSignInResult] = useState<string>('—');
+
+  // 받아쓰기 시험. 받아쓴 글은 보이지 않고 글자 수·확정 문장 수·오류 종류만 보인다
+  const [speechResult, setSpeechResult] = useState<string>('—');
+  const stopSpeech = useRef<(() => void) | null>(null);
+  useEffect(() => () => stopSpeech.current?.(), []);
+  const toggleSpeech = () => {
+    if (stopSpeech.current) {
+      stopSpeech.current();
+      stopSpeech.current = null;
+      setSpeechResult((r) => `${r} · 끔 · stopped`);
+      return;
+    }
+    let finals = 0;
+    setSpeechResult('듣는 중 · listening');
+    const lang = host.locale ?? navigator.language;
+    stopSpeech.current = listenHostSpeech(lang, {
+      onText: (text, final) => {
+        if (final) finals += 1;
+        setSpeechResult(`${lang} · 확정 ${finals}문장 · 말하는 중 ${text.length}자`);
+      },
+      onError: (error) => {
+        stopSpeech.current = null;
+        setSpeechResult(`speechError ${error}`);
+      },
+    });
+  };
 
   // 결과 종류만 보인다. 토큰은 보이지도 찍지도 않는다
   const trySignIn = () => {
@@ -79,6 +105,12 @@ export function HostCheckPage() {
           </button>
           <span className="muted">→ {signInResult}</span>
         </p>
+        <p className="links">
+          <button type="button" className="btn secondary" onClick={toggleSpeech}>
+            받아쓰기 시험 · Try speech
+          </button>
+          <span className="muted">→ {speechResult}</span>
+        </p>
       </section>
 
       <section className="card">
@@ -100,7 +132,7 @@ export function HostCheckPage() {
         <h2>브라우저에서 호스트 흉내 · Fake a host</h2>
         <p className="muted">개발자 도구 콘솔에 두 줄을 차례로 넣는다(새로고침 없음). 첫 줄이 통로, 둘째 줄이 호스트의 init이다. 셋째 줄은 Google 로그인 시험을 누른 뒤 넣는 응답이다. README "호스트 계약" · backlog 01 완료 기준.</p>
         <pre>{`window.ForNav = { postMessage: (s) => console.log('host<-', JSON.parse(s).type) }
-window.fornav.receive({ protocol: 1, type: 'init', platform: 'android', appVersion: '0.0.1', locale: 'vi-VN', insets: { top: 24, right: 0, bottom: 48, left: 0 }, features: ['googleSignIn'] })
+window.fornav.receive({ protocol: 1, type: 'init', platform: 'android', appVersion: '0.0.1', locale: 'vi-VN', insets: { top: 24, right: 0, bottom: 48, left: 0 }, features: ['googleSignIn', 'speech'] })
 window.fornav.receive({ protocol: 1, type: 'googleSignInResult', error: 'canceled' })`}</pre>
       </section>
     </div>
