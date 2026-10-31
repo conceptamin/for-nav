@@ -226,6 +226,8 @@ export const vi: Record<MessageKey, string> = {
   chatSend: 'Gửi',
   chatMe: 'Tôi',
   chatCenter: 'Trung tâm',
+  chatRead: 'Đã xem',
+  chatUnread: 'Chưa xem',
   chatConnecting: 'Đang kết nối…',
   chatReconnecting: 'Mất kết nối. Đang kết nối lại…',
   chatStopped: 'Cuộc trò chuyện đã kết thúc. Vui lòng liên hệ trung tâm bằng cách khác.',

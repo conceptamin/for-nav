@@ -225,6 +225,8 @@ export const km: Record<MessageKey, string> = {
   chatSend: 'ផ្ញើ',
   chatMe: 'ខ្ញុំ',
   chatCenter: 'មជ្ឈមណ្ឌល',
+  chatRead: 'បានអាន',
+  chatUnread: 'មិនទាន់អាន',
   chatConnecting: 'កំពុងភ្ជាប់…',
   chatReconnecting: 'ការតភ្ជាប់បានដាច់។ កំពុងភ្ជាប់ឡើងវិញ…',
   chatStopped: 'ការជជែកនេះបានបញ្ចប់។ សូមទាក់ទងមជ្ឈមណ្ឌលតាមវិធីផ្សេង។',

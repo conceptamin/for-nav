@@ -238,6 +238,8 @@ export const zhTW: Record<MessageKey, string> = {
   chatSend: '傳送',
   chatMe: '我',
   chatCenter: '中心',
+  chatRead: '已讀',
+  chatUnread: '未讀',
   chatConnecting: '正在連線…',
   chatReconnecting: '連線已中斷，正在重新連線…',
   chatStopped: '此聊天已結束。請透過其他方式聯絡中心。',

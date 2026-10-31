@@ -238,6 +238,8 @@ export const kk: Record<MessageKey, string> = {
   chatSend: 'Жіберу',
   chatMe: 'Мен',
   chatCenter: 'Орталық',
+  chatRead: 'Оқылды',
+  chatUnread: 'Оқылмады',
   chatConnecting: 'Қосылуда…',
   chatReconnecting: 'Байланыс үзілді. Қайта қосылуда…',
   chatStopped: 'Бұл чат аяқталды. Орталықпен басқа жолмен байланысыңыз.',

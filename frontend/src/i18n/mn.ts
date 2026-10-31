@@ -238,6 +238,8 @@ export const mn: Record<MessageKey, string> = {
   chatSend: 'Илгээх',
   chatMe: 'Би',
   chatCenter: 'Төв',
+  chatRead: 'Уншсан',
+  chatUnread: 'Уншаагүй',
   chatConnecting: 'Холбогдож байна…',
   chatReconnecting: 'Холболт тасарлаа. Дахин холбогдож байна…',
   chatStopped: 'Энэ чат дууссан. Төвтэй өөр аргаар холбогдоно уу.',

@@ -52,6 +52,8 @@ const CHAT_LABELS: ChatLabels = {
   send: '보내기',
   me: '센터',
   other: '근로자',
+  read: '읽음',
+  unread: '안 읽음',
   connecting: '채팅 연결 중…',
   reconnecting: '채팅 연결이 끊겼습니다. 다시 연결하는 중…',
   stopped: {
