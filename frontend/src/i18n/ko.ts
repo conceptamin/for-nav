@@ -279,7 +279,7 @@ export const ko: Record<MessageKey, string> = {
   myProfileEdit: '프로필 수정',
   profileAdd: '프로필 추가',
   profileOthers: '다른 프로필(누르면 바뀝니다)',
-  profileDelete: '이 프로필 삭제',
+  profileDelete: '현재 프로필 삭제',
   profileDeleteConfirm: '이 프로필을 삭제할까요?',
   reportDelete: '이 메모 삭제',
   reportDeleteConfirm: '이 메모를 삭제할까요?',
