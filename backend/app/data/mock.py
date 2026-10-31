@@ -140,7 +140,6 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
             created_at=clock.iso_utc(created),
         )
         insurance = weighted(r, INS_W)
-        emergency_flag = r() < 0.08
         # 사례마다 하나씩 뽑는다(프론트와 같은 시드 순서)
         request_types = [weighted(r, REQ_W)]
         contact_method = weighted(r, CONTACT_W)
@@ -149,14 +148,13 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
         summary = build_center_summary(
             CenterSummaryInput(
                 intake=intake,
-                emergency_flag=emergency_flag,
                 request_types=request_types,
                 coverage=coverage,
                 insurance=insurance,
                 contact_method=contact_method,
             )
         )
-        urgency, reasons = rate_urgency(emergency_flag, sc.work, insurance)
+        urgency, reasons = rate_urgency(sc.work, insurance)
         status: CaseStatus
         if n < 5:
             status = "new"
@@ -182,7 +180,6 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
                 contact_method=contact_method,
                 contact=None if contact_method == "visit" else f"010-0000-00{10 + n}",
                 after_hours=is_after_hours(created),
-                emergency_flag=emergency_flag,
                 work_related=sc.work,
                 insurance=insurance,
                 live=False,

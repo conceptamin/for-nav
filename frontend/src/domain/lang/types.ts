@@ -2,7 +2,7 @@
 // 한국어 표기·발음 표기는 vocab.ts·templates.ts에 있고, 여기에는 근로자에게 보이는 모국어만 둔다.
 // 새 언어는 파일 하나를 추가하고 index.ts의 PACKS에 등록하면 된다. 빠진 키는 타입 검사가 잡는다.
 
-import type { AgeGroup, BodyPart, Department, District, Industry, Onset, Sex, Symptom, WorkType, YesNoUnknown } from '../vocab';
+import type { BodyPart, Department, District, Industry, Onset, Sex, Symptom, WorkType, YesNoUnknown } from '../vocab';
 
 export type PhraseKey = 'firstVisit' | 'revisit' | 'workYes' | 'workNo' | 'korean' | 'hello' | 'arc';
 export type FaqId = 'first' | 'when' | 'where' | 'insurance' | 'help';
@@ -20,18 +20,6 @@ export type AnswerKey =
   | 'helpText';
 export type ReportFieldKey = 'symptoms' | 'bodyParts' | 'onset' | 'circumstance' | 'note' | 'baseline' | 'meds';
 export type RequestTypeKey = 'booking' | 'interpret' | 'policy' | 'referral' | 'other';
-export type KeywordReason =
-  | 'unconscious'
-  | 'breathing'
-  | 'chest'
-  | 'heavyBleeding'
-  | 'amputation'
-  | 'fall'
-  | 'seizure'
-  | 'stroke'
-  | 'severeBurn'
-  | 'chemicalEye'
-  | 'poisoning';
 
 export interface LangPack {
   /** 고정 어휘. vocab.ts의 표와 키가 같다 */
@@ -43,7 +31,6 @@ export interface LangPack {
     industries: Record<Industry, string>;
     workTypes: Record<WorkType, string>;
     districts: Record<District, string>;
-    ageGroups: Record<AgeGroup, string>;
     sexes: Record<Sex, string>;
   };
   /**
@@ -79,14 +66,5 @@ export interface LangPack {
     myNote: string;
     request: string;
     requestTypes: Record<RequestTypeKey, string>;
-  };
-  /** 응급 키워드(소문자 부분 일치). triage.ts가 모든 언어의 목록을 합쳐 쓴다 */
-  emergency: {
-    keywords: Record<KeywordReason, string[]>;
-    /** 머리 부상. 구토·어지러움과 함께일 때만 응급 */
-    headInjury: string[];
-    vomit: string[];
-    /** 보조 점수의 심각도 표현 */
-    severity: string[];
   };
 }

@@ -81,25 +81,10 @@ def test_worker_auth_me_default_off():
 def test_triage_readme_examples():
     r = client.post("/api/triage", json=INTAKE)
     assert r.status_code == 200
-    assert r.json() == {
-        "emergency": False,
-        "reasons": [],
-        "byRule": False,
-        "byModel": False,
-        "modelScore": 2,
-        "department": {"primary": "surgery", "alt": "ortho"},
-        "missing": [],
-    }
+    assert r.json() == {"department": {"primary": "surgery", "alt": "ortho"}, "missing": []}
+    # 가슴 통증도 응급 판정 없이 진료과만 돌려준다(backlog 26)
     chest = client.post("/api/triage", json={**INTAKE, "bodyParts": ["chest"], "symptoms": ["pain"]}).json()
-    assert chest == {
-        "emergency": True,
-        "reasons": ["chest"],
-        "byRule": True,
-        "byModel": False,
-        "modelScore": 0,
-        "department": {"primary": "internal", "alt": "family"},
-        "missing": [],
-    }
+    assert chest == {"department": {"primary": "internal", "alt": "family"}, "missing": []}
 
 
 def test_invalid_enum_is_422():
@@ -128,52 +113,24 @@ def test_extract_keeps_button_input():
     assert out["filled"] is False
 
 
-# 응급도 모델 입력(backlog 10) -----------------------------------------------------
-
-ACUITY_INPUTS = {"ageGroup": "45to64", "sex": "female", "injury": True, "painScore": 7, "mental": "alert"}
+# 손상 여부(진료과 모델 B 입력, backlog 10)와 지운 응급도 입력(backlog 26) ---------------------------
 
 
-def test_acuity_inputs_are_optional_and_absent_when_unset():
-    # 새 키가 없는 요청의 응답은 지금과 같다(프론트 타입·동기화 테스트와 맞는다)
+def test_injury_is_optional_and_absent_when_unset():
     out = client.post("/api/extract", json={"intake": INTAKE}).json()
     assert out["intake"] == INTAKE
-    assert client.post("/api/triage", json=INTAKE).json() == client.post("/api/triage", json={**INTAKE, "ageGroup": None}).json()
+    assert client.post("/api/extract", json={"intake": {**INTAKE, "injury": True}}).json()["intake"] == {**INTAKE, "injury": True}
 
 
-def test_acuity_inputs_round_trip():
-    r = client.post("/api/extract", json={"intake": {**INTAKE, **ACUITY_INPUTS}})
-    assert r.status_code == 200
-    assert r.json()["intake"] == {**INTAKE, **ACUITY_INPUTS}
-    # 규칙은 아직 이 값을 쓰지 않는다(모델 연결은 backlog 06)
-    assert client.post("/api/triage", json={**INTAKE, **ACUITY_INPUTS}).json() == client.post("/api/triage", json=INTAKE).json()
+def test_removed_acuity_inputs_are_ignored():
+    # 예전 프론트가 보내던 키는 422가 아니라 무시되고 응답에도 없다
+    old = {"ageGroup": "45to64", "sex": "female", "painScore": 7, "mental": "alert"}
+    assert client.post("/api/extract", json={"intake": {**INTAKE, **old}}).json()["intake"] == INTAKE
+    assert client.post("/api/triage", json={**INTAKE, **old}).json() == client.post("/api/triage", json=INTAKE).json()
 
 
-@pytest.mark.parametrize(
-    "bad",
-    [
-        {"painScore": 11},
-        {"painScore": -1},
-        {"painScore": "3"},
-        {"painScore": 2.5},
-        {"ageGroup": "child"},
-        {"mental": "asleep"},
-        {"sex": "x"},
-        {"injury": "yes"},
-    ],
-)
-def test_acuity_inputs_out_of_range_are_422(bad):
-    assert client.post("/api/triage", json={**INTAKE, **bad}).status_code == 422
-
-
-def test_acuity_enums_match_model_features():
-    # 순서가 모델 피처 값이다. modeling/src/fornav_modeling/features/buttons.py의 MENTALS·AGE_GROUPS·SEXES와 같아야 한다
-    from typing import get_args
-
-    from app import vocab
-
-    assert get_args(vocab.AgeGroup) == ("under30", "30to44", "45to64", "65plus")
-    assert get_args(vocab.Sex) == ("female", "male")
-    assert get_args(vocab.Mental) == ("alert", "verbal", "pain", "unresponsive")
+def test_injury_must_be_bool():
+    assert client.post("/api/triage", json={**INTAKE, "injury": "yes"}).status_code == 422
 
 
 def test_route_readme_example():
@@ -209,7 +166,6 @@ def test_clinician_report_shape():
 def test_center_summary():
     body = {
         "intake": INTAKE,
-        "emergencyFlag": False,
         "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "no",
@@ -223,7 +179,6 @@ def test_center_summary():
 def test_center_summary_lists_every_request_type():
     body = {
         "intake": INTAKE,
-        "emergencyFlag": False,
         "requestTypes": ["booking", "interpret"],
         "coverage": None,
         "insurance": "no",
@@ -235,7 +190,7 @@ def test_center_summary_lists_every_request_type():
 
 
 def test_center_summary_needs_a_request_type():
-    body = {"intake": INTAKE, "emergencyFlag": False, "requestTypes": [], "coverage": None, "insurance": "no", "contactMethod": None}
+    body = {"intake": INTAKE, "requestTypes": [], "coverage": None, "insurance": "no", "contactMethod": None}
     assert client.post("/api/report/center", json=body).status_code == 422
 
 
@@ -252,7 +207,6 @@ def test_mock_cases_listed_latest_first():
 def _send(**over):
     body = {
         "intake": {**INTAKE, "workRelated": "yes"},
-        "emergencyFlag": False,
         "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "no",

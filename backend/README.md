@@ -6,10 +6,10 @@
 목업 서버의 목표는 세 가지다.
 
 1. 프론트가 쓸 **API 계약(경로·요청·응답 형태)을 먼저 확정**한다. 응답 필드는 프론트 TypeScript 타입과 1:1로 맞춘다.
-2. 규칙 엔진(응급·진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
+2. 규칙 엔진(진료과·제도 경로·긴급도)과 기본 템플릿을 서버로 옮긴다. 이 템플릿은 나중에 **LLM 실패 시 대체 문장**으로 그대로 쓴다.
 3. 센터 접수함을 localStorage 대신 서버 메모리에 두어, **다른 기기에서도** "근로자 전송 → 센터 접수함 도착"을 시연할 수 있게 한다.
 
-학습 모델(`modeling/README.md`)은 `MODEL_DIR`이 있을 때 `/api/triage`에 붙고(없으면 규칙·보조 점수), LLM은 `/api/extract`, 접수 도우미의 상황 줄 슬롯, 리포트 자유 입력 번역, 통화 자막 번역에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿·원문 표시). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
+학습 모델(`modeling/README.md`)은 `MODEL_DIR`이 있을 때 `/api/triage`에 붙고(없으면 규칙표), LLM은 `/api/extract`, 접수 도우미의 상황 줄 슬롯, 리포트 자유 입력 번역, 통화 자막 번역에 붙였다(키가 없거나 실패하면 키워드 사전·기본 템플릿·원문 표시). 나머지 자리는 응답 스키마에 비워 둔다("나중에 붙일 자리").
 
 ## 기술 스택
 
@@ -21,7 +21,7 @@
 | 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경, 채팅 토큰·메시지가 재시작 뒤에도 남는다 |
 | 상담 채팅 | FastAPI 기본 WebSocket(`uvicorn[standard]`에 든 `websockets`) | 새 의존성이 없다. 사례별 방과 재접속 뒤 이전 메시지면 충분해 socket.io는 쓰지 않는다(backlog 14). 열린 연결은 프로세스 메모리에 있으므로 `--workers 1`(기본)로만 띄운다 |
 | 통화 | 브라우저끼리 WebRTC 음성, 서버는 같은 WebSocket으로 시그널링 중계와 자막 번역만 | 서버가 음성을 받지 않아 새 의존성·음성 인식 공급자가 없다. 받아쓰기는 브라우저 Web Speech API가 한다(backlog 16). TURN 서버는 없다 |
-| 모델 | `../modeling` 경로 의존성(editable)의 `predict()`. `lightgbm`·`numpy`가 따라 설치된다 | 응급도·진료과 모델(backlog 06, 12). 버전은 `modeling/pyproject.toml` 한 곳에서 고정한다. `MODEL_DIR`이 없으면 import하지 않는다 |
+| 모델 | `../modeling` 경로 의존성(editable)의 `predict()`. `lightgbm`·`numpy`가 따라 설치된다 | 진료과 모델(backlog 06, 12). 버전은 `modeling/pyproject.toml` 한 곳에서 고정한다. `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
 
@@ -33,7 +33,7 @@ backend/
   app/
     main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta, STATIC_DIR 프론트 서빙(APP_HOSTS 호스트에는 APP_STATIC_DIR 앱용 웹)
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
-    model.py           응급도·진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
+    model.py           진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
     llm_limit.py       LLM 호출 제한 — IP별 60초·서버 전체 하루 상한, 넘으면 LLMError(limited)로 대체 동작, IP 헤더는 루프백일 때만
     llm_providers/
@@ -46,9 +46,9 @@ backend/
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (20개 언어 Lang, 부위·증상·진료과·업종·구군 어휘, josa, 언어 묶음 PACKS 읽기)
-    lang/packs.json    ← domain/lang/*.ts (근로자 모국어 19개의 어휘 표기·문장 틀·응급 키워드). 손으로 고치지 않는다
+    lang/packs.json    ← domain/lang/*.ts (근로자 모국어 19개의 어휘 표기·문장 틀). 손으로 고치지 않는다
     rules/
-      triage.py        ← domain/triage.ts (응급 키워드, 보조 점수, 진료과 규칙표, 자유 입력 추출)
+      triage.py        ← domain/triage.ts (진료과 규칙표, 자유 입력 추출)
       extract_llm.py   자유 입력 LLM 추출(프롬프트, 열거값 밖 필드 버리기, 실패 시 키워드 사전)
       coverage.py      ← domain/coverage.ts (제도 경로, INFO_DATE, 센터 운영 시간)
       urgency.py       ← domain/centerCase.ts (rateUrgency)
@@ -87,7 +87,7 @@ backend/
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단), 호스트별 앱용 웹 빌드
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
     test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
-    test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
+    test_model_triage.py 규칙표 우선·막연한 분기 진료과·고정 조합·응급도 출력 무시·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
     test_llm_limit.py  LLM 호출 제한(IP별·하루, 대체 동작, 재시도 없음, 루프백일 때만 IP 헤더, 통화 자막, 로그에 IP 없음)
@@ -162,7 +162,7 @@ backend/
 
 아래 값은 현재 프론트 규칙에 실제로 넣어 얻은 결과다. 서버도 같은 값을 돌려줘야 한다.
 
-**`POST /api/triage`** — 손·베인 상처·출혈(비응급, 보조 점수 2)
+**`POST /api/triage`** — 손·베인 상처·출혈. 응급 여부는 판정하지 않고 진료과만 돌려준다(backlog 26)
 
 ```jsonc
 // 요청
@@ -170,49 +170,22 @@ backend/
   "freeText": "", "onset": null, "workRelated": null, "workType": null,
   "industry": null, "district": null, "createdAt": "2026-10-26T01:00:00.000Z" }
 // 응답
-{ "emergency": false, "reasons": [], "byRule": false, "byModel": false, "modelScore": 2,
-  "department": { "primary": "surgery", "alt": "ortho" }, "missing": [] }
+{ "department": { "primary": "surgery", "alt": "ortho" }, "missing": [] }
 ```
 
-가슴 + 통증이면 버튼 조합 규칙으로 바로 응급이다.
-
-```json
-{ "emergency": true, "reasons": ["chest"], "byRule": true, "byModel": false, "modelScore": 0,
-  "department": { "primary": "internal", "alt": "family" }, "missing": [] }
-```
-
-**모델이 있을 때(`MODEL_DIR`, backlog 06)** — 같은 요청에 선택 필드 `model`이 더해진다. 아래는 `modeling/models`(v2)로 띄운 실제 응답이다(확률은 줄임).
+**모델이 있을 때(`MODEL_DIR`, backlog 06)** — 같은 요청에 선택 필드 `model`이 더해진다(확률은 줄임).
 
 ```jsonc
 // 손·베인 상처·출혈 — 규칙표가 정한 조합이라 진료과는 규칙표 그대로
-{ "emergency": false, "reasons": [], "byRule": false, "byModel": false, "modelScore": 2,
-  "department": { "primary": "surgery", "alt": "ortho" }, "missing": [],
-  "model": { "acuity": "outpatient",
-             "acuityProba": { "emergency": 0.017, "today": 0.115, "outpatient": 0.869 },
-             "departmentProba": { "ortho": 0.292, "surgery": 0.476, "family": 0.166, "...": 0.066 },
-             "shap": [{ "feature": "symptom_cut", "value": 1.0, "contribution": 1.1125 }, "..."] } }
-// 가슴·통증 — 규칙이 응급이면 모델과 관계없이 응급(byRule: true). 응급이라 진료과도 규칙표 그대로
-{ "emergency": true, "reasons": ["chest"], "byRule": true, "byModel": true, "modelScore": 0,
-  "department": { "primary": "internal", "alt": "family" }, "missing": [], "model": { "acuity": "emergency", "...": "..." } }
+{ "department": { "primary": "surgery", "alt": "ortho" }, "missing": [],
+  "model": { "departmentProba": { "ortho": 0.292, "surgery": 0.476, "family": 0.166, "...": 0.066 } } }
 ```
 
-- `byModel`: 모델이 있으면 `model.acuity == "emergency"`, 없으면 보조 점수 ≥ 3. `emergency = byRule || byModel`이고, 모델만 응급이면 `reasons`는 `["riskScore"]`다.
-- `modelScore`는 모델 유무와 관계없이 보조 점수 그대로다.
-- `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)이면서 **응급이 아닐 때만** 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다. 응급(규칙이든 모델이든)이면 규칙표다.
-- `model.shap`: 판정한 응급도 클래스에 기여가 큰 피처 3개(`feature`, `value`, `contribution`). 값을 모르면 `value: null`.
-- 예측 중 오류가 나면 `model` 없이 규칙·보조 점수 결과를 돌려준다(로그에는 예외 종류만).
+- `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)만 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다. 단 가슴 + 통증, 숨참은 막연한 분기여도 규칙표로 고정한다(모델이 가슴 통증에 정형외과를 먼저 내기도 한다, backlog 06·26).
+- `model`에는 `departmentProba`만 나간다. `modeling` `predict()`가 응급도 출력(`acuity`·`acuityProba`·`shap`)을 함께 돌려줘도 읽지 않는다(modeling 15에서 지운다).
+- 예측 중 오류가 나면 `model` 없이 규칙표 결과를 돌려준다(로그에는 예외 종류만).
 
-**`Intake`의 응급도 모델 입력(선택)** — 모든 `Intake` 요청은 아래 키를 선택으로 더 받는다(backlog 10). 프론트 `Intake` 타입에는 아직 없고, 규칙은 이 값을 쓰지 않는다. `MODEL_DIR`이 있으면 응급도 모델 입력으로 넘긴다(backlog 06). 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다.
-
-| 키 | 값 |
-|---|---|
-| `ageGroup` | `"under30"` · `"30to44"` · `"45to64"` · `"65plus"` |
-| `sex` | `"female"` · `"male"` |
-| `injury` | `true` · `false`(손상·외상 여부) |
-| `painScore` | 0~10 정수 |
-| `mental` | `"alert"` · `"verbal"` · `"pain"` · `"unresponsive"`(AVPU) |
-
-범위 밖 값과 타입이 다른 값(`painScore: "3"`, `injury: "yes"`)은 422다.
+**`Intake`의 손상 여부(선택)** — 모든 `Intake` 요청은 `injury`(`true` · `false`, 손상·외상 여부)를 선택으로 더 받는다(backlog 10). 규칙은 이 값을 쓰지 않고, `MODEL_DIR`이 있으면 진료과 모델 B 입력으로 넘긴다. 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다. 타입이 다른 값(`injury: "yes"`)은 422다. 예전 응급도 입력(`ageGroup`·`sex`·`painScore`·`mental`)은 backlog 26에서 지웠고, 보내도 무시한다.
 
 **`POST /api/extract`** — 자유 입력 `"Ngón tay bị kẹp vào máy dập, bị sưng."`
 
@@ -232,7 +205,7 @@ backend/
 - `"llm"`: LLM 출력을 썼다. 출력은 `vocab.py` 열거값으로 고정하고, 열거값을 벗어난 필드는 그 필드만 비운다(목록은 `[]`, 나머지는 `null`). 그 뒤 키워드 결과와 필드별로 합친다. 부위·증상은 합집합, 업무 관련은 키워드 값만, 발생 시점·작업 유형은 LLM 값이다(backlog 09).
 - `"keywords"`: 키가 없거나, LLM이 `LLM_ATTEMPTS`번 모두 실패했거나, 호출 제한(backlog 20)에 걸렸거나, 자유 입력이 비어 키워드 사전을 썼다. 결과는 프론트 `extractFromText`와 같다.
 
-어느 쪽이든 버튼으로 고른 값이 우선이고 빈 항목만 채운다. 응급 판정(`/api/triage`)은 LLM과 관계없이 자유 입력에 키워드 규칙으로 돈다.
+어느 쪽이든 버튼으로 고른 값이 우선이고 빈 항목만 채운다.
 
 **`POST /api/visit-helper`의 `llmSlots`** — 서버 전용 선택 필드로, LLM으로 채운 슬롯 이름 목록이다. 채운 것이 없으면 `[]`다(backlog 04).
 
@@ -274,7 +247,6 @@ backend/
 // 요청
 {
   "intake": { /* Intake */ },
-  "emergencyFlag": true,            // 세션 중 응급 판정 이력(AppState.emergencySeen)
   "requestTypes": ["booking", "interpret"],   // 고른 순서, 1~5개. 빈 배열은 422
   "coverage": { /* CoverageResult 또는 null */ },
   "insurance": "no",
@@ -288,7 +260,7 @@ backend/
 
 `chatToken`은 서버 전용 선택 필드다(backlog 14). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
 
-긴급도는 `rateUrgency`와 같다. 예: 응급 이력 없음 + 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
+긴급도는 `rateUrgency`와 같다(업무 중 발생 +2, 건강보험증 없음 +1, 3점 이상 높음·1점 이상 보통). 예: 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
 
 **`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
@@ -436,9 +408,6 @@ backend/
    ```
 3. `tests/test_parity.py`가 같은 입력을 서버 함수에 넣어 출력이 완전히 같은지 비교한다.
 4. 입력 목록에는 최소한 다음을 넣는다.
-   - 응급 키워드 13종 각각(근로자 언어 20개마다 1개씩)
-   - 머리 부상 + 구토 / 머리 부상만(응급 아님)
-   - 보조 점수 경계값(2점, 3점)
    - 진료과 규칙표의 모든 분기
    - 오탐 방지 사례: `"ở nhà máy"`(공장에서 → 업무 중), 영어 `painting`(통증으로 잡히면 안 됨)
    - 제도 경로 4가지 + `alsoIndustrial`
@@ -452,7 +421,7 @@ backend/
 
 - `VITE_API_BASE`가 비어 있으면 지금처럼 브라우저 안의 함수를 쓰고, 값이 있으면 API를 호출한다. 화면 컴포넌트는 `src/api/` 아래 함수만 부르게 하고, 그 안에서 둘 중 하나를 고른다.
 - `vite.config.ts`에 `server.proxy: { '/api': 'http://localhost:8000' }`를 추가한다. 배포·발표 때는 서버가 프론트 빌드를 같은 출처에서 서빙해 CORS를 피한다(`STATIC_DIR`, 아래 "발표용 실행"). 개발 중 직접 호출에 대비해 서버 CORS는 `http://localhost:5180`만 허용한다.
-- **응급 판정은 API 실패 시 브라우저 규칙으로 즉시 대체한다.** 네트워크 오류 때문에 119 안내가 늦어지면 안 된다. 자유 입력 추출(`/api/extract`)도 실패하면 브라우저 키워드 추출로 대체한다. 추출에서 입력이 멈추면 그 뒤의 응급 판정까지 늦어지기 때문이다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
+- **진료과 추천(`/api/triage`)은 API 실패 시 브라우저 규칙표로 즉시 대체한다.** 자유 입력 추출(`/api/extract`)도 실패하면 브라우저 키워드 추출로 대체한다. 추출에서 입력이 멈추면 문진 전체가 늦어지기 때문이다. 하단 119 버튼은 네트워크와 관계없이 늘 보인다. 나머지(리포트·접수 도우미)는 실패 시 오류 문구를 보이고 다시 시도하게 한다.
 - 센터 접수함은 지금처럼 2초 주기로 `GET /api/center/cases`를 다시 부른다. 사례 수가 적어 전체 목록을 받아도 된다. 기존 `storage` 이벤트 갱신은 API 모드에서 끈다.
 - 근로자 상태(언어, 동의, 현재 입력, 프로필, 리포트)는 계속 브라우저에 둔다. 근로자 Google 로그인(backlog 21)을 켜면 서버는 계정 키와 세션 해시만 저장하고 이름·이메일·프로필·리포트는 저장하지 않는다.
 
@@ -493,7 +462,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `APP_STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../app-front/dist` | 앱용 웹 빌드(backlog 22). `APP_HOSTS`의 호스트로 온 요청에는 `STATIC_DIR` 대신 이것을 준다. `APP_HOSTS`·`STATIC_DIR`과 함께 있어야 한다 |
 | `APP_HOSTS` | (없음) | 쉼표 구분 호스트 이름(포트 없이), 예: `app.for-nav.com` | 요청의 `Host`가 여기 있으면 앱용 웹 빌드를 준다. 대소문자·포트는 보지 않는다 |
-| `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
+| `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 진료과 모델. 비어 있으면 모델 없이 규칙표로 동작한다 |
 | `CENTER_AUTH` | `off` | `off` \| `email` | 센터 직원 로그인(backlog 17). `email`이면 `DB_PATH`가 있어야 한다 |
 | `MAIL_PROVIDER` | `resend` | `resend` \| `console` | 로그인 코드 메일. `console`은 코드를 서버 표준 출력에 찍는다(로컬 개발 전용, `CENTER_COOKIE_SECURE=false`일 때만 허용) |
 | `MAIL_API_KEY` | (없음) | Resend API 키 | `resend`이면 있어야 한다 |
@@ -554,7 +523,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 - `/api/*`가 먼저 매칭되고, 나머지 경로는 빌드 폴더의 파일, 없으면 `index.html`이다(프론트 라우팅 `/center` 등). 확장자가 있는 없는 파일(`/assets/x.js`)은 404다.
 - 프론트를 API 모드(`VITE_API_BASE=/api`)로 빌드해야 같은 출처의 `/api`를 부른다. 단독 모드로 빌드하면 서버가 떠 있어도 브라우저 안 mock만 쓴다.
-- 시연 전에 휴대폰에서 응급 판정 실패 시 브라우저 규칙 대체가 동작하는지(서버를 잠깐 끄고 증상 입력) 확인한다.
+- 시연 전에 휴대폰에서 진료과 추천 실패 시 브라우저 규칙 대체가 동작하는지(서버를 잠깐 끄고 증상 입력) 확인한다.
 - 필요하면 `DB_PATH`, `MODEL_DIR`, `LLM_API_KEY`를 같은 명령에 더한다.
 - 상담 채팅의 열린 연결은 프로세스 메모리에 있으므로 `--workers`를 더하지 않는다(2 이상이면 같은 사례의 근로자·센터가 다른 프로세스에 붙어 서로 받지 못한다).
 
@@ -651,8 +620,7 @@ backend:
 
 | 자리 | 목업 동작 | 실서비스 |
 |---|---|---|
-| `TriageResult.modelScore`, `byModel` | `MODEL_DIR`이 있으면 응급도 모델(`byModel`, `model`), 없으면 위험 신호 가산 점수(임계값 3) — 붙임(backlog 06). `modelScore`는 계속 가산 점수 | 같음 |
-| `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 비응급의 막연한 분기만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
+| `TriageResult.department` | 규칙표, `MODEL_DIR`이 있으면 막연한 분기(고정 조합 제외)만 진료과 앙상블(모델 A + B) 상위 2개 — 붙임(backlog 06) | 같음 |
 | `POST /api/extract` | 키가 있으면 LLM(JSON 스키마 고정), 없거나 실패하면 다국어 키워드 사전 — 붙임(backlog 03) | 같음. 부위·증상이 비면 버튼 질문 |
 | 템플릿 문장 | 키가 있으면 자유 입력 요약으로 상황 줄 슬롯을 채우고, 없거나 실패·검사 탈락이면 기본 템플릿 — 붙임(backlog 04) | 같음 |
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
@@ -664,7 +632,7 @@ backend:
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 | LLM 호출 제한 | IP별 60초·서버 전체 하루 호출 수, 프로세스 메모리, 넘으면 대체 동작 — 붙임(backlog 20) | 공유 저장소(Redis 등)의 제한, 사용자·기관별 할당, 토큰·금액 기준 예산 |
 
-모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
+모델 결과는 선택 필드 `TriageResult.model`(`{ departmentProba }`)로 더했다. 규칙표가 먼저고, 모델은 막연한 분기만 바꾼다. 응급 여부 판정(응급 키워드·보조 점수·응급도 모델)은 backlog 26에서 지웠다.
 
 ## 확인이 필요한 값
 

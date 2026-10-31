@@ -4,12 +4,9 @@ from app.schemas import CaseStatus, Urgency
 from app.vocab import YesNoUnknown
 
 
-def rate_urgency(emergency_flag: bool, work_related: YesNoUnknown | None, insurance: YesNoUnknown | None) -> tuple[Urgency, list[str]]:
+def rate_urgency(work_related: YesNoUnknown | None, insurance: YesNoUnknown | None) -> tuple[Urgency, list[str]]:
     score = 0
     reasons: list[str] = []
-    if emergency_flag:
-        score += 3
-        reasons.append("응급 판정 이력")
     if work_related == "yes":
         score += 2
         reasons.append("업무 중 발생")

@@ -80,13 +80,12 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
       createdAt: created.toISOString(),
     };
     const insurance = weighted(r, INS_W);
-    const emergencyFlag = r() < 0.08;
     // 사례마다 하나씩 뽑는다(시드 순서를 지키려고 여러 개를 뽑지 않는다)
     const requestTypes = [weighted(r, REQ_W)];
     const contactMethod = weighted(r, CONTACT_W);
     const coverage = routeCoverage({ workRelated: sc.work, insurance, ulsan90: insurance === 'no' ? weighted(r, [['yes', 1], ['no', 1]] as [YesNoUnknown, number][]) : null });
-    const summary = buildCenterSummary({ intake, emergencyFlag, requestTypes, coverage, insurance, contactMethod });
-    const { urgency, reasons } = rateUrgency({ emergencyFlag, workRelated: sc.work, insurance });
+    const summary = buildCenterSummary({ intake, requestTypes, coverage, insurance, contactMethod });
+    const { urgency, reasons } = rateUrgency({ workRelated: sc.work, insurance });
     const status: CaseStatus = n < 5 ? 'new' : n < 12 ? weighted(r, [['progress', 2], ['new', 1]] as [CaseStatus, number][]) : weighted(r, [['done', 3], ['progress', 1]] as [CaseStatus, number][]);
     cases.push({
       id: `C-${String(1000 + 24 - n)}`,
@@ -105,7 +104,6 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
       contactMethod,
       contact: contactMethod === 'visit' ? null : '010-0000-00' + String(10 + n),
       afterHours: isAfterHours(created),
-      emergencyFlag,
       workRelated: sc.work,
       insurance,
       live: false,

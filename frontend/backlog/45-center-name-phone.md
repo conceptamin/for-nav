@@ -1,4 +1,4 @@
-# 44. 센터 정식 이름과 기관 연락처
+# 45. 센터 정식 이름과 기관 연락처
 
 상태: 완료
 의존: 없음
@@ -26,7 +26,7 @@
 ## 결과
 - `npm run build` → 통과
 - `npx rolldown scripts/dump-fixtures.ts ... && TZ=Asia/Seoul node dump.mjs > ../backend/tests/fixtures/parity.json` → 바뀐 값은 `center`·`ulsan`의 `phone`과 `generatedAt`뿐
-- `uv run ruff check .`, `uv run ruff format --check .` → 통과. `uv run pytest` → 3118 passed
+- `uv run ruff check .`, `uv run ruff format --check .` → 통과. `uv run pytest` → 2836 passed(main 병합 후)
 - 브라우저 확인은 하지 못했다(미리보기가 작업 worktree가 아닌 원래 checkout을 띄움). 빌드 번들에 새 이름·번호가 들어간 것만 확인했다.
 - 결정: 다른 언어도 '통합'을 옮겨 넣었다(사용자 결정). 센터 화면 머리글의 띄어쓰기 `울산 외국인주민·근로자 통합지원센터`도 같은 표기로 맞췄다.
 - 결정: 프론트가 원본인 `domain/coverage.ts`를 바꿨으므로 백엔드 상수와 README 예시 테스트를 같은 PR에서 고쳤다(사용자 결정, 한 PR).

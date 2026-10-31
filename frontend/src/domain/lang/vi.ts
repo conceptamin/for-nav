@@ -59,7 +59,6 @@ export const vi: LangPack = {
       assembly: 'Lắp ráp',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: 'Dưới 30 tuổi', '30to44': '30–44 tuổi', '45to64': '45–64 tuổi', '65plus': 'Từ 65 tuổi trở lên' },
     sexes: { female: 'Nữ', male: 'Nam' },
   },
   templates: {
@@ -131,23 +130,5 @@ export const vi: LangPack = {
       referral: 'Kết nối cơ quan',
       other: 'Khác',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['bất tỉnh', 'ngất', 'xỉu'],
-      breathing: ['khó thở', 'không thở được'],
-      chest: ['tức ngực', 'đau ngực'],
-      heavyBleeding: ['chảy máu nhiều', 'máu không cầm', 'không cầm máu', 'máu chảy không ngừng'],
-      amputation: ['đứt lìa', 'đứt ngón', 'bị đứt tay'],
-      fall: ['ngã từ trên cao', 'rơi từ', 'té từ'],
-      seizure: ['co giật'],
-      stroke: ['liệt', 'méo miệng', 'nói ngọng'],
-      severeBurn: ['bỏng nặng', 'điện giật'],
-      chemicalEye: ['hóa chất vào mắt', 'hóa chất bắn vào mắt'],
-      poisoning: ['ngộ độc', 'hít phải khí'],
-    },
-    headInjury: ['đập đầu', 'chấn thương đầu', 'va đầu'],
-    vomit: ['nôn'],
-    severity: ['nặng', 'rất đau', 'dữ dội', 'không chịu được'],
   },
 };

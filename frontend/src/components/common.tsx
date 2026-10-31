@@ -189,31 +189,6 @@ export function SingleSelect<K extends string>({
   );
 }
 
-/**
- * 통증 점수 슬라이더(0~10). 얼굴 → 단계 이름 → 숫자 → range → 양 끝 레이블.
- * 움직이기 전에는 값이 없다(답하지 않으면 키가 없다).
- */
-export function PainRange({ value, onChange }: { value: number | undefined; onChange: (n: number) => void }) {
-  const { t } = useT();
-  const n = value ?? 0;
-  const face = n <= 3 ? '🙂' : n <= 6 ? '😐' : '😣';
-  const level = n <= 3 ? t('painMild') : n <= 6 ? t('painModerate') : t('painSevere');
-  return (
-    <div className="range">
-      <div className="face" aria-hidden>
-        {face}
-      </div>
-      <p className="level">{level}</p>
-      <div className="num">{value === undefined ? '–' : value}</div>
-      <input type="range" min={0} max={10} step={1} value={n} aria-label={t('painQ')} onChange={(e) => onChange(Number(e.target.value))} />
-      <div className="ends" aria-hidden>
-        <span>0 · {t('painNone')}</span>
-        <span>10 · {t('painWorst')}</span>
-      </div>
-    </div>
-  );
-}
-
 export const MAX_PHOTOS = 3;
 
 export interface PhotoItem {

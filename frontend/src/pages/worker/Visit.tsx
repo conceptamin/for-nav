@@ -30,14 +30,13 @@ function LineView({ line, big = false }: { line: Line; big?: boolean }) {
   );
 }
 
-/** 접수·전화 화면은 비응급 판정과 진료과가 있어야 연다. */
+/** 접수·전화 화면은 진료과 추천이 있어야 연다. */
 type VisitContext = { redirect: string } | { intake: Intake; dept: Department };
 
 function useVisitContext(): VisitContext {
   const app = useApp();
   const tri = app.triage;
   if (!app.intake || !tri) return { redirect: '/intake' };
-  if (tri.emergency) return { redirect: '/emergency' };
   if (!tri.department) return { redirect: '/intake' };
   return { intake: app.intake, dept: tri.department.primary };
 }

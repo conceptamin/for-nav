@@ -60,7 +60,6 @@ export const uz: LangPack = {
       assembly: 'Yigʻish',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: '30 yoshgacha', '30to44': '30–44 yosh', '45to64': '45–64 yosh', '65plus': '65 yosh va undan katta' },
     sexes: { female: 'Ayol', male: 'Erkak' },
   },
   templates: {
@@ -132,23 +131,5 @@ export const uz: LangPack = {
       referral: 'Tashkilotga yoʻllash',
       other: 'Boshqa',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['hushidan ket', 'hushini yo', 'hushsiz', 'behush'],
-      breathing: ['nafas ololma', 'nafas olmayap', 'nafasim qis', 'nafasi qis'],
-      chest: ['krak og', 'kragim og', 'kragi og', 'yurak og', 'yurak sanch'],
-      heavyBleeding: ['qattiq qon ket', 'qon tinmay', "qon to'xtama", 'qon toʻxtama', 'qon toxtama'],
-      amputation: ['kesilib tush', 'uzilib tush', 'kesib tashla', 'amputats'],
-      fall: ['balanddan yiqil', 'tepadan yiqil', 'yuqoridan yiqil', 'narvondan yiqil', 'iskaladan yiqil'],
-      seizure: ['tutqanoq', 'talvasa', 'epilepsi'],
-      stroke: ['falaj', 'tanasining bir tom', 'bir tomoni ishlama', 'tili aylanma', 'zi qiyshay'],
-      severeBurn: ['tok urdi', 'tok urib', 'elektr tok', 'qattiq kuy', 'kuchli kuy'],
-      chemicalEye: ['zimga kimyo', 'zga kimyo', 'zlarimga kimyo', 'zimga kislota'],
-      poisoning: ['gaz sizib', 'gaz chiqib', 'zaharlan', 'gazdan zahar'],
-    },
-    headInjury: ['boshim uril', 'boshi uril', 'boshimni ur', 'boshini ur', 'bosh jarohat'],
-    vomit: ['qusdi', 'qusyap', 'qusish', 'qayt qil'],
-    severity: ['juda kuchli', 'juda yomon', 'chidab bo', 'qattiq', 'juda ko'],
   },
 };

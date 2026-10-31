@@ -59,7 +59,6 @@ export const en: LangPack = {
       assembly: 'Assembly',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: 'Under 30', '30to44': '30–44', '45to64': '45–64', '65plus': '65 or older' },
     sexes: { female: 'Female', male: 'Male' },
   },
   templates: {
@@ -131,23 +130,5 @@ export const en: LangPack = {
       referral: 'Referral to an agency',
       other: 'Other',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['unconscious', 'fainted', 'passed out', 'collapsed'],
-      breathing: ["can't breathe", 'cannot breathe', 'not breathing'],
-      chest: ['chest pain', 'chest hurts'],
-      heavyBleeding: ['bleeding a lot', "won't stop bleeding", 'heavy bleeding'],
-      amputation: ['cut off', 'amputat', 'severed'],
-      fall: ['fell from', 'fall from', 'fell off'],
-      seizure: ['seizure', 'convulsion'],
-      stroke: ['paralys', 'one side', 'slurred'],
-      severeBurn: ['electric shock', 'electrocut', 'severe burn'],
-      chemicalEye: ['chemical in eye', 'chemical in my eye'],
-      poisoning: ['gas leak', 'inhaled gas', 'poison'],
-    },
-    headInjury: ['hit my head', 'head injury'],
-    vomit: ['vomit', 'threw up'],
-    severity: ['severe', 'very bad', 'terrible', 'a lot', 'unbearable'],
   },
 };

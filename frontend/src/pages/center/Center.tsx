@@ -538,8 +538,6 @@ function CaseDetail({ c }: { c: CenterCase }) {
               <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
               <dt>건강보험증</dt>
               <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
-              <dt>응급 판정 이력</dt>
-              <dd>{c.emergencyFlag ? '있음' : '없음'}</dd>
             </dl>
           </section>
           <section className="panel">
