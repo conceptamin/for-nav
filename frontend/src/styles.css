@@ -2713,7 +2713,12 @@ table.cases tr.fresh {
   color: var(--ink);
 }
 
-/* 근로자 S-13 요청 줄의 "새 메시지"(backlog 46). 독의 점과 같은 틸 */
+/* C-01 접수함의 새 채팅 칩과 채팅 필터 숫자(backlog 53). 옅은 민트 바탕 + 진한 틸 글자 */
+.pill.unread {
+  background: var(--brand-2);
+  color: var(--brand-fg);
+}
+
 .filters {
   display: flex;
   gap: 8px;
