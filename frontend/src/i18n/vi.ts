@@ -15,7 +15,7 @@ export const vi: Record<MessageKey, string> = {
   required: 'bắt buộc',
   skip: 'Bỏ qua',
   call119: 'Gọi 119',
-  bar119: 'Khẩn cấp? Gọi 119',
+  bar119: 'Cấp cứu tại Hàn Quốc: 119',
   worse119: 'Nếu triệu chứng nặng hơn, hãy gọi 119 ngay.',
   changeLang: 'Ngôn ngữ',
 

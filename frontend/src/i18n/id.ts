@@ -15,7 +15,7 @@ export const id: Record<MessageKey, string> = {
   required: 'wajib',
   skip: 'Lewati',
   call119: 'Telepon 119',
-  bar119: 'Darurat? Telepon 119',
+  bar119: 'Darurat di Korea: 119',
   worse119: 'Jika gejala makin parah, segera telepon 119.',
   changeLang: 'Bahasa',
 

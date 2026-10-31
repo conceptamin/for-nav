@@ -15,7 +15,7 @@ export const fr: Record<MessageKey, string> = {
   required: 'obligatoire',
   skip: 'Passer',
   call119: 'Appeler le 119',
-  bar119: 'Urgence ? Appelez le 119',
+  bar119: 'Urgence en Corée : 119',
   worse119: 'Si ça s’aggrave, appelez tout de suite le 119.',
   changeLang: 'Langue',
 

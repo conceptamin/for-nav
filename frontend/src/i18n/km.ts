@@ -15,7 +15,7 @@ export const km: Record<MessageKey, string> = {
   required: 'ចាំបាច់',
   skip: 'រំលង',
   call119: 'ហៅ 119',
-  bar119: 'បន្ទាន់? ហៅ 119',
+  bar119: 'បន្ទាន់នៅកូរ៉េ៖ 119',
   worse119: 'បើរោគសញ្ញាកាន់តែធ្ងន់ សូមហៅ 119 ភ្លាម។',
   changeLang: 'ភាសា',
 

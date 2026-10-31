@@ -91,7 +91,7 @@ export function WorkerLayout() {
   const bar119 = pathname !== '/emergency' && (
     <div className={app.ready ? 'bar-119 with-chat' : 'bar-119'}>
       <a className="call-119" href="tel:119">
-        📞 {app.lang ? t('bar119') : '119 · Emergency · Khẩn cấp'}
+        📞 {app.lang ? t('bar119') : '119 · Korea Emergency · Cấp cứu'}
       </a>
       {app.ready && (
         <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>

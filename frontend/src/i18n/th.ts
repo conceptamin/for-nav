@@ -15,7 +15,7 @@ export const th: Record<MessageKey, string> = {
   required: 'จำเป็น',
   skip: 'ข้าม',
   call119: 'โทร 119',
-  bar119: 'ฉุกเฉิน? โทร 119',
+  bar119: 'ฉุกเฉินในเกาหลี: 119',
   worse119: 'ถ้าอาการแย่ลง ให้โทร 119 ทันที',
   changeLang: 'ภาษา',
 
