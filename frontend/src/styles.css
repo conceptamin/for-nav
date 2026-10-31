@@ -2733,6 +2733,13 @@ table.cases tr.fresh {
   box-shadow: var(--glass-color-in);
 }
 
+/* C-01 채팅 필터: 말풍선 선 아이콘 + 글 + 새 채팅 사례 수 칩(backlog 53) */
+.filters .filter-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
 .detail-head {
   display: flex;

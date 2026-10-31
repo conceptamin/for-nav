@@ -3,6 +3,7 @@
 // 서버가 로그인을 쓰지 않거나 단독 모드면 지금처럼 바로 열린다(PRD 5-2 데모).
 // 읽기·쓰기는 src/api/center.ts를 거친다. 실패하면 대체하지 않고 연결 띠·실패 문구로 보인다.
 // C-02 상담 채팅은 src/api/chat.ts(WebSocket)를 거친다. 단독 모드에는 없다(backlog 25).
+// C-01은 실제 전송 사례마다 채팅에 센터로 붙어 새 채팅 수·근로자 마지막 글 시각만 지켜본다(useChatDigests, backlog 53).
 // C-02 통화와 번역 자막은 src/api/call.ts(WebSocket + WebRTC)를 거친다. 단독 모드에는 없다(backlog 26).
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -10,7 +11,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'reac
 import { getMe, loginPath, logout, onSessionEnded } from '../../api/auth';
 import { clearCases, getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
 import { isCallAvailable } from '../../api/call';
-import { isChatAvailable } from '../../api/chat';
+import { isChatAvailable, useChatDigests } from '../../api/chat';
 import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useReveal } from '../../components/reveal';
@@ -257,14 +258,31 @@ function StatusPill({ s }: { s: CaseStatus }) {
   return <span className={`pill ${s}`}>{STATUS_KO[s]}</span>;
 }
 
+/** 말풍선 선 아이콘. 근로자 하단 독·시트의 채팅 아이콘과 같은 모양 */
+function ChatIcon({ size }: { size: number }) {
+  return (
+    <svg className="sheet-icon" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.15-2.9-.42L4.5 19.5l1.3-3.6C4.3 14.6 3.5 12.9 3.5 11c0-3.9 3.8-7 8.5-7Z" />
+    </svg>
+  );
+}
+
+type InboxFilter = CaseStatus | 'all' | 'chat';
+type InboxSort = 'time' | 'urgency' | 'chat';
+
 // ---------------------------------------------------------------------------
 // C-01 사례 접수함
 // ---------------------------------------------------------------------------
 export function InboxPage() {
   const { cases, connected, lastUpdated } = useCenterCases();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<CaseStatus | 'all'>('all');
-  const [sort, setSort] = useState<'time' | 'urgency'>('time');
+  const [status, setStatus] = useState<InboxFilter>('all');
+  const [sort, setSort] = useState<InboxSort>('time');
+  // 근로자 채팅은 실제 전송 사례에만 있다(mock 사례에는 근로자 토큰이 없다). 단독 모드에는 채팅이 없다
+  const chatOn = isChatAvailable();
+  const digests = useChatDigests(chatOn ? cases.filter((c) => c.live).map((c) => c.id) : []);
+  const unread = (c: CenterCase) => (digests[c.id]?.unread ?? 0) > 0;
+  const chatAt = (c: CenterCase) => digests[c.id]?.lastWorkerAt ?? '';
   const [resetting, setResetting] = useState(false);
   const [resetFailed, setResetFailed] = useState(false);
 
@@ -289,12 +307,19 @@ export function InboxPage() {
     return c;
   }, [cases]);
 
+  const unreadCases = cases.filter(unread).length;
+
   const rows = cases
-    .filter((c) => status === 'all' || c.status === status)
+    .filter((c) => status === 'all' || (status === 'chat' ? chatAt(c) !== '' : c.status === status))
     .sort((a, b) => {
-      // 신규 사례는 항상 맨 위(FR-80 수용 기준)
+      // 새 채팅이 온 사례가 맨 위, 그 안에서는 최근 채팅 순(backlog 53, 사용자 요청)
+      if (unread(a) !== unread(b)) return unread(a) ? -1 : 1;
+      if (unread(a) && chatAt(a) !== chatAt(b)) return chatAt(b).localeCompare(chatAt(a));
+      // 그다음 신규 사례가 맨 위(FR-80 수용 기준)
       if ((a.status === 'new') !== (b.status === 'new')) return a.status === 'new' ? -1 : 1;
       if (sort === 'urgency' && a.urgency !== b.urgency) return URGENCY_ORDER[a.urgency] - URGENCY_ORDER[b.urgency];
+      // 채팅 시각: 채팅이 없는 사례('')는 아래로 간다
+      if (sort === 'chat' && chatAt(a) !== chatAt(b)) return chatAt(b).localeCompare(chatAt(a));
       return b.createdAt.localeCompare(a.createdAt);
     });
 
@@ -327,12 +352,20 @@ export function InboxPage() {
             {s === 'all' ? '전체' : STATUS_KO[s]}
           </button>
         ))}
+        {chatOn && (
+          <button type="button" className="filter-chat" aria-pressed={status === 'chat'} onClick={() => setStatus('chat')}>
+            <ChatIcon size={18} />
+            채팅
+            {unreadCases > 0 && <span className="pill unread">새 {unreadCases}</span>}
+          </button>
+        )}
         <span style={{ flex: 1 }} />
         <label className="small">
           정렬{' '}
-          <select value={sort} onChange={(e) => setSort(e.target.value as 'time' | 'urgency')}>
+          <select value={sort} onChange={(e) => setSort(e.target.value as InboxSort)}>
             <option value="time">접수 시각</option>
             <option value="urgency">긴급도</option>
+            {chatOn && <option value="chat">채팅 시각</option>}
           </select>
         </label>
         <button
@@ -356,6 +389,7 @@ export function InboxPage() {
               <tr>
                 <th>접수 번호</th>
                 <th>접수 시각</th>
+                {chatOn && <th>채팅 시각</th>}
                 <th>언어</th>
                 <th>요청 유형</th>
                 <th>긴급도</th>
@@ -374,11 +408,17 @@ export function InboxPage() {
                   onKeyDown={(e) => e.key === 'Enter' && navigate(`/center/cases/${c.id}`)}
                 >
                   <td>
-                    <strong>{c.id}</strong> {c.live && <span className="pill live">실제 전송</span>}
+                    <strong>{c.id}</strong> {c.live && <span className="pill live">실제 전송</span>}{' '}
+                    {unread(c) && (
+                      <span className="pill unread">
+                        <ChatIcon size={14} />새 채팅 {digests[c.id].unread}
+                      </span>
+                    )}
                   </td>
                   <td>
                     {fmt(c.createdAt)} {c.afterHours && <span title="운영 시간 외 접수">🌙</span>}
                   </td>
+                  {chatOn && <td>{chatAt(c) ? fmt(chatAt(c)) : '—'}</td>}
                   <td>{LANGUAGE_NAMES_KO[c.language]}</td>
                   <td>{requestTypesKo(c.requestTypes)}</td>
                   <td>
@@ -397,6 +437,7 @@ export function InboxPage() {
       )}
       <p className="footer-note">
         mock 사례 24건 + 근로자 화면에서 실제 전송한 사례. 근로자 화면에서 전송하면 2초 안에 이 목록에 나타납니다. 🌙 = 운영 시간 외 접수
+        {chatOn && ' · 새 채팅 = 센터가 아직 읽지 않은 근로자 글. 사례를 열어 채팅을 보면 사라집니다. 채팅 시각 = 근로자 마지막 글 시각'}
       </p>
     </div>
   );
