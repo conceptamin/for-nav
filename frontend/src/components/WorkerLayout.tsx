@@ -49,7 +49,7 @@ export function useScreenBar(bar: ScreenBar) {
 
 const OpenCenterSheetContext = createContext<() => void>(() => {});
 
-/** 하단 채팅 아이콘과 같은 센터 채팅 시트를 연다(backlog 44, S-12에서 대화로 보낸 뒤) */
+/** 하단 채팅 아이콘과 같은 센터 채팅 시트를 연다(backlog 44·52, S-12 전송 완료 화면의 `💬 센터와 대화`) */
 export function useOpenCenterSheet() {
   return useContext(OpenCenterSheetContext);
 }
