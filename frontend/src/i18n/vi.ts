@@ -281,6 +281,8 @@ export const vi: Record<MessageKey, string> = {
   profileOthers: 'Hồ sơ khác (chạm để đổi)',
   profileDelete: 'Xóa hồ sơ này',
   profileDeleteConfirm: 'Xóa hồ sơ này?',
+  reportDelete: 'Xóa phiếu này',
+  reportDeleteConfirm: 'Xóa phiếu này?',
   mySettings: 'Cài đặt',
   myReports: 'Phiếu của tôi',
   myEmpty: 'Chưa có phiếu nào.',

@@ -294,6 +294,8 @@ export const my: Record<MessageKey, string> = {
   profileOthers: 'အခြား ပရိုဖိုင်များ (ပြောင်းရန် နှိပ်ပါ)',
   profileDelete: 'ဤပရိုဖိုင်ကို ဖျက်ရန်',
   profileDeleteConfirm: 'ဤပရိုဖိုင်ကို ဖျက်မလား?',
+  reportDelete: 'ဤအစီရင်ခံစာကို ဖျက်ရန်',
+  reportDeleteConfirm: 'ဤအစီရင်ခံစာကို ဖျက်မလား?',
   mySettings: 'ဆက်တင်',
   myReports: 'ကျွန်ုပ်၏ အစီရင်ခံစာများ',
   myEmpty: 'အစီရင်ခံစာ မရှိသေးပါ။',
