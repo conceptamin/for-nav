@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { Chip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
+import { Chip, PhotoStrip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
 import { canResume, useCenterLink } from '../../components/centerLink';
 import { CenterHoursNotice, MyCaseRow, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
 import { useScreenBar } from '../../components/WorkerLayout';
@@ -222,6 +222,7 @@ export function MyPage() {
                 <span>
                   🩺 {new Date(r.createdAt).toLocaleString(LOCALES[r.language])}
                   <span className="small muted"> · {r.rows.find((row) => row.field === 'symptoms')?.valueNative ?? ''}</span>
+                  <PhotoStrip photos={r.photos} />
                 </span>
                 <span className="small">{t('myOpen')} →</span>
               </Link>

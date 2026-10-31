@@ -12,6 +12,7 @@ S-05에서 사진을 올릴 수 있는데 어디에도 남지 않고 버려져�
   - 증상 입력을 마치면 사진을 세션(`umn.session.photos`)에 둔다. `Intake`에는 넣지 않는다
   - S-11 항목 고르기에 `사진 (n)` 체크(기본 켜짐)를 둔다. 켜져 있으면 만든 리포트에 이 기기에서 `photos`를 붙인다
   - S-11 리포트 보기(한국어·모국어 모두)에 `사진` 줄과 썸네일을 그린다
+  - 홈 최근 메모 카드와 S-13 내 메모 줄에 작은 사진 줄(`PhotoStrip`, `.photos.mini` 56px)을 그린다
   - 사진은 최근 리포트 5개에만 남기고 그보다 오래된 리포트에서는 뗀다(기기 저장소 약 5MB)
   - `photosNote` 20개 언어 문구를 "메모에만 붙고 보내지 않음"으로 바꾼다
 - 하지 않는 것
@@ -19,20 +20,21 @@ S-05에서 사진을 올릴 수 있는데 어디에도 남지 않고 버려져�
   - 사진 확대 보기·회전 보정, `REPORT_FIELDS`에 `photos` 더하기(서버 계약과 parity에 들어가므로)
 
 ## 화면·파일
-- S-05 `/intake`, S-11 `/report/new`, `/report/:id`. 경로·API 변경 없음
+- S-04 `/home`, S-05 `/intake`, S-11 `/report/new`, `/report/:id`, S-13 `/my`. 경로·API 변경 없음
 - `src/components/common.tsx`(`PhotoPicker`, `shrinkPhoto`), `src/state/AppState.tsx`(`photos`, `setPhotos`, 사진 남기는 리포트 수), `src/domain/templates.ts`(`ClinicianReport.photos?` 타입만, 출력 변경 없음), `src/pages/worker/Intake.tsx`, `src/pages/worker/Report.tsx`, `src/i18n/*.ts`(`photosNote`), `README.md`
-- 새 문구 키 없음(체크 이름은 `photosTitle`, 한국어 리포트는 `사진`). 새 클래스 없음(`.photos`·`.photo` 재사용)
+- 새 문구 키 없음(체크 이름은 `photosTitle`, 한국어 리포트는 `사진`). 새 클래스는 `.photos.mini` 하나(`design.md` S-04 표에 적음)
 
 ## 완료 기준
 - [x] `npm run build` 통과, `cd app-front && npm run build` 통과
 - [x] `/intake`에서 네 장을 고르면 세 장만 남고, `/result`까지 가면 `umn.session.photos`가 3개이고 `intake`에는 사진 데이터가 없다
 - [x] `/report/new`에 `사진 (3)` 체크가 보이고, 만들면 `/report/:id`에 사진 3장이 보이며 `umn.device.demo`의 리포트에 `photos`가 있다
 - [x] 흐름 동안 사진 데이터를 실은 요청이 없다
+- [x] `/home` 최근 메모 카드와 `/my` 내 메모 줄에 사진 3장이 작게 보인다
 - [x] en·vi·ko, 360px에서 가로 스크롤 없음
 
 ## 결과
 - `npm run build` → 통과(청크 크기 경고만). `cd app-front && npm run build` → 통과
-- Playwright 헤드리스 Chromium, 단독 모드, 360px·움직임 줄이기, en·vi·ko: `/intake` 사진 4장 → 3장, 각주 문구 확인 → `/result`에서 세션 사진 3개·`intake`에 `data:image` 없음 → `/report/new` 체크 목록 끝에 `사진 (3)` → `/report/:id` 한국어 화면에 `사진` 줄 썸네일 3장(긴 변 384px 원본은 그대로) → 기기 저장소 36KB, 사진 붙은 리포트 1개. POST 본문 0건. `scrollWidth` 360
+- Playwright 헤드리스 Chromium, 단독 모드, 360px·움직임 줄이기, en·vi·ko: `/intake` 사진 4장 → 3장, 각주 문구 확인 → `/result`에서 세션 사진 3개·`intake`에 `data:image` 없음 → `/report/new` 체크 목록 끝에 `사진 (3)` → `/report/:id` 한국어 화면에 `사진` 줄 썸네일 3장(긴 변 384px 원본은 그대로) → 기기 저장소 36KB, 사진 붙은 리포트 1개. POST 본문 0건. `scrollWidth` 360. vi·ko `/home` 최근 메모 `.photos.mini img` 3개, `/my` 내 메모 3개, 둘 다 `scrollWidth` 360
 - 결정: 사진은 `REPORT_FIELDS`가 아니라 리포트를 만든 뒤 브라우저에서 붙인다. 서버 계약·`parity.json`이 그대로이고 API 모드에서도 사진이 서버로 가지 않는다
 - 결정: JPEG로 바꿀 때 흰 바탕을 깐다(투명 PNG가 검게 되는 것 방지)
 

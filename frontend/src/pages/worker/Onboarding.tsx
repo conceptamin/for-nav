@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { checkWorkerAuth, loginWithGoogle, logoutWorker, useWorkerAuth } from '../../api/auth';
 import { hasGoogleClientId, renderGoogleButton, useNativeGoogleSignIn, type NativeGoogleSignIn } from '../../api/googleId';
-import { BirthDateInput, SingleSelect } from '../../components/common';
+import { BirthDateInput, PhotoStrip, SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
 import { HOME_MENU, SICK_MENU } from '../../components/workerMenu';
 import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
@@ -481,6 +481,7 @@ export function HomePage() {
                   {recentParts.labelNative}: {recentParts.valueNative}
                 </p>
               )}
+              <PhotoStrip photos={recent.photos} />
               <p className="muted">
                 🕓 {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { year: 'numeric', month: '2-digit', day: '2-digit' })}
               </p>
