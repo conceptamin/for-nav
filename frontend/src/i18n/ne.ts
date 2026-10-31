@@ -136,6 +136,8 @@ export const ne: Record<MessageKey, string> = {
   toReport: 'डाक्टरका लागि रिपोर्ट',
   toCoverage: 'बीमा र सहायता',
   toCenter: 'केन्द्रसँग सहयोग माग्नुहोस्',
+  resultGoGroup: 'अस्पताल जाँदा',
+  resultMoreGroup: 'थप सहयोग चाहिए भने',
   resultNoDiag: 'यो कुन क्लिनिक जाने भन्ने मार्गदर्शन हो, रोगको निदान होइन।',
 
   // S-08

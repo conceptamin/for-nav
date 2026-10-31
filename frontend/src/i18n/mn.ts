@@ -136,6 +136,8 @@ export const mn: Record<MessageKey, string> = {
   toReport: 'Эмчид өгөх тайлан',
   toCoverage: 'Даатгал ба дэмжлэг',
   toCenter: 'Төвөөс тусламж хүсэх',
+  resultGoGroup: 'Эмнэлэгт очихдоо',
+  resultMoreGroup: 'Нэмэлт тусламж хэрэгтэй бол',
   resultNoDiag: 'Энэ бол аль эмнэлэгт очих заавар юм. Онош биш.',
 
   // S-08

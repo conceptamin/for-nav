@@ -136,6 +136,8 @@ export const tl: Record<MessageKey, string> = {
   toReport: 'Report para sa doktor',
   toCoverage: 'Insurance at tulong',
   toCenter: 'Humingi ng tulong sa centre',
+  resultGoGroup: 'Kapag pupunta sa ospital',
+  resultMoreGroup: 'Kung kailangan mo ng dagdag na tulong',
   resultNoDiag: 'Gabay ito kung saang klinika pupunta, hindi diagnosis.',
 
   // S-08

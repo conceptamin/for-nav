@@ -136,6 +136,8 @@ export const kk: Record<MessageKey, string> = {
   toReport: 'Дәрігерге арналған есеп',
   toCoverage: 'Сақтандыру және көмек',
   toCenter: 'Орталықтан көмек сұрау',
+  resultGoGroup: 'Ауруханаға барғанда',
+  resultMoreGroup: 'Қосымша көмек керек болса',
   resultNoDiag: 'Бұл қай емханаға бару туралы кеңес, диагноз емес.',
 
   // S-08

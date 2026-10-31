@@ -136,6 +136,8 @@ export const ja: Record<MessageKey, string> = {
   toReport: '医師に見せるレポート',
   toCoverage: '保険・支援',
   toCenter: 'センターに助けを頼む',
+  resultGoGroup: '病院に行くとき',
+  resultMoreGroup: 'ほかに助けが必要なとき',
   resultNoDiag: 'これはどの診療科に行けばよいかの案内で、診断ではありません。',
 
   // S-08

@@ -135,6 +135,8 @@ export const en = {
   toReport: 'Report for the doctor',
   toCoverage: 'Insurance & support',
   toCenter: 'Ask the centre for help',
+  resultGoGroup: 'When you go to the hospital',
+  resultMoreGroup: 'If you need more help',
   resultNoDiag: 'This is guidance on which clinic to visit, not a diagnosis.',
 
   // S-08

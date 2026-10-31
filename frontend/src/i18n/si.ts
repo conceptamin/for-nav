@@ -136,6 +136,8 @@ export const si: Record<MessageKey, string> = {
   toReport: 'වෛද්‍යවරයාට වාර්තාව',
   toCoverage: 'රක්ෂණය සහ සහාය',
   toCenter: 'මධ්‍යස්ථානයෙන් උදව් ඉල්ලන්න',
+  resultGoGroup: 'රෝහලට යන විට',
+  resultMoreGroup: 'තවත් උදව් අවශ්‍ය නම්',
   resultNoDiag: 'මෙය යා යුතු සායනය ගැන මඟ පෙන්වීමක්, රෝග විනිශ්චයක් නොවේ.',
 
   // S-08

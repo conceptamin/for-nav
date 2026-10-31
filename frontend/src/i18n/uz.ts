@@ -136,6 +136,8 @@ export const uz: Record<MessageKey, string> = {
   toReport: 'Shifokor uchun hisobot',
   toCoverage: 'Sugʻurta va yordam',
   toCenter: 'Markazdan yordam soʻrash',
+  resultGoGroup: 'Kasalxonaga borganda',
+  resultMoreGroup: 'Qoʻshimcha yordam kerak boʻlsa',
   resultNoDiag: 'Bu qaysi klinikaga borish boʻyicha maslahat, tashxis emas.',
 
   // S-08

@@ -128,6 +128,8 @@ export const ar: Record<MessageKey, string> = {
   toReport: 'تقرير للطبيب',
   toCoverage: 'التأمين والدعم',
   toCenter: 'اطلب المساعدة من المركز',
+  resultGoGroup: 'عند الذهاب إلى المستشفى',
+  resultMoreGroup: 'إذا احتجت إلى مساعدة أكثر',
   resultNoDiag: 'هذا إرشاد إلى العيادة المناسبة، وليس تشخيصا.',
 
   covTitle: 'أين تسأل عن التكاليف أولا',

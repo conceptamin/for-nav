@@ -129,6 +129,8 @@ export const vi: Record<MessageKey, string> = {
   toReport: 'Phiếu cho bác sĩ',
   toCoverage: 'Bảo hiểm và hỗ trợ',
   toCenter: 'Nhờ trung tâm giúp',
+  resultGoGroup: 'Khi đi bệnh viện',
+  resultMoreGroup: 'Nếu cần thêm trợ giúp',
   resultNoDiag: 'Đây là hướng dẫn nên khám khoa nào, không phải chẩn đoán.',
 
   covTitle: 'Hỏi về chi phí ở đâu trước',

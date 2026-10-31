@@ -136,6 +136,8 @@ export const id: Record<MessageKey, string> = {
   toReport: 'Laporan untuk dokter',
   toCoverage: 'Asuransi & bantuan',
   toCenter: 'Minta bantuan pusat bantuan',
+  resultGoGroup: 'Saat pergi ke rumah sakit',
+  resultMoreGroup: 'Jika perlu bantuan lain',
   resultNoDiag: 'Ini panduan klinik yang perlu didatangi, bukan diagnosis.',
 
   // S-08

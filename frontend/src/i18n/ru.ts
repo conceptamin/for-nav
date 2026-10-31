@@ -136,6 +136,8 @@ export const ru: Record<MessageKey, string> = {
   toReport: 'Отчет для врача',
   toCoverage: 'Страховка и помощь',
   toCenter: 'Попросить помощи у центра',
+  resultGoGroup: 'Когда идёте в больницу',
+  resultMoreGroup: 'Если нужна ещё помощь',
   resultNoDiag: 'Это подсказка, в какую клинику идти, а не диагноз.',
 
   // S-08

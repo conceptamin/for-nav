@@ -136,6 +136,8 @@ export const fr: Record<MessageKey, string> = {
   toReport: 'Rapport pour le médecin',
   toCoverage: 'Assurance et aides',
   toCenter: 'Demander de l’aide au centre',
+  resultGoGroup: 'Quand vous allez à l’hôpital',
+  resultMoreGroup: 'Si vous avez besoin de plus d’aide',
   resultNoDiag: 'Ceci indique quelle clinique consulter. Ce n’est pas un diagnostic.',
 
   // S-08
