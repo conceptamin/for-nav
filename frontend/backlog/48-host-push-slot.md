@@ -54,6 +54,7 @@
   - S-13 로그아웃: `POST /api/center/push-devices/remove`(지금 토큰) → `unregister()` 순서
   - `localStorage`·`sessionStorage`·`console`에 기기 토큰 없음
 - 실제 앱(FCM 토큰·알림 탭)은 app-front 07·08에서 확인한다
+- 고친 것(2026-10-31, app-front 07 실기기 확인 중 발견): 앱을 완전히 껐다 켜면 세션의 언어가 사라져 S-01부터 시작하는데, 계정·프로필은 남아 있어 그때 영어 `pushNotice`로 다시 등록해 서버의 근로자 언어 문장을 덮어썼다(에뮬레이터에서 다음 알림이 "New update from the centre"로 옴). 언어를 고르기 전에는 등록하지 않게 했다(`notice`가 `null`이면 보내지 않음). Playwright로 언어 없는 세션에서 등록 0건 확인
 
 ## 메모
 - app-front 08이 "frontend 47(가칭)"으로 부른 항목이다

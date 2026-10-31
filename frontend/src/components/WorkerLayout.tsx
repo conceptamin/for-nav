@@ -129,8 +129,9 @@ export function WorkerLayout() {
     [feed],
   );
 
-  // 앱 푸시(backlog 48). 브라우저·단독 모드에서는 아무 일도 없다. 알림이 이 계정의 사례가 아니면(다른 계정·지운 사례) 열지 않는다
-  usePushDevice(app.account, refs, t('pushNotice'));
+  // 앱 푸시(backlog 48). 브라우저·단독 모드에서는 아무 일도 없다. 알림이 이 계정의 사례가 아니면(다른 계정·지운 사례) 열지 않는다.
+  // 언어를 고르기 전(앱을 껐다 켜 세션 언어가 사라졌을 때)에는 등록하지 않는다. 영어 문장으로 덮어쓰지 않게
+  usePushDevice(app.account, refs, app.lang ? t('pushNotice') : null);
   usePushOpen((caseId) => {
     if (app.ready && app.chatTokens[caseId]) centerLink.openCase(caseId);
   });
