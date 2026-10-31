@@ -1,7 +1,7 @@
 // 호스트 계약(app-front/README.md "호스트 계약")의 호스트 쪽 메시지. 계약이 바뀌면 그 문서를 먼저 고친다.
-// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal, googleSignIn, speechStart, speechStop).
-// - 호스트 → 웹: window.fornav.receive(객체)(init, insets, googleSignInResult, speech, speechError), 동기 window.fornav.onBack().
-// - 메시지 본문(특히 openExternal.url, googleSignInResult.idToken, speech.text)은 로그에 찍지 않는다. type만 남긴다.
+// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal, googleSignIn, speechStart, speechStop, pushRegister, pushUnregister).
+// - 호스트 → 웹: window.fornav.receive(객체)(init, insets, googleSignInResult, speech, speechError, pushToken, pushOpen), 동기 window.fornav.onBack().
+// - 메시지 본문(특히 openExternal.url, googleSignInResult.idToken, speech.text, pushToken.token, pushOpen.caseId)은 로그에 찍지 않는다. type만 남긴다.
 
 import 'dart:convert';
 
@@ -82,7 +82,8 @@ Map<String, Object> googleSignInFailure({required bool canceled}) => {
 };
 
 /// 사용자가 계정 선택을 닫은 것만 canceled다. 설정 오류·네트워크·Google Play 서비스 없음은 failed
-bool isSignInCanceled(Object error) => error is GoogleSignInException && error.code == GoogleSignInExceptionCode.canceled;
+bool isSignInCanceled(Object error) =>
+    error is GoogleSignInException && error.code == GoogleSignInExceptionCode.canceled;
 
 /// 네이티브 로그인을 켤 수 있는 빌드인가. Android는 웹 클라이언트 ID(serverClientId)만, iOS는 iOS 클라이언트 ID도 있어야 한다
 bool nativeSignInConfigured({required bool isIOS, required String webClientId, required String iosClientId}) =>
@@ -146,5 +147,58 @@ bool isMicrophoneOnlyRequest(Set<String> types) => types.isNotEmpty && types.eve
 /// 파일 선택기가 사진을 고르는가. accept가 비었으면 모든 파일이라 사진도 된다
 bool acceptsImages(List<String> acceptTypes) {
   final types = acceptTypes.expand((t) => t.split(',')).map((t) => t.trim().toLowerCase()).where((t) => t.isNotEmpty);
-  return types.isEmpty || types.any((t) => t == '*/*' || t.startsWith('image/') || const {'.jpg', '.jpeg', '.png', '.heic', '.webp'}.contains(t));
+  return types.isEmpty ||
+      types.any(
+        (t) => t == '*/*' || t.startsWith('image/') || const {'.jpg', '.jpeg', '.png', '.heic', '.webp'}.contains(t),
+      );
+}
+
+/// init.features 값. FCM 푸시 알림을 받을 수 있다(app-front backlog 07)
+const String featurePush = 'push';
+
+/// FCM 등록 토큰. 알림을 보낼 주소라 웹이 서버에 등록한다. 로그에 찍지 않는다
+Map<String, Object> pushTokenMessage(String token) => {'protocol': protocol, 'type': 'pushToken', 'token': token};
+
+/// pushRegister의 실패 응답. error는 denied(알림 권한 거부) | failed(그 밖)
+Map<String, Object> pushTokenFailure({required bool denied}) => {
+  'protocol': protocol,
+  'type': 'pushToken',
+  'error': denied ? 'denied' : 'failed',
+};
+
+/// 근로자가 센터 알림을 눌러 앱이 열렸다. caseId는 사례 번호일 뿐 내용이 아니다
+Map<String, Object> pushOpenMessage(String caseId) => {'protocol': protocol, 'type': 'pushOpen', 'caseId': caseId};
+
+/// 서버가 만드는 사례 id 모양(C-251031-001, 데모 C-02 등)
+final RegExp _caseIdPattern = RegExp(r'^C-[0-9A-Za-z-]{1,40}$');
+
+/// 알림의 data에서 열 사례 id. 센터 알림(kind == center)이고 사례 id 모양일 때만, 아니면 null(무시한다)
+String? pushCaseIdOf(Map<String, dynamic> data) {
+  final caseId = data['caseId'];
+  if (data['kind'] != 'center' || caseId is! String) return null;
+  return _caseIdPattern.hasMatch(caseId) ? caseId : null;
+}
+
+/// 알림으로 열린 사례를 웹이 받을 수 있을 때(init 뒤)까지 들고 있는다. 그 사이 여러 번 누르면 마지막 것만 남는다
+class PushOpenGate {
+  bool _open = false;
+  String? _held;
+
+  /// 알림을 눌렀다. 지금 보낼 수 있으면 caseId를, 아니면 들고 null을 돌려준다
+  String? tap(String caseId) {
+    if (_open) return caseId;
+    _held = caseId;
+    return null;
+  }
+
+  /// init을 보냈다. 들고 있던 것을 한 번 돌려주고 비운다
+  String? opened() {
+    _open = true;
+    final held = _held;
+    _held = null;
+    return held;
+  }
+
+  /// 페이지가 다시 불렸다(ready). 다음 init까지 들고 있는다
+  void close() => _open = false;
 }

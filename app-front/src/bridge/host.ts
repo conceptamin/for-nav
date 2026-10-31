@@ -7,6 +7,8 @@
 //   ID 토큰은 반환값으로만 지나가고 상태·기록·console에 남기지 않는다.
 // - 호스트 음성 인식(backlog 04): listenHostSpeech()가 speechStart를 보내고 speech·speechError를 받는다.
 //   받아쓴 글은 핸들러로만 지나가고 상태·기록·console에 남기지 않는다.
+// - 푸시(backlog 07·08): requestPushToken()이 pushRegister를 보내고 pushToken 하나를 기다린다. 요청 없이 온 pushToken은 토큰 갱신,
+//   pushOpen은 알림으로 열린 사례다(구독 전에 온 것은 마지막 하나를 30초 동안 들고 있다). FCM 토큰·caseId는 반환값·콜백으로만 지나간다.
 
 export const PROTOCOL = 1;
 
@@ -50,13 +52,28 @@ export type Outgoing =
   | { type: 'openExternal'; url: string }
   | { type: 'googleSignIn' }
   | { type: 'speechStart'; lang: string }
-  | { type: 'speechStop' };
+  | { type: 'speechStop' }
+  | { type: 'pushRegister' }
+  | { type: 'pushUnregister' };
 
 /** 호스트가 네이티브 Google 로그인을 할 수 있다는 init.features 값 */
 export const FEATURE_GOOGLE_SIGN_IN = 'googleSignIn';
 
 /** 호스트가 네이티브 음성 인식(통화 자막 받아쓰기)을 할 수 있다는 init.features 값 */
 export const FEATURE_SPEECH = 'speech';
+
+/** 호스트가 FCM 푸시 알림을 받을 수 있다는 init.features 값(backlog 07) */
+export const FEATURE_PUSH = 'push';
+
+/** pushOpen을 구독 전까지 들고 있는 시간. 오래된 알림을 늦게 열지 않는다(backlog 08 결정 2) */
+export const PUSH_OPEN_HOLD_MS = 30_000;
+
+/** requestPushToken()의 실패. 권한 거부는 실패가 아니라 null이다 */
+export class PushTokenError extends Error {
+  constructor() {
+    super('pushRegister failed');
+  }
+}
 
 /** listenHostSpeech()의 핸들러. 받아쓴 글은 기록하지 않는다 */
 export interface HostSpeechHandlers {
@@ -78,7 +95,9 @@ type Incoming =
   | { type: 'insets'; insets?: unknown }
   | { type: 'googleSignInResult'; idToken?: unknown; error?: unknown }
   | { type: 'speech'; text?: unknown; final?: unknown }
-  | { type: 'speechError'; error?: unknown };
+  | { type: 'speechError'; error?: unknown }
+  | { type: 'pushToken'; token?: unknown; error?: unknown }
+  | { type: 'pushOpen'; caseId?: unknown };
 
 interface HostWindow {
   ForNav?: { postMessage?: (message: string) => void };
@@ -109,6 +128,15 @@ let pendingSignIn: { promise: Promise<string>; resolve: (idToken: string) => voi
   null;
 /** 켜 둔 받아쓰기. speech·speechError는 이것 하나에만 간다 */
 let speechListener: HostSpeechHandlers | null = null;
+/** 기다리는 pushRegister 요청. 응답(pushToken)은 이것 하나만 끝낸다 */
+let pendingPush: { promise: Promise<string | null>; resolve: (token: string | null) => void; reject: (e: PushTokenError) => void } | null =
+  null;
+const pushTokenListeners = new Set<(token: string) => void>();
+const pushOpenListeners = new Set<(caseId: string) => void>();
+/** 구독자가 없을 때 온 마지막 pushOpen */
+let heldPushOpen: { caseId: string; at: number } | null = null;
+/** 이 페이지에서 마지막으로 받은 pushOpen이 있는가(확인 화면용, 값은 두지 않는다) */
+let pushOpenSeen = false;
 
 function hostWindow(): HostWindow {
   return window as unknown as HostWindow;
@@ -254,6 +282,26 @@ export function receive(raw: unknown): void {
       listener?.onError(m.error === 'denied' ? 'denied' : 'unsupported');
       break;
     }
+    case 'pushToken': {
+      const token = typeof m.token === 'string' && m.token !== '' ? m.token : null;
+      const pending = pendingPush;
+      pendingPush = null;
+      if (pending) {
+        if (token) pending.resolve(token);
+        else if (m.error === 'denied') pending.resolve(null);
+        else pending.reject(new PushTokenError());
+      } else if (token) {
+        pushTokenListeners.forEach((l) => l(token)); // 요청 없이 온 것은 토큰 갱신이다
+      }
+      break;
+    }
+    case 'pushOpen': {
+      if (typeof m.caseId !== 'string' || m.caseId === '') break;
+      pushOpenSeen = true;
+      if (pushOpenListeners.size) pushOpenListeners.forEach((l) => l(m.caseId as string));
+      else heldPushOpen = { caseId: m.caseId, at: Date.now() };
+      break;
+    }
     default:
       return; // 모르는 type: 기록도 남기지 않는다
   }
@@ -303,6 +351,52 @@ export function listenHostSpeech(lang: string, handlers: HostSpeechHandlers): ()
     speechListener = null;
     send({ type: 'speechStop' });
   };
+}
+
+/**
+ * 호스트의 FCM 토큰을 받는다(backlog 07·08). init.features에 push가 있을 때만 보낸다.
+ * 권한 거부는 null, 그 밖 실패는 PushTokenError. 기다리는 중에 또 부르면 같은 요청을 기다린다.
+ */
+export function requestPushToken(): Promise<string | null> {
+  if (pendingPush) return pendingPush.promise;
+  if (!state.ready || !state.features.includes(FEATURE_PUSH)) return Promise.reject(new PushTokenError());
+  let resolve!: (token: string | null) => void;
+  let reject!: (e: PushTokenError) => void;
+  const promise = new Promise<string | null>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  pendingPush = { promise, resolve, reject };
+  if (!send({ type: 'pushRegister' })) {
+    pendingPush = null;
+    reject(new PushTokenError());
+  }
+  return promise;
+}
+
+/** 요청 없이 온 pushToken(토큰 갱신). 구독을 끊는 함수를 돌려준다 */
+export function listenPushToken(cb: (token: string) => void): () => void {
+  pushTokenListeners.add(cb);
+  return () => pushTokenListeners.delete(cb);
+}
+
+/** 호스트가 FCM 토큰을 지운다. 응답은 없다 */
+export function unregisterPush(): void {
+  send({ type: 'pushUnregister' });
+}
+
+/** 알림으로 열린 사례. 구독 전에 30초 안에 온 마지막 하나는 첫 구독자에게 곧바로 넘기고 비운다 */
+export function listenPushOpen(cb: (caseId: string) => void): () => void {
+  pushOpenListeners.add(cb);
+  const held = heldPushOpen;
+  heldPushOpen = null;
+  if (held && Date.now() - held.at <= PUSH_OPEN_HOLD_MS) cb(held.caseId);
+  return () => pushOpenListeners.delete(cb);
+}
+
+/** 이 페이지에서 pushOpen을 받은 적이 있는가(확인 화면용) */
+export function hasSeenPushOpen(): boolean {
+  return pushOpenSeen;
 }
 
 /**

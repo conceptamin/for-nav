@@ -1,7 +1,7 @@
 # 센터 사례 저장소. DB_PATH가 비면 메모리(재시작하면 mock 시드 상태로 돌아간다), 있으면 SQLite 파일(store_sqlite.py)이다.
 # 어느 쪽이든 mock 사례·통계 레코드는 서버 시작 시 한 번 메모리에서 만들고, 근로자가 실제로 보낸 사례(live)와 상태 변경만 따로 둔다.
 # 상담 채팅(backlog 14)의 근로자 토큰과 메시지, 통화 자막(backlog 18), 센터 직원 로그인(backlog 17)의 직원 목록·코드·세션,
-# 근로자 Google 로그인(backlog 21)의 세션(계정 키만, 이름·이메일 없음)도 같은 저장소에 둔다.
+# 근로자 Google 로그인(backlog 21)의 세션(계정 키만, 이름·이메일 없음), 근로자 앱 푸시 기기 토큰(backlog 28, 사례에만 묶는다)도 같은 저장소에 둔다.
 # 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
 from collections.abc import Callable, Iterable
@@ -18,6 +18,11 @@ from app.vocab import Lang
 
 # 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
 CODE_REQUEST_KEEP = timedelta(hours=1)
+# 푸시 기기 묶음(backlog 28)은 마지막 등록 뒤 이만큼만 남긴다. 앱을 열 때마다 웹이 다시 등록하므로 쓰는 기기는 계속 남는다
+PUSH_DEVICE_KEEP = timedelta(days=30)
+# 기기 하나에 묶는 사례 수, 사례 하나에 묶는 기기 수. 넘으면 가장 오래 갱신하지 않은 묶음을 지운다
+PUSH_CASES_PER_DEVICE = 20
+PUSH_DEVICES_PER_CASE = 5
 
 
 @dataclass(frozen=True)
@@ -37,6 +42,17 @@ class AuthCode:
     code_hash: str
     expires_at: str
     attempts: int = 0
+
+
+@dataclass(frozen=True)
+class PushDevice:
+    """사례 하나에 묶인 기기 하나(backlog 28). 계정·세션과 잇지 않는다."""
+
+    case_id: str
+    device_token: str
+    platform: str
+    notice: str
+    updated_at: str
 
 
 class CenterStore(Protocol):
@@ -152,8 +168,22 @@ class CenterStore(Protocol):
 
     def delete_worker_session(self, token_hash: str) -> None: ...
 
+    # 근로자 앱 푸시(backlog 28). 저장하는 것은 (사례 id, 기기 토큰, 플랫폼, notice, 갱신 시각)뿐이다.
+    def add_push_device(self, case_id: str, device_token: str, platform: str, notice: str, at: datetime) -> None:
+        """기기를 사례에 묶는다. 이미 있으면 platform·notice·갱신 시각만 바꾼다.
+        PUSH_DEVICE_KEEP보다 오래된 묶음을 먼저 지우고, 기기·사례별 상한을 넘으면 가장 오래 갱신하지 않은 묶음을 지운다."""
+        ...
+
+    def push_devices(self, case_id: str, now: datetime) -> list[PushDevice]:
+        """그 사례에 묶인 기기. PUSH_DEVICE_KEEP보다 오래된 묶음은 지운 뒤 돌려준다."""
+        ...
+
+    def remove_push_device(self, device_token: str) -> None:
+        """그 기기의 묶음을 모두 지운다. 없으면 아무것도 하지 않는다."""
+        ...
+
     def reset(self) -> None:
-        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지·읽음, 통화 자막을 지운다. mock은 처음 상태로 돌아간다.
+        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지·읽음, 통화 자막, 푸시 기기 묶음을 지운다. mock은 처음 상태로 돌아간다.
         직원 목록·로그인 코드·세션과 근로자 세션은 그대로 둔다(초기화한 직원과 근로자가 로그아웃되지 않게)."""
         ...
 
@@ -197,6 +227,11 @@ def read_ids(marks: dict[ChatRole, int]) -> dict[ChatRole, str | None]:
     return {role: (f"m-{marks[role]}" if role in marks else None) for role in ("worker", "center")}
 
 
+def oldest_over(rows: list[PushDevice], limit: int) -> list[PushDevice]:
+    """상한을 넘는 만큼 가장 오래 갱신하지 않은 묶음. rows는 넣은 순서(같은 시각이면 앞이 오래된 것)다."""
+    return sorted(rows, key=lambda d: d.updated_at)[: max(0, len(rows) - limit)]
+
+
 def caption_number(caption_id: str) -> int | None:
     """`c-<n>`의 n. 형식이 다르면 None."""
     prefix, _, n = caption_id.partition("-")
@@ -221,6 +256,8 @@ class MemoryStore:
         self._codes: dict[str, AuthCode] = {}
         self._sessions: dict[str, tuple[str, str]] = {}
         self._worker_sessions: dict[str, tuple[str, str]] = {}
+        # (사례 id, 기기 토큰) → 묶음. 갱신하면 끝으로 옮겨 넣은 순서가 갱신 순서다
+        self._push: dict[tuple[str, str], PushDevice] = {}
 
     def all(self) -> list[CenterCase]:
         with self._lock:
@@ -401,6 +438,31 @@ class MemoryStore:
         with self._lock:
             self._worker_sessions.pop(token_hash, None)
 
+    def _prune_push(self, now: datetime) -> None:
+        keep_after = clock.iso_utc(now - PUSH_DEVICE_KEEP)
+        self._push = {k: d for k, d in self._push.items() if d.updated_at > keep_after}
+
+    def add_push_device(self, case_id: str, device_token: str, platform: str, notice: str, at: datetime) -> None:
+        with self._lock:
+            self._prune_push(at)
+            self._push.pop((case_id, device_token), None)
+            self._push[(case_id, device_token)] = PushDevice(case_id, device_token, platform, notice, clock.iso_utc(at))
+            for rows, limit in (
+                ([d for d in self._push.values() if d.device_token == device_token], PUSH_CASES_PER_DEVICE),
+                ([d for d in self._push.values() if d.case_id == case_id], PUSH_DEVICES_PER_CASE),
+            ):
+                for d in oldest_over(rows, limit):
+                    del self._push[(d.case_id, d.device_token)]
+
+    def push_devices(self, case_id: str, now: datetime) -> list[PushDevice]:
+        with self._lock:
+            self._prune_push(now)
+            return [d for d in self._push.values() if d.case_id == case_id]
+
+    def remove_push_device(self, device_token: str) -> None:
+        with self._lock:
+            self._push = {k: d for k, d in self._push.items() if d.device_token != device_token}
+
     def reset(self) -> None:
         with self._lock:
             self._live.clear()
@@ -409,6 +471,7 @@ class MemoryStore:
             self._messages.clear()
             self._reads.clear()
             self._captions.clear()
+            self._push.clear()
 
     def close(self) -> None:
         pass

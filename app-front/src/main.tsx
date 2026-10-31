@@ -4,12 +4,13 @@ import type { RouteObject } from 'react-router';
 import { createBrowserRouter, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { WorkerLayout } from '@fe/components/WorkerLayout';
-import { CenterRequestPage, GuidePage, MyPage } from '@fe/pages/worker/CenterRequest';
+import { AfterHoursPage, CenterRequestPage, GuidePage, MyPage } from '@fe/pages/worker/CenterRequest';
 import { CoveragePage } from '@fe/pages/worker/Coverage';
 import { IntakePage, ResultPage } from '@fe/pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from '@fe/pages/worker/Onboarding';
 import { ReportBuilderPage, ReportViewPage } from '@fe/pages/worker/Report';
 import { setNativeGoogleSignIn, type NativeGoogleSignIn } from '@fe/api/googleId';
+import { setHostPush, type HostPush } from '@fe/api/push';
 import { setHostSpeech, type HostSpeech } from '@fe/api/speech';
 import { CallPage, DeskPage } from '@fe/pages/worker/Visit';
 import { AppStateProvider } from '@fe/state/AppState';
@@ -17,13 +18,18 @@ import '@fe/styles.css';
 import { installBackPolicy } from './bridge/back';
 import {
   FEATURE_GOOGLE_SIGN_IN,
+  FEATURE_PUSH,
   FEATURE_SPEECH,
   getHostState,
   GoogleSignInError,
   installHost,
   listenHostSpeech,
+  listenPushOpen,
+  listenPushToken,
   requestGoogleIdToken,
+  requestPushToken,
   subscribeHost,
+  unregisterPush,
 } from './bridge/host';
 import { HostProvider } from './bridge/HostProvider';
 import { installLinkInterceptor } from './bridge/links';
@@ -59,6 +65,28 @@ const syncHostSpeech = () => {
 subscribeHost(syncHostSpeech);
 syncHostSpeech();
 
+// 앱 푸시 알림(backlog 07·08, frontend 48). 호스트가 init.features로 알리면 근로자 화면이 FCM 토큰으로 기기를 등록하고,
+// 알림으로 열린 사례의 센터 채팅 시트를 열게 등록한다. 브라우저·단독 웹앱에서는 등록하지 않는다(웹 푸시 없음, 결정 4)
+let hostPush: HostPush | null = null;
+const syncHostPush = () => {
+  const host = getHostState();
+  const on = host.present && host.features.includes(FEATURE_PUSH) && host.platform !== null;
+  if (on && hostPush?.platform !== host.platform) {
+    hostPush = {
+      platform: host.platform!,
+      getToken: requestPushToken,
+      onToken: listenPushToken,
+      unregister: unregisterPush,
+      onOpen: listenPushOpen,
+    };
+  } else if (!on) {
+    hostPush = null;
+  }
+  setHostPush(hostPush);
+};
+subscribeHost(syncHostPush);
+syncHostPush();
+
 // 근로자 화면은 frontend/src/main.tsx의 근로자 경로와 같은 순서·같은 화면 ID다(공유 import, backlog 02).
 // 센터 화면(/center*)은 이 앱에 없다. 알 수 없는 경로는 /로 보낸다.
 const routes: RouteObject[] = [
@@ -79,6 +107,7 @@ const routes: RouteObject[] = [
       { path: '/center-request', element: <CenterRequestPage /> }, // S-12
       { path: '/my', element: <MyPage /> }, // S-13
       { path: '/guide', element: <GuidePage /> },
+      { path: '/after-hours', element: <AfterHoursPage /> }, // S-07에서 여는 밤·휴일 안내
     ],
   },
   { path: '/__host', element: <HostCheckPage /> }, // 호스트 연결 확인(개발용, 메뉴에 없다)

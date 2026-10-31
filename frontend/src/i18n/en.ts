@@ -129,9 +129,7 @@ export const en = {
   mapOpens: 'Opens Kakao Map (Korean). The clinic name is searched in Korean.',
   ahTitle: 'At night or on a holiday',
   ah119: 'Not sure where to go? Call 119 and ask. Day and night, they tell you which hospitals and pharmacies are open now and give medical advice by phone.',
-  ahEgen: 'You can also find hospitals and pharmacies open now on the E-Gen website (Korean).',
   ahStore: 'Many 24-hour convenience stores sell basic medicine: for fever and pain, colds and the stomach, and pain patches.',
-  ahEgenBtn: 'Find open hospitals (E-Gen)',
   toDesk: 'Show at reception',
   toCall: 'Phone script',
   toReport: 'Report for the doctor',
@@ -301,6 +299,8 @@ export const en = {
   'caseStatus.progress': 'In progress',
   'caseStatus.done': 'Completed',
   caseNewMsg: 'New message',
+  // 앱 푸시 알림 본문(backlog 48). 화면에 보이지 않고 서버에 등록돼 잠금 화면에 뜬다. 내용·상태·이름·의료 낱말을 넣지 않는다
+  pushNotice: 'New update from the centre',
   caseStatusFailed: 'Couldn’t load the status. Showing the last one received.',
   casePrevDone: 'Your previous request is completed. You can send a new one.',
   myCaseSent: 'Sent',
@@ -321,7 +321,7 @@ export const en = {
   guide5t: '5. If it happened at work',
   guide5b: 'Write down when, where and how it happened. You can ask about industrial accident insurance. Ask the centre if you need help.',
   guide6t: '6. At night or on a holiday',
-  guide6b: 'If local clinics are closed, call 119 and ask where to go. Day and night, 119 tells you which hospitals and pharmacies are open now and gives medical advice by phone. Many 24-hour convenience stores sell basic medicine. You can also search on the E-Gen website (Korean).',
+  guide6b: 'If local clinics are closed, call 119 and ask where to go. Day and night, 119 tells you which hospitals and pharmacies are open now and gives medical advice by phone. Many 24-hour convenience stores sell basic medicine.',
   guideCheck: 'Details may differ by hospital. Please check with the hospital or the centre.',
 };
 

@@ -440,15 +440,76 @@ function CaseDetail({ c }: { c: CenterCase }) {
     }
   };
   const yn = (v: YesNoUnknown | null, map: Record<YesNoUnknown, string>) => (v ? map[v] : '—');
+  // 통화·채팅이 있으면 오른쪽 열을 그 둘에 주고 읽기만 하는 정보는 왼쪽 아래로 보낸다. 없으면(단독 모드) 오른쪽 열에 둔다(backlog 48)
+  const side = isCallAvailable() || isChatAvailable();
+  const info = (
+    <>
+      <section className="panel">
+        <h2>사례 정보</h2>
+        <dl className="kv">
+          <dt>접수 시각</dt>
+          <dd>
+            {new Date(c.createdAt).toLocaleString('ko-KR')} {c.afterHours && '(운영 시간 외)'}
+          </dd>
+          <dt>요청 유형</dt>
+          <dd>{requestTypesKo(c.requestTypes)}</dd>
+          <dt>긴급도 근거</dt>
+          <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
+          <dt>구·군</dt>
+          <dd>{c.district ? DISTRICTS[c.district].ko : '—'}</dd>
+          <dt>업종</dt>
+          <dd>{c.industry ? INDUSTRIES[c.industry].ko : '—'}</dd>
+          <dt>업무 중 발생</dt>
+          <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
+          <dt>건강보험증</dt>
+          <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
+        </dl>
+      </section>
+      <section className="panel">
+        <h2>제도 경로 결과</h2>
+        <p style={{ fontWeight: 700 }}>{c.coveragePath ? PATH_KO[c.coveragePath] : '근로자가 확인하지 않음'}</p>
+        <p className="footer-note">규칙 기반 "먼저 상담할 곳" 안내이며 지원 여부 판정이 아닙니다.</p>
+      </section>
+      <section className="panel">
+        <h2>연락 희망 방법</h2>
+        <dl className="kv">
+          <dt>방법</dt>
+          <dd>{c.contactMethod ? CONTACT_METHOD_KO[c.contactMethod] : '선택 안 함'}</dd>
+          <dt>연락처</dt>
+          <dd>{c.contact ?? '미입력'}</dd>
+        </dl>
+      </section>
+    </>
+  );
   return (
     <div>
-      <div className="row" style={{ marginBottom: 12 }}>
-        <Link to="/center">← 접수함</Link>
-        <h1 style={{ margin: '0 0 0 8px', fontSize: '1.3rem' }}>사례 {c.id}</h1>
-        <UrgencyPill u={c.urgency} />
-        <StatusPill s={c.status} />
-        {c.live && <span className="pill live">실제 전송</span>}
+      <div className="detail-head">
+        <div className="row">
+          <Link to="/center">← 접수함</Link>
+          <h1 style={{ margin: '0 0 0 8px', fontSize: '1.3rem' }}>사례 {c.id}</h1>
+          <UrgencyPill u={c.urgency} />
+          <StatusPill s={c.status} />
+          {c.live && <span className="pill live">실제 전송</span>}
+        </div>
+        <section className="status-box" aria-labelledby="status-box-label">
+          <span className="label" id="status-box-label">
+            상태 변경
+          </span>
+          {flow.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`btn ${c.status === s ? '' : 'secondary'}`}
+              aria-pressed={c.status === s}
+              disabled={busy}
+              onClick={() => void change(s)}
+            >
+              {STATUS_KO[s]}
+            </button>
+          ))}
+        </section>
       </div>
+      {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
       <div className="detail">
         <div>
           <section className="panel">
@@ -472,93 +533,86 @@ function CaseDetail({ c }: { c: CenterCase }) {
               ))}
             </div>
           </section>
+          {side && info}
         </div>
         <div>
-          {isCallAvailable() && (
-            <section className="panel">
-              <h2>{TEXT.callTitle}</h2>
-              <p className="footer-note">{c.live ? TEXT.callNote : TEXT.callMock}</p>
-              <CallPanel
-                caseId={c.id}
-                auth={{ role: 'center' }}
-                lang="ko"
-                labels={CALL_LABELS}
-                locale="ko-KR"
-                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-              />
-            </section>
-          )}
-          {isChatAvailable() && (
-            <section className="panel">
-              <h2>{TEXT.chatTitle}</h2>
-              <p className="footer-note">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
-              <ChatPanel
-                caseId={c.id}
-                auth={{ role: 'center' }}
-                me="center"
-                labels={CHAT_LABELS}
-                locale="ko-KR"
-                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-              />
-            </section>
-          )}
-          <section className="panel">
-            <h2>상태 변경</h2>
-            <div className="row">
-              {flow.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={`btn ${c.status === s ? '' : 'secondary'}`}
-                  style={{ minHeight: 40, flex: 1 }}
-                  aria-pressed={c.status === s}
-                  disabled={busy}
-                  onClick={() => void change(s)}
-                >
-                  {STATUS_KO[s]}
-                </button>
-              ))}
-            </div>
-            {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
-          </section>
-          <section className="panel">
-            <h2>사례 정보</h2>
-            <dl className="kv">
-              <dt>접수 시각</dt>
-              <dd>
-                {new Date(c.createdAt).toLocaleString('ko-KR')} {c.afterHours && '(운영 시간 외)'}
-              </dd>
-              <dt>요청 유형</dt>
-              <dd>{requestTypesKo(c.requestTypes)}</dd>
-              <dt>긴급도 근거</dt>
-              <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
-              <dt>구·군</dt>
-              <dd>{c.district ? DISTRICTS[c.district].ko : '—'}</dd>
-              <dt>업종</dt>
-              <dd>{c.industry ? INDUSTRIES[c.industry].ko : '—'}</dd>
-              <dt>업무 중 발생</dt>
-              <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
-              <dt>건강보험증</dt>
-              <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
-            </dl>
-          </section>
-          <section className="panel">
-            <h2>제도 경로 결과</h2>
-            <p style={{ fontWeight: 700 }}>{c.coveragePath ? PATH_KO[c.coveragePath] : '근로자가 확인하지 않음'}</p>
-            <p className="footer-note">규칙 기반 "먼저 상담할 곳" 안내이며 지원 여부 판정이 아닙니다.</p>
-          </section>
-          <section className="panel">
-            <h2>연락 희망 방법</h2>
-            <dl className="kv">
-              <dt>방법</dt>
-              <dd>{c.contactMethod ? CONTACT_METHOD_KO[c.contactMethod] : '선택 안 함'}</dd>
-              <dt>연락처</dt>
-              <dd>{c.contact ?? '미입력'}</dd>
-            </dl>
-          </section>
+          {isCallAvailable() && <CenterCall c={c} />}
+          {isChatAvailable() && <CenterChat c={c} />}
+          {!side && info}
         </div>
       </div>
     </div>
+  );
+}
+
+// C-02 통화·채팅 카드(backlog 49). 근로자 센터 채팅 시트와 같은 메신저 틀이다: 머리 / 대화 줄기 / 아래 고정 칸.
+// 자리는 그대로 오른쪽 열의 통화(위)·채팅(아래)이고, 시트와 달리 둘을 오가지 않고 함께 보인다(전화가 오는 것을 놓치지 않게).
+
+/** 카드 머리. 시트 머리(.sheet-head)와 같은 틀이고 시작 쪽은 상대(근로자) 표시다 */
+function TalkHead({ id, title, c }: { id: string; title: string; c: CenterCase }) {
+  return (
+    <header className="sheet-head">
+      <span className="sheet-avatar talk-avatar" aria-hidden="true">
+        <svg className="sheet-icon" width="22" height="22" viewBox="0 0 24 24" focusable="false">
+          <circle cx="12" cy="8.5" r="3.5" />
+          <path d="M5 19.5c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5" />
+        </svg>
+      </span>
+      <div className="sheet-title">
+        <h2 id={id}>{title}</h2>
+        <p>근로자 · {LANGUAGE_NAMES_KO[c.language]}</p>
+      </div>
+    </header>
+  );
+}
+
+function CenterCall({ c }: { c: CenterCase }) {
+  const body = useRef<HTMLDivElement>(null);
+  // 상태 줄·버튼 줄을 그릴 아래 고정 칸. CallPanel이 포털로 그린다
+  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
+  return (
+    <section className="panel talk talk-call" aria-labelledby="talk-call-title">
+      <TalkHead id="talk-call-title" title={TEXT.callTitle} c={c} />
+      <div className="sheet-body" ref={body}>
+        <p className="chat-sys">{c.live ? TEXT.callNote : TEXT.callMock}</p>
+        <CallPanel
+          caseId={c.id}
+          auth={{ role: 'center' }}
+          lang="ko"
+          labels={CALL_LABELS}
+          locale="ko-KR"
+          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+          scroller={body}
+          footer={foot}
+        />
+      </div>
+      <div className="sheet-foot" ref={setFoot} />
+    </section>
+  );
+}
+
+function CenterChat({ c }: { c: CenterCase }) {
+  const body = useRef<HTMLDivElement>(null);
+  // 채팅 상태 줄과 입력줄을 그릴 아래 고정 칸. ChatPanel이 포털로 그린다
+  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
+  return (
+    <section className="panel talk talk-chat" aria-labelledby="talk-chat-title">
+      <TalkHead id="talk-chat-title" title={TEXT.chatTitle} c={c} />
+      <div className="sheet-body" ref={body}>
+        <p className="chat-sys">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
+        <ChatPanel
+          caseId={c.id}
+          auth={{ role: 'center' }}
+          me="center"
+          labels={CHAT_LABELS}
+          locale="ko-KR"
+          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+          scroller={body}
+          footer={foot}
+        />
+      </div>
+      <div className="sheet-foot" ref={setFoot} />
+    </section>
   );
 }
 
