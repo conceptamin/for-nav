@@ -1557,6 +1557,13 @@ a.card.home-recent:active {
   margin-top: 8px;
 }
 
+/* Google 공식 로그인 버튼(backlog 28)의 틀. 버튼 자체는 Google이 그리는 iframe이라 토큰을 쓰지 않는다(design.md "근로자 로그인") */
+.gsi-button {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
 /* 버튼 왼쪽의 글자 아이콘(데모 Google 로그인의 G) */
 .btn .mark {
   width: 28px;
