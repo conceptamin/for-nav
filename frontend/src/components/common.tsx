@@ -37,16 +37,19 @@ export function Chip({ pressed, onClick, children }: { pressed: boolean; onClick
   );
 }
 
-/** 단계 숫자 원. 장식이라 aria-hidden이고, 단계 수는 글로 알려 주지 않는다 */
-export function Steps({ count, current }: { count: number; current: number }) {
+/**
+ * 진행 막대 + `3 / 10`(backlog 35). 분모는 실제로 지나갈 화면 수다. 막대는 기본 `progress`라
+ * 스크린리더가 값을 읽고, 옆 숫자는 같은 내용이라 aria-hidden이다
+ */
+export function Progress({ current, total, label }: { current: number; total: number; label: string }) {
   return (
-    <ol className="steps" aria-hidden>
-      {Array.from({ length: count }, (_, i) => (
-        <li key={i} className={i === current ? 'on' : undefined}>
-          {i + 1}
-        </li>
-      ))}
-    </ol>
+    <div className="progress">
+      <progress value={current} max={total} aria-label={label} />
+      {/* RTL에서 `9 / 6`으로 뒤집히지 않게 숫자 묶음만 왼→오 */}
+      <span className="count" dir="ltr" aria-hidden>
+        {current} / {total}
+      </span>
+    </div>
   );
 }
 

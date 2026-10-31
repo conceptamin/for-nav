@@ -76,6 +76,7 @@ export const mn: Record<MessageKey, string> = {
   intakeTitle: 'Шинж тэмдгээ хэлээрэй',
   stepBody: 'Хаана асуудал байна вэ?',
   stepBodyHint: 'Тохирох бүгдийг сонгоно уу.',
+  stepSymptomHint: 'Тохирох бүгдийг сонгоно уу.',
   stepSymptom: 'Юу болж байна вэ?',
   stepText: 'Өөрийн үгээр бичээрэй',
   stepTextHint: 'Заавал биш. Жишээ: "Өнөөдөр ажил дээр хуруу минь машинд хавчигдсан. Хавдсан байна."',

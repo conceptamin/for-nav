@@ -1,5 +1,6 @@
 // S-05 증상 입력 → S-06 응급 안내 / S-07 진료 안내
-// 묶음(부위·증상·자유 입력·추가 질문) 네 개가 숫자 원 1~4이고, 추가 질문 묶음은 화면 하나에 질문 하나다.
+// 묶음(부위·증상·자유 입력·추가 질문) 네 개 중 추가 질문 묶음은 화면 하나에 질문 하나다. 진행 표시는 묶음이 아니라
+// 실제로 지나갈 화면 수로 센다(backlog 35). 하나만 고르는 질문은 고르면 바로 다음 화면으로 가고, 프로필로 채운 질문은 묻지 않는다.
 // 단계마다 응급 감지를 돌려, 응급이면 남은 질문 없이 바로 119 화면으로 보낸다.
 // 추출과 최종 판정은 src/api/worker.ts를 거친다(단독/API 모드와 대체는 그 안에만 있다).
 // 서버를 기다리는 동안 추출은 버튼만 비활성이고, 최종 판정은 분석 중 화면을 보인다 (README.md "비동기 UX 규칙").
@@ -11,8 +12,8 @@ import {
   kakaoSearchUrl,
   PainRange,
   PhotoPicker,
+  Progress,
   SingleSelect,
-  Steps,
   toggleIn,
   usePhotoCleanup,
   Worse119,
@@ -24,15 +25,15 @@ import { useT, type MessageKey } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { checkTriage, extract, screenEmergency, usedKeywordFallback } from '../../api/worker';
 import type { ExtractResult, Intake, TriageResult } from '../../domain/triage';
-import { newIntake, REASON_KO } from '../../domain/triage';
+import { newIntake, profileAnswers, REASON_KO } from '../../domain/triage';
 import type { AgeGroup, BodyPart, Industry, Onset, Sex, Symptom, WorkType } from '../../domain/vocab';
 import { AGE_GROUPS, BODY_PARTS, DEPARTMENTS, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO, ONSETS, pron, SEXES, SYMPTOMS, WORK_TYPES } from '../../domain/vocab';
 import type { District } from '../../domain/vocab';
 
-/** 묶음: 0 부위 · 1 증상 · 2 자유 입력(사진) · 3 추가 질문 */
-const GROUP_COUNT = 4;
+/** 묶음: 0 부위 · 1 증상 · 2 자유 입력(사진) · 3 추가 질문. 추가 질문 앞의 화면 수 */
+const SCREENS_BEFORE_QUESTIONS = 3;
 
-/** 추가 질문 순서. 업무 종류는 업무 관련이 "예"일 때만 묻는다 */
+/** 추가 질문 순서. 업무 종류는 업무 관련이 "예"일 때만, 나이대·성별은 프로필로 채우지 못했을 때만 묻는다 */
 type MoreQuestion = 'onset' | 'pain' | 'injury' | 'work' | 'workType' | 'ageGroup' | 'sex' | 'industry' | 'district';
 const MORE_QUESTIONS: MoreQuestion[] = ['onset', 'pain', 'injury', 'work', 'workType', 'ageGroup', 'sex', 'industry', 'district'];
 
@@ -67,10 +68,16 @@ export function IntakePage() {
   const [busy, setBusy] = useState(false);
   /** 최종 판정을 기다리는 중. 분석 중 화면을 보인다 */
   const [analyzing, setAnalyzing] = useState(false);
+  /** 지금 프로필로 채운 나이대·성별. 최종 판정에만 붙이고(추출에는 보내지 않는다), 채운 질문은 묻지 않는다 */
+  const [fromProfile] = useState(() => profileAnswers(app.profile, new Date()));
 
-  const questions = MORE_QUESTIONS.filter((k) => k !== 'workType' || intake.workRelated === 'yes');
+  const questionsFor = (i: Intake) =>
+    MORE_QUESTIONS.filter((k) => (k !== 'workType' || i.workRelated === 'yes') && !(k in fromProfile));
+  const questions = questionsFor(intake);
   const current: MoreQuestion | null = group === 3 ? questions[Math.min(q, questions.length - 1)] : null;
   const lastQuestion = group === 3 && q >= questions.length - 1;
+  const screen = group < 3 ? group + 1 : SCREENS_BEFORE_QUESTIONS + Math.min(q, questions.length - 1) + 1;
+  const screens = SCREENS_BEFORE_QUESTIONS + questions.length;
 
   // 질문이 바뀌면 맨 위부터 보이게 한다(경로는 그대로라 WorkerLayout이 올리지 않는다).
   useEffect(() => {
@@ -104,21 +111,24 @@ export function IntakePage() {
     return false;
   };
 
-  const goNext = async () => {
+  /** 다음 화면. `answer`는 하나만 고르는 질문에서 방금 고른 값이다(상태가 바뀌기 전에 넘어가므로 함께 받는다) */
+  const goNext = async (answer?: Partial<Intake>) => {
     if (busy) return;
+    const cur = answer ? { ...intake, ...answer } : intake;
+    if (answer) setIntake(cur);
     setMissingMsg(false);
-    if (group === 1 && checkEmergency(intake)) return;
+    if (group === 1 && checkEmergency(cur)) return;
     if (group === 2) {
       let out: ExtractResult;
       setBusy(true);
       try {
-        out = await extract({ ...intake, language: lang });
+        out = await extract({ ...cur, language: lang });
       } finally {
         setBusy(false);
       }
       const merged = out.intake;
       setExtracted(out.filled);
-      setKeywordFallback(usedKeywordFallback(out, intake.freeText));
+      setKeywordFallback(usedKeywordFallback(out, cur.freeText));
       setIntake(merged);
       if (checkEmergency(merged)) return;
       // 필수 항목(부위·증상)이 비면 해당 버튼 질문으로 되돌아간다.
@@ -129,11 +139,11 @@ export function IntakePage() {
       }
     }
     if (group === 3) {
-      if (!lastQuestion) {
+      if (q < questionsFor(cur).length - 1) {
         setQ(q + 1);
         return;
       }
-      const final = { ...intake, language: lang };
+      const final = { ...cur, ...fromProfile, language: lang };
       // 응급은 브라우저에서 즉시 판정한다. 분석 중 화면을 거치지 않는다.
       if (checkEmergency(final)) return;
       let r: TriageResult;
@@ -157,6 +167,8 @@ export function IntakePage() {
   };
 
   const set = (p: Partial<Intake>) => setIntake((i) => ({ ...i, ...p }));
+  /** 하나만 고르는 질문: 고르면 바로 다음 화면. 잘못 골랐으면 ←로 돌아와 다시 고른다 */
+  const pick = (p: Partial<Intake>) => void goNext(p);
 
   if (analyzing) {
     return (
@@ -170,11 +182,24 @@ export function IntakePage() {
     );
   }
 
-  const primaryLabel = lastQuestion ? t('seeResult') : group === 2 && !intake.freeText ? t('skip') : t('next');
+  // 아직 답하지 않은 추가 질문은 바닥 버튼이 "건너뛰기"다(답하지 않으면 키가 없다)
+  const unanswered: Record<MoreQuestion, boolean> = {
+    onset: intake.onset === null,
+    pain: intake.painScore === undefined,
+    injury: intake.injury === undefined,
+    work: intake.workRelated === null,
+    workType: intake.workType === null,
+    ageGroup: intake.ageGroup === undefined,
+    sex: intake.sex === undefined,
+    industry: intake.industry === null,
+    district: intake.district === null,
+  };
+  const skippable = (group === 2 && !intake.freeText) || (current !== null && unanswered[current]);
+  const primaryLabel = lastQuestion ? t('seeResult') : skippable ? t('skip') : t('next');
 
   return (
     <div className="w-screen">
-      <Steps count={GROUP_COUNT} current={group} />
+      <Progress current={screen} total={screens} label={t('intakeTitle')} />
       {missingMsg && <div className="notice warn">{t('missingAsk')}</div>}
 
       {group === 0 && (
@@ -199,7 +224,7 @@ export function IntakePage() {
       {group === 1 && (
         <>
           <h1>{t('stepSymptom')}</h1>
-          <p className="small muted">{t('stepBodyHint')}</p>
+          <p className="small muted">{t('stepSymptomHint')}</p>
           {SYMPTOM_GROUPS.map((g) => (
             <section className="chip-group" key={g.title}>
               <h2>{t(g.title)}</h2>
@@ -244,21 +269,30 @@ export function IntakePage() {
           {current === 'onset' && (
             <>
               <h1>{t('onsetQ')}</h1>
-              <SingleSelect options={Object.keys(ONSETS) as Onset[]} value={intake.onset} onChange={(v) => set({ onset: v })} label={(k) => term(ONSETS[k])} />
+              <SingleSelect options={Object.keys(ONSETS) as Onset[]} value={intake.onset} onChange={(v) => pick({ onset: v })} label={(k) => term(ONSETS[k])} />
             </>
           )}
-          {/* 통증 점수·손상 여부·나이대·성별은 응급도 모델 입력이다. 답하지 않으면 키가 없다. */}
+          {/* 통증 점수·손상 여부·나이대·성별은 응급도 모델 입력이다. 답하지 않으면 키가 없다. 슬라이더는 움직이는 중이라 자동으로 넘기지 않는다 */}
           {current === 'pain' && (
             <>
               <h1>{t('painQ')}</h1>
               <PainRange value={intake.painScore} onChange={(n) => set({ painScore: n })} />
             </>
           )}
-          {current === 'injury' && <h1>{t('injuryQ')}</h1>}
+          {current === 'injury' && (
+            <>
+              <h1>{t('injuryQ')}</h1>
+              <YesNoSeg
+                withUnknown={false}
+                value={intake.injury === undefined ? null : intake.injury ? 'yes' : 'no'}
+                onChange={(v) => pick({ injury: v === 'yes' })}
+              />
+            </>
+          )}
           {current === 'work' && (
             <>
               <h1>{t('workQ')}</h1>
-              <YesNoSeg value={intake.workRelated} onChange={(v) => set({ workRelated: v })} />
+              <YesNoSeg value={intake.workRelated} onChange={(v) => pick({ workRelated: v })} />
             </>
           )}
           {current === 'workType' && (
@@ -266,25 +300,25 @@ export function IntakePage() {
               <h1>
                 {t('workTypeQ')} <span className="small muted">({t('optional')})</span>
               </h1>
-              <SingleSelect options={Object.keys(WORK_TYPES) as WorkType[]} value={intake.workType} onChange={(v) => set({ workType: v })} label={(k) => term(WORK_TYPES[k])} />
+              <SingleSelect options={Object.keys(WORK_TYPES) as WorkType[]} value={intake.workType} onChange={(v) => pick({ workType: v })} label={(k) => term(WORK_TYPES[k])} />
             </>
           )}
           {current === 'ageGroup' && (
             <>
               <h1>{t('ageGroupQ')}</h1>
-              <SingleSelect options={Object.keys(AGE_GROUPS) as AgeGroup[]} value={intake.ageGroup ?? null} onChange={(v) => set({ ageGroup: v })} label={(k) => term(AGE_GROUPS[k])} />
+              <SingleSelect options={Object.keys(AGE_GROUPS) as AgeGroup[]} value={intake.ageGroup ?? null} onChange={(v) => pick({ ageGroup: v })} label={(k) => term(AGE_GROUPS[k])} />
             </>
           )}
           {current === 'sex' && (
             <>
               <h1>{t('sex')}</h1>
-              <SingleSelect options={Object.keys(SEXES) as Sex[]} value={intake.sex ?? null} onChange={(v) => set({ sex: v })} label={(k) => term(SEXES[k])} />
+              <SingleSelect options={Object.keys(SEXES) as Sex[]} value={intake.sex ?? null} onChange={(v) => pick({ sex: v })} label={(k) => term(SEXES[k])} />
             </>
           )}
           {current === 'industry' && (
             <>
               <h1>{t('industryQ')}</h1>
-              <SingleSelect options={Object.keys(INDUSTRIES) as Industry[]} value={intake.industry} onChange={(v) => set({ industry: v })} label={(k) => term(INDUSTRIES[k])} />
+              <SingleSelect options={Object.keys(INDUSTRIES) as Industry[]} value={intake.industry} onChange={(v) => pick({ industry: v })} label={(k) => term(INDUSTRIES[k])} />
             </>
           )}
           {current === 'district' && (
@@ -293,8 +327,8 @@ export function IntakePage() {
               <SingleSelect
                 options={Object.keys(DISTRICTS) as District[]}
                 value={intake.district}
-                onChange={(v) => set({ district: v })}
-                label={(k) => `${DISTRICTS[k].ko} · ${term(DISTRICTS[k])}`}
+                onChange={(v) => pick({ district: v })}
+                label={(k) => (lang === 'ko' ? DISTRICTS[k].ko : `${DISTRICTS[k].ko} · ${term(DISTRICTS[k])}`)}
               />
             </>
           )}
@@ -302,14 +336,6 @@ export function IntakePage() {
       )}
 
       <footer className="w-footer">
-        {/* 둘뿐인 예/아니요는 바닥 버튼 바로 위에 붙여 엄지 범위에 둔다 */}
-        {current === 'injury' && (
-          <YesNoSeg
-            withUnknown={false}
-            value={intake.injury === undefined ? null : intake.injury ? 'yes' : 'no'}
-            onChange={(v) => set({ injury: v === 'yes' })}
-          />
-        )}
         <button type="button" className="btn block" disabled={busy} onClick={() => void goNext()}>
           {primaryLabel}
         </button>

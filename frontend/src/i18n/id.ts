@@ -76,6 +76,7 @@ export const id: Record<MessageKey, string> = {
   intakeTitle: 'Ceritakan gejala Anda',
   stepBody: 'Di mana masalahnya?',
   stepBodyHint: 'Pilih semua yang sesuai.',
+  stepSymptomHint: 'Pilih semua yang sesuai.',
   stepSymptom: 'Apa yang terjadi?',
   stepText: 'Ceritakan dengan kata-kata Anda sendiri',
   stepTextHint: 'Tidak wajib. Contoh: "Jari saya terjepit mesin di tempat kerja hari ini. Jarinya bengkak."',

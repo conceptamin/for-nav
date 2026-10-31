@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:for_nav/bridge.dart';
 import 'package:for_nav/navigation.dart';
 
@@ -67,5 +68,33 @@ void main() {
       expect(isTrueResult('false'), isFalse);
       expect(isTrueResult(null), isFalse);
     });
+    group('googleSignIn', () {
+    test('features가 비면 init에 넣지 않고, 있으면 그대로 담는다', () {
+      Map<String, Object> init(List<String> features) =>
+          initMessage(platform: 'ios', appVersion: '1.0.0', locale: 'en-US', padding: EdgeInsets.zero, features: features);
+      expect(init(const []).containsKey('features'), isFalse);
+      expect(init(const [featureGoogleSignIn])['features'], ['googleSignIn']);
+    });
+
+    test('googleSignInResult는 성공이면 idToken, 실패면 error 하나만 담는다', () {
+      expect(googleSignInSuccess('eyJ.test.sig'), {'protocol': 1, 'type': 'googleSignInResult', 'idToken': 'eyJ.test.sig'});
+      expect(googleSignInFailure(canceled: true), {'protocol': 1, 'type': 'googleSignInResult', 'error': 'canceled'});
+      expect(googleSignInFailure(canceled: false), {'protocol': 1, 'type': 'googleSignInResult', 'error': 'failed'});
+    });
+
+    test('사용자가 닫은 것만 canceled다', () {
+      expect(isSignInCanceled(const GoogleSignInException(code: GoogleSignInExceptionCode.canceled)), isTrue);
+      expect(isSignInCanceled(const GoogleSignInException(code: GoogleSignInExceptionCode.interrupted)), isFalse);
+      expect(isSignInCanceled(const GoogleSignInException(code: GoogleSignInExceptionCode.clientConfigurationError)), isFalse);
+      expect(isSignInCanceled(Exception('network')), isFalse);
+    });
+
+    test('Android는 웹 클라이언트 ID만, iOS는 iOS 클라이언트 ID도 있어야 켠다', () {
+      expect(nativeSignInConfigured(isIOS: false, webClientId: 'w', iosClientId: ''), isTrue);
+      expect(nativeSignInConfigured(isIOS: true, webClientId: 'w', iosClientId: ''), isFalse);
+      expect(nativeSignInConfigured(isIOS: true, webClientId: 'w', iosClientId: 'i'), isTrue);
+      expect(nativeSignInConfigured(isIOS: false, webClientId: '', iosClientId: 'i'), isFalse);
+    });
   });
+});
 }

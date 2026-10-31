@@ -1,1 +1,3 @@
 #include "Generated.xcconfig"
+// 네이티브 Google 로그인(app-front backlog 06). 있으면 GOOGLE_REVERSED_CLIENT_ID를 읽는다(커밋하지 않는다, app/README.md "Google 로그인")
+#include? "GoogleSignIn.xcconfig"

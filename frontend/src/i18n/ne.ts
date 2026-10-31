@@ -76,6 +76,7 @@ export const ne: Record<MessageKey, string> = {
   intakeTitle: 'आफ्ना लक्षणबारे भन्नुहोस्',
   stepBody: 'समस्या कहाँ छ?',
   stepBodyHint: 'मिल्ने सबै छान्नुहोस्।',
+  stepSymptomHint: 'मिल्ने सबै छान्नुहोस्।',
   stepSymptom: 'के भइरहेको छ?',
   stepText: 'आफ्नै शब्दमा लेख्नुहोस्',
   stepTextHint: 'ऐच्छिक। उदाहरण: "आज काममा मेरो औंला मेसिनमा च्यापियो। सुन्निएको छ।"',

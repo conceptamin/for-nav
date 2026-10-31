@@ -71,6 +71,7 @@ export const vi: Record<MessageKey, string> = {
   intakeTitle: 'Cho chúng tôi biết triệu chứng',
   stepBody: 'Bạn bị ở đâu?',
   stepBodyHint: 'Chọn tất cả chỗ phù hợp.',
+  stepSymptomHint: 'Chọn tất cả triệu chứng phù hợp.',
   stepSymptom: 'Bạn bị thế nào?',
   stepText: 'Mô tả bằng lời của bạn',
   stepTextHint: 'Không bắt buộc. Ví dụ: "Hôm nay ngón tay bị kẹp vào máy ở chỗ làm. Bị sưng."',

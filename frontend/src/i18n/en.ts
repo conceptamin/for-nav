@@ -75,6 +75,7 @@ export const en = {
   intakeTitle: 'Tell us about your symptoms',
   stepBody: 'Where is the problem?',
   stepBodyHint: 'Choose all that apply.',
+  stepSymptomHint: 'Choose all that apply.',
   stepSymptom: 'What is happening?',
   stepText: 'Describe it in your own words',
   stepTextHint: 'Optional. Example: "My finger got caught in a machine at work today. It is swollen."',

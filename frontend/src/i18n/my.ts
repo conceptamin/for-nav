@@ -76,6 +76,7 @@ export const my: Record<MessageKey, string> = {
   intakeTitle: 'သင့်ရောဂါလက္ခဏာကို ပြောပြပါ',
   stepBody: 'ဘယ်နေရာမှာ ပြဿနာရှိလဲ?',
   stepBodyHint: 'ကိုက်ညီတာ အားလုံးကို ရွေးပါ။',
+  stepSymptomHint: 'ကိုက်ညီတာ အားလုံးကို ရွေးပါ။',
   stepSymptom: 'ဘာဖြစ်နေလဲ?',
   stepText: 'ကိုယ့်စကားနဲ့ ရေးပြပါ',
   stepTextHint: 'မဖြစ်မနေ မဟုတ်ပါ။ ဥပမာ: "ဒီနေ့ အလုပ်မှာ လက်ချောင်း စက်ထဲ ညပ်သွားတယ်။ ရောင်နေတယ်။"',

@@ -76,6 +76,7 @@ export const ru: Record<MessageKey, string> = {
   intakeTitle: 'Расскажите о своих симптомах',
   stepBody: 'Где болит или беспокоит?',
   stepBodyHint: 'Выберите все подходящие.',
+  stepSymptomHint: 'Выберите все подходящие.',
   stepSymptom: 'Что с вами происходит?',
   stepText: 'Опишите своими словами',
   stepTextHint: 'Необязательно. Пример: «Сегодня на работе палец попал в станок. Он опух».',

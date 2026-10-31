@@ -1,6 +1,6 @@
 # 22. app.for-nav.com에 앱용 웹(app-front) 빌드 서빙
 
-상태: 진행 중
+상태: 완료
 의존: 없음 (app-front 02 완료, PR #117. Flutter 앱 쪽은 app-front 03, PR #119)
 
 ## 목표
@@ -37,12 +37,12 @@
 - [x] 로컬에서 `STATIC_DIR=../frontend/dist APP_STATIC_DIR=../app-front/dist APP_HOSTS=app.localhost`로 띄우면 `curl -H 'Host: app.localhost' /`의 번들에 `fornav`가 있고, `Host: localhost`의 번들에는 없다. 두 호스트 모두 `/api/health`가 200
 - [x] `APP_STATIC_DIR`을 빼고 띄우면 두 호스트 모두 지금과 같은 `frontend/` 빌드
 - [x] `deploy.sh`에서 `app-front` 빌드를 일부러 실패시키면(예: 없는 `outDir` 부모) `static`·`static-app`·떠 있는 서버가 그대로다
-- [ ] 맥미니 배포 뒤 `https://app.for-nav.com/` 번들에 `fornav`가 있고, `https://www.for-nav.com/center`는 지금처럼 센터 화면이다
-- [ ] Flutter 앱(`APP_URL=https://app.for-nav.com`)을 Android 에뮬레이터에서 열면 `/__host`가 "호스트 있음·init 받음"이고, 동의 화면에서 뒤로 가기가 한 화면 뒤로 간다
+- [x] 맥미니 배포 뒤 `https://app.for-nav.com/` 번들에 `fornav`가 있고, `https://www.for-nav.com/center`는 지금처럼 센터 화면이다
+- [x] Flutter 앱(`APP_URL=https://app.for-nav.com`)을 Android 에뮬레이터에서 열면 `/__host`가 "호스트 있음·init 받음"이고, 동의 화면에서 뒤로 가기가 한 화면 뒤로 간다
 
 ## 결과
 
-2026-10-31. 브랜치 `backend/app-host-static`. 코드·로컬 확인은 끝났고, **맥미니 배포 뒤 확인(완료 기준 마지막 두 줄)이 남아 상태는 "진행 중"이다.**
+2026-10-31. 브랜치 `backend/app-host-static`(PR #126). 배포 뒤 확인(완료 기준 마지막 두 줄)은 브랜치 `app/prod-env`에서 했다.
 
 실행한 명령
 - `uv run ruff check . && uv run ruff format --check .` → 통과
@@ -63,9 +63,12 @@ API: 변경 없음. 환경 변수 `APP_STATIC_DIR`·`APP_HOSTS`를 더했다(선
 - 설정 테스트는 기존 `STATIC_DIR` 검증 테스트가 있는 `tests/test_static.py`에 두었다(`tests/test_settings.py`는 고치지 않음)
 - `deploy-backend.yml`의 `paths`에 `app-front/**`를 더했다. `.github/`는 `chore/` 영역이지만 이 항목이 동작하는 데 꼭 필요한 한 줄이라 같은 PR에 넣었다
 
-남은 것(병합·배포 뒤)
-- `curl -s https://app.for-nav.com/`의 번들에 `fornav`가 있고 `https://www.for-nav.com/center`가 센터 화면인지. `app.`이 여전히 frontend 번들이면 터널이 `Host`를 바꾸는 것이다(결정 1의 대안)
-- Flutter 앱(`APP_URL=https://app.for-nav.com`)을 Android 에뮬레이터에서 열어 `/__host`와 뒤로 가기
+배포 뒤 확인(2026-10-31, #126 병합 뒤 Mac mini 배포)
+- `https://app.for-nav.com/` 번들(`index-B0wRuzdb.js`)에 `fornav`가 있다. `https://www.for-nav.com/center`는 200이고 번들(`index-BVQY8TnD.js`)에 `fornav`가 없다(센터 화면). `app.for-nav.com/center`는 지금처럼 `www.`으로 302, `app.for-nav.com/api/health` 200. 터널은 `Host`를 그대로 넘긴다(결정 1의 대안은 필요 없다)
+- Flutter 앱, Android 에뮬레이터(Pixel 7, API 36)
+  - `--dart-define-from-file=env/prod.json --dart-define=APP_URL=https://app.for-nav.com/__host`: "호스트: 있음 (webview_flutter)", "init 받음: 예", 출처 `https://app.for-nav.com`, insets top 51.8·bottom 24, 로그 `← ready` → `→ init`
+  - `env/prod.json`만으로 만든 배포 APK(`flutter build apk`): 언어 선택(기기 언어 베트남어) → 동의 화면에서 뒤로 가기 → 언어 선택으로 돌아오고 앱은 앞에 그대로다. 상태 표시줄과 겹치지 않는다
+- 따로 찾은 것: 운영 `/__host` 화면의 카드가 세로로 좁게 늘어선다. 확인 화면 바깥 `div.check`가 공용 체크박스 스타일 `.check { display: flex }`와 이름이 겹친다(앱과 관계없이 브라우저에서도 같다). app-front 쪽 문제라 여기서 고치지 않았다
 
 ## 메모
 - 브라우저로 `app.for-nav.com`에 오는 사용자도 앱용 빌드를 받는다. 화면·문구는 같다(`app-front/CLAUDE.md` "호스트가 없어도 똑같이 동작한다"). 다른 점은 `app-front`에 센터 경로가 없어, 앱 안에서 `/center`로 가는 라우터 링크가 `/`로 돌아간다는 것이다(전체 페이지로 열면 Cloudflare가 `www.`으로 보낸다)

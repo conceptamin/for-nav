@@ -76,6 +76,7 @@ export const fr: Record<MessageKey, string> = {
   intakeTitle: 'Parlez-nous de vos symptômes',
   stepBody: 'Où avez-vous mal ?',
   stepBodyHint: 'Choisissez tout ce qui correspond.',
+  stepSymptomHint: 'Choisissez tout ce qui correspond.',
   stepSymptom: 'Que se passe-t-il ?',
   stepText: 'Expliquez avec vos propres mots',
   stepTextHint: 'Facultatif. Exemple : « Mon doigt s’est coincé dans une machine au travail aujourd’hui. Il est gonflé. »',
