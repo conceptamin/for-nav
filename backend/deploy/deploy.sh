@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 맥미니에서 지금 클론으로 프론트를 빌드하고 서버(pm2 앱 for-nav)를 다시 띄운다.
+# 맥미니에서 지금 클론으로 프론트(frontend)와 앱용 웹(app-front)을 빌드하고 서버(pm2 앱 for-nav)를 다시 띄운다.
 # GitHub Actions(.github/workflows/deploy-backend.yml)가 git pull 뒤 SSH로 부른다. 맥미니에서 직접 돌려도 같다.
-# 빌드나 의존성 설치가 실패하면 떠 있는 서버와 정적 파일을 건드리지 않고 멈춘다.
+# 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 정적 파일(static, static-app)을 건드리지 않고 멈춘다.
 set -eo pipefail
 
 DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -34,14 +34,24 @@ npm ci --no-audit --no-fund
 rm -rf "$DEPLOY_DIR/static.next"
 VITE_API_BASE=/api npm run build -- --outDir "$DEPLOY_DIR/static.next" --emptyOutDir
 
+echo "▶ 앱용 웹 빌드(API 모드, app.for-nav.com에 서빙)"
+# frontend/src를 공유 import하지만 react 등은 app-front의 node_modules만 쓴다(app-front backlog 02)
+cd "$ROOT/app-front"
+npm ci --no-audit --no-fund
+rm -rf "$DEPLOY_DIR/static-app.next"
+VITE_API_BASE=/api npm run build -- --outDir "$DEPLOY_DIR/static-app.next" --emptyOutDir
+
 echo "▶ 서버 의존성"
 cd "$ROOT/backend"
 uv sync --frozen --no-dev
 
 echo "▶ 정적 파일 교체"
-rm -rf "$DEPLOY_DIR/static.prev"
-if [ -d "$DEPLOY_DIR/static" ]; then mv "$DEPLOY_DIR/static" "$DEPLOY_DIR/static.prev"; fi
-mv "$DEPLOY_DIR/static.next" "$DEPLOY_DIR/static"
+# 두 빌드가 모두 성공한 뒤에만 여기 온다. 둘을 함께 바꿔 끼운다
+for name in static static-app; do
+  rm -rf "$DEPLOY_DIR/$name.prev"
+  if [ -d "$DEPLOY_DIR/$name" ]; then mv "$DEPLOY_DIR/$name" "$DEPLOY_DIR/$name.prev"; fi
+  mv "$DEPLOY_DIR/$name.next" "$DEPLOY_DIR/$name"
+done
 
 echo "▶ 서버 재시작(pm2 for-nav, 포트 $PORT)"
 # 설정 파일의 인자·환경 변수가 바뀌어도 반영되게 지우고 새로 띄운다

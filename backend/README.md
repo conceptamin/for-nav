@@ -31,7 +31,7 @@
 backend/
   pyproject.toml
   app/
-    main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta, STATIC_DIR 프론트 서빙
+    main.py            FastAPI 앱, CORS, 라우터 등록, /api/health, /api/meta, STATIC_DIR 프론트 서빙(APP_HOSTS 호스트에는 APP_STATIC_DIR 앱용 웹)
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
     model.py           응급도·진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
@@ -67,8 +67,8 @@ backend/
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
       auth.py          /api/auth/* (센터 직원 로그인), /api/auth/worker/* (근로자 Google 로그인)
   deploy/
-    deploy.sh          맥미니 배포 — 프론트 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
-    ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, MODEL_DIR=../modeling/models, .env 있으면 읽기)
+    deploy.sh          맥미니 배포 — 프론트·앱용 웹 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
+    ecosystem.config.cjs pm2 앱 for-nav(STATIC_DIR=deploy/static, APP_STATIC_DIR=deploy/static-app·APP_HOSTS=app.for-nav.com, MODEL_DIR=../modeling/models, .env 있으면 읽기)
   scripts/
     llm_smoke.py       실제 공급자를 한 번 불러 확인(CI에서 돌지 않음)
     extract_compare.py 픽스처 자유 입력의 LLM 추출과 키워드 추출 비교(CI에서 돌지 않음)
@@ -84,7 +84,7 @@ backend/
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
     test_api.py        경로별 응답 형태·상태 코드
-    test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
+    test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단), 호스트별 앱용 웹 빌드
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
     test_extract_llm.py /api/extract의 LLM 추출·대체(가짜 LLM)
     test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
@@ -491,6 +491,8 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_CLIENT_IP_HEADER` | (없음) | 소문자 헤더 이름, 예: `cf-connecting-ip` | TCP 상대가 루프백일 때만 이 헤더를 클라이언트 IP로 쓴다 |
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
+| `APP_STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../app-front/dist` | 앱용 웹 빌드(backlog 22). `APP_HOSTS`의 호스트로 온 요청에는 `STATIC_DIR` 대신 이것을 준다. `APP_HOSTS`·`STATIC_DIR`과 함께 있어야 한다 |
+| `APP_HOSTS` | (없음) | 쉼표 구분 호스트 이름(포트 없이), 예: `app.for-nav.com` | 요청의 `Host`가 여기 있으면 앱용 웹 빌드를 준다. 대소문자·포트는 보지 않는다 |
 | `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
 | `CENTER_AUTH` | `off` | `off` \| `email` | 센터 직원 로그인(backlog 17). `email`이면 `DB_PATH`가 있어야 한다 |
 | `MAIL_PROVIDER` | `resend` | `resend` \| `console` | 로그인 코드 메일. `console`은 코드를 서버 표준 출력에 찍는다(로컬 개발 전용, `CENTER_COOKIE_SECURE=false`일 때만 허용) |
@@ -558,9 +560,11 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 ### 맥미니 배포
 
-`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
+`main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·`app-front/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
 
-`deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에 빌드 → `uv sync --frozen --no-dev` → `static`으로 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 실패하면 떠 있는 서버와 `static`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+`deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에, 앱용 웹(`app-front`)을 `backend/deploy/static-app.next`에 빌드 → `uv sync --frozen --no-dev` → 둘을 `static`·`static-app`으로 함께 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 `static`·`static-app`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+
+호스트별 빌드(backlog 22): `Host`가 `app.for-nav.com`인 요청에는 앱용 웹 빌드(`static-app`, Flutter 앱이 불러오는 화면. 브라우저에서도 같은 근로자 화면이다)를, 나머지(`www.for-nav.com` 등)에는 `frontend` 빌드(`static`)를 준다. `/api/*`는 호스트와 관계없이 같다. Cloudflare 터널은 공개 주소의 `Host`를 그대로 넘긴다(터널 설정에 `httpHostHeader`를 두지 않는다).
 
 처음 한 번 준비할 것:
 
@@ -569,7 +573,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    ```sh
    mkdir -p ~/srv && git clone https://github.com/conceptamin/for-nav.git ~/srv/for-nav
    ```
-3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. 첫 배포 뒤에 만들었으면 4번처럼 한 번 다시 돌린다. `STATIC_DIR`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
+3. 필요하면 `~/srv/for-nav/backend/.env`를 만든다(`.env.example` 참고). 없으면 기본값(LLM 없음, 메모리 저장소)으로 뜬다. 첫 배포 뒤에 만들었으면 4번처럼 한 번 다시 돌린다. `STATIC_DIR`·`APP_STATIC_DIR`·`APP_HOSTS`·`MODEL_DIR`은 pm2 설정이 정하므로 넣지 않는다. `DB_PATH`를 넣으면 연락처·자유 입력이 평문 파일로 남는다.
 4. 클론을 미리 받았으면 맥미니에서 한 번 직접 돌려 본다: `bash ~/srv/for-nav/backend/deploy/deploy.sh` → `배포 완료`
 5. GitHub 저장소 Settings → Secrets and variables → Actions에 secrets 3개를 넣는다.
 

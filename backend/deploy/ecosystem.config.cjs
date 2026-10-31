@@ -1,5 +1,6 @@
 // 맥미니 pm2 앱 설정. backend/deploy/deploy.sh가 UV_BIN·PORT를 넘겨 `pm2 start`로 부른다.
 // 프론트 빌드(deploy/static)와 API를 한 주소에서 서빙하고, 모델은 저장소의 modeling/models를 쓴다.
+// app.for-nav.com으로 온 요청에는 앱용 웹 빌드(deploy/static-app)를 준다(backlog 22).
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -19,6 +20,9 @@ module.exports = {
       interpreter: 'none',
       env: {
         STATIC_DIR: path.join(__dirname, 'static'),
+        // 이 호스트로 온 요청에는 app-front 빌드를 준다. 나머지(www.for-nav.com 등)는 STATIC_DIR
+        APP_STATIC_DIR: path.join(__dirname, 'static-app'),
+        APP_HOSTS: 'app.for-nav.com',
         MODEL_DIR: path.resolve(backend, '../modeling/models'),
         // LLM 호출 제한(backlog 20). 공개 주소라 .env를 빠뜨려도 켜지게 여기 둔다. 넘으면 LLM 없이 대체 동작으로 응답한다
         LLM_RATE_PER_MIN: '60',
