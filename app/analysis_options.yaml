@@ -9,6 +9,12 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# Flutter가 iOS Swift 패키지를 build/ios/SourcePackages에 풀어 둔다. firebase_messaging은 그 안에 자기 테스트 mock까지 있어
+# 분석에 걸리므로 빌드 산출물은 보지 않는다(app-front backlog 07)
+analyzer:
+  exclude:
+    - build/**
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
