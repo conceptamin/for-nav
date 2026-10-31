@@ -10,7 +10,7 @@ from app import clock
 from app.data.mock import build_mock_cases, build_stat_records, rng
 from app.rules.coverage import is_after_hours, next_open_day, route_coverage
 from app.rules.triage import extract_from_text, merge_extraction, triage
-from app.rules.urgency import rate_urgency
+from app.rules.urgency import default_category, rate_urgency
 from app.schemas import CenterSummaryInput, CoverageInput, Intake, Profile
 from app.templates.reports import build_center_summary, build_clinician_report
 from app.templates.visit import build_call_script, build_desk_sheet
@@ -48,6 +48,12 @@ def test_urgency(case):
     i = case["input"]
     urgency, reasons = rate_urgency(i["workRelated"], i["insurance"])
     assert {"urgency": urgency, "reasons": reasons} == case["output"]
+
+
+@cases("category")
+def test_default_category(case):
+    i = case["input"]
+    assert default_category(i["coveragePath"], i["requestTypes"]) == case["output"]
 
 
 @cases("desk")

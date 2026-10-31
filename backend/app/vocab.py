@@ -194,3 +194,12 @@ def josa(word: str, with_batchim: str, without_batchim: str) -> str:
     if code < 0 or code > 11171:
         return word + without_batchim
     return word + (without_batchim if code % 28 == 0 else with_batchim)
+
+
+# 센터 사례 상담 분야·조치·연계 기관(frontend backlog 41). 값과 순서는 frontend/src/domain/centerCase.ts와 같다
+CaseCategory = Literal["medical", "insurance", "cost"]
+CaseAction = Literal["info", "interpret", "referral", "followUp"]
+ReferralTarget = Literal["nhis", "kcomwel", "hospital", "ulsan", "other"]
+CASE_CATEGORIES: list[CaseCategory] = list(get_args(CaseCategory))
+CASE_ACTIONS: list[CaseAction] = list(get_args(CaseAction))
+REFERRAL_TARGETS: list[ReferralTarget] = list(get_args(ReferralTarget))

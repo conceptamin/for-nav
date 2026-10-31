@@ -8,13 +8,13 @@ from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta
 from threading import Lock
-from typing import Protocol
+from typing import Any, Protocol
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
-from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
+from app.schemas import Caption, CasePatch, CenterCase, ChatMessage, ChatRole, TranslationStatus
 from app.settings import settings
-from app.vocab import Lang
+from app.vocab import CASE_ACTIONS, REFERRAL_TARGETS, Lang
 
 # 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
 CODE_REQUEST_KEEP = timedelta(hours=1)
@@ -68,7 +68,9 @@ class CenterStore(Protocol):
         """id를 정해 `make(id)`로 만든 사례를 맨 앞에 넣는다(id 규칙은 `next_case_id`)."""
         ...
 
-    def set_status(self, case_id: str, status: CaseStatus) -> CenterCase | None: ...
+    def update_case(self, case_id: str, patch: CasePatch) -> CenterCase | None:
+        """보낸 필드만 바꾼다. 앞서 바꾼 필드는 남는다. 사례가 없으면 None."""
+        ...
 
     def set_chat_token(self, case_id: str, token: str) -> None: ...
 
@@ -205,8 +207,18 @@ def latest_first(cases: list[CenterCase]) -> list[CenterCase]:
     return sorted(cases, key=lambda c: clock.parse_iso(c.created_at), reverse=True)
 
 
-def with_status(c: CenterCase, status: CaseStatus | None) -> CenterCase:
-    return c.model_copy(update={"status": status}) if status else c
+# 직원이 바꾸는 사례 필드(PATCH). 저장소는 사례 id별로 바꾼 값만 둔다
+CHANGEABLE = ("status", "category", "actions", "referred_to")
+
+
+def apply_changes(c: CenterCase, changes: dict[str, Any] | None) -> CenterCase:
+    """바꾼 값을 사례에 얹는다. 조치·연계 기관은 열거 순서로 맞추고, 연계 조치가 없으면 기관을 비운다(프론트 applyCasePatch와 같다)."""
+    if not changes:
+        return c
+    merged = c.model_copy(update={k: v for k, v in changes.items() if k in CHANGEABLE and v is not None})
+    actions = [a for a in CASE_ACTIONS if a in merged.actions]
+    referred_to = [t for t in REFERRAL_TARGETS if t in merged.referred_to] if "referral" in actions else []
+    return merged.model_copy(update={"actions": actions, "referred_to": referred_to})
 
 
 def make_message(
@@ -245,7 +257,8 @@ class MemoryStore:
         self._mock = build_mock_cases(started)
         self.stat_records: list[StatRecord] = build_stat_records(started)
         self._live: list[CenterCase] = []
-        self._status: dict[str, CaseStatus] = {}
+        # 사례 id → 직원이 바꾼 필드(CHANGEABLE)
+        self._changes: dict[str, dict[str, Any]] = {}
         self._tokens: dict[str, str] = {}
         self._messages: dict[str, list[ChatMessage]] = {}
         self._reads: dict[str, dict[ChatRole, int]] = {}
@@ -261,14 +274,14 @@ class MemoryStore:
 
     def all(self) -> list[CenterCase]:
         with self._lock:
-            cases = [with_status(c, self._status.get(c.id)) for c in [*self._live, *self._mock]]
+            cases = [apply_changes(c, self._changes.get(c.id)) for c in [*self._live, *self._mock]]
         return latest_first(cases)
 
     def get(self, case_id: str) -> CenterCase | None:
         with self._lock:
             for c in [*self._live, *self._mock]:
                 if c.id == case_id:
-                    return with_status(c, self._status.get(c.id))
+                    return apply_changes(c, self._changes.get(c.id))
         return None
 
     def add_live(self, at: datetime, make: Callable[[str], CenterCase]) -> CenterCase:
@@ -277,11 +290,11 @@ class MemoryStore:
             self._live.insert(0, c)
         return c
 
-    def set_status(self, case_id: str, status: CaseStatus) -> CenterCase | None:
+    def update_case(self, case_id: str, patch: CasePatch) -> CenterCase | None:
         if self.get(case_id) is None:
             return None
         with self._lock:
-            self._status[case_id] = status
+            self._changes.setdefault(case_id, {}).update(patch.model_dump(exclude_none=True))
         return self.get(case_id)
 
     def set_chat_token(self, case_id: str, token: str) -> None:
@@ -466,7 +479,7 @@ class MemoryStore:
     def reset(self) -> None:
         with self._lock:
             self._live.clear()
-            self._status.clear()
+            self._changes.clear()
             self._tokens.clear()
             self._messages.clear()
             self._reads.clear()

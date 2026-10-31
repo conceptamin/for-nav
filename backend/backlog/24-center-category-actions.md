@@ -1,6 +1,6 @@
 # 24. 센터 사례의 상담 분야·조치 기록을 받고 돌려주기
 
-상태: 대기
+상태: 완료
 의존: frontend 41(`category`·`actions`·`referredTo`와 `defaultCategory`, `parity.json` 재생성)
 
 ## 목표
@@ -32,6 +32,17 @@
 - [ ] 세 열이 없는 옛 SQLite 파일로 서버를 띄워도 사례 목록이 열린다
 
 ## 결과
+- `uv run ruff check . && uv run ruff format --check .` → 통과
+- `uv run pytest` → 3045개 통과(frontend 41이 만든 `parity.json`, `defaultCategory` 35건 비교 포함, mock 24건 세 필드 포함 비교)
+- 바뀐 API
+  - `PATCH /api/center/cases/{id}` 본문 `{ status }` → `{ status?, category?, actions?, referredTo? }`. 보낸 필드만 바꾼다. 빈 본문·모두 `null`·모르는 값·같은 값 두 번·연계 없는 `referredTo`는 422
+  - `CenterCase` 응답(`GET`·`POST`·`PATCH`)에 `category`·`actions`·`referredTo`
+- 테스트 추가: 접수 기본 분야(`test_send_case_default_category`), PATCH 조합(`test_patch_category_and_actions`, 상태만 보내는 옛 요청 포함), 422 여덟 가지(`test_patch_rejects_bad_body`), 저장소의 필드별 덮어쓰기·순서 맞추기(`test_update_case_keeps_earlier_changes`), 옛 SQLite 파일(`case_status`에 `status`만, 분야 없는 `live_cases` 본문)
+- 결정
+  - `default_category`는 새 파일 대신 `rules/urgency.py`(센터 사례 규칙)에 뒀다. 폴더 구조 표가 바뀌지 않는다
+  - 저장소 `set_status`를 `update_case(id, CasePatch)`로 바꿨다. 메모리는 사례 id별로 바꾼 필드만 두고, SQLite는 `case_status` 표에 `category`·`actions`·`referred_to` 열(TEXT, 배열은 JSON)을 더한다. 옛 파일은 열 때 열을 더하고 NULL은 "바꾸지 않음"으로 읽는다. `status` 열이 NOT NULL이라 행을 처음 만들 때 지금 상태를 함께 적는다
+  - 조치·연계 기관은 열거 순서로 맞추고, 연계 조치가 빠지면 연계 기관도 비운다(프론트 `applyCasePatch`와 같다). 연계 없는 `referredTo`는 조용히 버리지 않고 422로 거절한다
+  - 근로자 푸시는 지금처럼 상태가 바뀔 때만 보낸다
 
 ## 메모
 - 분야 기본값 규칙은 프론트 `domain/centerCase.ts`가 원본이고 서버는 그것을 옮긴다. 증상 내용으로 분야를 가르지 않는다

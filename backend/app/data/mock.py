@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 from app import clock
 from app.rules.coverage import is_after_hours, route_coverage
-from app.rules.urgency import rate_urgency
+from app.rules.urgency import default_category, rate_urgency
 from app.schemas import CaseStatus, CenterCase, CenterSummaryInput, ContactMethod, CoverageInput, Intake, RequestType
 from app.templates.reports import build_center_summary
 from app.vocab import BodyPart, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
@@ -302,6 +302,10 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
                 district=intake.district,
                 industry=intake.industry,
                 status=status,
+                # 분야는 규칙으로 계산한다(새 난수를 뽑지 않아 시드 순서가 그대로다)
+                category=default_category(coverage.path, request_types),
+                actions=[],
+                referred_to=[],
                 summary_ko=summary.ko,
                 original_native=summary.native,
                 consented_items=["증상", "부위", "시작 시점", "경위", "자유 입력 메모"],

@@ -143,7 +143,7 @@ backend/
 | `POST /api/center/cases` | `addLiveCase` (+ `rateUrgency`, `isAfterHours`, `nextOpenDay`) | S-12 전송 | 아래 참고 | `{ case: CenterCase, nextOpenDate, chatToken }` |
 | `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
-| `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
+| `PATCH /api/center/cases/{id}` | `updateCase` | C-02 | `{ status?, category?, actions?, referredTo? }` (하나 이상) | `CenterCase` |
 | `POST /api/center/my-cases` | — (frontend 46) | S-13·센터 채팅 시트 | `{ cases: [{ id, token }] }` (1~20개) | `MyCaseView[]` (토큰이 맞는 사례만) |
 | `POST /api/center/push-devices` | — (frontend 48) | 근로자 앱 시작·언어 변경 | `{ deviceToken, platform, notice, cases: [{ id, token }] }` (1~20개) | `{ cases: string[] }` (토큰이 맞아 묶인 사례 id) |
 | `POST /api/center/push-devices/remove` | — (frontend 48) | 로그아웃·계정 바꾸기·내 데이터 지우기 | `{ deviceToken }` | `204` (없는 토큰도) |
@@ -260,12 +260,26 @@ backend/
   "consentedItems": ["증상", "부위", "시작 시점"]
 }
 // 응답 201
-{ "case": { /* CenterCase, live: true, status: "new" */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
+{ "case": { /* CenterCase, live: true, status: "new", category: "medical", actions: [], referredTo: [] */ }, "nextOpenDate": "2026-10-27", "chatToken": "kqr6VTRE…" }
 ```
 
 `chatToken`은 서버 전용 선택 필드다(backlog 14). 근로자가 이 사례의 상담 채팅에 붙을 때 쓰고, `CenterCase`에는 들어가지 않아 센터 목록·상세에는 나오지 않는다.
 
 긴급도는 `rateUrgency`와 같다(업무 중 발생 +2, 건강보험증 없음 +1, 3점 이상 높음·1점 이상 보통). 예: 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
+
+분야(`category`)는 `defaultCategory`와 같다(frontend backlog 41): 제도 경로가 `ulsanSupport`면 `cost`(의료비 지원), 그 밖에 `nhis`이거나 요청 종류가 `["policy"]`뿐이면 `insurance`(건강보험·공공의료), 나머지는 `medical`(의료·보건). 증상 내용으로 가르지 않는다.
+
+**`PATCH /api/center/cases/{id}`** — C-02 상태·분야·조치 변경(backlog 24)
+
+```jsonc
+// 요청: 보낸 필드만 바꾼다. 앞서 바꾼 필드는 남는다. { "status": "progress" }만 보내는 옛 요청도 그대로 된다
+{ "status": "progress", "category": "insurance", "actions": ["info", "referral"], "referredTo": ["nhis"] }
+// 응답 200: 바꾼 뒤의 CenterCase. actions·referredTo는 열거 순서로 맞추고, referral이 빠지면 referredTo도 비운다
+```
+
+- `category`: `medical` | `insurance` | `cost`. `actions`: `info`(정보 제공) | `interpret`(통역 지원) | `referral`(관계기관 연계) | `followUp`(후속 상담 필요). `referredTo`: `nhis` | `kcomwel` | `hospital` | `ulsan` | `other`
+- 422: 빈 본문(또는 모두 `null`), 모르는 값, 같은 값 두 번, `referral` 조치 없이(보낸 `actions` 또는 지금 값 기준) `referredTo`가 비어 있지 않을 때. 없는 사례는 404
+- 근로자 기기 푸시는 상태가 실제로 바뀔 때만 보낸다. 분야·조치만 바꾸면 보내지 않는다
 
 **`POST /api/center/my-cases`** — 근로자가 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27)
 
