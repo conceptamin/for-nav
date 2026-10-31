@@ -321,9 +321,9 @@ export const tl: Record<MessageKey, string> = {
   guide3b: 'Ipakita ang screen na "Report para sa doktor". Sabihin kung kailan nagsimula at kung nangyari ito sa trabaho.',
   guide4t: '4. Magbayad at kumuha ng gamot',
   guide4b: 'Magbayad sa reception. Dalhin ang reseta sa botika (약국) sa malapit. Itago ang mga resibo.',
-  guide5t: '5. Kung nangyari sa trabaho',
+  guide5t: 'Kung nangyari sa trabaho',
   guide5b: 'Isulat kung kailan, saan, at paano ito nangyari. Puwede kang magtanong tungkol sa industrial accident insurance. Magtanong sa centre kung kailangan mo ng tulong.',
-  guide6t: '6. Sa gabi o sa araw ng pahinga',
+  guide6t: 'Sa gabi o sa araw ng pahinga',
   guide6b: 'Kung sarado ang mga klinika sa malapit, tumawag sa 119 at itanong kung saan pupunta. Araw at gabi, sinasabi ng 119 kung aling ospital at botika ang bukas ngayon at nagbibigay ng payong medikal sa telepono. Maraming 24-oras na convenience store ang nagbebenta ng pangunahing gamot.',
   guideCheck: 'Maaaring iba-iba ito sa bawat ospital. Pakitanong sa ospital o sa centre.',
 };
