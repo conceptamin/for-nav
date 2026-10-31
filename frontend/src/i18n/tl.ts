@@ -76,6 +76,7 @@ export const tl: Record<MessageKey, string> = {
   intakeTitle: 'Sabihin sa amin ang iyong sintomas',
   stepBody: 'Saan ang problema?',
   stepBodyHint: 'Piliin lahat ng tugma.',
+  stepSymptomHint: 'Piliin lahat ng tugma.',
   stepSymptom: 'Ano ang nangyayari?',
   stepText: 'Ilarawan sa sarili mong salita',
   stepTextHint: 'Opsyonal. Halimbawa: "Naipit ang daliri ko sa makina sa trabaho kanina. Namamaga ito."',

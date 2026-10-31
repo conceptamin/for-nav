@@ -76,6 +76,7 @@ export const kk: Record<MessageKey, string> = {
   intakeTitle: 'Белгілеріңіз туралы айтыңыз',
   stepBody: 'Қай жеріңіз мазалайды?',
   stepBodyHint: 'Сәйкес келетіннің бәрін таңдаңыз.',
+  stepSymptomHint: 'Сәйкес келетіннің бәрін таңдаңыз.',
   stepSymptom: 'Не болып жатыр?',
   stepText: 'Өз сөзіңізбен жазыңыз',
   stepTextHint: 'Міндетті емес. Мысалы: «Бүгін жұмыста саусағым станокқа қысылды. Ол ісіп кетті».',

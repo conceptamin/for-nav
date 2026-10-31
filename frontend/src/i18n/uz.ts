@@ -76,6 +76,7 @@ export const uz: Record<MessageKey, string> = {
   intakeTitle: 'Belgilaringiz haqida aytib bering',
   stepBody: 'Qayeringizda muammo bor?',
   stepBodyHint: 'Mos keladiganlarning hammasini tanlang.',
+  stepSymptomHint: 'Mos keladiganlarning hammasini tanlang.',
   stepSymptom: 'Nima boʻlyapti?',
   stepText: 'Oʻz soʻzlaringiz bilan yozing',
   stepTextHint: 'Ixtiyoriy. Misol: "Bugun ishda barmogʻim stanokka qisilib qoldi. Shishib ketdi."',

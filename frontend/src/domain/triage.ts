@@ -316,6 +316,33 @@ export function newIntake(language: Lang): Intake {
   };
 }
 
+/**
+ * 생년월일('YYYY-MM-DD') → 나이대. `on` 날짜의 만 나이로 센다. 날짜가 아니면 null이다(backlog 35).
+ * 문자열을 직접 나눠 읽어 시간대에 따라 하루가 밀리지 않게 한다.
+ */
+export function ageGroupFromBirthDate(birthDate: string, on: Date): AgeGroup | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
+  if (!m) return null;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  let age = on.getFullYear() - y;
+  if (on.getMonth() + 1 < mo || (on.getMonth() + 1 === mo && on.getDate() < d)) age -= 1;
+  if (age < 0) return null;
+  if (age < 30) return 'under30';
+  if (age < 45) return '30to44';
+  if (age < 65) return '45to64';
+  return '65plus';
+}
+
+/**
+ * 프로필(생년월일·성별)에서 채울 수 있는 응급도 모델 입력. 채운 질문은 S-05에서 묻지 않는다(backlog 35).
+ * 프로필이 없거나 생년월일을 읽지 못하면 그 키가 없다(답하지 않은 것과 같다).
+ */
+export function profileAnswers(profile: { birthDate: string; sex: Sex } | null, on: Date): Pick<Intake, 'ageGroup' | 'sex'> {
+  if (!profile) return {};
+  const ageGroup = ageGroupFromBirthDate(profile.birthDate, on);
+  return ageGroup ? { ageGroup, sex: profile.sex } : { sex: profile.sex };
+}
+
 export const REASON_KO: Record<EmergencyReason, string> = {
   unconscious: '의식 저하·쓰러짐',
   breathing: '호흡 곤란',
