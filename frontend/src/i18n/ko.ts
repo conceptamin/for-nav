@@ -132,7 +132,7 @@ export const ko: Record<MessageKey, string> = {
   toCenter: '센터에 도움 요청',
   resultGoGroup: '병원에 갈 때',
   resultMoreGroup: '더 도움이 필요하면',
-  resultNoDiag: '어느 진료과로 갈지 안내하는 것이며,\n진단이 아닙니다.',
+  resultNoDiag: '어느 진료과로 갈지 안내하는 것이며, 진단이 아닙니다.',
 
   covTitle: '비용은 어디에 먼저 물어볼까요',
   covWorkQ: '일하다가 생겼나요?',

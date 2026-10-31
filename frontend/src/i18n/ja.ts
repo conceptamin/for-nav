@@ -139,7 +139,7 @@ export const ja: Record<MessageKey, string> = {
   toCenter: 'センターに助けを頼む',
   resultGoGroup: '病院に行くとき',
   resultMoreGroup: 'ほかに助けが必要なとき',
-  resultNoDiag: 'これはどの診療科に行けばよいかの案内で、\n診断ではありません。',
+  resultNoDiag: 'これはどの診療科に行けばよいかの案内で、診断ではありません。',
 
   // S-08
   covTitle: '費用について最初に聞く所',

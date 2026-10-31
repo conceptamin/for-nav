@@ -335,7 +335,7 @@ export function ResultPage() {
   return (
     <div className="stack wide">
       <Worse119 />
-      {/* 진단이 아니라는 안내는 맨 아래에서 제목 옆으로 올려 빨간 글씨로 보인다(2026-10-31 사용자 결정) */}
+      {/* 진단이 아니라는 안내는 맨 아래에서 제목 바로 아래 한 줄로 올려 빨간 글씨로 보인다(2026-10-31 사용자 결정) */}
       <div className="result-head">
         <h1>{t('resultTitle')}</h1>
         <p className="result-nodiag">ⓘ {t('resultNoDiag')}</p>

@@ -138,7 +138,7 @@ export const en = {
   toCenter: 'Ask the centre for help',
   resultGoGroup: 'When you go to the hospital',
   resultMoreGroup: 'If you need more help',
-  resultNoDiag: 'This is guidance on which clinic to visit,\nnot a diagnosis.',
+  resultNoDiag: 'This is guidance on which clinic to visit, not a diagnosis.',
 
   // S-08
   covTitle: 'Where to ask about costs first',

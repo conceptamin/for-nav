@@ -139,7 +139,7 @@ export const fr: Record<MessageKey, string> = {
   toCenter: 'Demander de l’aide au centre',
   resultGoGroup: 'Quand vous allez à l’hôpital',
   resultMoreGroup: 'Si vous avez besoin de plus d’aide',
-  resultNoDiag: 'Ceci indique quelle clinique consulter.\nCe n’est pas un diagnostic.',
+  resultNoDiag: 'Ceci indique quelle clinique consulter. Ce n’est pas un diagnostic.',
 
   // S-08
   covTitle: 'Où demander d’abord pour les frais',

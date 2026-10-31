@@ -139,7 +139,7 @@ export const ne: Record<MessageKey, string> = {
   toCenter: 'केन्द्रसँग सहयोग माग्नुहोस्',
   resultGoGroup: 'अस्पताल जाँदा',
   resultMoreGroup: 'थप सहयोग चाहिए भने',
-  resultNoDiag: 'यो कुन क्लिनिक जाने भन्ने मार्गदर्शन हो,\nरोगको निदान होइन।',
+  resultNoDiag: 'यो कुन क्लिनिक जाने भन्ने मार्गदर्शन हो, रोगको निदान होइन।',
 
   // S-08
   covTitle: 'खर्चबारे पहिले कहाँ सोध्ने',
