@@ -247,6 +247,7 @@ export const vi: Record<MessageKey, string> = {
   chatRejected: 'Không gửi được tin nhắn. Vui lòng kiểm tra và thử lại.',
   talkNoCase: 'Hãy gửi yêu cầu đến trung tâm trước. Sau đó bạn có thể gọi hoặc nhắn tin với trung tâm tại đây.',
   talkOffline: 'Chỉ có thể gọi và nhắn tin với trung tâm khi ứng dụng đang kết nối với máy chủ.',
+  close: 'Đóng',
   liveCallTitle: 'Gọi cho trung tâm',
   liveCallIntro: 'Nói chuyện với tư vấn viên qua internet. Lời của hai bên hiện bên dưới thành phụ đề kèm bản dịch máy. Hãy dùng tai nghe để giọng người kia không bị ghi thành phụ đề của bạn.',
   liveCallStart: 'Gọi',

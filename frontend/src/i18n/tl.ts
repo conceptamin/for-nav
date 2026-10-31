@@ -259,6 +259,7 @@ export const tl: Record<MessageKey, string> = {
   chatRejected: 'Hindi maipadala ang mensahe. Pakisuri at subukang muli.',
   talkNoCase: 'Magpadala muna ng kahilingan sa centre. Pagkatapos, puwede kang tumawag o makipag-chat sa centre dito.',
   talkOffline: 'Gumagana lang ang tawag at chat sa centre kapag nakakonekta ang app sa server.',
+  close: 'Isara',
   liveCallTitle: 'Tumawag sa center',
   liveCallIntro: 'Makipag-usap sa counselor sa internet. Ang sinasabi ninyong dalawa ay lalabas sa ibaba bilang caption na may machine translation. Gumamit ng earphones para hindi ma-caption ang boses ng kausap bilang sa iyo.',
   liveCallStart: 'Tumawag',

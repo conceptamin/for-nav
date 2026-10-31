@@ -45,6 +45,7 @@
   --radius-sm: 16px;
   --radius-lg: 28px;
   --bar-119: 72px; /* 하단 119 독 자리 높이(위아래 10px + 독 52px = 버튼 44px + 안쪽 4px×2). .w-main 아래 여백 */
+  --scrim: rgb(18 35 46 / 28%); /* 센터 채팅 시트 뒤 화면을 옅게 덮는 막(backlog 39). 119 독은 막 위에 있다 */
 
   /* 유리 면(design.md "글래스모피즘" › "그림자와 흐림"). 값은 여기에만 둔다 */
   --glass-edge: rgb(255 255 255 / 70%); /* 유리 가장자리 1px */
@@ -654,25 +655,29 @@ a.brand-pill:active {
   overflow-wrap: anywhere;
 }
 
-/* 독 안의 센터 채팅 버튼(backlog 29·32): 56×44px, 평평한 투명 면 + 틸 말풍선. 지금 화면이거나 누르면 --brand-2로 들어간다 */
+/* 독 안의 센터 채팅 버튼(backlog 29·32·39): 56×44px, 평평한 투명 면 + 틸 말풍선. 시트가 열려 있거나 누르면 --brand-2로 들어간다 */
 .bar-chat {
   flex: none;
   display: grid;
   place-items: center;
   width: 56px;
   height: 44px;
+  padding: 0;
+  border: 0;
   border-radius: 999px;
+  background: transparent;
   color: var(--brand-fg);
+  cursor: pointer;
 }
 
 .bar-chat:active,
-.bar-chat[aria-current='page'] {
+.bar-chat[aria-expanded='true'] {
   background: var(--brand-2);
   box-shadow: var(--glass-in);
 }
 
 @media (hover: hover) {
-  .bar-chat:hover:not([aria-current='page']) {
+  .bar-chat:hover:not([aria-expanded='true']) {
     background: var(--bg-2);
   }
 }
@@ -688,6 +693,121 @@ a.brand-pill:active {
 .bar-chat-icon circle {
   fill: currentColor;
   stroke: none;
+}
+
+/* 센터 채팅 시트(backlog 39, design.md "센터 채팅 시트"). 하단 독 바로 위에 떠 있는 유리 면. 올라오는 움직임은 없다.
+   뒤 화면은 --scrim 막이 덮고, 119 독(z-index 20)은 막 위라 그대로 보이고 눌린다 */
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: var(--scrim);
+}
+
+.sheet {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bar-119) + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 16;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 32px);
+  max-width: 448px; /* .w-shell 480px - 좌우 16px */
+  max-height: calc(100dvh - var(--bar-119) - env(safe-area-inset-bottom) - 72px); /* 위는 앱 바 자리만큼 남긴다 */
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass);
+}
+
+.sheet:focus {
+  outline: none;
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+/* 머리: 시작 쪽 제목, 끝 쪽 📞/💬 전환과 ✕. 버튼은 독의 채팅 버튼과 같은 평평한 44px 원 */
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  padding-inline-start: 16px;
+}
+
+.sheet-head h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.sheet-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--brand-fg);
+  font: inherit;
+  font-size: var(--t6);
+  cursor: pointer;
+}
+
+.sheet-btn:active {
+  background: var(--brand-2);
+  box-shadow: var(--glass-in);
+}
+
+@media (hover: hover) {
+  .sheet-btn:hover {
+    background: var(--bg-2);
+  }
+}
+
+/* 대화: 안내 말풍선(상대 모양)과 내 답, 그 사이에 칩·동의·보내기가 끼고, 보낸 뒤에는 채팅 패널이 이어진다.
+   유리 면 위라 상대 말풍선은 --card 대신 --bg-2로 한 단계 들어간다 */
+.sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 16px 16px;
+}
+
+.sheet-body > .chat-msg:not(.mine) {
+  background: var(--bg-2);
+}
+
+.sheet-body > .chat-msg .native-box {
+  margin: 4px 0;
+  background: var(--card);
+  box-shadow: none;
+}
+
+.sheet-body .options {
+  gap: 8px;
+}
+
+.sheet-body .notice,
+.sheet-body .footer-note {
+  margin: 0;
+}
+
+.sheet-case {
+  margin: 4px 0 0;
+}
+
+.sheet .chat-log {
+  max-height: 45dvh;
 }
 
 /* ---------- 공통 요소 ---------- */

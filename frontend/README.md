@@ -70,7 +70,7 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 | S-08 | `/coverage` | 산재 / 건강보험 / 울산 지원 / 센터 상담 경로 + 기관 최종 결정 문구·기준일 |
 | S-09·S-10 | `/visit/desk`, `/visit/call` | 접수 창구용 큰 한국어 화면, 전화 스크립트(발음 표기) + 예상 질문 답변 버튼 |
 | S-11 | `/report/new` → `/report/:id` | 항목 선택(기본 전체) → 한국어·모국어 토글 리포트 |
-| S-12·S-13 | `/center-request`, `/center-chat`, `/my` | 센터 요청(회원만, 전송 동의 별도, 운영 시간 외 안내, 연락 방법은 앱 안 센터와 통화(음성 + 번역 자막)·센터와 대화 채팅 둘뿐이다. API 모드면 전송 완료 화면과 `/center-chat`(하단 채팅 아이콘, 가장 최근 요청)에서 고른 쪽 하나를 보인다. 단독 모드는 안내 한 줄), 내 정보(프로필·언어 설정·내 메모·센터 요청 id·전체 삭제. 프로필 수정은 `/signup?next=/my`, 같은 계정에 프로필 추가는 `/signup?next=/my&new=1`. 다른 프로필을 누르면 그 프로필로 바뀌고, 둘 이상이면 지금 프로필을 지울 수 있다, backlog 34) |
+| S-12·S-13 | `/center-request`, `/my` | 센터 요청(회원만, 전송 동의 별도, 운영 시간 외 안내, 연락 방법은 앱 안 센터와 통화(음성 + 번역 자막)·센터와 대화 채팅 둘뿐이다. API 모드면 전송 완료 화면에서 고른 쪽 하나를 보인다. 단독 모드는 안내 한 줄). 하단 채팅 아이콘은 경로 없이 지금 화면 위에 센터 채팅 시트를 연다: 보낸 요청이 없으면 요청(종류 → 보낼 내용 → 전송 동의 → 보내기)을 대화로 묻고, 보내면 같은 시트에서 채팅(📞로 통화)으로 이어진다. 요청이 있으면 가장 최근 요청의 채팅(backlog 39), 내 정보(프로필·언어 설정·내 메모·센터 요청 id·전체 삭제. 프로필 수정은 `/signup?next=/my`, 같은 계정에 프로필 추가는 `/signup?next=/my&new=1`. 다른 프로필을 누르면 그 프로필로 바뀌고, 둘 이상이면 지금 프로필을 지울 수 있다, backlog 34) |
 | — | `/guide` | 병원 이용 안내 5개 항목(고정 문구) |
 | C-00 | `/center/login` | 센터 직원 로그인(API 모드 + 서버 `CENTER_AUTH=email`일 때만 쓰인다, backlog 27): 이메일 → 메일로 받은 6자리 코드. 로그인 뒤 `from`(센터 경로)으로 돌아간다 |
 | C-01~C-03 | `/center`, `/center/cases/:id`, `/center/stats` | 접수함(mock 24건 + 실제 전송), 상세·상태 변경·통화(음성 + 번역 자막, 근로자가 화면에 있을 때만 걸 수 있다)·상담 채팅(API 모드), 익명 통계(5건 미만 칸은 `<5`). 들어올 때 로그인을 확인하고, 필요하면 C-00으로 보낸다. 머리글에 직원 이메일·로그아웃 |
@@ -84,7 +84,7 @@ src/
   main.tsx          경로 표. PRD 화면 ID를 주석으로 단다
   pages/            worker/ (S-01~S-13, /guide), center/ (C-00 로그인, C-01~C-03)
                     화면은 api/·state/·i18n/·components/만 부른다. domain/을 직접 부르지 않는다(아래 "API 연결")
-  components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PainRange·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅), CallPanel(근로자·센터 통화와 번역 자막)
+  components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PainRange·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅), CallPanel(근로자·센터 통화와 번역 자막), CenterSheet(하단 채팅 아이콘이 여는 센터 채팅 시트, S-12와 같이 쓰는 요청 전송 훅)
   api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결), call(통화 신호 WebSocket·WebRTC 음성·자막 목록), speech(통화 중 받아쓰기, Web Speech API, 앱이 등록하는 호스트 음성 인식 자리), auth(센터 직원 로그인·세션 끝 알림, 근로자 Google 로그인 상태), googleId(Google Identity Services 스크립트·공식 버튼, 앱이 등록하는 네이티브 로그인 자리), meta
                     단독/API 모드 선택과 경로별 대체 정책은 여기에만 있다
   domain/           규칙 엔진(triage·coverage·centerCase)과 템플릿(templates), 어휘(vocab) — 타입·규칙·문장의 원본
