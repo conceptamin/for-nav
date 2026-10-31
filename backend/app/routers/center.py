@@ -49,7 +49,7 @@ from app.settings import settings
 from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
 from app.templates.translate import translate_line, translate_message, translate_note
-from app.vocab import INDUSTRIES, District, Lang
+from app.vocab import INDUSTRIES, LANGS, District, Lang
 
 logger = logging.getLogger(__name__)
 
@@ -438,7 +438,7 @@ def stats(days: int = 90, district: District | None = None) -> CenterStats:
         work_related_rate=rate(sum(1 for r in recs if r.work_related == "yes")),
         no_insurance_rate=rate(sum(1 for r in recs if r.insurance != "yes")),
         by_industry=_count_by(recs, list(INDUSTRIES), lambda r: r.industry),
-        by_language=_count_by(recs, ["vi", "en"], lambda r: r.language),
+        by_language=_count_by(recs, LANGS, lambda r: r.language),
         by_insurance=_count_by(recs, ["yes", "no", "unknown"], lambda r: r.insurance),
         by_after_hours=[StatCell(key="after", n=_mask(after)), StatCell(key="within", n=_mask(total - after))],
     )

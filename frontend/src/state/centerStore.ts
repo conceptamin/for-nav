@@ -11,7 +11,7 @@ import { isAfterHours, nextOpenDay } from '../domain/coverage';
 import type { RequestType } from '../domain/templates';
 import { buildCenterSummary } from '../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../domain/vocab';
-import { INDUSTRIES } from '../domain/vocab';
+import { INDUSTRIES, LANGS } from '../domain/vocab';
 import { readJson, writeJson } from './storage';
 
 const LIVE_KEY = 'umn.center.liveCases';
@@ -119,7 +119,7 @@ export function getStatsLocal(days: number, district: District | null): CenterSt
     workRelatedRate: rate(recs.filter((r) => r.workRelated === 'yes').length),
     noInsuranceRate: rate(recs.filter((r) => r.insurance !== 'yes').length),
     byIndustry: countBy(recs, Object.keys(INDUSTRIES) as Industry[], (r) => r.industry),
-    byLanguage: countBy(recs, ['vi', 'en'] as Lang[], (r) => r.language),
+    byLanguage: countBy(recs, [...LANGS] as Lang[], (r) => r.language),
     byInsurance: countBy(recs, ['yes', 'no', 'unknown'] as YesNoUnknown[], (r) => r.insurance),
     byAfterHours: [
       { key: 'after', n: mask(after) },

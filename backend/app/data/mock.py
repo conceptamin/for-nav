@@ -2,6 +2,7 @@
 # - 센터 접수함 mock 사례 24건
 # - 통계 탭용 익명 집계 원천(개인 식별값 없음)
 
+import calendar
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -190,7 +191,35 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
 
 # ---------------------------------------------------------------------------
 # 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외)만 둔다. API로 원천을 내보내지 않는다.
+# 날짜·구군·언어·시간외 비율은 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)의 분포를 따른 합성값이다.
+# 업종·보험·요청 종류·업무 관련은 회신에 없어 이전 가중치 그대로다.
 # ---------------------------------------------------------------------------
+STAT_COUNT = 329
+# 최근 6개월 월별 건수(오래된 달부터, 마지막이 이번 달)
+STAT_MONTH_W = [16, 25, 41, 85, 97, 65]
+# 국적 → 언어: 러시아·카자흐스탄·우즈베키스탄·키르기스스탄·타지키스탄 → 러시아어, 인도네시아, 스리랑카 → 싱할라어, 필리핀 → 영어·필리핀어
+STAT_LANG_W: list[tuple[Lang, float]] = [("ru", 44), ("id", 25), ("si", 15), ("en", 8), ("tl", 4), ("vi", 2), ("ko", 2)]
+# 주소가 구까지 적힌 건만(동구 센터 회신이라 동구가 많다, 중구는 0건)
+STAT_DISTRICT_W: list[tuple[District, float]] = [("dong", 196), ("buk", 20), ("ulju", 17), ("nam", 8)]
+# 운영 시간 외 25건 + 주말 27건 = 52 / 329
+STAT_AFTER_HOURS = 52 / 329
+
+
+def stat_date(now: datetime, u: float) -> datetime:
+    """난수 하나로 최근 6개월 중 한 날을 고른다. 달은 STAT_MONTH_W 비율, 날은 그 달 안에서 고르게(이번 달은 오늘까지)."""
+    k = now.astimezone(clock.SEOUL)
+    x = u * sum(STAT_MONTH_W)
+    i = 0
+    while i < len(STAT_MONTH_W) - 1 and x >= STAT_MONTH_W[i]:
+        x -= STAT_MONTH_W[i]
+        i += 1
+    back = len(STAT_MONTH_W) - 1 - i
+    year, month0 = divmod(k.year * 12 + k.month - 1 - back, 12)
+    span = k.day if back == 0 else calendar.monthrange(year, month0 + 1)[1]
+    day = 1 + int((x / STAT_MONTH_W[i]) * span)
+    return k.replace(year=year, month=month0 + 1, day=day)
+
+
 @dataclass(frozen=True)
 class StatRecord:
     date: datetime
@@ -206,15 +235,15 @@ class StatRecord:
 def build_stat_records(now: datetime) -> list[StatRecord]:
     r = rng(77)
     out: list[StatRecord] = []
-    for _ in range(420):
+    for _ in range(STAT_COUNT):
         out.append(
             StatRecord(
-                date=now - timedelta(days=int(r() * 180)),
-                district=weighted(r, DISTRICT_W),
+                date=stat_date(now, r()),
+                district=weighted(r, STAT_DISTRICT_W),
                 industry=weighted(r, INDUSTRY_W),
-                language=weighted(r, LANG_W),
+                language=weighted(r, STAT_LANG_W),
                 insurance=weighted(r, INS_W),
-                after_hours=r() < 0.41,
+                after_hours=r() < STAT_AFTER_HOURS,
                 request_type=weighted(r, REQ_W),
                 work_related=weighted(r, [("yes", 48), ("no", 34), ("unknown", 18)]),
             )
