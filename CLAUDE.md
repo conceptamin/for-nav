@@ -27,12 +27,13 @@ AI도 사람과 같은 규칙을 따른다. 아래 순서를 건너뛰지 않는
 ### 브랜치 이름
 
 ```text
-<영역>/<짧은-설명>      예: frontend/report-toggle, docs/claude-md, chore/ci-build
+<영역>/<짧은-설명>      예: frontend/report-toggle, app-front/host-bridge, docs/claude-md, chore/ci-build
 ```
 
 | 영역 | 언제 |
 |---|---|
 | `frontend` | 화면·컴포넌트·클라이언트 로직(`src/`) |
+| `app-front` | Flutter WebView 안에서 도는 근로자 앱의 웹 쪽(`app-front/`): 호스트 다리, WebView 설정 |
 | `backend` | API·규칙 엔진·LLM 호출 |
 | `modeling` | 모델·데이터·평가 |
 | `docs` | `README.md`, `CLAUDE.md` 등 문서 |
