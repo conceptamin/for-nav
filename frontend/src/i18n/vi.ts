@@ -123,9 +123,7 @@ export const vi: Record<MessageKey, string> = {
   mapOpens: 'Mở Kakao Map (tiếng Hàn). Tên khoa được tìm bằng tiếng Hàn.',
   ahTitle: 'Vào ban đêm hoặc ngày nghỉ',
   ah119: 'Không biết nên đi đâu? Hãy gọi 119 để hỏi. Cả ngày lẫn đêm, họ cho bạn biết bệnh viện và nhà thuốc nào đang mở cửa và tư vấn y tế qua điện thoại.',
-  ahEgen: 'Bạn cũng có thể tìm bệnh viện và nhà thuốc đang mở cửa trên trang E-Gen (tiếng Hàn).',
   ahStore: 'Nhiều cửa hàng tiện lợi 24 giờ bán thuốc thông thường: hạ sốt giảm đau, cảm cúm, tiêu hóa và miếng dán giảm đau.',
-  ahEgenBtn: 'Tìm bệnh viện đang mở (E-Gen)',
   toDesk: 'Đưa cho quầy tiếp nhận',
   toCall: 'Kịch bản gọi điện',
   toReport: 'Phiếu cho bác sĩ',
@@ -307,6 +305,6 @@ export const vi: Record<MessageKey, string> = {
   guide5t: '5. Nếu xảy ra khi làm việc',
   guide5b: 'Ghi lại khi nào, ở đâu, xảy ra thế nào. Bạn có thể hỏi về bảo hiểm tai nạn lao động. Hỏi trung tâm nếu cần giúp.',
   guide6t: '6. Vào ban đêm hoặc ngày nghỉ',
-  guide6b: 'Nếu phòng khám gần nhà đã đóng cửa, hãy gọi 119 để hỏi nên đi đâu. Cả ngày lẫn đêm, 119 cho bạn biết bệnh viện và nhà thuốc nào đang mở cửa và tư vấn y tế qua điện thoại. Nhiều cửa hàng tiện lợi 24 giờ bán thuốc thông thường. Bạn cũng có thể tìm trên trang E-Gen (tiếng Hàn).',
+  guide6b: 'Nếu phòng khám gần nhà đã đóng cửa, hãy gọi 119 để hỏi nên đi đâu. Cả ngày lẫn đêm, 119 cho bạn biết bệnh viện và nhà thuốc nào đang mở cửa và tư vấn y tế qua điện thoại. Nhiều cửa hàng tiện lợi 24 giờ bán thuốc thông thường.',
   guideCheck: 'Chi tiết có thể khác nhau tùy bệnh viện. Vui lòng hỏi bệnh viện hoặc trung tâm.',
 };

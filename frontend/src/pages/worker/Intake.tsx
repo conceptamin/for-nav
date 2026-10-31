@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import {
   Chip,
-  EGEN_HOSPITAL_URL,
   kakaoSearchUrl,
   PhotoPicker,
   Progress,
@@ -311,6 +310,7 @@ export function ResultPage() {
   const app = useApp();
   const { t, term, lang } = useT();
   const tri = app.triage;
+  const [afterHoursOpen, setAfterHoursOpen] = useState(false);
   if (!app.intake || !tri) return <Navigate to="/intake" replace />;
   if (!tri.department) return <Navigate to="/intake" replace />;
 
@@ -358,16 +358,22 @@ export function ResultPage() {
         ☎️ {t('mapNotice')}
         <div className="small">{t('mapOpens')}</div>
       </div>
-      {/* 늘 보이는 고정 안내(backlog 44 after-hours-guide). 갈 곳을 고르는 판단은 119에 맡긴다 */}
-      <section className="card">
-        <h2>🌙 {t('ahTitle')}</h2>
-        <p>📞 {t('ah119')}</p>
-        <p>🔍 {t('ahEgen')}</p>
-        <p>🏪 {t('ahStore')}</p>
-        <a className="btn secondary block" href={EGEN_HOSPITAL_URL} target="_blank" rel="noreferrer">
-          🏥 {t('ahEgenBtn')}
-        </a>
-      </section>
+      {/* 누르면 펼치는 고정 안내(backlog 44 after-hours-guide). 갈 곳을 고르는 판단은 119에 맡긴다 */}
+      <button
+        type="button"
+        className="btn secondary block"
+        aria-expanded={afterHoursOpen}
+        aria-controls="after-hours"
+        onClick={() => setAfterHoursOpen(!afterHoursOpen)}
+      >
+        🌙 {t('ahTitle')} {afterHoursOpen ? '⌄' : '›'}
+      </button>
+      {afterHoursOpen && (
+        <section className="card" id="after-hours">
+          <p>📞 {t('ah119')}</p>
+          <p>🏪 {t('ahStore')}</p>
+        </section>
+      )}
       <div className="stack">
         <Link className="btn block" to="/visit/call">
           📞 {t('toCall')}
