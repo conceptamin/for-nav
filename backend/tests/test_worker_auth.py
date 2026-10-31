@@ -174,6 +174,23 @@ def test_center_request_needs_worker_session(client):
     assert client.post("/api/center/cases", json=NEW_CASE).status_code == 201
 
 
+def test_my_cases_needs_worker_session(client, store, monkeypatch):
+    # 근로자가 자기 요청 상태를 읽는 경로(backlog 26)도 센터 전송과 같이 근로자 세션이 있어야 한다
+    login(client)
+    out = client.post("/api/center/cases", json=NEW_CASE).json()
+    ref = {"cases": [{"id": out["case"]["id"], "token": out["chatToken"]}]}
+    assert client.post("/api/center/my-cases", json=ref).json()[0]["status"] == "new"
+
+    client.cookies.clear()
+    assert client.post("/api/center/my-cases", json=ref).status_code == 401
+    # 센터 직원 쿠키로는 열리지 않는다
+    use_settings(monkeypatch, worker_auth="google", google_client_id="x", db_path="center.db", center_auth="email")
+    center_token = "center-session-token"
+    store.add_session(auth.hash_secret(center_token), STAFF, AT, AT + timedelta(days=30))
+    client.cookies.set("fornav_center", center_token)
+    assert client.post("/api/center/my-cases", json=ref).status_code == 401
+
+
 def test_guidance_paths_stay_open(client):
     # 응급 판정·안내는 로그인에 묶지 않는다(backlog 21 결정 6). 쿠키 없이 지금과 같은 응답이다
     intake = NEW_CASE["intake"]

@@ -322,6 +322,30 @@ class StatusPatch(CamelModel):
 
 
 # ---------------------------------------------------------------------------
+# 근로자가 자기 요청의 상태를 읽기(backlog 26). 토큰은 URL에 싣지 않으려고 본문으로 받는다
+# ---------------------------------------------------------------------------
+MY_CASES_MAX = 20
+
+
+class MyCaseRef(CamelModel):
+    id: str = Field(min_length=1, max_length=40)
+    token: str = Field(min_length=1, max_length=200)
+
+
+class MyCasesRequest(CamelModel):
+    cases: list[MyCaseRef] = Field(min_length=1, max_length=MY_CASES_MAX)
+
+
+class MyCaseView(CamelModel):
+    id: str
+    status: CaseStatus
+    # 센터가 보낸 채팅 메시지 수. 근로자 글은 세지 않는다
+    center_messages: int
+    # 마지막 센터 메시지 시각(ISO, UTC). 없으면 null
+    last_center_at: str | None
+
+
+# ---------------------------------------------------------------------------
 # 상담 채팅(backlog 14). 프론트 타입은 아직 없다
 # ---------------------------------------------------------------------------
 ChatRole = Literal["worker", "center"]

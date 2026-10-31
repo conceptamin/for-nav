@@ -58,6 +58,10 @@ class CenterStore(Protocol):
         """보낸 순서대로."""
         ...
 
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        """센터가 보낸 메시지 수와 마지막 시각(backlog 26)."""
+        ...
+
     # 통화 자막(backlog 18). 받자마자 번역 전 상태로 넣고, 번역이 끝나면 채운다.
     def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
         """받은 순서대로 사례 안 번호를 정해 `c-<n>`을 돌려준다."""
@@ -226,6 +230,10 @@ class MemoryStore:
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             return list(self._messages.get(case_id, []))
+
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        mine = [m for m in self.messages(case_id) if m.from_ == "center"]
+        return len(mine), (mine[-1].at if mine else None)
 
     def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
         with self._lock:
