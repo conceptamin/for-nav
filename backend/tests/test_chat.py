@@ -1,4 +1,4 @@
-# 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그, 읽음(backlog 27). 메모리·SQLite 두 저장소에 돌린다.
+# 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그, 읽음(backlog 28). 메모리·SQLite 두 저장소에 돌린다.
 
 import json
 import logging
@@ -265,3 +265,68 @@ def test_uvicorn_websocket_line_is_dropped(caplog):
 
     messages = [r.getMessage() for r in caplog.records if r.name == "uvicorn.error"]
     assert messages == ["Application startup complete."]
+
+
+# ---------------------------------------------------------------------------
+# 근로자가 자기 요청의 상태와 센터 메시지 수를 읽기(backlog 27)
+# ---------------------------------------------------------------------------
+def my_cases(client: TestClient, *refs: tuple[str, str]) -> list[dict]:
+    r = client.post("/api/center/my-cases", json={"cases": [{"id": i, "token": t} for i, t in refs]})
+    assert r.status_code == 200
+    return r.json()
+
+
+def test_my_cases_counts_center_messages_only(client):
+    case_id, token = send_case(client)
+    assert my_cases(client, (case_id, token)) == [{"id": case_id, "status": "new", "centerMessages": 0, "lastCenterAt": None}]
+
+    with client.websocket_connect(url(case_id, token=token)) as worker, client.websocket_connect(url(case_id, "center")) as staff:
+        worker.receive_json()
+        staff.receive_json()
+        worker.send_json({"type": "message", "text": "도와주세요"})
+        worker.receive_json()
+        staff.receive_json()
+        for text in ("확인했습니다", "내일 연락드릴게요"):
+            staff.send_json({"type": "message", "text": text})
+            worker.receive_json()
+            staff.receive_json()
+
+    assert client.patch(f"/api/center/cases/{case_id}", json={"status": "progress"}).status_code == 200
+    assert my_cases(client, (case_id, token)) == [
+        {"id": case_id, "status": "progress", "centerMessages": 2, "lastCenterAt": clock.iso_utc(AT)}
+    ]
+
+
+def test_my_cases_drops_wrong_token_and_unknown_case(client):
+    a, token_a = send_case(client)
+    b, token_b = send_case(client)
+    out = my_cases(client, (a, "wrong"), ("C-0", token_a), ("C-1001", "x"), (b, token_b))
+    # 틀린 토큰·없는 사례·토큰 없는 mock 사례는 403·404 없이 빠진다.
+    assert [x["id"] for x in out] == [b]
+
+
+def test_my_cases_after_reset_is_empty(client):
+    case_id, token = send_case(client)
+    assert client.post("/api/center/reset").status_code == 204
+    assert my_cases(client, (case_id, token)) == []
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"cases": []},
+        {"cases": [{"id": f"C-{n}", "token": "t"} for n in range(21)]},
+        {"cases": [{"id": "C-1"}]},
+        {"cases": [{"id": "", "token": "t"}]},
+        {},
+    ],
+)
+def test_my_cases_bad_body_is_422(client, body):
+    assert client.post("/api/center/my-cases", json=body).status_code == 422
+
+
+def test_my_cases_log_has_no_token(client, caplog):
+    caplog.set_level(logging.INFO, logger="app")
+    case_id, token = send_case(client)
+    my_cases(client, (case_id, token))
+    assert token not in "\n".join(r.getMessage() for r in caplog.records)

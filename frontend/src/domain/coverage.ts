@@ -32,11 +32,11 @@ export interface CoverageResult {
 /** 제도 정보 기준일. 실제 운영 시 담당자가 확인한 날짜로 바꾼다. */
 export const INFO_DATE = '2026-10-24';
 
-// 대표번호는 공개된 기관 대표번호만 둔다. 센터·울산시 지원사업 연락처는 미확인(PRD Q1·Q6).
+// 대표번호는 확인된 기관 대표번호만 둔다.
 const KCOMWEL: Institution = { id: 'kcomwel', phone: '1588-0075' };
 const NHIS: Institution = { id: 'nhis', phone: '1577-1000' };
-const CENTER: Institution = { id: 'center', phone: null };
-const ULSAN: Institution = { id: 'ulsan', phone: null };
+const CENTER: Institution = { id: 'center', phone: '1577-2818' };
+const ULSAN: Institution = { id: 'ulsan', phone: '052-235-7100' };
 
 /** `infoDate`는 API 모드에서 `/api/meta`가 준 기준일을 넘길 때만 쓴다. 기본값이면 지금과 같다. */
 export function routeCoverage(input: CoverageInput, infoDate: string = INFO_DATE): CoverageResult {

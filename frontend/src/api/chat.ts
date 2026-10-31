@@ -1,7 +1,7 @@
 // 근로자·센터 상담 채팅(WS /api/center/cases/{id}/chat, backend 14). 단독/API 모드 분기는 여기에만 있다.
 // 단독 모드에는 서버가 없으므로 채팅이 없다. 화면은 isChatAvailable()로 패널째 숨긴다.
 // 센터 경로처럼 대체하지 않는다. 끊기면 CHAT_RECONNECT_MS 뒤 다시 붙고, 4403·4404·4000·4401이면 멈춘 이유를 보인다.
-// 역할별 "어디까지 읽었나"는 history.read와 read 프레임으로 받고, 내가 읽은 자리는 markRead로 보낸다(backend 27).
+// 역할별 "어디까지 읽었나"는 history.read와 read 프레임으로 받고, 내가 읽은 자리는 markRead로 보낸다(backend 28).
 // 메시지 본문·토큰은 console에 찍지 않는다. 끊김 기록은 닫힘 코드만 남긴다.
 
 import { useCallback, useEffect, useRef, useState } from 'react';

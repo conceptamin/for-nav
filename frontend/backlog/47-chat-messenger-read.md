@@ -1,7 +1,7 @@
-# 45. 채팅 시트를 흔한 메신저 모양으로, 읽음 표시
+# 47. 채팅 시트를 흔한 메신저 모양으로, 읽음 표시
 
 상태: 완료
-의존: 39 센터 채팅 시트, 44 요청 후 시트 열기, backend 27(읽음 프레임). 한 PR로 낸다
+의존: 39 센터 채팅 시트, 44 요청 후 시트 열기, backend 28(읽음 프레임). 한 PR로 낸다
 
 ## 목표
 2026-10-31 사용자 요청: 하단 채팅 아이콘이 여는 시트가 흔한 채팅 앱과 달라 어색하다. 지금은 시트 안에 들어간 상자(`.chat-log`)가 또 있고, 말풍선마다 "Me · 17:33"이 붙고, 입력줄이 대화와 함께 스크롤되어 아래로 밀려난다. 카카오톡·WhatsApp처럼 머리 / 대화 한 줄기 / 아래에 붙은 입력줄로 바꾸고, 내 글을 상대가 읽었는지 보이게 한다.
@@ -19,7 +19,7 @@
   - 말풍선(`ChatPanel`, 시트와 센터 C-02 둘 다)
     - 말풍선 위 "나 · 시각"을 지운다. 시각은 말풍선 옆 아래(내 글은 시작 쪽, 상대 글은 끝 쪽)에 작게
     - 같은 사람이 같은 분에 이어 보낸 글은 묶어, 시각·읽음은 묶음 마지막에만. 묶음 마지막 말풍선의 꼬리 쪽 모서리만 작게(4px) 둥글린다
-  - 읽음 표시(backend 27)
+  - 읽음 표시(backend 28)
     - 내 글 묶음 옆 시각 위에 `읽음`(`--brand-fg`) 또는 `안 읽음`(`--ink-2`). 근로자 새 키 `chatRead`·`chatUnread`, 센터는 한국어 고정
     - 내가 읽는 때: 근로자는 시트가 열려 있고 채팅 화면(통화 아님)이고 문서가 보일 때, 센터는 C-02가 보일 때. 그때 상대의 마지막 글 id를 `{type:"read", upTo}`로 보낸다(값이 바뀔 때만)
     - `api/chat.ts`의 `useChat`이 `history.read`와 `read` 프레임으로 `peerReadUpTo`를 들고, `markRead(id)`를 내준다
@@ -34,7 +34,7 @@
 
 ## 화면·파일
 - 경로: 그대로. 시트(하단 독이 있는 근로자 화면 전부)와 센터 C-02 채팅 패널
-- API: `WS /api/center/cases/{id}/chat`의 새 `read` 프레임(backend 27)
+- API: `WS /api/center/cases/{id}/chat`의 새 `read` 프레임(backend 28)
 - 파일: `src/api/chat.ts`, `src/components/ChatPanel.tsx`, `src/components/CenterSheet.tsx`, `src/pages/center/Center.tsx`(문구), `src/styles.css`, `src/i18n/*.ts`(20개), `design.md`
 - 새 문구 키: `chatRead`, `chatUnread`
 
@@ -66,4 +66,4 @@
 ## 메모
 - design.md는 "말풍선에 꼬리를 달지 않는다", "읽음 표시는 없다"고 정했다. 묶음 끝 모서리를 작게 둥글리는 것과 읽음 표시는 이번 사용자 요청으로 바꾸는 것이다
 - 새 키 `chatRead`·`chatUnread`의 vi 문구는 원어민 검수가 필요하다. en·vi를 뺀 17개 언어는 기계 번역 초안이다(backlog 16)
-- 서버 쪽은 backend 27. frontend 작업이 backend를 고치지 않는다는 규칙의 예외로, backend 26 ↔ frontend 43처럼 한 PR에 함께 낸다
+- 서버 쪽은 backend 28. frontend 작업이 backend를 고치지 않는다는 규칙의 예외로, backend 26 ↔ frontend 43처럼 한 PR에 함께 낸다

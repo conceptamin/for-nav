@@ -1,6 +1,6 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
 # 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
-# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. chat_reads: 역할별 읽은 자리(backlog 27). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
@@ -201,6 +201,13 @@ class SqliteStore:
         with self._lock:
             rows = self._db.execute("SELECT role, n FROM chat_reads WHERE case_id = ?", (case_id,)).fetchall()
         return read_ids(dict(rows))
+
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        with self._lock:
+            count, last = self._db.execute(
+                "SELECT COUNT(*), MAX(at) FROM chat_messages WHERE case_id = ? AND sender = 'center'", (case_id,)
+            ).fetchone()
+        return count, last
 
     def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
         with self._lock, self._db:

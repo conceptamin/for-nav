@@ -58,13 +58,17 @@ class CenterStore(Protocol):
         """보낸 순서대로."""
         ...
 
-    # 상담 채팅 읽음(backlog 27). 역할마다 사례 안 메시지 번호 하나(어디까지 읽었나)만 둔다.
+    # 상담 채팅 읽음(backlog 28). 역할마다 사례 안 메시지 번호 하나(어디까지 읽었나)만 둔다.
     def mark_read(self, case_id: str, role: ChatRole, n: int) -> bool:
         """역할의 읽은 자리를 n으로 옮긴다. 이미 n 이상이면 그대로 두고 False."""
         ...
 
     def read_marks(self, case_id: str) -> dict[ChatRole, str | None]:
         """역할별 마지막으로 읽은 메시지 id. 읽은 것이 없으면 None."""
+        ...
+
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        """센터가 보낸 메시지 수와 마지막 시각(backlog 27)."""
         ...
 
     # 통화 자막(backlog 18). 받자마자 번역 전 상태로 넣고, 번역이 끝나면 채운다.
@@ -258,6 +262,10 @@ class MemoryStore:
     def read_marks(self, case_id: str) -> dict[ChatRole, str | None]:
         with self._lock:
             return read_ids(self._reads.get(case_id, {}))
+
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        mine = [m for m in self.messages(case_id) if m.from_ == "center"]
+        return len(mine), (mine[-1].at if mine else None)
 
     def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
         with self._lock:

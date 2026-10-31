@@ -1,7 +1,7 @@
 // 상담 채팅 패널(backlog 25). 근로자 채팅 시트와 센터 C-02가 같이 쓴다.
 // 문구는 props로 받는다(근로자는 i18n, 센터는 한국어 고정). 연결·다시 연결·읽음은 api/chat.ts의 useChat이 한다.
 // 단독 모드에서는 부르는 쪽이 isChatAvailable()로 이 패널을 그리지 않는다.
-// 흔한 메신저처럼 같은 사람이 같은 분에 이어 보낸 글을 묶고, 시각과 내 글의 읽음은 묶음 끝 말풍선 옆에 한 번만 쓴다(backlog 45).
+// 흔한 메신저처럼 같은 사람이 같은 분에 이어 보낸 글을 묶고, 시각과 내 글의 읽음은 묶음 끝 말풍선 옆에 한 번만 쓴다(backlog 47).
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
@@ -43,6 +43,7 @@ interface Row {
  * `active`: 지금 사람이 이 대화를 보고 있다(숨긴 시트면 false). 보고 있고 문서가 보일 때만 읽음을 보낸다
  * `scroller`: 새 글이 오면 맨 아래로 옮길 스크롤 상자. 없으면 메시지 목록 자신
  * `footer`: 입력줄과 상태 줄을 그릴 자리(시트 아래 고정 칸). 없으면 목록 바로 아래
+ * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 46)
  */
 export function ChatPanel({
   caseId,
@@ -54,6 +55,7 @@ export function ChatPanel({
   active = true,
   scroller,
   footer,
+  onSeen,
 }: {
   caseId: string;
   auth: ChatAuth;
@@ -64,10 +66,16 @@ export function ChatPanel({
   active?: boolean;
   scroller?: RefObject<HTMLElement | null>;
   footer?: HTMLElement | null;
+  onSeen?: (centerMessages: number) => void;
 }) {
   const chat = useChat(caseId, auth);
   const [draft, setDraft] = useState('');
   const log = useRef<HTMLDivElement>(null);
+
+  const centerCount = chat.messages.filter((m) => m.from === 'center').length;
+  useEffect(() => {
+    if (onSeen && chat.state === 'open') onSeen(centerCount);
+  }, [onSeen, centerCount, chat.state]);
 
   // 새 메시지가 오면 맨 아래로 바로 옮긴다(스크롤 효과 없음)
   useEffect(() => {

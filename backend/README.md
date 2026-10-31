@@ -142,6 +142,7 @@ backend/
 | `GET /api/center/cases` | `useCenterCases` | C-01 | `?status=&since=` | `CenterCase[]` (최신순, `since`보다 뒤에 접수된 것만) |
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
 | `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
+| `POST /api/center/my-cases` | — (frontend 46) | S-13·센터 채팅 시트 | `{ cases: [{ id, token }] }` (1~20개) | `MyCaseView[]` (토큰이 맞는 사례만) |
 | `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다) |
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
@@ -156,7 +157,7 @@ backend/
 
 `CENTER_AUTH=email`이면 센터 읽기·쓰기(`GET /api/center/cases`, `GET`·`PATCH /api/center/cases/{id}`, `POST /api/center/reset`, `GET /api/center/stats`)와 채팅·통화의 `role=center`는 직원 세션 쿠키가 있어야 한다(없으면 401, WS는 `4401`). 근로자 전송(`POST /api/center/cases`)과 `role=worker`는 그대로 열려 있다. 기본값 `off`에서는 지금처럼 로그인 없이 열린다(backlog 17).
 
-`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
+`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)과 내 요청 상태(`POST /api/center/my-cases`, backlog 27)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
 
 ### 요청·응답 예시
 
@@ -235,7 +236,7 @@ backend/
 
 ```json
 { "infoDate": "2026-10-24", "alsoIndustrial": true, "path": "ulsanSupport",
-  "institutions": [{ "id": "center", "phone": null }, { "id": "ulsan", "phone": null }],
+  "institutions": [{ "id": "center", "phone": "1577-2818" }, { "id": "ulsan", "phone": "052-235-7100" }],
   "docs": ["arc", "receipts"] }
 ```
 
@@ -262,6 +263,19 @@ backend/
 
 긴급도는 `rateUrgency`와 같다(업무 중 발생 +2, 건강보험증 없음 +1, 3점 이상 높음·1점 이상 보통). 예: 업무 중 발생 + 보험 없음 → `{ "urgency": "high", "reasons": ["업무 중 발생", "건강보험증 없음"] }`(2 + 1 = 3점).
 
+**`POST /api/center/my-cases`** — 근로자가 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27)
+
+```jsonc
+// 요청: 전송 응답의 chatToken. 토큰을 URL에 싣지 않으려고 본문으로 받는다
+{ "cases": [{ "id": "C-48213", "token": "kqr6VTRE…" }] }
+// 응답
+[{ "id": "C-48213", "status": "progress", "centerMessages": 2, "lastCenterAt": "2026-10-30T05:12:00.000Z" }]
+```
+
+- 토큰이 틀리거나 사례가 없으면(데모 초기화 포함) 그 항목만 빠진다. 사례가 있는지 드러내지 않으려고 403·404를 내지 않는다.
+- `centerMessages`는 센터가 보낸 채팅 메시지 수(근로자 글은 세지 않는다), `lastCenterAt`은 마지막 센터 메시지 시각이고 없으면 `null`이다. 사례 본문(요약·원문·긴급도)은 돌려주지 않는다.
+- 빈 목록, 21개 이상, 형식 오류는 422.
+
 **`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
 사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(`CENTER_AUTH=email`이면 직원 세션 쿠키도 있어야 한다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
@@ -276,7 +290,7 @@ backend/
 ```jsonc
 // 클라이언트 → 서버. text는 앞뒤 공백을 지운 뒤 1~1000자
 { "type": "message", "text": "Tay tôi vẫn còn chảy máu" }
-// 클라이언트 → 서버: 이 연결의 역할이 m-5까지 읽었다(backlog 27). 이 사례에 있는 메시지 id여야 한다
+// 클라이언트 → 서버: 이 연결의 역할이 m-5까지 읽었다(backlog 28). 이 사례에 있는 메시지 id여야 한다
 { "type": "read", "upTo": "m-5" }
 
 // 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다). read는 역할별 마지막으로 읽은 메시지 id, 없으면 null
@@ -646,5 +660,5 @@ backend:
 
 - 센터 운영 시간: 일~목 09:00~18:00(센터 확인 2026-10-31). 시간은 `CENTER_HOURS`, 요일은 `app/settings.py`의 `WORKDAYS`
 - 정보 기준일 → `INFO_DATE`. 발표 전 재확인
-- 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
-- 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지
+- 기관 대표번호(`KCOMWEL`, `NHIS`, `CENTER`, `ULSAN`)는 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
+- 미확인 연락처는 `phone: null`로 두고 프론트가 "센터 상담으로 확인하세요"를 보인다

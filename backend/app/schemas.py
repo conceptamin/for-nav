@@ -284,6 +284,30 @@ class StatusPatch(CamelModel):
 
 
 # ---------------------------------------------------------------------------
+# 근로자가 자기 요청의 상태를 읽기(backlog 27). 토큰은 URL에 싣지 않으려고 본문으로 받는다
+# ---------------------------------------------------------------------------
+MY_CASES_MAX = 20
+
+
+class MyCaseRef(CamelModel):
+    id: str = Field(min_length=1, max_length=40)
+    token: str = Field(min_length=1, max_length=200)
+
+
+class MyCasesRequest(CamelModel):
+    cases: list[MyCaseRef] = Field(min_length=1, max_length=MY_CASES_MAX)
+
+
+class MyCaseView(CamelModel):
+    id: str
+    status: CaseStatus
+    # 센터가 보낸 채팅 메시지 수. 근로자 글은 세지 않는다
+    center_messages: int
+    # 마지막 센터 메시지 시각(ISO, UTC). 없으면 null
+    last_center_at: str | None
+
+
+# ---------------------------------------------------------------------------
 # 상담 채팅(backlog 14). 프론트 타입은 아직 없다
 # ---------------------------------------------------------------------------
 ChatRole = Literal["worker", "center"]
@@ -306,7 +330,7 @@ class ChatMessageIn(CamelModel):
 
 
 class ChatReadIn(CamelModel):
-    """이 연결의 역할이 up_to(메시지 id)까지 읽었다(backlog 27)."""
+    """이 연결의 역할이 up_to(메시지 id)까지 읽었다(backlog 28)."""
 
     type: Literal["read"]
     up_to: Annotated[str, StringConstraints(pattern=r"^m-[1-9][0-9]{0,8}$")]

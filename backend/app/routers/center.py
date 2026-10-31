@@ -33,6 +33,8 @@ from app.schemas import (
     ChatIn,
     ChatReadIn,
     ChatRole,
+    MyCasesRequest,
+    MyCaseView,
     NewCaseRequest,
     NewCaseResponse,
     StatCell,
@@ -110,6 +112,25 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
     token = secrets.token_urlsafe(24)
     store.set_chat_token(c.id, token)
     return NewCaseResponse(case=c, next_open_date=next_open_day(now).isoformat(), chat_token=token)
+
+
+@router.post("/my-cases", dependencies=[Depends(require_worker)])
+def my_cases(req: MyCasesRequest) -> list[MyCaseView]:
+    """S-13·센터 채팅 시트: 근로자가 채팅 토큰으로 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27).
+
+    토큰이 틀리거나 사례가 없으면 그 항목만 뺀다. 사례가 있는지 드러내지 않으려고 403·404를 내지 않는다.
+    """
+    out: list[MyCaseView] = []
+    for ref in req.cases:
+        expected = store.chat_token(ref.id)
+        if not expected or not secrets.compare_digest(ref.token.encode(), expected.encode()):
+            continue
+        c = store.get(ref.id)
+        if c is None:
+            continue
+        count, last = store.center_message_summary(ref.id)
+        out.append(MyCaseView(id=c.id, status=c.status, center_messages=count, last_center_at=last))
+    return out
 
 
 @router.get("/cases", dependencies=staff_only)
@@ -198,7 +219,7 @@ def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | No
 @router.websocket("/cases/{case_id}/chat")
 async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
     """근로자·센터 상담 채팅. 연결 직후 이전 메시지와 역할별 읽은 자리(history)를 한 번 보내고,
-    이후 메시지와 읽음(backlog 27)을 같은 방의 모든 연결에 보낸다."""
+    이후 메시지와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
     await ws.accept()
     denied = _chat_denied(ws, case_id, role, token)
     if denied:

@@ -122,7 +122,7 @@ export function CenterHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="c-header">
       <img className="logo" src="/mark.png" width="24" height="24" alt="" />
-      <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
+      <span className="brand">울산외국인주민·근로자통합지원센터 · 의료지원</span>
       {children}
     </header>
   );
