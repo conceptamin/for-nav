@@ -183,6 +183,13 @@ class SqliteStore:
             ).fetchall()
         return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
 
+    def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
+        with self._lock:
+            count, last = self._db.execute(
+                "SELECT COUNT(*), MAX(at) FROM chat_messages WHERE case_id = ? AND sender = 'center'", (case_id,)
+            ).fetchone()
+        return count, last
+
     def add_caption(self, case_id: str, sender: ChatRole, text: str, lang: Lang, translated_lang: Lang, at: datetime) -> str:
         with self._lock, self._db:
             (n,) = self._db.execute("SELECT COALESCE(MAX(n), 0) + 1 FROM call_captions WHERE case_id = ?", (case_id,)).fetchone()
