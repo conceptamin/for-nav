@@ -78,7 +78,7 @@ backend/
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
-    test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지
+    test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지, 옛 본문 읽기
     test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
@@ -407,6 +407,7 @@ backend/
 - mock 사례의 `createdAt`은 "서버 시작 시각 기준 몇 시간 전"으로 만든다. 서버 시작 시 한 번만 만든다.
 - 근로자가 실제로 보낸 사례는 `live: true`로 같은 저장소에 넣는다. `POST /api/center/reset`은 live 사례와 상태 변경만 지우고 mock은 처음 상태로 되돌린다.
 - `DB_PATH`가 있으면 live 사례(`live_cases`: id, 접수 시각, 본문 JSON)와 상태 변경(`case_status`: id, 상태)만 SQLite 파일에 둔다. mock 사례·통계 레코드는 지금처럼 시작 시 메모리에서 만든다(시드 고정이라 재시작해도 id가 같다). `reset`은 두 표를 비우고 파일은 지우지 않는다.
+- `live_cases` 본문은 저장할 때의 계약 그대로 남는다. 읽을 때 옛 계약을 지금 계약으로 바꾸고(backlog 23 전 단수 `requestType` → `requestTypes` 한 칸 배열), 그래도 읽지 못하는 본문은 그 사례만 목록·조회에서 빼고 `live case skipped id=… error=…` 한 줄을 남긴다(본문은 남기지 않는다). 사례 하나 때문에 `GET /api/center/cases` 전체가 500이 되지 않게 하려는 것이다(backlog 29).
 - SQLite 파일에는 연락처·자유 입력(채팅 메시지·통화 자막 포함)이 **평문으로** 남는다. 데모 범위에서만 쓰고, 보존 기간·삭제 규칙은 PRD 미결이다. `*.db`는 `.gitignore`에 있다.
 - 사례 id: mock은 `C-1001`~`C-1024`, live는 `C-` + 접수 시각 밀리초 끝 5자리(프론트와 같음). 겹치면 뒤에 `-2`를 붙인다.
 
