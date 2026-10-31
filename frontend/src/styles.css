@@ -579,7 +579,7 @@ p {
 }
 
 /* 글자 길이만큼의 반투명 빨간 버튼(backlog 25). 색이 있는 면이지만 예외로 85% 빨강 + 뒤 흐림 */
-.bar-119 a {
+.bar-119 .call-119 {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -600,8 +600,54 @@ p {
   pointer-events: auto;
 }
 
-.bar-119 a:active {
+.bar-119 .call-119:active {
   box-shadow: var(--glass-color-in);
+}
+
+/* 회원·비회원을 고른 뒤: 119는 왼쪽, 센터 채팅 아이콘은 오른쪽(backlog 29). RTL에서는 좌우가 뒤집힌다 */
+.bar-119.with-chat {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* 아이콘 자리만큼 좁아진다. 긴 언어(uz·kk·ky 등)는 자르지 않고 두 줄로 접는다. 두 줄도 44px 안이라 띠 높이는 같다 */
+.bar-119.with-chat .call-119 {
+  min-width: 0;
+  padding: 0 16px;
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
+}
+
+/* 센터 채팅 아이콘: 44px 원, 떠 있는 유리(앱 바 언어 버튼과 같은 면) */
+.bar-chat {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-sm);
+  color: var(--brand);
+  pointer-events: auto;
+}
+
+.bar-chat:active,
+.bar-chat[aria-current='page'] {
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+.bar-chat-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ---------- 공통 요소 ---------- */

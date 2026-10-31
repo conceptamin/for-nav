@@ -6,7 +6,7 @@ import { RouterProvider } from 'react-router/dom';
 import { WorkerLayout } from './components/WorkerLayout';
 import { CaseDetailPage, CenterLayout, InboxPage, StatsPage } from './pages/center/Center';
 import { CenterLoginPage } from './pages/center/Login';
-import { CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
+import { CenterChatPage, CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
 import { CoveragePage } from './pages/worker/Coverage';
 import { EmergencyPage, IntakePage, ResultPage } from './pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from './pages/worker/Onboarding';
@@ -33,6 +33,7 @@ const routes: RouteObject[] = [
       { path: '/report/new', element: <ReportBuilderPage /> }, // S-11 항목 선택
       { path: '/report/:id', element: <ReportViewPage /> }, // S-11 리포트
       { path: '/center-request', element: <CenterRequestPage /> }, // S-12
+      { path: '/center-chat', element: <CenterChatPage /> }, // S-12 연락(통화·채팅)
       { path: '/my', element: <MyPage /> }, // S-13
       { path: '/guide', element: <GuidePage /> },
     ],
