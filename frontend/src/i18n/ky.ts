@@ -301,6 +301,7 @@ export const ky: Record<MessageKey, string> = {
   'caseStatus.progress': 'Кеңеш жүрүп жатат',
   'caseStatus.done': 'Бүттү',
   caseNewMsg: 'Жаңы билдирүү',
+  pushNotice: 'Борбордон жаңы кабар бар',
   caseStatusFailed: 'Абалды жүктөй алган жокпуз. Акыркы алынган абал көрсөтүлүүдө.',
   casePrevDone: 'Мурунку өтүнүч бүттү. Жаңы өтүнүч жөнөтсөңүз болот.',
   myCaseSent: 'Жөнөтүлдү',

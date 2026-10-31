@@ -1,5 +1,6 @@
 // 근로자 영역 레이아웃: 첫 진입 스플래시, 앱 바(← + 로고 + 언어 변경 LangMenu),하단 119 고정 버튼, 진입 순서 가드, 스크롤 등장.
 // 들어올 때 서버 로그인 상태(api/auth.ts useWorkerAuth)를 한 번 보고 기기의 계정과 맞춘다(backlog 28).
+// 앱 안에서는 이 계정의 센터 요청에 푸시 기기를 묶고, 알림으로 열리면 시트를 그 사례로 연다(backlog 48, api/push.ts).
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
 // title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
@@ -7,6 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import { useWorkerAuth } from '../api/auth';
 import { useMyCasesFeed } from '../api/center';
+import { usePushDevice, usePushOpen } from '../api/push';
 import { hasUnread } from '../domain/centerCase';
 import { useT } from '../i18n';
 import { useApp } from '../state/AppState';
@@ -126,6 +128,12 @@ export function WorkerLayout() {
     }),
     [feed],
   );
+
+  // 앱 푸시(backlog 48). 브라우저·단독 모드에서는 아무 일도 없다. 알림이 이 계정의 사례가 아니면(다른 계정·지운 사례) 열지 않는다
+  usePushDevice(app.account, refs, t('pushNotice'));
+  usePushOpen((caseId) => {
+    if (app.ready && app.chatTokens[caseId]) centerLink.openCase(caseId);
+  });
 
   const appName = app.lang ? t('appName') : 'for nav';
 

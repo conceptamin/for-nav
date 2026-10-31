@@ -288,6 +288,7 @@ export const vi: Record<MessageKey, string> = {
   'caseStatus.progress': 'Đang tư vấn',
   'caseStatus.done': 'Đã xong',
   caseNewMsg: 'Tin nhắn mới',
+  pushNotice: 'Có tin mới từ trung tâm',
   caseStatusFailed: 'Không tải được trạng thái. Đang hiện trạng thái nhận được gần nhất.',
   casePrevDone: 'Yêu cầu trước đã hoàn tất. Bạn có thể gửi yêu cầu mới.',
   myCaseSent: 'Đã gửi',

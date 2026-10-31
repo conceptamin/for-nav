@@ -287,6 +287,7 @@ export const th: Record<MessageKey, string> = {
   'caseStatus.progress': 'กำลังปรึกษา',
   'caseStatus.done': 'เสร็จสิ้น',
   caseNewMsg: 'ข้อความใหม่',
+  pushNotice: 'มีข่าวใหม่จากศูนย์',
   caseStatusFailed: 'โหลดสถานะไม่ได้ กำลังแสดงสถานะล่าสุดที่ได้รับ',
   casePrevDone: 'คำขอก่อนหน้าเสร็จสิ้นแล้ว คุณส่งคำขอใหม่ได้',
   myCaseSent: 'ส่งเมื่อ',

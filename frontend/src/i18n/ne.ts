@@ -301,6 +301,7 @@ export const ne: Record<MessageKey, string> = {
   'caseStatus.progress': 'परामर्श हुँदैछ',
   'caseStatus.done': 'सकियो',
   caseNewMsg: 'नयाँ सन्देश',
+  pushNotice: 'केन्द्रबाट नयाँ खबर छ',
   caseStatusFailed: 'स्थिति ल्याउन सकिएन। पछिल्लो पटक पाएको स्थिति देखाइँदैछ।',
   casePrevDone: 'अघिल्लो अनुरोध सकियो। नयाँ अनुरोध पठाउन सक्नुहुन्छ।',
   myCaseSent: 'पठाएको',

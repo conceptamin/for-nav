@@ -301,6 +301,7 @@ export const ru: Record<MessageKey, string> = {
   'caseStatus.progress': 'Идёт консультация',
   'caseStatus.done': 'Завершён',
   caseNewMsg: 'Новое сообщение',
+  pushNotice: 'Есть новости от центра',
   caseStatusFailed: 'Не удалось загрузить статус. Показан последний полученный.',
   casePrevDone: 'Прошлый запрос завершён. Можно отправить новый.',
   myCaseSent: 'Отправлен',

@@ -288,6 +288,7 @@ export const ko: Record<MessageKey, string> = {
   'caseStatus.progress': '상담 중',
   'caseStatus.done': '완료',
   caseNewMsg: '새 메시지',
+  pushNotice: '센터에서 새 소식이 있습니다',
   caseStatusFailed: '상태를 불러오지 못했습니다. 마지막으로 받은 상태를 보여 줍니다.',
   casePrevDone: '지난 요청은 완료되었습니다. 새 요청을 보낼 수 있습니다.',
   myCaseSent: '보낸 날',
