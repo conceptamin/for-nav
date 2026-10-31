@@ -69,6 +69,7 @@ frontend/
   scripts/dump-fixtures.ts   백엔드 동기화 테스트 기대값(parity.json) 생성
   public/mark.png            팀 로고 마크. 빌드 없이 그대로 서빙된다(파비콘·로고 화면·앱 바·센터 머리글)
   public/wordmark.png        앱 이름 `for nav` 글자 그림(스플래시·로고 화면·홈 앱 바)
+  public/google-g.svg        앱 안 Google 로그인 버튼의 공식 G 로고(Google 브랜드 자산, backlog 35)
   public/flags/              S-01 언어 칸의 국기 SVG 19개(flag-icons 7.6.0에서 복사, MIT, LICENSE.txt 함께). 패키지는 의존성으로 두지 않는다
   src/
     main.tsx       라우트 표. 경로 옆에 PRD 화면 ID(S-xx, C-xx) 주석
@@ -110,7 +111,7 @@ frontend/
 - 예외는 `backend/tests/fixtures/parity.json`이다. 프론트 `domain/`·`data/mock.ts`를 바꿨다면 이 파일은 프론트 코드의 출력이므로 다시 만들어 같은 PR에 넣는다. 손으로 고치지 않는다.
 - 재생성 후 `backend`에서 `uv run pytest`가 실패하면(서버 규칙이 아직 옛것) 멈추고 사용자에게 묻는다. 서버 수정을 같은 PR에 넣을지 `backend/` 브랜치로 따로 할지는 사용자가 정한다. CI `backend` 작업이 모든 PR에서 돌므로 실패한 채로 올리지 않는다.
 - 모델 결과(`TriageResult.model`)는 선택 필드다. 없을 때도 화면이 지금처럼 동작해야 한다.
-- `app-front/`(Flutter WebView용 근로자 앱)가 이 폴더의 `src/pages/worker/*`, `src/components/WorkerLayout`, `src/state/AppState`, `src/styles.css`, `public/`을 경로 별칭 `@fe`로 **공유 import**한다(app-front backlog 02). 이 파일들을 옮기거나 이름을 바꾸거나 `.w-header button.back`(앱 바 ←, app-front의 Android 뒤로 가기가 누른다) 선택자를 바꾸면 `cd app-front && npm run build`도 함께 돌려 확인하고, 깨지면 같은 PR에서 `app-front/src/main.tsx`·`src/bridge/back.ts`를 고친다. `app-front/` 작업은 이 폴더를 고치지 않는다.
+- `app-front/`(Flutter WebView용 근로자 앱)가 이 폴더의 `src/pages/worker/*`, `src/components/WorkerLayout`, `src/state/AppState`, `src/api/googleId`(`setNativeGoogleSignIn`, backlog 35), `src/styles.css`, `public/`을 경로 별칭 `@fe`로 **공유 import**한다(app-front backlog 02). 이 파일들을 옮기거나 이름을 바꾸거나 `.w-header button.back`(앱 바 ←, app-front의 Android 뒤로 가기가 누른다) 선택자를 바꾸면 `cd app-front && npm run build`도 함께 돌려 확인하고, 깨지면 같은 PR에서 `app-front/src/main.tsx`·`src/bridge/back.ts`를 고친다. `app-front/` 작업은 이 폴더를 고치지 않는다.
 
 ## 검사와 커밋
 

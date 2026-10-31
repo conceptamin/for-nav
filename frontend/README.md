@@ -85,7 +85,7 @@ src/
   pages/            worker/ (S-01~S-13, /guide), center/ (C-00 로그인, C-01~C-03)
                     화면은 api/·state/·i18n/·components/만 부른다. domain/을 직접 부르지 않는다(아래 "API 연결")
   components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PainRange·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅), CallPanel(근로자·센터 통화와 번역 자막)
-  api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결), call(통화 신호 WebSocket·WebRTC 음성·자막 목록), speech(통화 중 받아쓰기, Web Speech API), auth(센터 직원 로그인·세션 끝 알림, 근로자 Google 로그인 상태), googleId(Google Identity Services 스크립트·공식 버튼), meta
+  api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결), call(통화 신호 WebSocket·WebRTC 음성·자막 목록), speech(통화 중 받아쓰기, Web Speech API), auth(센터 직원 로그인·세션 끝 알림, 근로자 Google 로그인 상태), googleId(Google Identity Services 스크립트·공식 버튼, 앱이 등록하는 네이티브 로그인 자리), meta
                     단독/API 모드 선택과 경로별 대체 정책은 여기에만 있다
   domain/           규칙 엔진(triage·coverage·centerCase)과 템플릿(templates), 어휘(vocab) — 타입·규칙·문장의 원본
     lang/           근로자 모국어별 내용 묶음(어휘 표기·접수 도우미 문장 틀·응급 키워드). 한국어를 뺀 19개 언어가 파일 하나씩, 형태는 types.ts의 LangPack
@@ -199,7 +199,7 @@ backlog/            작업 항목(NN-short-name.md)
 | 자유 입력 번역 | "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 DB | 단독 모드 localStorage / API 모드 서버 메모리 | 서버 DB(backend 07) |
 | 통화 | PC 브라우저끼리만 확인했다(휴대폰은 배포 주소가 HTTPS라 열 수 있지만 실기기로는 확인하지 않았다). STUN만 있고 TURN이 없어 이동통신망끼리는 붙지 않을 수 있다. 웹 앱이라 근로자가 S-12 화면을 열어 두어야 전화를 받는다(푸시 없음). 받아쓰기는 브라우저 공급자(Chrome은 Google 음성 인식)가 하고 Firefox에는 없다 | TURN 서버, 푸시 알림 |
-| 근로자 로그인 | API 모드 + 서버 `WORKER_AUTH=google`일 때만 실제 Google 로그인. 단독 모드·서버 `off`는 기기 안 데모 계정. 프로필·리포트는 기기에만 있고 기기 사이 동기화가 없다. Flutter 앱(WebView) 안에서는 Google이 웹 로그인을 막아 아직 실제 로그인이 안 된다 | 네이티브 Google 로그인(app-front), 서버 저장·동기화(미정) |
+| 근로자 로그인 | API 모드 + 서버 `WORKER_AUTH=google`일 때만 실제 Google 로그인. 단독 모드·서버 `off`는 기기 안 데모 계정. 프로필·리포트는 기기에만 있고 기기 사이 동기화가 없다. Flutter 앱(WebView) 안에서는 Google이 웹 로그인을 막아, 앱이 네이티브 로그인을 등록하면(`setNativeGoogleSignIn`, backlog 35) GIS 대신 앱 로그인 버튼이 같은 서버 경로로 로그인한다 | 서버 저장·동기화(미정) |
 | 테스트 | 타입 검사(`npm run build`)와 백엔드 동기화 테스트만. 프론트 단위 테스트는 없다 | — |
 | CI | PR마다 `.github/workflows/ci.yml`의 `frontend` 잡이 같은 `npm run build`를 돌려 타입 오류를 잡는다 | — |
 

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { checkWorkerAuth, loginWithGoogle, logoutWorker, useWorkerAuth } from '../../api/auth';
-import { hasGoogleClientId, renderGoogleButton } from '../../api/googleId';
+import { hasGoogleClientId, renderGoogleButton, useNativeGoogleSignIn, type NativeGoogleSignIn } from '../../api/googleId';
 import { BirthDateInput, SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
 import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
@@ -150,6 +150,7 @@ export function ConsentPage() {
 // ---------------------------------------------------------------------------
 // S-03: 로그인 → 프로필(backlog 28). 비회원은 없다.
 // 서버가 Google 로그인을 쓰면(API 모드, WORKER_AUTH=google) Google 공식 버튼으로 로그인하고 서버 세션을 받는다.
+// 앱이 네이티브 로그인을 등록했으면(backlog 35) GIS 대신 앱 로그인 버튼이고, 받은 ID 토큰을 같은 길로 서버에 보낸다.
 // 단독 모드나 서버가 쓰지 않으면 지금처럼 데모 버튼(G 글자)이 이 기기의 데모 계정으로 들어간다.
 // 로그인한 뒤 프로필이 없으면 프로필 단계다. 필수는 생년월일·성별뿐이고 이름·연락처·체류 자격은 받지 않는다.
 // ---------------------------------------------------------------------------
@@ -195,6 +196,17 @@ function GoogleLogin({ onCredential }: { onCredential: (credential: string) => v
   );
 }
 
+/** 앱 안 네이티브 로그인 버튼. Google 브랜드 규정(흰 바탕, 공식 G 로고)을 따른다(design.md "근로자 로그인") */
+function NativeGoogleButton({ onClick }: { onClick: () => void }) {
+  const { t } = useT();
+  return (
+    <button type="button" className="btn google block" onClick={onClick}>
+      <img className="g-logo" src="/google-g.svg" width="20" height="20" alt="" />
+      {t('loginGoogle')}
+    </button>
+  );
+}
+
 export function SignupPage() {
   const app = useApp();
   const { t } = useT();
@@ -202,6 +214,7 @@ export function SignupPage() {
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
   const workerAuth = useWorkerAuth();
+  const nativeSignIn = useNativeGoogleSignIn();
   // 로그인하고 프로필까지 있는 채로 들어오면(/my의 '프로필 수정'·'프로필 추가') 프로필 단계를 보인다. 들어올 때 정하고,
   // 로그아웃으로 계정이 비면 푼다(그 뒤 로그인한 사람은 프로필이 있으면 바로 next로 간다)
   const [editing, setEditing] = useState(() => app.ready);
@@ -243,17 +256,21 @@ export function SignupPage() {
     onBack: () => (form ? (editing ? navigate(next) : backToLogin()) : navigate('/consent')),
   });
 
-  const onCredential = async (credential: string) => {
+  // ID 토큰을 얻는 길(GIS 콜백·앱 네이티브)만 다르고 서버로 보내는 것은 같다. null은 사용자가 계정 선택을 닫은 것이라 문구 없이 버튼으로 돌아간다
+  const signInWith = async (getCredential: () => Promise<string | null>) => {
     setSigningIn(true);
     setLoginFailed(false);
     try {
-      app.signIn(await loginWithGoogle(credential), 'google');
+      const credential = await getCredential();
+      if (credential) app.signIn(await loginWithGoogle(credential), 'google');
     } catch {
       setLoginFailed(true);
     } finally {
       setSigningIn(false);
     }
   };
+  const onCredential = (credential: string) => signInWith(async () => credential);
+  const onNative = (signIn: NativeGoogleSignIn) => signInWith(signIn);
 
   if (!form) {
     const real = workerAuth.status === 'ready' && workerAuth.required;
@@ -274,13 +291,18 @@ export function SignupPage() {
                 {t('retry')}
               </button>
             </div>
-          ) : real && !hasGoogleClientId() ? (
+          ) : real && !nativeSignIn && !hasGoogleClientId() ? (
             <div className="notice warn" role="alert">
               {t('loginNotConfigured')}
             </div>
           ) : real ? (
             <>
-              {!signingIn && <GoogleLogin onCredential={(c) => void onCredential(c)} />}
+              {!signingIn &&
+                (nativeSignIn ? (
+                  <NativeGoogleButton onClick={() => void onNative(nativeSignIn)} />
+                ) : (
+                  <GoogleLogin onCredential={(c) => void onCredential(c)} />
+                ))}
               {signingIn && (
                 <button type="button" className="btn secondary block big" disabled>
                   {t('loginGoogle')}
