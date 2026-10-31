@@ -593,7 +593,7 @@ p {
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   z-index: 20;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end; /* 끝 쪽(RTL이면 왼쪽)에 모아 띄운다(backlog 31). 혼자일 때도 같은 자리라 로그인 뒤 119가 옮겨 가지 않는다 */
   pointer-events: none; /* 띠 바탕이 없으므로 버튼 둘레의 빈자리는 아래 내용이 눌리게 한다 */
 }
 
@@ -628,10 +628,10 @@ p {
   box-shadow: var(--glass-color-in);
 }
 
-/* 로그인하고 프로필까지 있을 때: 119는 왼쪽, 센터 채팅 버튼은 오른쪽(backlog 29). RTL에서는 좌우가 뒤집힌다 */
+/* 로그인하고 프로필까지 있을 때: 119와 센터 채팅 버튼을 한 묶음으로 끝 쪽에 붙인다. 채팅이 가장자리, 119가 그 안쪽(backlog 29·31).
+   RTL에서는 좌우가 뒤집힌다 */
 .bar-119.with-chat {
-  justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* 아이콘 자리만큼 좁아진다. 긴 언어(uz·kk·ky 등)는 자르지 않고 두 줄로 접는다. 두 줄도 44px 안이라 띠 높이는 같다 */
