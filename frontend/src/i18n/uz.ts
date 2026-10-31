@@ -296,7 +296,6 @@ export const uz: Record<MessageKey, string> = {
   profileDeleteConfirm: 'Bu profil oʻchirilsinmi?',
   reportDelete: 'Bu hisobotni oʻchirish',
   reportDeleteConfirm: 'Bu hisobot oʻchirilsinmi?',
-  mySettings: 'Sozlamalar',
   myReports: 'Hisobotlarim',
   myEmpty: 'Hali hisobot yoʻq.',
   myCases: 'Markazga yuborilgan soʻrovlar',

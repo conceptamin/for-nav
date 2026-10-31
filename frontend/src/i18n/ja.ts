@@ -296,7 +296,6 @@ export const ja: Record<MessageKey, string> = {
   profileDeleteConfirm: 'このプロフィールを削除しますか？',
   reportDelete: 'このレポートを削除',
   reportDeleteConfirm: 'このレポートを削除しますか？',
-  mySettings: '設定',
   myReports: 'マイレポート',
   myEmpty: 'まだレポートがありません。',
   myCases: 'センターに送った依頼',

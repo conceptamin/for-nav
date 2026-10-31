@@ -296,7 +296,6 @@ export const si: Record<MessageKey, string> = {
   profileDeleteConfirm: 'මෙම පැතිකඩ මකන්නද?',
   reportDelete: 'මෙම වාර්තාව මකන්න',
   reportDeleteConfirm: 'මෙම වාර්තාව මකන්නද?',
-  mySettings: 'සැකසුම්',
   myReports: 'මගේ වාර්තා',
   myEmpty: 'තවම වාර්තා නැහැ.',
   myCases: 'මධ්‍යස්ථානයට යැවූ ඉල්ලීම්',

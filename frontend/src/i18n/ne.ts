@@ -296,7 +296,6 @@ export const ne: Record<MessageKey, string> = {
   profileDeleteConfirm: 'यो प्रोफाइल मेटाउने?',
   reportDelete: 'यो रिपोर्ट मेटाउनुहोस्',
   reportDeleteConfirm: 'यो रिपोर्ट मेटाउने?',
-  mySettings: 'सेटिङ',
   myReports: 'मेरा रिपोर्ट',
   myEmpty: 'अहिलेसम्म रिपोर्ट छैन।',
   myCases: 'केन्द्रमा पठाएका अनुरोध',

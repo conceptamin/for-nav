@@ -296,7 +296,6 @@ export const my: Record<MessageKey, string> = {
   profileDeleteConfirm: 'ဤပရိုဖိုင်ကို ဖျက်မလား?',
   reportDelete: 'ဤအစီရင်ခံစာကို ဖျက်ရန်',
   reportDeleteConfirm: 'ဤအစီရင်ခံစာကို ဖျက်မလား?',
-  mySettings: 'ဆက်တင်',
   myReports: 'ကျွန်ုပ်၏ အစီရင်ခံစာများ',
   myEmpty: 'အစီရင်ခံစာ မရှိသေးပါ။',
   myCases: 'စင်တာသို့ ပို့ထားသော တောင်းဆိုချက်များ',

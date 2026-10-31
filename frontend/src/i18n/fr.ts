@@ -296,7 +296,6 @@ export const fr: Record<MessageKey, string> = {
   profileDeleteConfirm: 'Supprimer ce profil ?',
   reportDelete: 'Supprimer ce rapport',
   reportDeleteConfirm: 'Supprimer ce rapport ?',
-  mySettings: 'Réglages',
   myReports: 'Mes rapports',
   myEmpty: 'Aucun rapport pour le moment.',
   myCases: 'Demandes envoyées au centre',
