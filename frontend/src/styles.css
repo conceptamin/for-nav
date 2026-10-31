@@ -155,10 +155,10 @@ p {
   color: var(--ink);
 }
 
-/* 앱 바는 띠(면) 없이 투명하다(backlog 31). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있고,
+/* 앱 바는 띠(면) 없이 투명하다(backlog 32). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있고,
    스크롤되는 내용은 두 버튼 사이로 지나간다 */
 
-/* 앱 바 왼쪽 알약(backlog 31). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
+/* 앱 바 왼쪽 알약(backlog 32). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
    홈은 로고 + 워드마크(통째로 홈 링크), 그 밖은 ← + 로고, 앱 바를 숨기는 화면은 로고 하나 */
 .brand-pill {
   flex: none;
@@ -594,7 +594,7 @@ a.brand-pill:active {
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   z-index: 20;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end; /* 끝 쪽(RTL이면 왼쪽)에 모아 띄운다(backlog 31). 혼자일 때도 같은 자리라 로그인 뒤 119가 옮겨 가지 않는다 */
   pointer-events: none; /* 띠 바탕이 없으므로 버튼 둘레의 빈자리는 아래 내용이 눌리게 한다 */
 }
 
@@ -629,10 +629,10 @@ a.brand-pill:active {
   box-shadow: var(--glass-color-in);
 }
 
-/* 로그인하고 프로필까지 있을 때: 119는 왼쪽, 센터 채팅 버튼은 오른쪽(backlog 29). RTL에서는 좌우가 뒤집힌다 */
+/* 로그인하고 프로필까지 있을 때: 119와 센터 채팅 버튼을 한 묶음으로 끝 쪽에 붙인다. 채팅이 가장자리, 119가 그 안쪽(backlog 29·31).
+   RTL에서는 좌우가 뒤집힌다 */
 .bar-119.with-chat {
-  justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* 아이콘 자리만큼 좁아진다. 긴 언어(uz·kk·ky 등)는 자르지 않고 두 줄로 접는다. 두 줄도 44px 안이라 띠 높이는 같다 */

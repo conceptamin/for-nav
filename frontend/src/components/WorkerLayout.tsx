@@ -126,7 +126,7 @@ export function WorkerLayout() {
     return <Navigate to={`/signup?${new URLSearchParams({ next: pathname + search })}`} replace />;
   }
 
-  // 앱 바 왼쪽은 언어 버튼과 같은 유리 알약 하나(backlog 31). 홈은 로고 + 앱 이름(통째로 홈 링크, RTL에서도 로고가 앞),
+  // 앱 바 왼쪽은 언어 버튼과 같은 유리 알약 하나(backlog 32). 홈은 로고 + 앱 이름(통째로 홈 링크, RTL에서도 로고가 앞),
   // 그 밖은 ← + 로고(로그인하고 프로필까지 있으면 로고가 홈 링크).
   // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 알약 하나를 둔다(backlog 25)
   const isRoot = pathname === '/' || pathname === '/home';
