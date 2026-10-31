@@ -8,6 +8,7 @@ export const km: Record<MessageKey, string> = {
   back: 'ថយក្រោយ',
   next: 'បន្ទាប់',
   home: 'ទំព័រដើម',
+  menu: 'ម៉ឺនុយ',
   yes: 'បាទ/ចាស',
   no: 'ទេ',
   unknown: 'មិនច្បាស់',

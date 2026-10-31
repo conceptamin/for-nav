@@ -8,6 +8,7 @@ export const fr: Record<MessageKey, string> = {
   back: 'Retour',
   next: 'Suivant',
   home: 'Accueil',
+  menu: 'Menu',
   yes: 'Oui',
   no: 'Non',
   unknown: 'Je ne sais pas',

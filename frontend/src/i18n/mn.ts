@@ -8,6 +8,7 @@ export const mn: Record<MessageKey, string> = {
   back: 'Буцах',
   next: 'Дараах',
   home: 'Нүүр',
+  menu: 'Цэс',
   yes: 'Тийм',
   no: 'Үгүй',
   unknown: 'Мэдэхгүй',

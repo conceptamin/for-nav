@@ -8,6 +8,7 @@ export const zhTW: Record<MessageKey, string> = {
   back: '返回',
   next: '下一步',
   home: '首頁',
+  menu: '選單',
   yes: '是',
   no: '否',
   unknown: '不確定',

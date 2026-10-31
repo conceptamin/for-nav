@@ -8,6 +8,7 @@ export const tl: Record<MessageKey, string> = {
   back: 'Bumalik',
   next: 'Susunod',
   home: 'Home',
+  menu: 'Menu',
   yes: 'Oo',
   no: 'Hindi',
   unknown: 'Hindi sigurado',

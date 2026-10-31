@@ -8,6 +8,7 @@ export const ru: Record<MessageKey, string> = {
   back: 'Назад',
   next: 'Далее',
   home: 'Главная',
+  menu: 'Меню',
   yes: 'Да',
   no: 'Нет',
   unknown: 'Не знаю',

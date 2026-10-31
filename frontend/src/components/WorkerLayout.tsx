@@ -15,6 +15,7 @@ import { CenterLinkContext, type CenterLink } from './centerLink';
 import { CenterSheet } from './CenterSheet';
 import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
+import { WorkerDrawer } from './WorkerDrawer';
 
 export interface ScreenBar {
   /** 화면 이름. 브라우저 탭 제목에 쓴다(앱 바에는 보이지 않는다) */
@@ -106,7 +107,19 @@ export function WorkerLayout() {
     setSheetMounted(true);
     setSheetCase(null);
     setSheetOpen((o) => !o);
+    setDrawerOpen(false);
   };
+
+  // 메뉴 서랍(backlog 50). 센터 채팅 시트와 하나만 열린다. 화면이 바뀌면 닫는다
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const openDrawer = useCallback(() => {
+    setSheetOpen(false);
+    setDrawerOpen(true);
+  }, []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
 
   // 내 센터 요청의 처리 상태(backlog 46). 로그인하고 프로필까지 있을 때만 읽는다
   const refs = useMemo(
@@ -236,6 +249,10 @@ export function WorkerLayout() {
           </OpenCenterSheetContext.Provider>
         </main>
         {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} focusCaseId={sheetCase} />}
+        {/* 서랍은 홈 밖에서 로그인하고 프로필까지 있을 때만. 앱 바를 숨긴 화면(분석 중)에도 두지 않는다. 시트가 열려 있으면 손잡이를 감춘다 */}
+        {app.ready && !isRoot && !bar.hidden && (
+          <WorkerDrawer id="worker-drawer" open={drawerOpen} showHandle={!sheetOpen} appName={appName} onOpen={openDrawer} onClose={closeDrawer} />
+        )}
         {bar119}
       </div>
       </CenterLinkContext.Provider>

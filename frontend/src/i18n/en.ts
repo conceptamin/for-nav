@@ -7,6 +7,7 @@ export const en = {
   back: 'Back',
   next: 'Next',
   home: 'Home',
+  menu: 'Menu',
   yes: 'Yes',
   no: 'No',
   unknown: 'Not sure',

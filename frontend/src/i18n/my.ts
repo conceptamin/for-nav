@@ -8,6 +8,7 @@ export const my: Record<MessageKey, string> = {
   back: 'နောက်သို့',
   next: 'ရှေ့သို့',
   home: 'ပင်မစာမျက်နှာ',
+  menu: 'မီနူး',
   yes: 'ဟုတ်ကဲ့',
   no: 'မဟုတ်ပါ',
   unknown: 'မသေချာပါ',

@@ -8,6 +8,7 @@ export const ko: Record<MessageKey, string> = {
   back: '뒤로',
   next: '다음',
   home: '홈',
+  menu: '메뉴',
   yes: '예',
   no: '아니요',
   unknown: '잘 모름',

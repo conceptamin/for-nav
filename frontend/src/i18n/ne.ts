@@ -8,6 +8,7 @@ export const ne: Record<MessageKey, string> = {
   back: 'पछाडि',
   next: 'अर्को',
   home: 'गृहपृष्ठ',
+  menu: 'मेनु',
   yes: 'हो',
   no: 'होइन',
   unknown: 'थाहा छैन',

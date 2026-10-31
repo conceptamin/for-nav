@@ -8,6 +8,7 @@ export const vi: Record<MessageKey, string> = {
   back: 'Quay lại',
   next: 'Tiếp',
   home: 'Trang chủ',
+  menu: 'Menu',
   yes: 'Có',
   no: 'Không',
   unknown: 'Không rõ',
