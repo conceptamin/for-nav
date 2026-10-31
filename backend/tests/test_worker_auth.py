@@ -191,6 +191,31 @@ def test_my_cases_needs_worker_session(client, store, monkeypatch):
     assert client.post("/api/center/my-cases", json=ref).status_code == 401
 
 
+def test_push_register_needs_worker_session_but_remove_does_not(client, store, monkeypatch):
+    # 푸시 기기 등록(backlog 28)은 my-cases와 같이 근로자 세션이 있어야 한다
+    login(client)
+    out = client.post("/api/center/cases", json=NEW_CASE).json()
+    body = {
+        "deviceToken": "fcm-token",
+        "platform": "android",
+        "notice": "새 소식",
+        "cases": [{"id": out["case"]["id"], "token": out["chatToken"]}],
+    }
+    assert client.post("/api/center/push-devices", json=body).json() == {"cases": [out["case"]["id"]]}
+
+    client.cookies.clear()
+    assert client.post("/api/center/push-devices", json=body).status_code == 401
+    # 해제는 세션을 보지 않는다. 웹이 로그아웃 직후 부르고, 기기 토큰이 곧 열쇠다
+    assert client.post("/api/center/push-devices/remove", json={"deviceToken": "fcm-token"}).status_code == 204
+    assert store.push_devices(out["case"]["id"], AT) == []
+    # 센터 직원 쿠키로는 등록되지 않는다
+    use_settings(monkeypatch, worker_auth="google", google_client_id="x", db_path="center.db", center_auth="email")
+    center_token = "center-session-token"
+    store.add_session(auth.hash_secret(center_token), STAFF, AT, AT + timedelta(days=30))
+    client.cookies.set("fornav_center", center_token)
+    assert client.post("/api/center/push-devices", json=body).status_code == 401
+
+
 def test_guidance_paths_stay_open(client):
     # 응급 판정·안내는 로그인에 묶지 않는다(backlog 21 결정 6). 쿠키 없이 지금과 같은 응답이다
     intake = NEW_CASE["intake"]

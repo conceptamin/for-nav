@@ -286,6 +286,7 @@ export const ar: Record<MessageKey, string> = {
   'caseStatus.progress': 'قيد الاستشارة',
   'caseStatus.done': 'مكتمل',
   caseNewMsg: 'رسالة جديدة',
+  pushNotice: 'لديك خبر جديد من المركز',
   caseStatusFailed: 'تعذّر تحميل الحالة. نعرض آخر حالة وصلتنا.',
   casePrevDone: 'اكتمل طلبك السابق. يمكنك إرسال طلب جديد.',
   myCaseSent: 'أُرسل',

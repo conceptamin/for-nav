@@ -1,9 +1,10 @@
 # Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1.
 # JSON 필드명은 camelCase(프론트 타입 그대로), Python 코드 안에서는 snake_case를 쓴다.
 
+import unicodedata
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
 
 from app.vocab import BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
@@ -305,6 +306,42 @@ class MyCaseView(CamelModel):
     center_messages: int
     # 마지막 센터 메시지 시각(ISO, UTC). 없으면 null
     last_center_at: str | None
+
+
+# ---------------------------------------------------------------------------
+# 근로자 앱 푸시 기기 등록(backlog 28). 채팅 토큰이 맞는 사례에만 기기 토큰을 묶는다
+# ---------------------------------------------------------------------------
+DEVICE_TOKEN_MAX = 4096
+PUSH_NOTICE_MAX = 80
+PushPlatform = Literal["android", "ios"]
+
+
+def _no_control_chars(v: str) -> str:
+    if any(unicodedata.category(ch) == "Cc" for ch in v):
+        raise ValueError("제어 문자를 넣을 수 없다")
+    return v
+
+
+# 근로자 앱 언어로 번역된 알림 본문 한 문장(결정 2). 공백만이거나 제어 문자(줄바꿈 포함)가 있으면 422
+PushNotice = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=PUSH_NOTICE_MAX), AfterValidator(_no_control_chars)
+]
+
+
+class PushDeviceRequest(CamelModel):
+    device_token: str = Field(min_length=1, max_length=DEVICE_TOKEN_MAX)
+    platform: PushPlatform
+    notice: PushNotice
+    cases: list[MyCaseRef] = Field(min_length=1, max_length=MY_CASES_MAX)
+
+
+class PushDeviceResponse(CamelModel):
+    # 묶인 사례 id. 토큰이 틀리거나 없는 사례는 빠진다
+    cases: list[str]
+
+
+class PushDeviceRemove(CamelModel):
+    device_token: str = Field(min_length=1, max_length=DEVICE_TOKEN_MAX)
 
 
 # ---------------------------------------------------------------------------

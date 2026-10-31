@@ -300,6 +300,7 @@ export const fr: Record<MessageKey, string> = {
   'caseStatus.progress': 'En cours',
   'caseStatus.done': 'Terminée',
   caseNewMsg: 'Nouveau message',
+  pushNotice: 'Nouvelle information du centre',
   caseStatusFailed: 'Impossible de charger le statut. Dernier statut reçu affiché.',
   casePrevDone: 'Votre demande précédente est terminée. Vous pouvez en envoyer une nouvelle.',
   myCaseSent: 'Envoyée le',

@@ -300,6 +300,7 @@ export const zhCN: Record<MessageKey, string> = {
   'caseStatus.progress': '咨询中',
   'caseStatus.done': '已完成',
   caseNewMsg: '新消息',
+  pushNotice: '中心有新消息',
   caseStatusFailed: '无法加载状态，显示的是最后一次收到的状态。',
   casePrevDone: '上一个请求已完成。你可以发送新的请求。',
   myCaseSent: '发送于',

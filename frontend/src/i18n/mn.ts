@@ -300,6 +300,7 @@ export const mn: Record<MessageKey, string> = {
   'caseStatus.progress': 'Зөвлөгөө явагдаж байна',
   'caseStatus.done': 'Дууссан',
   caseNewMsg: 'Шинэ зурвас',
+  pushNotice: 'Төвөөс шинэ мэдээ ирлээ',
   caseStatusFailed: 'Төлөвийг ачаалж чадсангүй. Сүүлд авсан төлөвийг харуулж байна.',
   casePrevDone: 'Өмнөх хүсэлт дууссан. Шинэ хүсэлт илгээж болно.',
   myCaseSent: 'Илгээсэн',

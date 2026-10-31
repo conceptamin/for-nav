@@ -286,6 +286,7 @@ export const km: Record<MessageKey, string> = {
   'caseStatus.progress': 'កំពុងពិគ្រោះ',
   'caseStatus.done': 'បានបញ្ចប់',
   caseNewMsg: 'សារថ្មី',
+  pushNotice: 'មានព័ត៌មានថ្មីពីមជ្ឈមណ្ឌល',
   caseStatusFailed: 'មិនអាចផ្ទុកស្ថានភាពបានទេ។ កំពុងបង្ហាញស្ថានភាពចុងក្រោយដែលបានទទួល។',
   casePrevDone: 'សំណើមុនបានបញ្ចប់ហើយ។ អ្នកអាចផ្ញើសំណើថ្មីបាន។',
   myCaseSent: 'បានផ្ញើ',

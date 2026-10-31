@@ -300,6 +300,7 @@ export const my: Record<MessageKey, string> = {
   'caseStatus.progress': 'ဆွေးနွေးနေဆဲ',
   'caseStatus.done': 'ပြီးဆုံး',
   caseNewMsg: 'မက်ဆေ့ချ်အသစ်',
+  pushNotice: 'စင်တာမှ သတင်းအသစ် ရှိပါသည်',
   caseStatusFailed: 'အခြေအနေကို မဖွင့်နိုင်ပါ။ နောက်ဆုံးရရှိထားသော အခြေအနေကို ပြထားသည်။',
   casePrevDone: 'ယခင်တောင်းဆိုချက် ပြီးဆုံးပါပြီ။ တောင်းဆိုချက်အသစ် ပို့နိုင်ပါသည်။',
   myCaseSent: 'ပို့ခဲ့သည်',

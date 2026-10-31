@@ -300,6 +300,7 @@ export const si: Record<MessageKey, string> = {
   'caseStatus.progress': 'උපදේශනය සිදුවෙමින්',
   'caseStatus.done': 'අවසන්',
   caseNewMsg: 'නව පණිවිඩය',
+  pushNotice: 'මධ්‍යස්ථානයෙන් නව තොරතුරක් ඇත',
   caseStatusFailed: 'තත්ත්වය ලබාගත නොහැකි විය. අවසන් වරට ලැබුණු තත්ත්වය පෙන්වයි.',
   casePrevDone: 'පෙර ඉල්ලීම අවසන්. ඔබට නව ඉල්ලීමක් යැවිය හැක.',
   myCaseSent: 'යැව්වේ',

@@ -300,6 +300,7 @@ export const tl: Record<MessageKey, string> = {
   'caseStatus.progress': 'Kinokonsulta',
   'caseStatus.done': 'Tapos na',
   caseNewMsg: 'Bagong mensahe',
+  pushNotice: 'May bagong balita mula sa center',
   caseStatusFailed: 'Hindi ma-load ang status. Ipinapakita ang huling natanggap.',
   casePrevDone: 'Tapos na ang naunang request. Puwede kang magpadala ng bago.',
   myCaseSent: 'Ipinadala',
