@@ -109,7 +109,7 @@ export const vi: Record<MessageKey, string> = {
   photosTitle: 'Ảnh',
   photoAdd: 'Thêm ảnh',
   photoRemove: 'Xóa ảnh',
-  photosNote: 'Ảnh chỉ ở trên màn hình này. Không gửi đi và không lưu lại.',
+  photosNote: 'Ảnh chỉ được thêm vào ghi chú cho bác sĩ. Ảnh không được gửi đi đâu cả.',
   analyzingTitle: 'Đang xem câu trả lời của bạn',
   analyzingSub: 'Vui lòng đợi một chút.',
 

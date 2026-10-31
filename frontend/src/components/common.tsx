@@ -1,6 +1,6 @@
 // 근로자 화면 공통 컴포넌트
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { DATE_ORDER, dateFormat, hasDateLocale, useT, type DatePart } from '../i18n';
 import type { YesNoUnknown } from '../domain/vocab';
 
@@ -192,28 +192,51 @@ export function SingleSelect<K extends string>({
 export const MAX_PHOTOS = 3;
 
 export interface PhotoItem {
+  /** 줄인 JPEG data URL. 세션·리포트와 함께 이 기기 저장소에 들어가므로 작게 만든다 */
   url: string;
   name: string;
 }
 
+/** 사진 긴 변의 최대 픽셀과 JPEG 품질. 리포트 하나에 사진 3장이어도 저장소를 넘치지 않을 만큼 줄인다 */
+const PHOTO_MAX_SIDE = 960;
+const PHOTO_QUALITY = 0.6;
+
+/** 고른 사진 파일을 긴 변 PHOTO_MAX_SIDE 이하 JPEG data URL로 줄인다. 읽지 못한 파일은 null */
+async function shrinkPhoto(file: File): Promise<PhotoItem | null> {
+  const src = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+    const scale = Math.min(1, PHOTO_MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    // JPEG에는 투명이 없어 투명 PNG가 검게 된다. 흰 바탕을 먼저 깐다
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return { url: canvas.toDataURL('image/jpeg', PHOTO_QUALITY), name: file.name };
+  } catch {
+    return null;
+  } finally {
+    URL.revokeObjectURL(src);
+  }
+}
+
 /**
- * 사진 올리기. 사진은 브라우저 메모리(object URL)에만 두고 서버·저장소에 보내지 않는다(보낼 API가 없다).
- * 화면을 떠나면 URL을 해제해 사라진다.
+ * 사진 올리기. 사진은 의사에게 보여 줄 메모(S-11)에만 붙는다. 서버(추출·추천·리포트·센터 요청)에는 보내지 않는다.
  */
 export function PhotoPicker({ photos, onChange }: { photos: PhotoItem[]; onChange: (p: PhotoItem[]) => void }) {
   const { t } = useT();
-  const add = (files: FileList | null) => {
-    if (!files) return;
+  const add = async (files: File[]) => {
     const room = MAX_PHOTOS - photos.length;
-    const added = Array.from(files)
-      .slice(0, Math.max(0, room))
-      .map((f) => ({ url: URL.createObjectURL(f), name: f.name }));
+    const added = (await Promise.all(files.slice(0, Math.max(0, room)).map(shrinkPhoto))).filter((p): p is PhotoItem => p !== null);
     if (added.length) onChange([...photos, ...added]);
   };
-  const remove = (i: number) => {
-    URL.revokeObjectURL(photos[i].url);
-    onChange(photos.filter((_, j) => j !== i));
-  };
+  const remove = (i: number) => onChange(photos.filter((_, j) => j !== i));
   return (
     <div>
       <div className="photos-head">
@@ -232,11 +255,19 @@ export function PhotoPicker({ photos, onChange }: { photos: PhotoItem[]; onChang
               </span>
               {t('photoAdd')}
             </span>
-            <input type="file" accept="image/*" multiple onChange={(e) => { add(e.target.files); e.target.value = ''; }} />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                void add(Array.from(e.target.files ?? []));
+                e.target.value = '';
+              }}
+            />
           </label>
         )}
         {photos.map((p, i) => (
-          <div className="photo" key={p.url}>
+          <div className="photo" key={`${i}-${p.name}`}>
             <img src={p.url} alt={p.name} />
             <button type="button" className="rm" aria-label={`${t('photoRemove')} ${i + 1}`} onClick={() => remove(i)}>
               ✕
@@ -247,13 +278,6 @@ export function PhotoPicker({ photos, onChange }: { photos: PhotoItem[]; onChang
       <p className="footer-note">{t('photosNote')}</p>
     </div>
   );
-}
-
-/** 화면이 사라질 때 object URL을 해제한다. 사진 상태를 가진 화면에서 한 번 부른다 */
-export function usePhotoCleanup(photos: PhotoItem[]) {
-  const ref = useRef(photos);
-  ref.current = photos;
-  useEffect(() => () => ref.current.forEach((p) => URL.revokeObjectURL(p.url)), []);
 }
 
 export function toggleIn<T>(list: T[], item: T): T[] {

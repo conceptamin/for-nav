@@ -114,7 +114,7 @@ export const ja: Record<MessageKey, string> = {
   photosTitle: '写真',
   photoAdd: '写真を追加',
   photoRemove: '写真を削除',
-  photosNote: '写真はこの画面にだけ表示されます。送信も保存もしません。',
+  photosNote: '写真は医師に見せるメモにだけ付きます。どこにも送信しません。',
   analyzingTitle: '答えを確認しています',
   analyzingSub: '少しお待ちください。',
 

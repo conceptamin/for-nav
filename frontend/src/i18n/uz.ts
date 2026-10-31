@@ -114,7 +114,7 @@ export const uz: Record<MessageKey, string> = {
   photosTitle: 'Rasmlar',
   photoAdd: 'Rasm qoʻshish',
   photoRemove: 'Rasmni oʻchirish',
-  photosNote: 'Rasmlar faqat shu ekranda qoladi. Ular yuborilmaydi va saqlanmaydi.',
+  photosNote: 'Rasmlar faqat shifokor uchun eslatmaga qo‘shiladi. Ular hech qayerga yuborilmaydi.',
   analyzingTitle: 'Javoblaringiz tekshirilmoqda',
   analyzingSub: 'Biroz kuting.',
 

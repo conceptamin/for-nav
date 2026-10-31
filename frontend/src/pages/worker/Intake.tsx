@@ -14,7 +14,6 @@ import {
   Progress,
   SingleSelect,
   toggleIn,
-  usePhotoCleanup,
   Worse119,
   YesNoSeg,
   type PhotoItem,
@@ -58,7 +57,6 @@ export function IntakePage() {
   const [q, setQ] = useState(0);
   const [intake, setIntake] = useState<Intake>(() => newIntake(lang));
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
-  usePhotoCleanup(photos);
   const [missingMsg, setMissingMsg] = useState(false);
   const [extracted, setExtracted] = useState(false);
   /** API 모드에서 LLM 대신 키워드 사전으로 채웠는지(README "경로별 대체 정책") */
@@ -138,6 +136,7 @@ export function IntakePage() {
         setBusy(false);
       }
       app.setIntake(final);
+      app.setPhotos(photos);
       app.setTriage(r);
       navigate('/result');
       return;

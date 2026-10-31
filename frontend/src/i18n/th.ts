@@ -108,7 +108,7 @@ export const th: Record<MessageKey, string> = {
   photosTitle: 'รูปภาพ',
   photoAdd: 'เพิ่มรูป',
   photoRemove: 'ลบรูป',
-  photosNote: 'รูปอยู่บนหน้าจอนี้เท่านั้น ไม่มีการส่งหรือบันทึก',
+  photosNote: 'รูปจะแนบไปกับบันทึกสำหรับแพทย์เท่านั้น ไม่มีการส่งไปที่ใด',
   analyzingTitle: 'กำลังตรวจคำตอบของคุณ',
   analyzingSub: 'กรุณารอสักครู่',
 

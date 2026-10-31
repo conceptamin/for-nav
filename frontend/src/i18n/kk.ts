@@ -114,7 +114,7 @@ export const kk: Record<MessageKey, string> = {
   photosTitle: 'Суреттер',
   photoAdd: 'Сурет қосу',
   photoRemove: 'Суретті өшіру',
-  photosNote: 'Суреттер тек осы экранда қалады. Олар жіберілмейді және сақталмайды.',
+  photosNote: 'Суреттер тек дәрігерге арналған жазбаға қосылады. Олар ешқайда жіберілмейді.',
   analyzingTitle: 'Жауаптарыңызды тексеріп жатырмыз',
   analyzingSub: 'Сәл күтіңіз.',
 

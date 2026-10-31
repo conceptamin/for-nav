@@ -113,7 +113,7 @@ export const en = {
   photosTitle: 'Photos',
   photoAdd: 'Add photo',
   photoRemove: 'Remove photo',
-  photosNote: 'Photos stay on this screen only. They are not sent or saved.',
+  photosNote: 'Photos are added only to your memo for the doctor. They are not sent anywhere.',
   analyzingTitle: 'Checking your answers',
   analyzingSub: 'Please wait a moment.',
 

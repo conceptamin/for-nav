@@ -114,7 +114,7 @@ export const zhTW: Record<MessageKey, string> = {
   photosTitle: '照片',
   photoAdd: '新增照片',
   photoRemove: '移除照片',
-  photosNote: '照片只會顯示在這個畫面，不會傳送，也不會儲存。',
+  photosNote: '照片只會附在給醫生看的備忘裡，不會傳送到任何地方。',
   analyzingTitle: '正在檢查您的回答',
   analyzingSub: '請稍等一下。',
 

@@ -114,7 +114,7 @@ export const ky: Record<MessageKey, string> = {
   photosTitle: 'Сүрөттөр',
   photoAdd: 'Сүрөт кошуу',
   photoRemove: 'Сүрөттү өчүрүү',
-  photosNote: 'Сүрөттөр ушул экранда гана калат. Алар жөнөтүлбөйт жана сакталбайт.',
+  photosNote: 'Сүрөттөр дарыгерге арналган эскертмеге гана кошулат. Алар эч жакка жөнөтүлбөйт.',
   analyzingTitle: 'Жоопторуңузду текшерип жатабыз',
   analyzingSub: 'Бир аз күтө туруңуз.',
 
