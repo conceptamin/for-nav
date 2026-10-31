@@ -41,7 +41,8 @@ uv run --directory ../backend fastapi dev app/main.py   # http://localhost:8000
 VITE_API_BASE=/api npm run dev
 ```
 
-- 지금(backlog 01)은 호스트 연결 확인 화면 `/__host` 하나만 있다. `/`는 거기로 보낸다. 근로자 화면은 backlog 02부터다.
+- `/`부터 근로자 화면이 `frontend/`와 같이 뜬다(S-01 언어 선택부터). 센터 경로(`/center*`)는 없고 `/`로 돌아간다. 호스트 연결 확인 화면은 `/__host`다(메뉴에 없다).
+- `frontend/src`를 공유 import하므로 **`frontend/`의 `node_modules`는 필요 없다.** 이 폴더의 `npm install`만으로 빌드된다(`tsconfig.json`의 `paths`가 react·react-dom·react-router를 이 폴더의 것으로 고정한다).
 - 휴대폰 WebView에서 열려면 Flutter 앱(`../app/`, 실행은 `app/README.md`)이 이 주소를 불러온다. 개발 중에는 같은 Wi-Fi의 폰에서 `http://<맥 IP>:5181/`로 열어도 되고(`npm run dev -- --host`), PC 브라우저의 기기 모드(360px)로도 대부분 확인할 수 있다. 호스트가 있을 때만 다른 동작(외부 링크·뒤로 가기)은 실제 앱에서 확인한다.
 
 ## 폴더 구조
@@ -51,14 +52,14 @@ app-front/
   CLAUDE.md  README.md  design.md  backlog/
   package.json  package-lock.json  vite.config.ts  tsconfig.json  index.html
   src/
-    main.tsx          경로 표. 경로 옆에 화면 ID 주석(frontend와 같은 S-xx)
-    bridge/           호스트 계약의 구현. 호스트 감지·메시지 보내기·받기·뒤로 가기·외부 링크 가로채기·안전 영역. 화면은 useHost()만 부른다
-    pages/            화면. 지금은 HostCheck(/__host) 하나. 근로자 화면은 backlog 02에서
-    styles.css        스타일. 토큰·컴포넌트는 frontend/design.md를 따른다(backlog 02에서 frontend 스타일을 가져오면 WebView용 덧붙임만 남긴다)
+    main.tsx          경로 표. frontend/src/main.tsx의 근로자 경로와 같은 순서·화면 ID. 화면·레이아웃·상태·스타일은 @fe(= ../frontend/src)에서 import한다
+    bridge/           호스트 계약의 구현. host(감지·send·receive·onBack·안전 영역 변수), links(외부 링크·전화 가로채기), back(Android 뒤로 가기 규칙), HostProvider(useHost). 화면은 useHost()만 부른다
+    pages/            이 앱만의 화면. HostCheck(/__host) 하나. 근로자 화면은 여기 두지 않는다
+    styles.css        WebView 덧붙임(안전 영역 --inset-*, 터치, overscroll)과 /__host 스타일. 토큰·컴포넌트는 @fe/styles.css 그대로
     vite-env.d.ts     Vite 환경 변수 타입
 ```
 
-`frontend/src/domain/`이 규칙·템플릿·어휘의 원본인 것은 여기서도 같다. 이 폴더에 규칙·템플릿·문구를 새로 쓰지 않는다. 가져오는 방법(공유 import인지 복사인지)은 backlog 02의 결정 사항이다.
+**근로자 화면은 `frontend/src`를 공유 import한다**(backlog 02 결정, 2026-10-31). 별칭 `@fe` → `../frontend/src`(`vite.config.ts`의 `resolve.alias`와 `tsconfig.json`의 `paths`), `resolve.dedupe`로 React를 하나로 묶고, `publicDir`을 `../frontend/public`으로 두어 로고·국기가 같은 절대 경로로 나온다. 그래서 `frontend/src/domain/`이 원본인 것, 화면·문구·스타일이 `frontend/`와 한 글자도 다르지 않은 것이 구조로 보장된다. 이 폴더에 규칙·템플릿·문구·화면을 새로 쓰지 않고, 바꿔야 하면 `frontend/` 브랜치로 한다. `frontend/`가 이 파일들을 옮기면 이 앱 빌드가 깨지므로 `frontend/CLAUDE.md` "경계"에 그 사실이 적혀 있다.
 
 ## 호스트 계약(bridge)
 
@@ -95,7 +96,7 @@ app-front/
 
 | `type` | 필드 | 언제 | 웹이 할 일 |
 |---|---|---|---|
-| `init` | `platform`(`android`·`ios`), `appVersion`, `locale`(BCP-47), `insets`(아래) | `ready`를 받은 뒤 한 번 | `useHost()`의 값이 채워진다. `locale`은 S-01의 "폰 언어" 제안에 쓴다(없으면 `navigator.language`) |
+| `init` | `platform`(`android`·`ios`), `appVersion`, `locale`(BCP-47), `insets`(아래) | `ready`를 받은 뒤 한 번 | `useHost()`의 값이 채워진다. `locale`은 확인 화면에 보이기만 한다. S-01의 "폰 언어" 제안은 `frontend/`와 같이 `navigator.languages`를 쓰는데, WebView의 `navigator.languages`가 기기 언어를 그대로 주므로 따로 넘길 필요가 없다 |
 | `insets` | `insets: { top, right, bottom, left }`(CSS px) | 안전 영역이 바뀔 때(회전, 키보드는 제외) | `:root`의 `--inset-*` 변수를 바꾼다 |
 
 **호스트 → 웹, 동기 호출**
@@ -115,7 +116,7 @@ app-front/
 
 ### 뒤로 가기
 
-- Android: 호스트가 `onBack()`을 부른다. 웹은 라우터 이력이 있으면 `history.back()`하고 `true`, 첫 화면(`/`, `/home`)이거나 이력이 없으면 `false`.
+- Android: 호스트가 `onBack()`을 부른다. 규칙은 `src/bridge/back.ts`다. 첫 화면(`/` 언어 선택, `/home`)이면 `false`(호스트가 앱을 뒤로 보낸다). 앱 바에 ←가 있으면 그것을 누른 것과 같게 하고 `true`(S-05처럼 화면이 등록한 단계 되돌리기가 그대로 돈다). 그 밖(앱 바를 숨긴 화면)은 라우터 이력이 있으면 `history.back()`하고 `true`, 없으면 `false`.
 - iOS: 가장자리 스와이프는 WebView 설정(`allowsBackForwardNavigationGestures`)으로 켜고 웹은 관여하지 않는다. 앱 바의 ←는 지금처럼 웹이 그린다.
 - 근로자 화면의 진입 순서 가드(언어 → 동의 → 로그인/비회원)는 `frontend/`와 같다. 뒤로 가기로 가드 앞 단계로 가면 가드가 되돌린다.
 
@@ -181,7 +182,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 
 | 자리 | 지금 | 나중 |
 |---|---|---|
-| 근로자 화면 | `/__host` 확인 화면만 | backlog 02에서 S-01~S-13 |
+| 하단 119 띠의 안전 영역 | `frontend/`의 `env()` 위에 호스트 `--inset-bottom`을 더한다(`src/styles.css`) | Android 실기기에서 값 확인(backlog 03) |
 | 번들 배포 | 원격 주소를 불러온다 | 앱 안에 빌드를 넣어 네트워크 없이 단독 모드(backlog 05). `base`를 상대 경로로 빌드할 수 있게 해 둔다 |
 | 받아쓰기 | 브라우저 Web Speech API(Android WebView는 됨, iOS는 없음) | 호스트 음성 인식 → `type: "speech"` 메시지(backlog 04) |
 | 푸시 | 없음. 통화는 S-12 화면을 열어 두어야 받는다 | 센터가 걸 때 알림. 호스트·백엔드 양쪽 항목이 필요하다(미정) |
@@ -189,7 +190,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 
 ## 결정이 필요한 것
 
-1. **근로자 화면을 어떻게 가져오나(backlog 02).** `frontend/src`의 `pages/`·`components/`·`state/`·`api/`·`domain/`·`i18n/`·`styles.css`를 경로 별칭으로 **공유 import**할지, 이 폴더로 **복사**할지. 권장은 공유 import다. 화면과 규칙의 원본이 하나로 남고, `frontend/`의 수정이 그대로 앱에 반영된다. 대신 두 폴더에 `node_modules`가 둘 다 있어야 하고 React를 하나로 묶는 설정(`resolve.dedupe`)이 필요하며, `frontend/` 쪽 파일 이동이 이 앱 빌드를 깨뜨릴 수 있다(CI가 잡는다).
+1. **근로자 화면을 어떻게 가져오나(backlog 02).** → **공유 import로 결정(2026-10-31).** `frontend/src`를 별칭 `@fe`로 import한다("폴더 구조"). `tsconfig.json`의 `paths`가 react·react-dom·react-router를 이 폴더의 `node_modules`로 고정하므로 `frontend/node_modules` 없이 빌드된다. `frontend/` 쪽 파일 이동이 이 앱 빌드를 깨뜨릴 수 있는 것은 `frontend/CLAUDE.md` "경계"에 적었고, CI 잡은 `chore/` 별도다.
 2. **배포 출처.** 같은 출처(`/app/` 경로로 백엔드가 서빙, backend 항목 필요) / 다른 출처(Vercel 등 + `CORS_ORIGINS`) / 앱 안 번들. 1차 권장은 다른 출처(지금 `frontend/`와 같은 방식, 서버 코드 변경 없음)이고, 발표가 맥미니 한 대라면 같은 출처가 낫다. Flutter 앱은 주소를 `--dart-define=APP_URL=`로 받으므로(backlog 03, 2026-10-31) 어느 쪽을 골라도 앱 코드는 바뀌지 않는다. 배포 주소가 생길 때 정한다.
 3. **Flutter 프로젝트 위치.** → **이 저장소의 `app/`으로 결정(2026-10-31, backlog 03).** 계약 문서와 웹·호스트를 같은 PR에서 고칠 수 있다.
 4. **WebView 라이브러리.** → **`webview_flutter`로 결정(2026-10-31, backlog 03).** 공식이고 가볍다. 파일 선택기·권한은 backlog 04에서 직접 붙인다. 웹은 `flutter_inappwebview`도 감지하므로 바꿔도 웹은 그대로다.
@@ -205,7 +206,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 | 항목 | 지금 | 실서비스 |
 |---|---|---|
 | 호스트 | `../app/`(개발 주소를 `--dart-define`으로 불러온다. 번들·서명·스토어 설정 없음) | Android·iOS 앱 |
-| 화면 | `/__host` 확인 화면 | 근로자 화면 전부 |
+| 화면 | 근로자 화면 전부(`frontend/` 공유 import) + `/__host` | 같음. 푸시·네이티브 화면은 없다 |
 | 받아쓰기 | 브라우저 공급자 | 호스트 음성 인식 또는 서버 음성 인식(미정) |
-| 테스트 | `npm run build`(타입 검사)뿐. 다리는 `/__host` 화면에서 눈으로 확인 | — |
+| 테스트 | `npm run build`(타입 검사)뿐. 다리는 `/__host` 화면에서 눈으로 확인. 근로자 화면의 규칙은 `frontend/`의 백엔드 동기화 테스트가 지킨다 | — |
 | CI | `.github/workflows/ci.yml`에 이 폴더 잡이 아직 없다(`chore/` 영역 별도 작업) | PR마다 `npm run build` |

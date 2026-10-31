@@ -35,6 +35,7 @@ backend/
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
     model.py           응급도·진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
+    llm_limit.py       LLM 호출 제한 — IP별 60초·서버 전체 하루 상한, 넘으면 LLMError(limited)로 대체 동작, IP 헤더는 루프백일 때만
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
@@ -87,6 +88,7 @@ backend/
     test_model_triage.py 규칙 우선·모델 응급도·막연한 분기 진료과·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
+    test_llm_limit.py  LLM 호출 제한(IP별·하루, 대체 동작, 재시도 없음, 루프백일 때만 IP 헤더, 통화 자막, 로그에 IP 없음)
     fakes.py           FakeLLMClient, FakeMailer
 ```
 
@@ -221,7 +223,7 @@ backend/
 `source`는 서버 전용 선택 필드로, 추출에 무엇을 썼는지 알려 준다. 위 예시는 LLM이 꺼진 기본 상태(키 없음)의 결과다.
 
 - `"llm"`: LLM 출력을 썼다. 출력은 `vocab.py` 열거값으로 고정하고, 열거값을 벗어난 필드는 그 필드만 비운다(목록은 `[]`, 나머지는 `null`). 그 뒤 키워드 결과와 필드별로 합친다. 부위·증상은 합집합, 업무 관련은 키워드 값만, 발생 시점·작업 유형은 LLM 값이다(backlog 09).
-- `"keywords"`: 키가 없거나, LLM이 `LLM_ATTEMPTS`번 모두 실패했거나, 자유 입력이 비어 키워드 사전을 썼다. 결과는 프론트 `extractFromText`와 같다.
+- `"keywords"`: 키가 없거나, LLM이 `LLM_ATTEMPTS`번 모두 실패했거나, 호출 제한(backlog 20)에 걸렸거나, 자유 입력이 비어 키워드 사전을 썼다. 결과는 프론트 `extractFromText`와 같다.
 
 어느 쪽이든 버튼으로 고른 값이 우선이고 빈 항목만 채운다. 응급 판정(`/api/triage`)은 LLM과 관계없이 자유 입력에 키워드 규칙으로 돈다.
 
@@ -454,6 +456,9 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_API_KEY` | (없음) | 공급자 API 키 | 비어 있으면 LLM을 쓰지 않는다 |
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
+| `LLM_RATE_PER_MIN` | `0`(끔) | 0 이상 정수 | 클라이언트 IP별 최근 60초 LLM 호출 수 상한(backlog 20) |
+| `LLM_DAILY_LIMIT` | `0`(끔) | 0 이상 정수 | 서버 전체 하루(Asia/Seoul) LLM 호출 수 상한(backlog 20) |
+| `LLM_CLIENT_IP_HEADER` | (없음) | 소문자 헤더 이름, 예: `cf-connecting-ip` | TCP 상대가 루프백일 때만 이 헤더를 클라이언트 IP로 쓴다 |
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
@@ -474,6 +479,8 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 - 로그에는 시도 횟수와 실패 종류(`llm attempt=1/2 failed=LLMError/RateLimitError`)만 남는다. 프롬프트·응답 원문은 로그·예외에 들어가지 않는다.
 - SDK 자체 재시도는 끄고 재시도는 `generate()` 한 곳에서만 한다.
 - 서버는 시작 시(lifespan) 클라이언트를 한 번 만들어 `app.state.llm`에 두고 종료 시 닫는다.
+- **호출 제한(backlog 20).** 공급자 호출 한 번(재시도 포함)을 하나로 세고, 클라이언트 IP별 최근 60초 `LLM_RATE_PER_MIN`번, 서버 전체 하루(Asia/Seoul) `LLM_DAILY_LIMIT`번까지 부른다. 넘으면 그 호출은 `LLMError(limited)`로 실패하고 재시도 없이 키가 없을 때와 같은 대체 결과(키워드·기본 템플릿·원문, `skipped`)로 응답한다. API와 상태 코드는 바뀌지 않는다. 근로자 경로와 통화 자막 번역이 같은 제한을 쓴다. 기본값 0은 제한 없음이고, 맥미니는 `deploy/ecosystem.config.cjs`가 60·3000을 켠다. 제한 상태는 프로세스 메모리라 다시 띄우면 0부터 센다. 막힐 때 로그는 `llm limited scope=ip|daily` 한 줄이고 IP는 남기지 않는다.
+- 클라이언트 IP는 TCP 상대 주소다. `LLM_CLIENT_IP_HEADER`(맥미니 `cf-connecting-ip`)를 주면 상대가 `127.0.0.1`·`::1`(같은 기기의 Cloudflare 터널)일 때만 그 헤더 값을 쓴다. 서버가 `0.0.0.0`으로 떠 있어 같은 망에서 직접 붙은 클라이언트는 헤더를 꾸밀 수 있기 때문이다.
 - 테스트는 가짜 LLM으로 돌고 키·네트워크가 필요 없다. 실제 공급자 확인은 손으로 한 번 돌린다.
 
 ```sh
@@ -607,6 +614,7 @@ backend:
 | 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
 | 통화 기록 | 자막을 사례별로 저장, 음성은 저장하지 않음 — 붙임(backlog 18). 연결 직후 `history`로 다시 준다 | 자막 기록 동의, 보존 기간·자동 삭제·암호화(채팅 메시지와 함께 정한다) |
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
+| LLM 호출 제한 | IP별 60초·서버 전체 하루 호출 수, 프로세스 메모리, 넘으면 대체 동작 — 붙임(backlog 20) | 공유 저장소(Redis 등)의 제한, 사용자·기관별 할당, 토큰·금액 기준 예산 |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.
 

@@ -13,6 +13,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import errors
 from app.chat import CallHub, ChatHub
+from app.llm_limit import LLMLimiter
 from app.mail import make_mailer
 from app.model import load_model
 from app.routers import auth, center, worker
@@ -38,6 +39,8 @@ app = FastAPI(title="Ulsan Medical Navigator mock API", version="0.1.0", lifespa
 app.state.chat = ChatHub()
 # 통화의 열린 연결(backlog 16). 채팅과 같은 이유로 여기서 만든다.
 app.state.call = CallHub()
+# LLM 호출 제한(backlog 20). 설정값이 0이면 꺼져 있고 LLM 클라이언트를 감싸지 않는다.
+app.state.llm_limiter = LLMLimiter(settings.llm_rate_per_min, settings.llm_daily_limit, settings.llm_client_ip_header)
 # 센터 직원 로그인 코드 메일(backlog 17). CENTER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
 app.state.mail = make_mailer(settings)
 

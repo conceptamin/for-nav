@@ -33,8 +33,11 @@ router = APIRouter()
 
 
 def llm_client(request: Request) -> LLMClient | None:
-    """서버 시작 시 만든 LLM 클라이언트. 키가 없거나 lifespan 밖(테스트)이면 None이다."""
-    return getattr(request.app.state, "llm", None)
+    """서버 시작 시 만든 LLM 클라이언트. 키가 없거나 lifespan 밖(테스트)이면 None이다.
+
+    호출 제한이 켜져 있으면 요청한 클라이언트 IP 몫으로 세는 클라이언트로 감싼다(backlog 20).
+    """
+    return request.app.state.llm_limiter.wrap(getattr(request.app.state, "llm", None), request)
 
 
 @router.post("/extract")
