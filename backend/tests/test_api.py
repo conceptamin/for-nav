@@ -283,6 +283,20 @@ def test_patch_status_and_reset():
 
 
 @both_stores
+def test_push_devices_shape():
+    # 근로자 앱 푸시 기기 등록·해제(backlog 28). 발송은 tests/test_push.py가 본다
+    out = _send().json()
+    body = {"deviceToken": "fcm-token", "platform": "android", "notice": "센터에서 새 소식이 있습니다"}
+    refs = [{"id": out["case"]["id"], "token": out["chatToken"]}, {"id": "C-0", "token": "x"}]
+    r = client.post("/api/center/push-devices", json={**body, "cases": refs})
+    assert r.status_code == 200
+    assert r.json() == {"cases": [out["case"]["id"]]}
+    assert client.post("/api/center/push-devices", json={**body, "cases": []}).status_code == 422
+    r = client.post("/api/center/push-devices/remove", json={"deviceToken": "fcm-token"})
+    assert (r.status_code, r.content) == (204, b"")
+
+
+@both_stores
 def test_unknown_case_is_404():
     assert client.get("/api/center/cases/C-0").status_code == 404
     assert client.patch("/api/center/cases/C-0", json={"status": "done"}).status_code == 404
