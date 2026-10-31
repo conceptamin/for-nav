@@ -39,6 +39,9 @@ export const id: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Tanggal lahir',
+  dateYear: 'Tahun',
+  dateMonth: 'Bulan',
+  dateDay: 'Tanggal',
   sex: 'Jenis kelamin',
   male: 'Laki-laki',
   female: 'Perempuan',
@@ -291,6 +294,10 @@ export const id: Record<MessageKey, string> = {
   myTitle: 'Info saya',
   myProfile: 'Profil',
   myProfileEdit: 'Ubah profil',
+  profileAdd: 'Tambah profil',
+  profileOthers: 'Profil lain (ketuk untuk beralih)',
+  profileDelete: 'Hapus profil ini',
+  profileDeleteConfirm: 'Hapus profil ini?',
   mySettings: 'Pengaturan',
   myReports: 'Laporan saya',
   myEmpty: 'Belum ada laporan.',

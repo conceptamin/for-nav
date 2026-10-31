@@ -39,6 +39,9 @@ export const zhTW: Record<MessageKey, string> = {
 
   // S-03
   birthDate: '出生日期',
+  dateYear: '年',
+  dateMonth: '月',
+  dateDay: '日',
   sex: '性別',
   male: '男',
   female: '女',
@@ -291,6 +294,10 @@ export const zhTW: Record<MessageKey, string> = {
   myTitle: '我的資料',
   myProfile: '個人檔案',
   myProfileEdit: '編輯個人檔案',
+  profileAdd: '新增個人檔案',
+  profileOthers: '其他個人檔案（點按切換）',
+  profileDelete: '刪除此個人檔案',
+  profileDeleteConfirm: '要刪除此個人檔案嗎？',
   mySettings: '設定',
   myReports: '我的報告',
   myEmpty: '還沒有報告。',

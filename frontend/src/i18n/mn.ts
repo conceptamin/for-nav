@@ -39,6 +39,9 @@ export const mn: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Төрсөн огноо',
+  dateYear: 'Он',
+  dateMonth: 'Сар',
+  dateDay: 'Өдөр',
   sex: 'Хүйс',
   male: 'Эрэгтэй',
   female: 'Эмэгтэй',
@@ -291,6 +294,10 @@ export const mn: Record<MessageKey, string> = {
   myTitle: 'Миний мэдээлэл',
   myProfile: 'Профайл',
   myProfileEdit: 'Профайл засах',
+  profileAdd: 'Профайл нэмэх',
+  profileOthers: 'Бусад профайл (солихын тулд дарна уу)',
+  profileDelete: 'Энэ профайлыг устгах',
+  profileDeleteConfirm: 'Энэ профайлыг устгах уу?',
   mySettings: 'Тохиргоо',
   myReports: 'Миний тайлангууд',
   myEmpty: 'Одоогоор тайлан алга.',

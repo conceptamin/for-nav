@@ -935,6 +935,22 @@ textarea {
   resize: vertical;
 }
 
+/* 생년월일 연·월·일 select 셋(backlog 34). 순서는 언어마다 다르고, 달 이름이 가장 길어 넓게 준다 */
+.date-parts {
+  display: flex;
+  gap: 8px;
+}
+
+.date-parts select.input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 10px;
+}
+
+.date-parts select.month {
+  flex-grow: 1.6;
+}
+
 .check {
   display: flex;
   gap: 12px;

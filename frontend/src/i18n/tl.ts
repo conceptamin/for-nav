@@ -39,6 +39,9 @@ export const tl: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Petsa ng kapanganakan',
+  dateYear: 'Taon',
+  dateMonth: 'Buwan',
+  dateDay: 'Araw',
   sex: 'Kasarian',
   male: 'Lalaki',
   female: 'Babae',
@@ -291,6 +294,10 @@ export const tl: Record<MessageKey, string> = {
   myTitle: 'Aking impormasyon',
   myProfile: 'Profile',
   myProfileEdit: 'I-edit ang profile',
+  profileAdd: 'Magdagdag ng profile',
+  profileOthers: 'Ibang profile (i-tap para lumipat)',
+  profileDelete: 'Burahin ang profile na ito',
+  profileDeleteConfirm: 'Burahin ang profile na ito?',
   mySettings: 'Settings',
   myReports: 'Aking mga report',
   myEmpty: 'Wala pang report.',

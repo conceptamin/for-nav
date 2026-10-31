@@ -39,6 +39,9 @@ export const kk: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Туған күні',
+  dateYear: 'Жыл',
+  dateMonth: 'Ай',
+  dateDay: 'Күн',
   sex: 'Жынысы',
   male: 'Ер',
   female: 'Әйел',
@@ -291,6 +294,10 @@ export const kk: Record<MessageKey, string> = {
   myTitle: 'Менің мәліметім',
   myProfile: 'Профиль',
   myProfileEdit: 'Профильді өзгерту',
+  profileAdd: 'Профиль қосу',
+  profileOthers: 'Басқа профильдер (ауыстыру үшін басыңыз)',
+  profileDelete: 'Бұл профильді жою',
+  profileDeleteConfirm: 'Бұл профильді жоясыз ба?',
   mySettings: 'Баптаулар',
   myReports: 'Менің есептерім',
   myEmpty: 'Әзірге есеп жоқ.',

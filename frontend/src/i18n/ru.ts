@@ -39,6 +39,9 @@ export const ru: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Дата рождения',
+  dateYear: 'Год',
+  dateMonth: 'Месяц',
+  dateDay: 'День',
   sex: 'Пол',
   male: 'Мужской',
   female: 'Женский',
@@ -291,6 +294,10 @@ export const ru: Record<MessageKey, string> = {
   myTitle: 'Мои данные',
   myProfile: 'Профиль',
   myProfileEdit: 'Изменить профиль',
+  profileAdd: 'Добавить профиль',
+  profileOthers: 'Другие профили (нажмите, чтобы переключить)',
+  profileDelete: 'Удалить этот профиль',
+  profileDeleteConfirm: 'Удалить этот профиль?',
   mySettings: 'Настройки',
   myReports: 'Мои отчеты',
   myEmpty: 'Отчетов пока нет.',
