@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-31T10:00:50.394Z",
+ "generatedAt": "2026-10-31T12:14:41.932Z",
  "now": "2026-10-26T01:00:00.000Z",
  "triage": [
   {
@@ -115469,144 +115469,19 @@
   {
    "id": "C-1024",
    "createdAt": "2026-10-25T18:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
-    "interpret"
-   ],
-   "urgency": "high",
-   "urgencyReasons": [
-    "업무 중 발생",
-    "건강보험증 없음"
-   ],
-   "district": "nam",
-   "industry": "shipbuilding",
-   "status": "new",
-   "summaryKo": "베트남어 사용 근로자(남구, 조선 업종). 손·손가락 통증, 부기, 2~3일 전 시작. 업무 중 발생: 예(기계(프레스 등) 작업). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: Zalo.",
-   "originalNative": "Vấn đề: Đau, Sưng — Bàn tay, ngón tay (2–3 ngày trước).\nXảy ra khi làm việc: có.\nKhu vực: Nam-gu.\nNgành: Đóng tàu.\nGhi chú: \"Ngón tay bị kẹp vào máy dập, bị sưng.\"\nYêu cầu: Phiên dịch.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "industrial",
-   "contactMethod": "zalo",
-   "contact": "010-0000-0010",
-   "afterHours": true,
-   "workRelated": "yes",
-   "insurance": "no",
-   "live": false
-  },
-  {
-   "id": "C-1023",
-   "createdAt": "2026-10-25T05:00:00.000Z",
-   "language": "vi",
-   "requestTypes": [
-    "policy"
-   ],
-   "urgency": "medium",
-   "urgencyReasons": [
-    "업무 중 발생"
-   ],
-   "district": "jung",
-   "industry": "shipbuilding",
-   "status": "new",
-   "summaryKo": "베트남어 사용 근로자(중구, 조선 업종). 허리·등 통증, 어제 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-   "originalNative": "Vấn đề: Đau — Lưng, eo (Hôm qua).\nXảy ra khi làm việc: có.\nKhu vực: Jung-gu.\nNgành: Đóng tàu.\nGhi chú: \"Đau lưng sau khi nâng hàng nặng.\"\nYêu cầu: Tư vấn bảo hiểm, chế độ.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "industrial",
-   "contactMethod": "kakao",
-   "contact": "010-0000-0011",
-   "afterHours": false,
-   "workRelated": "yes",
-   "insurance": "yes",
-   "live": false
-  },
-  {
-   "id": "C-1022",
-   "createdAt": "2026-10-24T15:00:00.000Z",
-   "language": "vi",
-   "requestTypes": [
-    "other"
-   ],
-   "urgency": "medium",
-   "urgencyReasons": [
-    "업무 중 발생"
-   ],
-   "district": "buk",
-   "industry": "other",
-   "status": "new",
-   "summaryKo": "베트남어 사용 근로자(북구, 기타 업종). 눈 눈의 이물감, 통증, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-   "originalNative": "Vấn đề: Dị vật trong mắt, Đau — Mắt (2–3 ngày trước).\nXảy ra khi làm việc: có.\nKhu vực: Buk-gu.\nNgành: Khác.\nGhi chú: \"Bụi vào mắt khi đang mài.\"\nYêu cầu: Khác.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "industrial",
-   "contactMethod": "kakao",
-   "contact": "010-0000-0012",
-   "afterHours": true,
-   "workRelated": "yes",
-   "insurance": "yes",
-   "live": false
-  },
-  {
-   "id": "C-1021",
-   "createdAt": "2026-10-24T07:00:00.000Z",
-   "language": "vi",
-   "requestTypes": [
-    "interpret"
-   ],
-   "urgency": "medium",
-   "urgencyReasons": [
-    "업무 중 발생"
-   ],
-   "district": "ulju",
-   "industry": "shipbuilding",
-   "status": "new",
-   "summaryKo": "베트남어 사용 근로자(울주군, 조선 업종). 팔·어깨 화상, 어제 시작. 업무 중 발생: 예(용접). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 문자.",
-   "originalNative": "Vấn đề: Bỏng — Cánh tay, vai (Hôm qua).\nXảy ra khi làm việc: có.\nKhu vực: Ulju-gun.\nNgành: Đóng tàu.\nGhi chú: \"Bị bỏng nhẹ ở tay khi hàn điện.\"\nYêu cầu: Phiên dịch.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "industrial",
-   "contactMethod": "sms",
-   "contact": "010-0000-0013",
-   "afterHours": true,
-   "workRelated": "yes",
-   "insurance": "unknown",
-   "live": false
-  },
-  {
-   "id": "C-1020",
-   "createdAt": "2026-10-23T19:00:00.000Z",
-   "language": "en",
-   "requestTypes": [
-    "policy"
+    "booking"
    ],
    "urgency": "medium",
    "urgencyReasons": [
     "건강보험증 없음"
    ],
    "district": "buk",
-   "industry": "other",
+   "industry": "shipbuilding",
    "status": "new",
-   "summaryKo": "영어 사용 근로자(북구, 기타 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Problem: Fever, Cough — Whole body (Today).\nHappened at work: no.\nArea: Buk-gu.\nIndustry: Other.\nMy note: \"Fever and cough for three days.\"\nRequest: Insurance & support advice.",
+   "summaryKo": "러시아어 사용 근로자(북구, 조선 업종). 이·잇몸 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "Проблема: Боль — Зубы, десны (2–3 дня назад).\nСлучилось на работе: нет.\nРайон: Пук-гу.\nОтрасль: Судостроение.\nМои слова: \"Уже неделю болит зуб. Нужен переводчик у стоматолога.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115616,26 +115491,86 @@
    ],
    "coveragePath": "center",
    "contactMethod": "phone",
-   "contact": "010-0000-0014",
+   "contact": "010-0000-0010",
    "afterHours": true,
    "workRelated": "no",
    "insurance": "no",
    "live": false
   },
   {
-   "id": "C-1019",
-   "createdAt": "2026-10-23T01:00:00.000Z",
-   "language": "vi",
+   "id": "C-1023",
+   "createdAt": "2026-10-25T05:00:00.000Z",
+   "language": "id",
    "requestTypes": [
-    "referral"
+    "policy"
    ],
    "urgency": "low",
    "urgencyReasons": [],
-   "district": "nam",
+   "district": "ulju",
    "industry": "shipbuilding",
    "status": "new",
-   "summaryKo": "베트남어 사용 근로자(남구, 조선 업종). 피부 발진·가려움, 2~3일 전 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 기관 연계. 연락 희망: 문자.",
-   "originalNative": "Vấn đề: Phát ban, ngứa — Da (2–3 ngày trước).\nXảy ra khi làm việc: không rõ.\nKhu vực: Nam-gu.\nNgành: Đóng tàu.\nGhi chú: \"Ngứa, mẩn đỏ ở tay, có thể do sơn.\"\nYêu cầu: Kết nối cơ quan.",
+   "summaryKo": "인도네시아어 사용 근로자(울주군, 조선 업종). 배 통증, 구토·메스꺼움, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
+   "originalNative": "Masalah: Nyeri, Mual, muntah — Perut (Kemarin).\nTerjadi di tempat kerja: tidak.\nWilayah: Ulju-gun.\nIndustri: Galangan kapal.\nCatatan saya: \"Sakit perut dan muntah sejak kemarin. Harus ke rumah sakit mana?\"\nPermintaan: Saran asuransi & bantuan.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "nhis",
+   "contactMethod": "visit",
+   "contact": null,
+   "afterHours": false,
+   "workRelated": "no",
+   "insurance": "yes",
+   "live": false
+  },
+  {
+   "id": "C-1022",
+   "createdAt": "2026-10-24T15:00:00.000Z",
+   "language": "id",
+   "requestTypes": [
+    "other"
+   ],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "업무 중 발생"
+   ],
+   "district": "dong",
+   "industry": "other",
+   "status": "new",
+   "summaryKo": "인도네시아어 사용 근로자(동구, 기타 업종). 손·손가락 베인 상처, 출혈, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
+   "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (2–3 hari lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Lainnya.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Lainnya.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "industrial",
+   "contactMethod": "phone",
+   "contact": "010-0000-0012",
+   "afterHours": true,
+   "workRelated": "yes",
+   "insurance": "yes",
+   "live": false
+  },
+  {
+   "id": "C-1021",
+   "createdAt": "2026-10-24T07:00:00.000Z",
+   "language": "ru",
+   "requestTypes": [
+    "booking"
+   ],
+   "urgency": "low",
+   "urgencyReasons": [],
+   "district": "dong",
+   "industry": "shipbuilding",
+   "status": "new",
+   "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 배 통증, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
+   "originalNative": "Проблема: Боль — Живот (Вчера).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Болит низ живота. Хочу к гинекологу с переводчиком.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115644,27 +115579,90 @@
     "자유 입력 메모"
    ],
    "coveragePath": "center",
-   "contactMethod": "sms",
-   "contact": "010-0000-0015",
+   "contactMethod": "visit",
+   "contact": null,
    "afterHours": true,
-   "workRelated": "unknown",
+   "workRelated": "no",
+   "insurance": "unknown",
+   "live": false
+  },
+  {
+   "id": "C-1020",
+   "createdAt": "2026-10-23T19:00:00.000Z",
+   "language": "tl",
+   "requestTypes": [
+    "booking"
+   ],
+   "urgency": "high",
+   "urgencyReasons": [
+    "업무 중 발생",
+    "건강보험증 없음"
+   ],
+   "district": "dong",
+   "industry": "other",
+   "status": "new",
+   "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Tulong sa booking.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "industrial",
+   "contactMethod": "phone",
+   "contact": "010-0000-0014",
+   "afterHours": true,
+   "workRelated": "yes",
+   "insurance": "no",
+   "live": false
+  },
+  {
+   "id": "C-1019",
+   "createdAt": "2026-10-23T01:00:00.000Z",
+   "language": "ru",
+   "requestTypes": [
+    "referral"
+   ],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "업무 중 발생"
+   ],
+   "district": "dong",
+   "industry": "shipbuilding",
+   "status": "new",
+   "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 눈 눈의 이물감, 통증, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
+   "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (2–3 дня назад).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Направление в учреждение.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "industrial",
+   "contactMethod": "visit",
+   "contact": null,
+   "afterHours": true,
+   "workRelated": "yes",
    "insurance": "unknown",
    "live": false
   },
   {
    "id": "C-1018",
    "createdAt": "2026-10-22T09:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
-    "interpret"
+    "booking"
    ],
    "urgency": "low",
    "urgencyReasons": [],
-   "district": "buk",
+   "district": "dong",
    "industry": "autoparts",
    "status": "new",
-   "summaryKo": "베트남어 사용 근로자(북구, 자동차 부품 업종). 이·잇몸 통증, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Đau — Răng, lợi (Hôm nay).\nXảy ra khi làm việc: không.\nKhu vực: Buk-gu.\nNgành: Phụ tùng ô tô.\nGhi chú: \"Đau răng một tuần.\"\nYêu cầu: Phiên dịch.",
+   "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "Проблема: Температура, Кашель — Все тело (Сегодня).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Температура и кашель три дня. Карту медстраховки ещё не получил.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115683,7 +115681,7 @@
   {
    "id": "C-1017",
    "createdAt": "2026-10-21T23:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
     "interpret"
    ],
@@ -115691,11 +115689,11 @@
    "urgencyReasons": [
     "업무 중 발생"
    ],
-   "district": "nam",
+   "district": "dong",
    "industry": "shipbuilding",
    "status": "progress",
-   "summaryKo": "베트남어 사용 근로자(남구, 조선 업종). 다리·무릎 통증, 움직이기 어려움, 오늘 시작. 업무 중 발생: 예(조립). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Đau, Khó cử động — Chân, đầu gối (Hôm nay).\nXảy ra khi làm việc: có.\nKhu vực: Nam-gu.\nNgành: Đóng tàu.\nGhi chú: \"Đau đầu gối, khó đi lại.\"\nYêu cầu: Phiên dịch.",
+   "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Проблема: Ожог — Рука, плечо (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Небольшой ожог руки от сварки.\"\nЗапрос: Перевод.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115714,49 +115712,19 @@
   {
    "id": "C-1016",
    "createdAt": "2026-10-21T14:00:00.000Z",
-   "language": "en",
-   "requestTypes": [
-    "policy"
-   ],
-   "urgency": "low",
-   "urgencyReasons": [],
-   "district": "dong",
-   "industry": "shipbuilding",
-   "status": "progress",
-   "summaryKo": "영어 사용 근로자(동구, 조선 업종). 배 통증, 구토·메스꺼움, 일주일 이상 전 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Problem: Pain, Nausea, vomiting — Stomach (Over a week ago).\nHappened at work: no.\nArea: Dong-gu.\nIndustry: Shipbuilding.\nMy note: \"Stomach pain and vomiting since yesterday.\"\nRequest: Insurance & support advice.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "center",
-   "contactMethod": "phone",
-   "contact": "010-0000-0018",
-   "afterHours": true,
-   "workRelated": "no",
-   "insurance": "unknown",
-   "live": false
-  },
-  {
-   "id": "C-1015",
-   "createdAt": "2026-10-20T23:00:00.000Z",
-   "language": "vi",
+   "language": "id",
    "requestTypes": [
     "booking"
    ],
-   "urgency": "high",
+   "urgency": "medium",
    "urgencyReasons": [
-    "업무 중 발생",
-    "건강보험증 없음"
+    "업무 중 발생"
    ],
-   "district": "buk",
-   "industry": "autoparts",
+   "district": "dong",
+   "industry": "shipbuilding",
    "status": "progress",
-   "summaryKo": "베트남어 사용 근로자(북구, 자동차 부품 업종). 손·손가락 베인 상처, 출혈, 어제 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Vết cắt, vết thương, Chảy máu — Bàn tay, ngón tay (Hôm qua).\nXảy ra khi làm việc: có.\nKhu vực: Buk-gu.\nNgành: Phụ tùng ô tô.\nGhi chú: \"Bị cắt tay vào tấm thép.\"\nYêu cầu: Hỗ trợ đặt lịch.",
+   "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "Masalah: Nyeri, Sulit bergerak — Kaki, lutut (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Lutut sakit, susah berjalan.\"\nPermintaan: Bantuan janji temu.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115766,28 +115734,59 @@
    ],
    "coveragePath": "industrial",
    "contactMethod": "phone",
-   "contact": "010-0000-0019",
+   "contact": "010-0000-0018",
    "afterHours": true,
    "workRelated": "yes",
+   "insurance": "unknown",
+   "live": false
+  },
+  {
+   "id": "C-1015",
+   "createdAt": "2026-10-20T23:00:00.000Z",
+   "language": "ru",
+   "requestTypes": [
+    "interpret"
+   ],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "건강보험증 없음"
+   ],
+   "district": "dong",
+   "industry": "autoparts",
+   "status": "progress",
+   "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 피부 발진·가려움, 어제 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Проблема: Сыпь, зуд — Кожа (Вчера).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Зудящая сыпь на руках, возможно от краски.\"\nЗапрос: Перевод.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "center",
+   "contactMethod": "phone",
+   "contact": "010-0000-0019",
+   "afterHours": true,
+   "workRelated": "unknown",
    "insurance": "no",
    "live": false
   },
   {
    "id": "C-1014",
    "createdAt": "2026-10-20T13:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
-    "booking"
+    "interpret"
    ],
    "urgency": "medium",
    "urgencyReasons": [
     "건강보험증 없음"
    ],
-   "district": "buk",
+   "district": "dong",
    "industry": "construction",
    "status": "new",
-   "summaryKo": "베트남어 사용 근로자(북구, 건설 업종). 머리 어지러움, 2~3일 전 시작. 업무 중 발생: 모름. 건강보험증: 없음. 제도 경로 결과: 울산 의료비 지원 상담. 요청 유형: 예약 지원. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Chóng mặt — Đầu (2–3 ngày trước).\nXảy ra khi làm việc: không rõ.\nKhu vực: Buk-gu.\nNgành: Xây dựng.\nGhi chú: \"Hay chóng mặt sau ca đêm.\"\nYêu cầu: Hỗ trợ đặt lịch.",
+   "summaryKo": "러시아어 사용 근로자(동구, 건설 업종). 머리 어지러움, 2~3일 전 시작. 업무 중 발생: 모름. 건강보험증: 없음. 제도 경로 결과: 울산 의료비 지원 상담. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Проблема: Головокружение — Голова (2–3 дня назад).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Строительство.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115806,7 +115805,7 @@
   {
    "id": "C-1013",
    "createdAt": "2026-10-19T18:00:00.000Z",
-   "language": "en",
+   "language": "tl",
    "requestTypes": [
     "other"
    ],
@@ -115817,8 +115816,8 @@
    "district": "dong",
    "industry": "construction",
    "status": "progress",
-   "summaryKo": "영어 사용 근로자(동구, 건설 업종). 귀·코·목 기침, 통증, 2~3일 전 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
-   "originalNative": "Problem: Cough, Pain — Ear, nose, throat (2–3 days ago).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Construction.\nMy note: \"Sore throat and cough, smell of chemicals at work.\"\nRequest: Other.",
+   "summaryKo": "필리핀어 사용 근로자(동구, 건설 업종). 귀·코·목 기침, 통증, 2~3일 전 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
+   "originalNative": "Problema: Ubo, Pananakit — Tainga, ilong, lalamunan (2–3 araw na ang nakaraan).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Konstruksyon.\nAking tala: \"Masakit ang lalamunan at may ubo, amoy kemikal sa trabaho.\"\nRequest: Iba pa.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115837,20 +115836,19 @@
   {
    "id": "C-1012",
    "createdAt": "2026-10-19T10:00:00.000Z",
-   "language": "en",
+   "language": "si",
    "requestTypes": [
     "interpret"
    ],
-   "urgency": "high",
+   "urgency": "medium",
    "urgencyReasons": [
-    "업무 중 발생",
     "건강보험증 없음"
    ],
-   "district": "nam",
+   "district": "buk",
    "industry": "autoparts",
    "status": "done",
-   "summaryKo": "영어 사용 근로자(남구, 자동차 부품 업종). 손·손가락 통증, 부기, 일주일 이상 전 시작. 업무 중 발생: 예(기계(프레스 등) 작업). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-   "originalNative": "Problem: Pain, Swelling — Hand, finger (Over a week ago).\nHappened at work: yes.\nArea: Nam-gu.\nIndustry: Auto parts.\nMy note: \"My finger got caught in the press machine, it is swollen.\"\nRequest: Interpretation.",
+   "summaryKo": "싱할라어 사용 근로자(북구, 자동차 부품 업종). 이·잇몸 통증, 일주일 이상 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
+   "originalNative": "ප්‍රශ්නය: වේදනාව — දත්, විදුරුමස් (සතියකට වඩා කලින්).\nවැඩේදී වුණා: නැහැ.\nප්‍රදේශය: බුක්-ගු (Buk-gu).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"සතියක් තිස්සේ දතේ කැක්කුමක් තියෙනවා. දන්ත වෛද්‍යවරයා ළඟ භාෂා පරිවර්තකයෙක් ඕනේ.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115858,30 +115856,28 @@
     "경위",
     "자유 입력 메모"
    ],
-   "coveragePath": "industrial",
-   "contactMethod": "kakao",
-   "contact": "010-0000-0022",
+   "coveragePath": "center",
+   "contactMethod": "visit",
+   "contact": null,
    "afterHours": true,
-   "workRelated": "yes",
+   "workRelated": "no",
    "insurance": "no",
    "live": false
   },
   {
    "id": "C-1011",
    "createdAt": "2026-10-18T19:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
     "policy"
    ],
-   "urgency": "medium",
-   "urgencyReasons": [
-    "업무 중 발생"
-   ],
-   "district": "jung",
+   "urgency": "low",
+   "urgencyReasons": [],
+   "district": "ulju",
    "industry": "construction",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(중구, 건설 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Đau — Lưng, eo (Hôm nay).\nXảy ra khi làm việc: có.\nKhu vực: Jung-gu.\nNgành: Xây dựng.\nGhi chú: \"Đau lưng sau khi nâng hàng nặng.\"\nYêu cầu: Tư vấn bảo hiểm, chế độ.",
+   "summaryKo": "러시아어 사용 근로자(울주군, 건설 업종). 배 통증, 구토·메스꺼움, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 제도 상담. 연락 희망: 전화.",
+   "originalNative": "Проблема: Боль, Тошнота, рвота — Живот (Сегодня).\nСлучилось на работе: нет.\nРайон: Ульджу-гун.\nОтрасль: Строительство.\nМои слова: \"Со вчерашнего дня болит живот и рвота. В какую больницу идти?\"\nЗапрос: Советы о страховке и помощи.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115889,18 +115885,18 @@
     "경위",
     "자유 입력 메모"
    ],
-   "coveragePath": "industrial",
+   "coveragePath": "center",
    "contactMethod": "phone",
    "contact": "010-0000-0023",
    "afterHours": true,
-   "workRelated": "yes",
+   "workRelated": "no",
    "insurance": "unknown",
    "live": false
   },
   {
    "id": "C-1010",
    "createdAt": "2026-10-18T04:00:00.000Z",
-   "language": "vi",
+   "language": "id",
    "requestTypes": [
     "policy"
    ],
@@ -115911,8 +115907,8 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(동구, 조선 업종). 눈 눈의 이물감, 통증, 일주일 이상 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Dị vật trong mắt, Đau — Mắt (Hơn một tuần trước).\nXảy ra khi làm việc: có.\nKhu vực: Dong-gu.\nNgành: Đóng tàu.\nGhi chú: \"Bụi vào mắt khi đang mài.\"\nYêu cầu: Tư vấn bảo hiểm, chế độ.",
+   "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 일주일 이상 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
+   "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Saran asuransi & bantuan.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115931,19 +115927,48 @@
   {
    "id": "C-1009",
    "createdAt": "2026-10-17T20:00:00.000Z",
-   "language": "vi",
+   "language": "id",
    "requestTypes": [
-    "booking"
+    "interpret"
+   ],
+   "urgency": "low",
+   "urgencyReasons": [],
+   "district": "dong",
+   "industry": "autoparts",
+   "status": "done",
+   "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 배 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
+   "originalNative": "Masalah: Nyeri — Perut (2–3 hari lalu).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Perut bagian bawah sakit. Saya ingin ke dokter kandungan dengan penerjemah.\"\nPermintaan: Penerjemahan.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "center",
+   "contactMethod": "visit",
+   "contact": null,
+   "afterHours": true,
+   "workRelated": "no",
+   "insurance": "unknown",
+   "live": false
+  },
+  {
+   "id": "C-1008",
+   "createdAt": "2026-10-17T02:00:00.000Z",
+   "language": "tl",
+   "requestTypes": [
+    "policy"
    ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
    ],
-   "district": "nam",
-   "industry": "autoparts",
+   "district": "dong",
+   "industry": "other",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(남구, 자동차 부품 업종). 팔·어깨 화상, 2~3일 전 시작. 업무 중 발생: 예(용접). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 문자.",
-   "originalNative": "Vấn đề: Bỏng — Cánh tay, vai (2–3 ngày trước).\nXảy ra khi làm việc: có.\nKhu vực: Nam-gu.\nNgành: Phụ tùng ô tô.\nGhi chú: \"Bị bỏng nhẹ ở tay khi hàn điện.\"\nYêu cầu: Hỗ trợ đặt lịch.",
+   "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
+   "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Payo tungkol sa insurance at tulong.",
    "consentedItems": [
     "증상",
     "부위",
@@ -115952,56 +115977,29 @@
     "자유 입력 메모"
    ],
    "coveragePath": "industrial",
-   "contactMethod": "sms",
-   "contact": "010-0000-0025",
-   "afterHours": true,
-   "workRelated": "yes",
-   "insurance": "unknown",
-   "live": false
-  },
-  {
-   "id": "C-1008",
-   "createdAt": "2026-10-17T02:00:00.000Z",
-   "language": "en",
-   "requestTypes": [
-    "policy"
-   ],
-   "urgency": "low",
-   "urgencyReasons": [],
-   "district": "buk",
-   "industry": "other",
-   "status": "done",
-   "summaryKo": "영어 사용 근로자(북구, 기타 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Problem: Fever, Cough — Whole body (Today).\nHappened at work: no.\nArea: Buk-gu.\nIndustry: Other.\nMy note: \"Fever and cough for three days.\"\nRequest: Insurance & support advice.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "nhis",
    "contactMethod": "phone",
    "contact": "010-0000-0026",
    "afterHours": true,
-   "workRelated": "no",
+   "workRelated": "yes",
    "insurance": "yes",
    "live": false
   },
   {
    "id": "C-1007",
    "createdAt": "2026-10-16T12:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
-    "policy"
+    "booking"
    ],
-   "urgency": "low",
-   "urgencyReasons": [],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "업무 중 발생"
+   ],
    "district": "dong",
    "industry": "chemical",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(동구, 화학 업종). 피부 발진·가려움, 오늘 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Phát ban, ngứa — Da (Hôm nay).\nXảy ra khi làm việc: không rõ.\nKhu vực: Dong-gu.\nNgành: Hóa chất.\nGhi chú: \"Ngứa, mẩn đỏ ở tay, có thể do sơn.\"\nYêu cầu: Tư vấn bảo hiểm, chế độ.",
+   "summaryKo": "러시아어 사용 근로자(동구, 화학 업종). 눈 눈의 이물감, 통증, 오늘 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Химическая промышленность.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116009,28 +116007,28 @@
     "경위",
     "자유 입력 메모"
    ],
-   "coveragePath": "nhis",
+   "coveragePath": "industrial",
    "contactMethod": "phone",
    "contact": "010-0000-0027",
    "afterHours": true,
-   "workRelated": "unknown",
+   "workRelated": "yes",
    "insurance": "yes",
    "live": false
   },
   {
    "id": "C-1006",
    "createdAt": "2026-10-16T03:00:00.000Z",
-   "language": "vi",
+   "language": "id",
    "requestTypes": [
-    "booking"
+    "interpret"
    ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "dong",
    "industry": "autoparts",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(동구, 자동차 부품 업종). 이·잇몸 통증, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 전화.",
-   "originalNative": "Vấn đề: Đau — Răng, lợi (Hôm nay).\nXảy ra khi làm việc: không.\nKhu vực: Dong-gu.\nNgành: Phụ tùng ô tô.\nGhi chú: \"Đau răng một tuần.\"\nYêu cầu: Hỗ trợ đặt lịch.",
+   "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Masalah: Demam, Batuk — Seluruh badan (Hari ini).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Demam dan batuk tiga hari. Kartu asuransi kesehatan saya belum datang.\"\nPermintaan: Penerjemahan.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116051,17 +116049,17 @@
    "createdAt": "2026-10-15T09:00:00.000Z",
    "language": "en",
    "requestTypes": [
-    "booking"
+    "interpret"
    ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
    ],
-   "district": "ulju",
+   "district": "dong",
    "industry": "chemical",
    "status": "done",
-   "summaryKo": "영어 사용 근로자(울주군, 화학 업종). 다리·무릎 통증, 움직이기 어려움, 오늘 시작. 업무 중 발생: 예(조립). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: Zalo.",
-   "originalNative": "Problem: Pain, Hard to move — Leg, knee (Today).\nHappened at work: yes.\nArea: Ulju-gun.\nIndustry: Chemical.\nMy note: \"Knee hurts, hard to walk.\"\nRequest: Booking support.",
+   "summaryKo": "영어 사용 근로자(동구, 화학 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Problem: Burn — Arm, shoulder (Today).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Chemical.\nMy note: \"Small burn on my arm from welding.\"\nRequest: Interpretation.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116070,7 +116068,7 @@
     "자유 입력 메모"
    ],
    "coveragePath": "industrial",
-   "contactMethod": "zalo",
+   "contactMethod": "phone",
    "contact": "010-0000-0029",
    "afterHours": true,
    "workRelated": "yes",
@@ -116082,47 +116080,17 @@
    "createdAt": "2026-10-14T21:00:00.000Z",
    "language": "en",
    "requestTypes": [
-    "booking"
+    "interpret"
    ],
-   "urgency": "low",
-   "urgencyReasons": [],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "업무 중 발생"
+   ],
    "district": "dong",
    "industry": "autoparts",
    "status": "progress",
-   "summaryKo": "영어 사용 근로자(동구, 자동차 부품 업종). 배 통증, 구토·메스꺼움, 일주일 이상 전 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 전화.",
-   "originalNative": "Problem: Pain, Nausea, vomiting — Stomach (Over a week ago).\nHappened at work: no.\nArea: Dong-gu.\nIndustry: Auto parts.\nMy note: \"Stomach pain and vomiting since yesterday.\"\nRequest: Booking support.",
-   "consentedItems": [
-    "증상",
-    "부위",
-    "시작 시점",
-    "경위",
-    "자유 입력 메모"
-   ],
-   "coveragePath": "nhis",
-   "contactMethod": "phone",
-   "contact": "010-0000-0030",
-   "afterHours": true,
-   "workRelated": "no",
-   "insurance": "yes",
-   "live": false
-  },
-  {
-   "id": "C-1003",
-   "createdAt": "2026-10-14T14:00:00.000Z",
-   "language": "en",
-   "requestTypes": [
-    "booking"
-   ],
-   "urgency": "high",
-   "urgencyReasons": [
-    "업무 중 발생",
-    "건강보험증 없음"
-   ],
-   "district": "ulju",
-   "industry": "chemical",
-   "status": "done",
-   "summaryKo": "영어 사용 근로자(울주군, 화학 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-   "originalNative": "Problem: Cut, wound, Bleeding — Hand, finger (Today).\nHappened at work: yes.\nArea: Ulju-gun.\nIndustry: Chemical.\nMy note: \"Cut my hand on a steel plate.\"\nRequest: Booking support.",
+   "summaryKo": "영어 사용 근로자(동구, 자동차 부품 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "Problem: Pain, Hard to move — Leg, knee (Over a week ago).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Auto parts.\nMy note: \"Knee hurts, hard to walk.\"\nRequest: Interpretation.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116131,27 +116099,58 @@
     "자유 입력 메모"
    ],
    "coveragePath": "industrial",
-   "contactMethod": "kakao",
-   "contact": "010-0000-0031",
+   "contactMethod": "phone",
+   "contact": "010-0000-0030",
    "afterHours": true,
    "workRelated": "yes",
+   "insurance": "yes",
+   "live": false
+  },
+  {
+   "id": "C-1003",
+   "createdAt": "2026-10-14T14:00:00.000Z",
+   "language": "si",
+   "requestTypes": [
+    "interpret"
+   ],
+   "urgency": "medium",
+   "urgencyReasons": [
+    "건강보험증 없음"
+   ],
+   "district": "dong",
+   "industry": "chemical",
+   "status": "done",
+   "summaryKo": "싱할라어 사용 근로자(동구, 화학 업종). 피부 발진·가려움, 오늘 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
+   "originalNative": "ප්‍රශ්නය: කුෂ්ඨ, කැසීම — සම (අද).\nවැඩේදී වුණා: විශ්වාස නැහැ.\nප්‍රදේශය: දොං-ගු (Dong-gu).\nක්ෂේත්‍රය: රසායන.\nමගේ සටහන: \"අත්වල කසන බිබිලි, සමහරවිට තීන්ත නිසා වෙන්න ඇති.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
+   "consentedItems": [
+    "증상",
+    "부위",
+    "시작 시점",
+    "경위",
+    "자유 입력 메모"
+   ],
+   "coveragePath": "center",
+   "contactMethod": "phone",
+   "contact": "010-0000-0031",
+   "afterHours": true,
+   "workRelated": "unknown",
    "insurance": "no",
    "live": false
   },
   {
    "id": "C-1002",
    "createdAt": "2026-10-14T00:00:00.000Z",
-   "language": "vi",
+   "language": "ru",
    "requestTypes": [
-    "booking"
+    "interpret"
    ],
    "urgency": "low",
    "urgencyReasons": [],
-   "district": "buk",
+   "district": "dong",
    "industry": "autoparts",
    "status": "done",
-   "summaryKo": "베트남어 사용 근로자(북구, 자동차 부품 업종). 머리 어지러움, 오늘 시작. 업무 중 발생: 모름. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-   "originalNative": "Vấn đề: Chóng mặt — Đầu (Hôm nay).\nXảy ra khi làm việc: không rõ.\nKhu vực: Buk-gu.\nNgành: Phụ tùng ô tô.\nGhi chú: \"Hay chóng mặt sau ca đêm.\"\nYêu cầu: Hỗ trợ đặt lịch.",
+   "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 머리 어지러움, 오늘 시작. 업무 중 발생: 모름. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 센터 방문.",
+   "originalNative": "Проблема: Головокружение — Голова (Сегодня).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116160,8 +116159,8 @@
     "자유 입력 메모"
    ],
    "coveragePath": "nhis",
-   "contactMethod": "kakao",
-   "contact": "010-0000-0032",
+   "contactMethod": "visit",
+   "contact": null,
    "afterHours": false,
    "workRelated": "unknown",
    "insurance": "yes",
@@ -116170,19 +116169,19 @@
   {
    "id": "C-1001",
    "createdAt": "2026-10-13T04:00:00.000Z",
-   "language": "en",
+   "language": "si",
    "requestTypes": [
-    "policy"
+    "booking"
    ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
    ],
-   "district": "jung",
+   "district": "ulju",
    "industry": "autoparts",
    "status": "done",
-   "summaryKo": "영어 사용 근로자(중구, 자동차 부품 업종). 귀·코·목 기침, 통증, 오늘 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
-   "originalNative": "Problem: Cough, Pain — Ear, nose, throat (Today).\nHappened at work: yes.\nArea: Jung-gu.\nIndustry: Auto parts.\nMy note: \"Sore throat and cough, smell of chemicals at work.\"\nRequest: Insurance & support advice.",
+   "summaryKo": "싱할라어 사용 근로자(울주군, 자동차 부품 업종). 귀·코·목 기침, 통증, 오늘 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
+   "originalNative": "ප්‍රශ්නය: කැස්ස, වේදනාව — කන, නාසය, උගුර (අද).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: උල්ජු-ගුන් (Ulju-gun).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"උගුරේ අමාරුවයි කැස්සයි, වැඩපොළේ රසායන ගඳක් තියෙනවා.\"\nඉල්ලීම: වෙන් කිරීමට සහාය.",
    "consentedItems": [
     "증상",
     "부위",
@@ -116227,7 +116226,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116247,7 +116246,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -116257,7 +116256,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -116267,7 +116266,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "yes"
   },
   {
@@ -116277,7 +116276,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116297,7 +116296,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116337,7 +116336,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -116347,7 +116346,7 @@
    "language": "tl",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -116367,7 +116366,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -116387,7 +116386,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116417,7 +116416,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116437,7 +116436,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116447,7 +116446,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -116457,7 +116456,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116467,7 +116466,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -116477,7 +116476,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -116487,7 +116486,7 @@
    "language": "tl",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -116497,7 +116496,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116507,7 +116506,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -116517,7 +116516,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116527,7 +116526,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -116537,7 +116536,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -116557,7 +116556,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -116577,7 +116576,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -116587,7 +116586,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -116597,7 +116596,7 @@
    "language": "tl",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -116617,7 +116616,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -116627,7 +116626,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -116637,7 +116636,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -116657,7 +116656,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116667,7 +116666,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116677,7 +116676,7 @@
    "language": "tl",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -116687,7 +116686,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -116697,7 +116696,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -116707,7 +116706,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -116767,7 +116766,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -116787,7 +116786,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -116837,7 +116836,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116847,7 +116846,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -116867,7 +116866,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -116877,7 +116876,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -116887,7 +116886,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -116907,7 +116906,7 @@
    "language": "en",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -116957,7 +116956,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -116977,7 +116976,7 @@
    "language": "en",
    "insurance": "no",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -116997,7 +116996,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117027,7 +117026,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117077,7 +117076,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117087,7 +117086,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117107,7 +117106,7 @@
    "language": "en",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117117,7 +117116,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117127,7 +117126,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -117137,7 +117136,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117177,7 +117176,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117207,7 +117206,7 @@
    "language": "tl",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117227,7 +117226,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117237,7 +117236,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117267,7 +117266,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "yes"
   },
   {
@@ -117277,7 +117276,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117287,7 +117286,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117307,7 +117306,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117327,7 +117326,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117357,7 +117356,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117367,7 +117366,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -117377,7 +117376,7 @@
    "language": "en",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "yes"
   },
   {
@@ -117427,7 +117426,7 @@
    "language": "tl",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117447,7 +117446,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117457,7 +117456,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117467,7 +117466,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117477,7 +117476,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117497,7 +117496,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117507,7 +117506,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117527,7 +117526,7 @@
    "language": "tl",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117537,7 +117536,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -117547,7 +117546,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117557,7 +117556,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117567,7 +117566,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117597,7 +117596,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -117617,7 +117616,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117637,7 +117636,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117647,7 +117646,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117657,7 +117656,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -117667,7 +117666,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117677,7 +117676,7 @@
    "language": "en",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -117687,7 +117686,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117717,7 +117716,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117737,7 +117736,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117747,7 +117746,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117767,7 +117766,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117777,7 +117776,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117787,7 +117786,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117797,7 +117796,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "unknown"
   },
   {
@@ -117817,7 +117816,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117827,7 +117826,7 @@
    "language": "vi",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117837,7 +117836,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -117857,7 +117856,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117887,7 +117886,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -117917,7 +117916,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117927,7 +117926,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -117937,7 +117936,7 @@
    "language": "tl",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117947,7 +117946,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -117957,7 +117956,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -117967,7 +117966,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118017,7 +118016,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118027,7 +118026,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118057,7 +118056,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118087,7 +118086,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118097,7 +118096,7 @@
    "language": "en",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118117,7 +118116,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118137,7 +118136,7 @@
    "language": "tl",
    "insurance": "no",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118147,7 +118146,7 @@
    "language": "en",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118157,7 +118156,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118177,7 +118176,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118187,7 +118186,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118197,7 +118196,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118207,7 +118206,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118217,7 +118216,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118227,7 +118226,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118267,7 +118266,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118277,7 +118276,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118287,7 +118286,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118307,7 +118306,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118337,7 +118336,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "no"
   },
   {
@@ -118367,7 +118366,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118377,7 +118376,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -118387,7 +118386,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118397,7 +118396,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118437,7 +118436,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118447,7 +118446,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118467,7 +118466,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118477,7 +118476,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "unknown"
   },
   {
@@ -118517,7 +118516,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -118537,7 +118536,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118547,7 +118546,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118577,7 +118576,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118587,7 +118586,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118607,7 +118606,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118637,7 +118636,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "no"
   },
   {
@@ -118647,7 +118646,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -118667,7 +118666,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118677,7 +118676,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118687,7 +118686,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -118697,7 +118696,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118717,7 +118716,7 @@
    "language": "id",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118727,7 +118726,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118777,7 +118776,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118787,7 +118786,7 @@
    "language": "vi",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118797,7 +118796,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118857,7 +118856,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118877,7 +118876,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118897,7 +118896,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118907,7 +118906,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -118917,7 +118916,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118927,7 +118926,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118937,7 +118936,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -118947,7 +118946,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -118957,7 +118956,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -118987,7 +118986,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119017,7 +119016,7 @@
    "language": "si",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -119037,7 +119036,7 @@
    "language": "ko",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "no"
   },
   {
@@ -119047,7 +119046,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -119057,7 +119056,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -119067,7 +119066,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -119087,7 +119086,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119097,7 +119096,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -119117,7 +119116,7 @@
    "language": "ru",
    "insurance": "no",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "no"
   },
   {
@@ -119127,7 +119126,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": true,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -119167,7 +119166,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -119177,7 +119176,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -119187,7 +119186,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119227,7 +119226,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -119237,7 +119236,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119257,7 +119256,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -119267,7 +119266,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "other",
+   "requestType": "referral",
    "workRelated": "yes"
   },
   {
@@ -119297,7 +119296,7 @@
    "language": "en",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119307,7 +119306,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119317,7 +119316,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119327,7 +119326,7 @@
    "language": "id",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "policy",
+   "requestType": "booking",
    "workRelated": "no"
   },
   {
@@ -119337,7 +119336,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119367,7 +119366,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119377,7 +119376,7 @@
    "language": "si",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -119387,7 +119386,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119397,7 +119396,7 @@
    "language": "id",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119417,7 +119416,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "no"
   },
   {
@@ -119427,7 +119426,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "yes"
   },
   {
@@ -119447,7 +119446,7 @@
    "language": "si",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "interpret",
+   "requestType": "booking",
    "workRelated": "yes"
   },
   {
@@ -119467,7 +119466,7 @@
    "language": "ru",
    "insurance": "yes",
    "afterHours": true,
-   "requestType": "booking",
+   "requestType": "interpret",
    "workRelated": "unknown"
   },
   {
@@ -119487,7 +119486,7 @@
    "language": "ru",
    "insurance": "unknown",
    "afterHours": false,
-   "requestType": "referral",
+   "requestType": "policy",
    "workRelated": "no"
   }
  ]
