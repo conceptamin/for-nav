@@ -523,7 +523,7 @@ gradients:
 
 브랜드 일관성은 색에서 멈추지 않는다. 아이콘도 **당근 로고의 형태적 특징을 바탕으로** 친근하고 부드러운 인상을 전달하도록 만들어졌고, 명확한 메타포와 간결한 형태, 굵은 선을 써서 글로벌 사용자가 공감할 수 있는 디자인을 목표로 한다 [src:15]. 이 문서가 옮기는 것은 그 **형태 원리**(둥근 실루엣, 굵은 선, 간결한 메타포)이지 로고 자산 자체가 아니다 — 아래 `## Do's and Don'ts`의 브랜드 자산 항을 볼 것.
 
-> **이 프로젝트의 브랜드(2026-10-30, backlog 18).** 이 앱의 이름은 `for nav`이고 브랜드 색은 주황이 아니라 **틸 `#12979A`**다. 로고는 틸 둥근 십자 안에 흰 화살표(길 안내)가 들어간 마크(`public/logo.png`)다. 2026-10-31(backlog 28)부터 십자 면은 밝은 틸 그러데이션의 유리 질감이고, 화살표 자리는 투명이라 놓인 바탕색이 비친다. 앱 이름 `for nav`도 같은 유리 질감의 둥근 글자 그림(`public/wordmark.png`, `.wordmark`)으로 보인다. 스플래시 36px, S-03 로고 화면 28px, 홈 앱 바 20px 높이이고, `alt`가 앱 이름이다. 마크 색은 브랜드 토큰을 바꾸지 않는다. 이 문서의 `carrot` 램프와 주황 서술은 참고 시스템인 SEED(당근)의 브랜드이고, 이 앱의 브랜드 역할은 아래 `## Colors`의 "이 프로젝트의 브랜드 색" 대응을 따른다.
+> **이 프로젝트의 브랜드(2026-10-30, backlog 18).** 이 앱의 이름은 `for nav`이고 브랜드 색은 주황이 아니라 **틸 `#12979A`**다. 로고는 틸 둥근 십자 안에 흰 화살표(길 안내)가 들어간 마크(`public/mark.png`)다. 2026-10-31(backlog 28)부터 십자 면은 밝은 틸 그러데이션의 유리 질감이고, 화살표 자리는 투명이라 놓인 바탕색이 비친다. 앱 이름 `for nav`도 같은 유리 질감의 둥근 글자 그림(`public/wordmark.png`, `.wordmark`)으로 보인다. 스플래시 36px, S-03 로고 화면 28px, 홈 앱 바 20px 높이이고, `alt`가 앱 이름이다. 마크 파일은 옛 `logo.png`에서 이름을 바꿨다(backlog 32). 같은 이름이면 브라우저·WebView가 캐시한 옛 마크를 계속 보여 준다. 마크 색은 브랜드 토큰을 바꾸지 않는다. 이 문서의 `carrot` 램프와 주황 서술은 참고 시스템인 SEED(당근)의 브랜드이고, 이 앱의 브랜드 역할은 아래 `## Colors`의 "이 프로젝트의 브랜드 색" 대응을 따른다.
 
 ## Colors
 
@@ -742,11 +742,11 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 | 흐림을 다는 것 | 흐림을 달지 않는 것 |
 |---|---|
 | 카드, 패널, KPI, 표 상자, 홈 기능 목록 판(`.home-list`), 다른 진료과 상자(`.dept.alt`) | 카드 안의 버튼·칩·체크·입력란·토글·필터, S-01 언어 타일, 들어간 면 전부 |
-| 근로자 앱 바(`.w-header`), 아래 주 동작 자리(`.w-footer`), 센터 헤더(`.c-header`), 앱 바 언어 버튼(`.lang-btn`)·언어 목록(`.lang-menu`) | 불투명한 면: 색이 있는 면(홈 시작 카드 `.home-hero` 포함), 첫 진료과 상자(`.dept`, `--brand-2`), 응급 전화 버튼(`--card-solid`) |
+| 근로자 앱 바 왼쪽 알약(`.brand-pill`), 아래 주 동작 자리(`.w-footer`), 센터 헤더(`.c-header`), 앱 바 언어 버튼(`.lang-btn`)·언어 목록(`.lang-menu`) | 불투명한 면: 색이 있는 면(홈 시작 카드 `.home-hero` 포함), 첫 진료과 상자(`.dept`, `--brand-2`), 응급 전화 버튼(`--card-solid`) |
 
 - 유리 안에 유리를 겹쳐 흐리지 않는다. 겹친 흐림은 저가형 안드로이드에서 스크롤을 끊기게 하고, 이미 흐린 바탕을 한 번 더 흐려도 보이는 차이가 없다. 안쪽 조각은 같은 반투명 채움과 가장자리만 쓴다.
 - 색이 있는 면 위에 놓이는 흰 면(응급 히어로 안의 응급 전화 버튼)은 `--card` 대신 불투명한 `--card-solid`를 쓴다. 반투명 흰색은 빨간 바탕 위에서 분홍으로 비친다.
-- 근로자 앱 바는 흐림을 띠 자신이 아니라 `.w-header::before`에 단다. `backdrop-filter`가 걸린 상자 안의 자식은 그 상자 밖을 흐리지 못하므로(backdrop root), 띠 아래로 내려오는 언어 목록이 본문을 흐리려면 띠 자신에는 흐림이 없어야 한다. 보이는 모양은 같다(backlog 28).
+- 근로자 앱 바(`.w-header`)는 띠(면) 없이 투명하다(backlog 32, 2026-10-31 사용자 결정). 왼쪽 알약(`.brand-pill`: ← + 로고, 홈은 로고 + 워드마크, 앱 바를 숨기는 화면은 로고 하나)과 오른쪽 언어 버튼(`.lang-btn`)이 같은 유리 버튼 모양(44px, `--radius-sm`, `--card` + 흐림 + `--glass-sm`)으로 떠 있고, 스크롤되는 내용은 두 버튼 사이로 지나간다. 앱 바 자신에는 흐림이 없으므로 아래로 내려오는 언어 목록도 본문을 흐릴 수 있다(backdrop root). 홈 알약은 RTL에서도 로고 → 글자 순서다(`dir="ltr"`).
 - 고정된 띠는 그림자 없이 `--card` 채움 + 흐림 + 아래(하단 띠는 위) 쪽 1px `--glass-edge` 선 하나다(`box-shadow: 0 1px 0 var(--glass-edge)`). 띠 아래로 지나가는 내용이 흐리게 비친다. `.w-footer`는 `.w-main`의 좌우 여백까지 넓혀(`margin: 16px -16px -16px; padding: 16px`) 띠가 화면 폭을 채운다. 하단 119(`.bar-119`)는 띠 바탕 없이 빨간 버튼만 바닥 끝 쪽(오른쪽, RTL이면 왼쪽)에 떠 있다(2026-10-30 사용자 결정, 자리는 backlog 31). 혼자일 때도 같은 쪽이라 로그인 뒤 자리가 옮겨 가지 않는다. 버튼 둘레의 빈자리는 `pointer-events: none`이라 아래 내용이 눌린다. 로그인하고 프로필까지 있으면(`app.ready`) 119와 센터 채팅 버튼이 간격 8px로 한 묶음이 되어 끝 쪽에 붙는다. 채팅이 가장자리, 119가 그 안쪽이다. 센터 채팅 버튼(`.bar-chat`, 72×44px 알약, 틸을 비친 유리 `--card-tint` + 위쪽 빛 반사 `--glass-sheen` + `--glass-lift`, 틸 외곽선 말풍선 26px, 지금 화면이면 `--brand-2` 들어간 면, 마우스가 있는 기기에서만 호버)(backlog 29·30·31, RTL은 좌우가 뒤집힌다). 두 버튼은 위쪽 빛 반사와 아래 안쪽 음영(`--glass-lift`, `--glass-color-lift`)으로 두께를 내고, 바깥 그림자는 하나뿐이다. 아이콘 자리만큼 좁아진 119는 글자를 자르지 않고 두 줄로 접는다(줄 높이 1.25라 두 줄도 44px 안).
 
 ### 대비를 지키는 규칙
@@ -884,7 +884,7 @@ body { background: var(--bg-paint); background-attachment: fixed; }
 
 input[type='text'], textarea, select.input { background: var(--bg-2); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-in); }
 
-.w-header::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 1px 0 var(--glass-edge); }
+.brand-pill { height: 44px; padding: 0 8px; border-radius: var(--radius-sm); background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-sm); }
 ```
 
 - 입력란은 `--card`가 아니라 `--bg-2` 틴트 위에 둔다. 흰 반투명 채움은 떠 있는 면의 색이라, 입력란이 같은 색이면 들어간 면으로 읽히지 않는다.
@@ -896,7 +896,7 @@ input[type='text'], textarea, select.input { background: var(--bg-2); border: 0;
 
 근로자 영역을 브라우저 세션에서 처음 열 때 한 번 보이는 로고 화면(backlog 24). 경로가 아니라 `WorkerLayout`이 화면 대신 그린다.
 
-- `.w-splash`: 바닥 위 가운데에 로고(`/logo.png`, 96px)와 앱 이름 워드마크(`/wordmark.png`, 높이 36px) 둘뿐이다. 면·그림자 없음. 앱 바 없음
+- `.w-splash`: 바닥 위 가운데에 로고(`/mark.png`, 96px)와 앱 이름 워드마크(`/wordmark.png`, 높이 36px) 둘뿐이다. 면·그림자 없음. 앱 바 없음
 - 하단 119 버튼도 그리지 않는다(2026-10-30 사용자 결정). 1.2초뿐이고 누르면 바로 넘어가며, 넘어간 화면에는 119가 있다. "119는 로딩과 관계없이 보인다"의 예외는 이 화면과 응급 화면 둘뿐이다
 - 1.2초 뒤 또는 화면을 누르면 원래 열려던 화면으로 바로 바뀐다. 스플래시 자체가 나타나고 사라지는 효과는 없다(넘어간 화면의 요소는 스크롤 등장으로 나타난다)
 
