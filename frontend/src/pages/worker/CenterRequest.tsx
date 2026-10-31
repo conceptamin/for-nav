@@ -281,6 +281,7 @@ export function GuidePage() {
     ['guide3t', 'guide3b'],
     ['guide4t', 'guide4b'],
     ['guide5t', 'guide5b'],
+    ['guide6t', 'guide6b'],
   ];
   return (
     <div>
