@@ -119,7 +119,7 @@ function Failure({ text, onRetry, busy }: { text: string; onRetry: () => void; b
 export function CenterHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="c-header">
-      <img className="logo" src="/logo.png" width="24" height="24" alt="" />
+      <img className="logo" src="/mark.png" width="24" height="24" alt="" />
       <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
       {children}
     </header>

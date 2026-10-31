@@ -155,45 +155,56 @@ p {
   color: var(--ink);
 }
 
-/* 고정 유리 띠. 스크롤되는 내용이 흐리게 비친다(design.md "흐림은 맨 위 유리에만").
-   흐림을 띠 자신이 아니라 ::before에 단다. 띠에 backdrop-filter가 있으면 안의 언어 목록(.lang-menu)이 띠 밖 내용을 흐리지 못한다 */
-.w-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+/* 앱 바는 띠(면) 없이 투명하다(backlog 31). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있고,
+   스크롤되는 내용은 두 버튼 사이로 지나간다 */
+
+/* 앱 바 왼쪽 알약(backlog 31). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
+   홈은 로고 + 워드마크(통째로 홈 링크), 그 밖은 ← + 로고, 앱 바를 숨기는 화면은 로고 하나 */
+.brand-pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  margin: -4px 0;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   background: var(--card);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  box-shadow: 0 1px 0 var(--glass-edge);
+  box-shadow: var(--glass-sm);
+  color: var(--ink);
+  text-decoration: none;
 }
 
-/* 앱 바의 로고 마크(backlog 25). 홈은 앱 이름 앞, 그 밖은 ← 오른쪽(회원·비회원이 정해졌으면 홈 링크) */
-.w-header .logo {
+a.brand-pill:active {
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+.brand-pill .logo {
   flex: none;
   display: block;
   width: 28px;
   height: 28px;
 }
 
-.w-header .logo-link {
+.brand-pill .wordmark {
+  margin-inline-end: 4px;
+}
+
+/* ← 오른쪽 로고(로그인하고 프로필까지 있으면 홈 링크). 알약 높이를 다 누르는 영역으로 쓴다 */
+.brand-pill .logo-link {
   flex: none;
   display: grid;
   place-items: center;
-  width: 44px;
+  width: 36px;
   height: 44px;
-  margin: -8px 0;
 }
 
-/* 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)의 좌측 상단 로고 하나. 누를 수 없다 */
+/* 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)의 좌측 상단 로고 알약. 누를 수 없다 */
 .w-corner-logo {
   padding: 12px 16px 0;
-}
-
-.w-corner-logo .logo {
-  display: block;
-  width: 28px;
-  height: 28px;
 }
 
 /* 스크롤 등장(backlog 25, src/components/reveal.ts). 들어오면 16px 올라오며 나타난다. 300ms(duration-d6), easing-enter.
@@ -237,22 +248,11 @@ p {
   }
 }
 
-.w-header .title {
-  flex: 1;
-  font-weight: 700;
-  font-size: var(--t5);
-  color: var(--ink);
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 앱 바의 ← 되돌아가기. 아이콘 24px, 누르는 영역 48px, 평평 */
+/* 앱 바의 ← 되돌아가기. 왼쪽 알약 안에 평평하게. 아이콘 24px, 누르는 영역은 알약 높이 44px */
 .w-header .back {
-  width: 48px;
-  height: 48px;
-  margin: -6px 0 -6px -12px;
+  width: 40px;
+  height: 44px;
+  margin: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -269,6 +269,7 @@ p {
 .lang-pick {
   position: relative;
   flex: none;
+  margin-inline-start: auto;
 }
 
 .lang-btn {
@@ -450,7 +451,7 @@ p {
   padding: 32px 0;
 }
 
-/* 팀 로고 마크(public/logo.png). 바탕이 투명이라 화살표 자리로 바닥색이 비친다 */
+/* 팀 로고 마크(public/mark.png). 바탕이 투명이라 화살표 자리로 바닥색이 비친다 */
 .w-logo .mark {
   display: block;
   width: 64px;
