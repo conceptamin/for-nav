@@ -194,7 +194,7 @@ backlog/            작업 항목(NN-short-name.md)
 | 접수 문장·리포트 | 기본 템플릿 | LLM 슬롯 채우기 + 기본 템플릿 대체 |
 | 자유 입력 번역 | "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 DB | 단독 모드 localStorage / API 모드 서버 메모리 | 서버 DB(backend 07) |
-| 통화 | `localhost`의 PC 브라우저끼리만 확인했다(휴대폰은 HTTPS가 없어 마이크가 열리지 않는다). STUN만 있고 TURN이 없어 이동통신망끼리는 붙지 않을 수 있다. 웹 앱이라 근로자가 S-12 화면을 열어 두어야 전화를 받는다(푸시 없음). 받아쓰기는 브라우저 공급자(Chrome은 Google 음성 인식)가 하고 Firefox에는 없다 | 휴대폰 HTTPS, TURN 서버, 푸시 알림 |
+| 통화 | PC 브라우저끼리만 확인했다(휴대폰은 배포 주소가 HTTPS라 열 수 있지만 실기기로는 확인하지 않았다). STUN만 있고 TURN이 없어 이동통신망끼리는 붙지 않을 수 있다. 웹 앱이라 근로자가 S-12 화면을 열어 두어야 전화를 받는다(푸시 없음). 받아쓰기는 브라우저 공급자(Chrome은 Google 음성 인식)가 하고 Firefox에는 없다 | TURN 서버, 푸시 알림 |
 | 테스트 | 타입 검사(`npm run build`)와 백엔드 동기화 테스트만. 프론트 단위 테스트는 없다 | — |
 | CI | PR마다 `.github/workflows/ci.yml`의 `frontend` 잡이 같은 `npm run build`를 돌려 타입 오류를 잡는다 | — |
 
