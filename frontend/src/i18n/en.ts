@@ -258,6 +258,7 @@ export const en = {
   chatRejected: 'Could not send this message. Please check it and try again.',
   talkNoCase: 'Send a request to the centre first. Then you can call or chat with the centre here.',
   talkOffline: 'Calls and chat with the centre work only when the app is connected to the server.',
+  close: 'Close',
   liveCallTitle: 'Call the centre',
   liveCallIntro: 'Talk to a counsellor over the internet. What you both say appears below as captions with machine translation. Use earphones so the other voice is not captioned as yours.',
   liveCallStart: 'Call',

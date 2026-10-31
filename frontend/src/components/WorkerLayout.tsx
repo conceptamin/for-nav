@@ -3,12 +3,13 @@
 // 화면 이름은 본문 h1 하나다. 앱 바에 다시 쓰지 않는다(심토미 기준, backlog 15). 화면이 useScreenBar로 등록하는
 // title은 브라우저 탭 제목에만 쓰고, ← 동작과 숨김(로고 화면)도 거기서 등록한다.
 
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import { useWorkerAuth } from '../api/auth';
 import { useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
+import { CenterSheet } from './CenterSheet';
 import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
 
@@ -79,6 +80,16 @@ export function WorkerLayout() {
   const mainRef = useRef<HTMLElement>(null);
   useReveal(mainRef, !splash && pathname !== '/emergency');
 
+  // 센터 채팅 시트(backlog 39). 한 번 열면 닫아도 숨기기만 해서 채팅 연결·통화가 끊기지 않는다.
+  // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다. 응급 화면에서는 숨긴다
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetMounted, setSheetMounted] = useState(false);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+  const toggleSheet = () => {
+    setSheetMounted(true);
+    setSheetOpen((o) => !o);
+  };
+
   const appName = app.lang ? t('appName') : 'for nav';
 
   // 화면 이름은 브라우저 탭 제목으로만 쓴다. 훅은 아래의 이른 return보다 먼저 불러야 한다
@@ -87,7 +98,7 @@ export function WorkerLayout() {
   }, [bar.title, appName]);
 
   // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
-  // 채팅 버튼은 센터 연락(통화·채팅, backlog 29)으로 간다. 로그인하고 프로필까지 있을 때만 보인다.
+  // 채팅 버튼은 센터 연락(통화·채팅, backlog 29) 시트를 지금 화면 위에 열고 닫는다(backlog 39). 로그인하고 프로필까지 있을 때만 보인다.
   // 두 버튼은 끝 쪽에 뜬 유리 독(.bar-dock) 하나에 담는다(backlog 33)
   const bar119 = pathname !== '/emergency' && (
     <div className="bar-119">
@@ -101,14 +112,21 @@ export function WorkerLayout() {
           <span className="call-119-text">{app.lang ? t('bar119') : '119 · Korea Emergency · Cấp cứu'}</span>
         </a>
         {app.ready && (
-          <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>
+          <button
+            type="button"
+            className="bar-chat"
+            aria-label={t('chatTitle')}
+            aria-expanded={sheetOpen}
+            aria-controls="center-sheet"
+            onClick={toggleSheet}
+          >
             <svg className="bar-chat-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.15-2.9-.42L4.5 19.5l1.3-3.6C4.3 14.6 3.5 12.9 3.5 11c0-3.9 3.8-7 8.5-7Z" />
               <circle cx="8.5" cy="11" r="1" />
               <circle cx="12" cy="11" r="1" />
               <circle cx="15.5" cy="11" r="1" />
             </svg>
-          </Link>
+          </button>
         )}
       </div>
     </div>
@@ -176,6 +194,7 @@ export function WorkerLayout() {
         <main className="w-main" ref={mainRef}>
           <Outlet />
         </main>
+        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen && pathname !== '/emergency'} onClose={closeSheet} />}
         {bar119}
       </div>
     </ScreenBarContext.Provider>

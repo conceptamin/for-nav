@@ -259,6 +259,7 @@ export const uz: Record<MessageKey, string> = {
   chatRejected: 'Xabarni yuborib boʻlmadi. Tekshirib, qayta urinib koʻring.',
   talkNoCase: 'Avval markazga soʻrov yuboring. Keyin shu yerda markaz bilan qoʻngʻiroq yoki chat qilishingiz mumkin.',
   talkOffline: 'Markaz bilan qoʻngʻiroq va chat faqat ilova serverga ulangan paytda ishlaydi.',
+  close: 'Yopish',
   liveCallTitle: 'Markazga qoʻngʻiroq',
   liveCallIntro: 'Maslahatchi bilan internet orqali gaplashing. Ikkalangiz aytgan soʻzlar quyida mashina tarjimasi bilan subtitr boʻlib chiqadi. Suhbatdosh ovozi sizning subtitringizga tushmasligi uchun quloqchin taqing.',
   liveCallStart: 'Qoʻngʻiroq qilish',
