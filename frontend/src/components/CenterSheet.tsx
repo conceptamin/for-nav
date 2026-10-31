@@ -1,24 +1,25 @@
 // 센터 채팅 시트(backlog 39). 하단 독의 채팅 아이콘이 지금 화면 위에 연다. 페이지를 옮기지 않는다.
 // 보낸 요청이 없으면 요청(종류 → 보낼 내용 → 전송 동의 → 보내기)을 대화로 묻고, 보내면 같은 시트가 센터 채팅으로 이어진다.
-// 이미 보낸 요청(토큰이 있고 완료가 아닌 가장 최근 것, S-13에서 고른 것이 있으면 그것)이 있으면 그 요청의 상태와 채팅만 보인다(backlog 46).
-// 머리의 📞로 통화 패널과 오간다.
+// 다시 붙을 수 있는 요청이 하나라도 있으면 독 아이콘으로 열 때 채팅 목록(새 요청 버튼 + 요청 줄)부터 보이고, 줄을 누르면 그 요청의 대화다(backlog 52).
+// S-13 요청 줄·S-12 전송·푸시 알림은 목록을 건너뛰고 그 요청의 대화를 연다. 머리의 ←로 목록, 📞로 통화 패널과 오간다.
+// 목록을 보는 동안에도 마지막으로 연 요청의 채팅·통화는 숨겨 둔 채 붙어 있다.
 // 부르는 쪽(WorkerLayout)은 한 번 연 시트를 닫아도 숨기기만 한다. 채팅 연결·통화가 끊기지 않게 하려는 것이다.
 // S-12 페이지(/center-request)와 전송·연락 문구를 같이 쓴다(useSendCenterRequest, workerChatLabels, workerCallLabels).
 // S-12에서 요청을 보내면 그 페이지도 이 시트를 연다(backlog 44). 시트는 가장 최근 요청의 채팅을 보이고, 📞로 통화로 바꿀 수 있다고 안내한다.
 // 흔한 메신저 틀이다(backlog 47): 머리(센터 마크·제목·요청 번호) / 대화 한 줄기 / 아래 고정 입력줄. 채팅 입력줄은 ChatPanel이 아래 칸에 그린다.
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { isSessionEnded } from '../api/auth';
 import { isCallAvailable } from '../api/call';
 import { sendCase } from '../api/center';
 import { isChatAvailable } from '../api/chat';
 import { useCenterSummary } from '../api/worker';
-import type { CaseStatus, NewCaseResponse } from '../domain/centerCase';
+import { unreadCount, type CaseStatus, type NewCaseResponse } from '../domain/centerCase';
 import type { CenterSummaryInput, RequestType } from '../domain/templates';
 import { newIntake } from '../domain/triage';
 import { LOCALES } from '../domain/vocab';
 import type { MessageKey } from '../i18n';
-import { useT } from '../i18n';
+import { formatIsoDate, useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { CallPanel, type CallLabels } from './CallPanel';
 import { canResume, useCenterLink } from './centerLink';
@@ -31,6 +32,53 @@ export const REQUEST_TYPES: RequestType[] = ['booking', 'interpret', 'policy', '
 export function MyCaseStatus({ status }: { status: CaseStatus }) {
   const { t } = useT();
   return <span className={`pill ${status}`}>{t(`caseStatus.${status}` as MessageKey)}</span>;
+}
+
+/** 안 읽은 센터 메시지 수 배지(backlog 52, SEED notification-badge Large). 10 이상은 9+. label은 화면 읽기 프로그램만 읽는다 */
+export function CountBadge({ n, label, className }: { n: number; label?: string; className?: string }) {
+  return (
+    <span className={className ? `count-badge ${className}` : 'count-badge'} aria-hidden={label ? undefined : true}>
+      {label && <span className="sr-only">{label} </span>}
+      {n > 9 ? '9+' : n}
+    </span>
+  );
+}
+
+/**
+ * 내 센터 요청 한 줄(backlog 46·52): 요청 번호·보낸 날·처리 상태·안 읽은 수. S-13 목록과 시트의 채팅 목록이 같이 쓴다.
+ * onOpen이 없으면(토큰이 없거나 서버가 모르는 요청) 누를 수 없다
+ */
+export function MyCaseRow({ id, onOpen }: { id: string; onOpen?: () => void }) {
+  const app = useApp();
+  const { t, lang } = useT();
+  const { feed } = useCenterLink();
+  const view = feed.cases[id];
+  const sentAt = app.caseSentAt[id];
+  const unread = unreadCount(view, app.seenCenterMessages[id]);
+  const body = (
+    <>
+      <span>
+        📨 <strong>{id}</strong>
+        {sentAt && (
+          <span className="small muted">
+            {' '}
+            · {t('myCaseSent')} {formatIsoDate(new Date(sentAt).toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }), lang)}
+          </span>
+        )}
+      </span>
+      <span className="my-case-state">
+        {view && <MyCaseStatus status={view.status} />}
+        {unread > 0 && <CountBadge n={unread} label={t('caseNewMsg')} />}
+      </span>
+    </>
+  );
+  return onOpen ? (
+    <button type="button" className="row link my-case" onClick={onOpen}>
+      {body}
+    </button>
+  ) : (
+    <div className="row link my-case">{body}</div>
+  );
 }
 
 type T = (key: MessageKey) => string;
@@ -158,7 +206,13 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
     }
   };
 
-  return { summary, sent, sending, failed, send };
+  // 시트에서 새 요청을 다시 시작할 때 앞 전송 결과를 비운다(backlog 52)
+  const reset = useCallback(() => {
+    setSent(null);
+    setFailed(false);
+  }, []);
+
+  return { summary, sent, sending, failed, send, reset };
 }
 
 /** 운영 시간 안/밖 안내. 다음 운영일은 센터 날짜라 그날 정오(한국 시각)로 읽어 요일이 시간대에 따라 밀리지 않게 한다 */
@@ -183,33 +237,67 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
-export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; open: boolean; onClose: () => void; focusCaseId: string | null }) {
+export function CenterSheet({ id, open, onClose, focus }: { id: string; open: boolean; onClose: () => void; focus: { id: string | null } }) {
   const app = useApp();
   const { t, lang } = useT();
   const { feed } = useCenterLink();
   const [types, setTypes] = useState<RequestType[]>([]);
   const [agreed, setAgreed] = useState(false);
   const [talk, setTalk] = useState<'chat' | 'call'>('chat');
-  // 이어 볼 요청: S-13에서 고른 것, 아니면 다시 붙을 수 있고 완료가 아닌 가장 최근 요청.
-  // 상태를 아직 못 받았으면 완료가 아닌 것으로 보고, 받은 뒤 서버가 모르는 사례(데모 초기화·서버 재시작)는 건너뛴다
-  const resumable = app.myCaseIds.filter((caseId) => canResume(feed, caseId, app.chatTokens[caseId]));
-  const focused = focusCaseId && canResume(feed, focusCaseId, app.chatTokens[focusCaseId]) ? focusCaseId : null;
-  const existing = focused ?? resumable.find((caseId) => feed.cases[caseId]?.status !== 'done') ?? null;
-  // 이어 볼 요청이 없고 지난 요청이 완료되었다
-  const prevDone = !existing && resumable.some((caseId) => feed.cases[caseId]?.status === 'done');
-  // 시트를 연 뒤 요청을 보냈으면 그 대화를 이어 보인다. 아니면 이미 있는 요청의 채팅만
-  const asking = !existing;
-  const { summary, sent: sentHere, sending, failed, send } = useSendCenterRequest(types, open && asking);
-  // S-12가 그 뒤에 새 요청을 보냈으면(backlog 44) 새 요청의 채팅을 보이고, 시트 안 요청 대화는 접는다
-  const caseId = existing ?? sentHere?.case.id ?? null;
-  const sent = sentHere && sentHere.case.id === caseId ? sentHere : null;
-  const token = caseId ? app.chatTokens[caseId] : undefined;
+  // 채팅 목록에 보일 요청: 다시 붙을 수 있는 것, 최근에 보낸 것부터.
+  // 상태를 아직 못 받았으면 토큰만 보고, 받은 뒤 서버가 모르는 사례(데모 초기화·서버 재시작)는 건너뛴다
+  const listed = app.myCaseIds.filter((caseId) => canResume(feed, caseId, app.chatTokens[caseId]));
+  // 보는 것: 채팅 목록 / 요청 하나의 대화 / 새 요청 대화. 목록에 보일 요청이 없으면 목록 대신 새 요청 대화
+  const [view, setView] = useState<'list' | 'case' | 'new'>('list');
+  const shown = view === 'list' && !listed.length ? 'new' : view;
+  // 마지막으로 연 요청. 목록·새 요청을 보는 동안에도 그 채팅·통화를 숨겨 둔 채 붙여 둔다
+  const [current, setCurrent] = useState<string | null>(null);
+  const { summary, sent, sending, failed, send, reset } = useSendCenterRequest(types, open && shown === 'new');
+
+  const openCase = useCallback((caseId: string) => {
+    setCurrent(caseId);
+    setView('case');
+  }, []);
+  // 다른 요청을 열면 채팅부터 보인다(앞 요청의 통화는 칸째 닫힌다)
+  useEffect(() => {
+    setTalk('chat');
+  }, [current]);
+  const startNew = () => {
+    reset();
+    setTypes([]);
+    setAgreed(false);
+    setView('new');
+  };
+
+  // 독 아이콘으로 열면 목록부터, 고른 사례(S-13·S-12·푸시)가 있으면 그 대화로. 여는 차례마다 focus가 새 값이다.
+  // 효과가 아니라 렌더 중에 바꾼다. 효과로 바꾸면 지난번 대화가 한 번 그려지며 읽은 것으로 세어진다
+  const [opened, setOpened] = useState<{ id: string | null } | null>(null);
+  if (open && focus !== opened) {
+    setOpened(focus);
+    if (focus.id) openCase(focus.id);
+    else setView('list');
+  }
+
+  // 시트 안에서 보낸 요청이 이제 붙여 둘 요청이다. 첫 요청이면 목록이 막 생겼으므로 보던 대화에 머문다
+  useEffect(() => {
+    if (!sent) return;
+    setCurrent(sent.case.id);
+    setView('new');
+  }, [sent]);
+
+  // 채팅·통화 칸에 붙는 요청과 그 칸이 보이는지. 새 요청 대화에서는 보낸 뒤에 보낸 요청의 채팅이 이어진다
+  const paneCase = shown === 'new' && sent ? sent.case.id : current;
+  const paneVisible = shown === 'case' || (shown === 'new' && Boolean(sent));
+  // 머리에 보일 요청 번호
+  const caseId = paneVisible ? paneCase : null;
+  const token = paneCase ? app.chatTokens[paneCase] : undefined;
   const online = Boolean(token) && isChatAvailable();
   const canCall = online && isCallAvailable();
   const status = caseId ? feed.cases[caseId]?.status : undefined;
-  // 시트가 열려 있을 때만 읽은 것으로 센다. 닫아도 채팅 연결은 남아 있으므로(숨기기만 한다) 닫힌 동안 온 글은 새 메시지다
+  // 그 요청의 대화가 보일 때만 읽은 것으로 센다. 목록을 보거나 닫아 둔 동안 온 글은 새 메시지다
   const { markCenterSeen } = app;
-  const onSeen = useMemo(() => (open && caseId ? (n: number) => markCenterSeen(caseId, n) : undefined), [open, caseId, markCenterSeen]);
+  const seeing = open && paneVisible;
+  const onSeen = useMemo(() => (seeing && paneCase ? (n: number) => markCenterSeen(paneCase, n) : undefined), [seeing, paneCase, markCenterSeen]);
 
   const sheet = useRef<HTMLElement>(null);
   const body = useRef<HTMLDivElement>(null);
@@ -232,10 +320,10 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
     };
   }, [open, onClose]);
 
-  // 열 때와 보낸 뒤에는 대화 맨 아래(최근 글)를 보인다. 숨겨 둔 사이 온 글은 숨긴 상자라 스크롤되지 않았다
+  // 대화를 열 때와 보낸 뒤에는 맨 아래(최근 글)를, 목록은 맨 위를 보인다. 숨겨 둔 사이 온 글은 숨긴 상자라 스크롤되지 않았다
   useEffect(() => {
-    if (open && body.current) body.current.scrollTop = body.current.scrollHeight;
-  }, [open, sent]);
+    if (open && body.current) body.current.scrollTop = shown === 'list' ? 0 : body.current.scrollHeight;
+  }, [open, sent, shown, current]);
 
   const typeLabel = (k: RequestType) => t(`req.${k}` as MessageKey);
 
@@ -244,9 +332,16 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
       {open && <div className="sheet-scrim" onClick={onClose} aria-hidden="true" />}
       <section id={id} className="sheet" role="dialog" aria-labelledby={`${id}-title`} hidden={!open} ref={sheet} tabIndex={-1}>
         <header className="sheet-head">
+          {shown !== 'list' && listed.length > 0 && (
+            <button type="button" className="sheet-btn sheet-back" aria-label={t('back')} onClick={() => setView('list')}>
+              <Icon>
+                <path d="M15 5l-7 7 7 7" />
+              </Icon>
+            </button>
+          )}
           <img className="sheet-avatar" src="/mark.png" alt="" width="36" height="36" />
           <div className="sheet-title">
-            <h2 id={`${id}-title`}>{talk === 'call' && canCall ? t('liveCallTitle') : t('chatTitle')}</h2>
+            <h2 id={`${id}-title`}>{paneVisible && talk === 'call' && canCall ? t('liveCallTitle') : t('chatTitle')}</h2>
             {caseId && (
               <p>
                 {t('cenCaseNo')} {caseId}
@@ -254,7 +349,7 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
               </p>
             )}
           </div>
-          {canCall && (
+          {paneVisible && canCall && (
             <button
               type="button"
               className="sheet-btn"
@@ -278,10 +373,21 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
             </Icon>
           </button>
         </header>
-        <div className="sheet-body" ref={body}>
-          {asking || sent ? (
+        {/* 칸 순서를 보기마다 같게 두어(false 자리 포함) 아래 채팅·통화 칸이 목록을 오가도 다시 붙지 않게 한다 */}
+        <div className={shown === 'list' ? 'sheet-body list' : 'sheet-body'} ref={body}>
+          {shown === 'list' && (
+            <div className="stack my-cases">
+              <button type="button" className="btn secondary block" onClick={startNew}>
+                ＋ {t('cenTitle')}
+              </button>
+              {listed.map((caseId) => (
+                <MyCaseRow key={caseId} id={caseId} onOpen={() => openCase(caseId)} />
+              ))}
+              {feed.failed && <div className="notice info">{t('caseStatusFailed')}</div>}
+            </div>
+          )}
+          {shown === 'new' && (
             <>
-              {prevDone && !sent && <div className="notice info">{t('casePrevDone')}</div>}
               <div className="chat-msg">
                 <p>{t('cenIntro')}</p>
               </div>
@@ -346,36 +452,37 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
                 </>
               )}
             </>
-          ) : (
+          )}
+          {shown === 'case' && (
             <div className="chat-msg">
               <p>{t('chatIntro')}</p>
             </div>
           )}
-          {caseId && (
-            <>
+          {paneCase && (
+            <div className="sheet-pane" key={paneCase} hidden={!paneVisible}>
               {/* 연락 방법을 따로 묻지 않으므로 통화로 바꾸는 머리의 📞을 알려 준다(backlog 44) */}
               {canCall && talk === 'chat' && <p className="chat-sys">{t('chatCallHint')}</p>}
               {!online || !token ? (
                 <p className="chat-sys">{t('talkOffline')}</p>
               ) : talk === 'call' && canCall ? (
-                <CallPanel caseId={caseId} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} />
+                <CallPanel caseId={paneCase} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} />
               ) : (
                 <ChatPanel
-                  caseId={caseId}
+                  caseId={paneCase}
                   auth={{ role: 'worker', token }}
                   me="worker"
                   labels={workerChatLabels(t)}
                   locale={LOCALES[lang]}
-                  active={open}
+                  active={seeing}
                   scroller={body}
                   footer={foot}
                   onSeen={onSeen}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
-        <div className="sheet-foot" ref={setFoot} />
+        <div className="sheet-foot" ref={setFoot} hidden={!paneVisible} />
       </section>
     </>
   );
