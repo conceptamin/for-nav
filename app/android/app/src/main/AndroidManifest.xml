@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- WebView가 앱 주소를 불러온다. 배포 빌드는 HTTPS만 쓴다(http는 debug 매니페스트에서만 연다) -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 통화 마이크(WebView getUserMedia)와 통화 자막 받아쓰기(speech_to_text). WebRTC 음성 경로를 바꾸려면 MODIFY_AUDIO_SETTINGS도 있어야 한다(app-front backlog 04) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <application
         android:label="for nav"
         android:name="${applicationName}"
@@ -60,6 +63,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>
+        </intent>
+        <!-- 받아쓰기(speech_to_text): 기기의 음성 인식 서비스를 찾는다 -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
         </intent>
     </queries>
 </manifest>

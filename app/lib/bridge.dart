@@ -1,7 +1,7 @@
 // 호스트 계약(app-front/README.md "호스트 계약")의 호스트 쪽 메시지. 계약이 바뀌면 그 문서를 먼저 고친다.
-// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal, googleSignIn).
-// - 호스트 → 웹: window.fornav.receive(객체)(init, insets, googleSignInResult), 동기 window.fornav.onBack().
-// - 메시지 본문(특히 openExternal.url, googleSignInResult.idToken)은 로그에 찍지 않는다. type만 남긴다.
+// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal, googleSignIn, speechStart, speechStop).
+// - 호스트 → 웹: window.fornav.receive(객체)(init, insets, googleSignInResult, speech, speechError), 동기 window.fornav.onBack().
+// - 메시지 본문(특히 openExternal.url, googleSignInResult.idToken, speech.text)은 로그에 찍지 않는다. type만 남긴다.
 
 import 'dart:convert';
 
@@ -87,3 +87,64 @@ bool isSignInCanceled(Object error) => error is GoogleSignInException && error.c
 /// 네이티브 로그인을 켤 수 있는 빌드인가. Android는 웹 클라이언트 ID(serverClientId)만, iOS는 iOS 클라이언트 ID도 있어야 한다
 bool nativeSignInConfigured({required bool isIOS, required String webClientId, required String iosClientId}) =>
     webClientId.isNotEmpty && (!isIOS || iosClientId.isNotEmpty);
+
+/// init.features 값. 네이티브 음성 인식으로 통화 자막을 받아쓸 수 있다(app-front backlog 04)
+const String featureSpeech = 'speech';
+
+/// speechStart의 lang. 형식이 틀리면 null(무시한다)
+String? speechLangOf(Map<String, dynamic> message) {
+  final lang = message['lang'];
+  return lang is String && lang.trim().isNotEmpty ? lang.trim() : null;
+}
+
+/// 받아쓴 글. 본문이므로 로그에 찍지 않는다
+Map<String, Object> speechMessage(String text, {required bool isFinal}) => {
+  'protocol': protocol,
+  'type': 'speech',
+  'text': text,
+  'final': isFinal,
+};
+
+/// speechError.error 값
+enum SpeechErrorKind { denied, unsupported }
+
+Map<String, Object> speechErrorMessage(SpeechErrorKind kind) => {
+  'protocol': protocol,
+  'type': 'speechError',
+  'error': kind.name,
+};
+
+/// 결과 없이 이어진 오류가 이만큼이면 끈다. 웹의 SPEECH_MAX_NETWORK_ERRORS와 같은 뜻이다
+const int speechMaxErrorsInRow = 3;
+
+/// 말이 없을 때 플랫폼이 내는 오류. 다시 켜면 되고 세지 않는다
+const Set<String> _speechSilenceErrors = {'error_no_match', 'error_speech_timeout', 'error_busy', 'error_retry'};
+
+/// 다시 켜지 않는 오류(권한·언어·인식기 없음)
+const Map<String, SpeechErrorKind> _speechFatalErrors = {
+  'error_permission': SpeechErrorKind.denied,
+  'error_language_not_supported': SpeechErrorKind.unsupported,
+  'error_language_unavailable': SpeechErrorKind.unsupported,
+  'error_speech_recognizer_disabled': SpeechErrorKind.unsupported,
+  'error_assets_not_installed': SpeechErrorKind.unsupported,
+};
+
+/// 이어진 오류로 셀 오류인가. 말 없음은 조용한 통화에서 계속 나므로 세지 않는다
+bool speechErrorCounts(String errorMsg) => !_speechSilenceErrors.contains(errorMsg);
+
+/// speech_to_text 오류 이름 → 끌 이유. null이면 다시 켠다. errorsInRow는 speechErrorCounts인 오류만 센 수다
+SpeechErrorKind? speechErrorKind(String errorMsg, {required int errorsInRow}) {
+  final fatal = _speechFatalErrors[errorMsg];
+  if (fatal != null) return fatal;
+  if (_speechSilenceErrors.contains(errorMsg)) return null;
+  return errorsInRow >= speechMaxErrorsInRow ? SpeechErrorKind.unsupported : null;
+}
+
+/// WebView의 권한 요청 가운데 허용할 수 있는 것. 웹은 통화 마이크만 쓴다(카메라 영상은 쓰지 않는다)
+bool isMicrophoneOnlyRequest(Set<String> types) => types.isNotEmpty && types.every((t) => t == 'microphone');
+
+/// 파일 선택기가 사진을 고르는가. accept가 비었으면 모든 파일이라 사진도 된다
+bool acceptsImages(List<String> acceptTypes) {
+  final types = acceptTypes.expand((t) => t.split(',')).map((t) => t.trim().toLowerCase()).where((t) => t.isNotEmpty);
+  return types.isEmpty || types.any((t) => t == '*/*' || t.startsWith('image/') || const {'.jpg', '.jpeg', '.png', '.heic', '.webp'}.contains(t));
+}

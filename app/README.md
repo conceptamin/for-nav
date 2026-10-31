@@ -3,7 +3,8 @@
 근로자 화면(`../app-front/`)을 **WebView 한 장으로 불러오는 Flutter 앱**이다. 화면은 모두 웹이고, 이 앱은 웹이 브라우저에 기대던 일(전화·외부 링크·뒤로 가기·안전 영역·기기 언어)을 대신하는 껍데기다. 웹과 주고받는 약속은 `../app-front/README.md` "호스트 계약"이 원본이고, 이 앱은 그 호스트 쪽 구현이다.
 
 - 플랫폼: Android·iOS. 세로 고정
-- WebView: `webview_flutter`(공식). 파일 선택기·권한은 app-front backlog 04에서 직접 붙인다
+- WebView: `webview_flutter`(공식). 마이크 권한·Android 파일 선택기는 직접 붙였다(app-front backlog 04)
+- 통화 매체(app-front backlog 04): `permission_handler`(Android 마이크 앱 권한), `image_picker`(Android 사진 선택기), `speech_to_text`(통화 자막 받아쓰기). `permission_handler`는 12.x로 둔다(13.x의 Android 쪽이 `compileSdk 37`을 요구하는데 SDK에 `android-37` 이름의 플랫폼이 없어 빌드가 깨진다)
 - 근로자 Google 로그인: `google_sign_in` 7.x(네이티브, app-front backlog 06). WebView 안에서는 Google이 웹 로그인을 막는다(`403 disallowed_useragent`)
 - Flutter: fvm으로 `3.44.7` 고정(`.fvmrc`)
 - 최소 OS: Android `flutter.minSdkVersion`(기본값), iOS 15.0
@@ -93,11 +94,16 @@ fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
 | iOS 뒤로 가기 | `setAllowsBackForwardNavigationGestures(true)`. 웹은 관여하지 않는다 |
 | 안전 영역 | WebView가 상태 표시줄까지 덮고 네이티브 패딩을 두지 않는다. 웹이 `env()`·`--inset-*`로 비킨다 |
 | `googleSignIn` → `googleSignInResult`, `init.features` | `_googleSignIn`: `signOut()` → `authenticate()` → `authentication.idToken`. 취소(`GoogleSignInExceptionCode.canceled`)만 `canceled`, 그 밖과 빈 토큰은 `failed`. 새 요청·페이지 `ready`가 오면 앞 결과는 버린다 |
+| `speechStart`·`speechStop` → `speech`·`speechError`, `init.features`의 `speech` | `lib/speech.dart` `NativeSpeech`. `speech_to_text`를 `dictation`·말하는 중 결과 켬·3초 쉬면 확정·55초 한도로 켜고, `done`이면 300ms 뒤 다시 켠다. 권한 거부·언어 미지원은 바로 `speechError`, 말 없음(`error_no_match` 등)은 세지 않고, 그 밖 오류가 결과 없이 3번 이어지면 `unsupported`. 페이지가 다시 `ready`하면 끈다 |
+| WebView 마이크 요청 | `_onPermissionRequest`: 마이크만 요청이면 Android는 `RECORD_AUDIO`를 받고 허용, 거부면 WebView 요청도 거부(웹 `micDenied`). iOS는 시스템 권한 창. 카메라 등은 거부 |
+| Android 파일 선택기 | `_onShowFileSelector` → `image_picker`(시스템 사진 선택기, 권한 없음). `accept`가 사진이 아니면 빈 목록 |
+| 통화 상대 음성 자동 재생 | iOS `mediaTypesRequiringUserAction: {}`·`allowsInlineMediaPlayback`, Android `setMediaPlaybackRequiresUserGesture(false)` |
 | 메시지 형식·스크립트 | `lib/bridge.dart` |
 
 - `locale`은 `PlatformDispatcher.instance.locale.toLanguageTag()`(기기 첫 번째 언어, BCP-47)다. `Platform.localeName`은 iOS에서 앱 번들이 지원하는 언어로 좁혀져 기기 언어가 그대로 오지 않는다.
 - 앱 주소를 못 불러오면(메인 프레임 실패) WebView 오류 화면 대신 `lib/offline_view.dart` 한 장(다시 시도, 119 전화)을 보인다. 번들(app-front backlog 05) 전까지의 임시 동작이다.
-- 로그(`flutter run` 출력)에는 `[host] ← ready`처럼 메시지 `type`만 남긴다. 주소·메시지 본문은 찍지 않는다. 배포 빌드에서는 찍지 않는다.
+- 로그(`flutter run` 출력)에는 `[host] ← ready`처럼 메시지 `type`만 남긴다. 주소·메시지 본문·받아쓴 글은 찍지 않는다(`speech`는 말하는 동안 계속 오므로 type도 찍지 않는다). 배포 빌드에서는 찍지 않는다.
+- 권한 문구: iOS `Info.plist`의 마이크·음성 인식·사진 보관함·카메라 설명은 한국어·영어 한 줄이다. Android는 `RECORD_AUDIO`·`MODIFY_AUDIO_SETTINGS`와 음성 인식 서비스 `<queries>`를 둔다.
 
 ## 확인 방법
 
@@ -106,8 +112,11 @@ fvm flutter test        # 이동 분류·메시지 형식 단위 테스트
 3. "카카오맵" → 외부 브라우저. WebView 안에 카카오맵이 뜨면 실패다.
 4. Android 뒤로 가기: 웹 이력이 있으면 한 화면 뒤로, 첫 화면에서는 앱이 뒤로 간다.
 5. Google 로그인(위 "Google 로그인"으로 실행, 서버 `WORKER_AUTH=google`): `/__host`의 features가 `googleSignIn`이고 "Google 로그인 시험"이 `성공`이다. S-03 앱 로그인 버튼 → 계정 선택 → 프로필 → `/home`, S-12 센터 요청이 보내진다.
-6. 비행기 모드로(iOS 시뮬레이터는 웹 개발 서버를 끄고) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
+6. 받아쓰기: `/__host`의 features에 `speech`가 있고, "받아쓰기 시험"을 누르면 처음에 권한 창(Android 마이크, iOS 음성 인식·마이크)이 뜬다. 거부하면 `speechError denied`, 허용하면 `듣는 중`이고 말하면 확정 문장 수가 오른다. 다시 누르면 끈다(`speechStop`). 에뮬레이터·시뮬레이터 마이크에는 소리가 들어오지 않을 수 있어 받아쓴 글은 실기기에서 본다.
+7. 사진(Android): S-05 "사진 추가" → 시스템 사진 선택기 → 미리보기. 취소하면 아무 일 없이 돌아온다.
+8. 통화: S-12에서 "통화" → 마이크 권한 → PC 센터 화면(`frontend/` C-02)이 받으면 양쪽 자막이 번역되어 보인다. 통화는 HTTPS 또는 `localhost`(Android는 `adb reverse`)에서만 된다.
+9. 비행기 모드로(iOS 시뮬레이터는 웹 개발 서버를 끄고) 앱을 열면 오프라인 안내가 뜨고, 서버를 켠 뒤 "다시 시도"로 돌아온다.
 
 ## 하지 않는 것(다른 항목)
 
-권한(마이크·카메라·파일 선택기)·받아쓰기(app-front backlog 04), 번들(05), 푸시, 스토어 배포 설정(서명·아이콘·앱 ID). 번들 ID `dev.fornav.forNav`·Android `dev.fornav.for_nav`는 임시다(`app-front/README.md` "확인이 필요한 값").
+Android 파일 선택기의 카메라 촬영(2차), 번들(app-front backlog 05), 푸시, 스토어 배포 설정(서명·아이콘·앱 ID). 번들 ID `dev.fornav.forNav`·Android `dev.fornav.for_nav`는 임시다(`app-front/README.md` "확인이 필요한 값").
