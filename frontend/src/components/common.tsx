@@ -280,6 +280,20 @@ export function PhotoPicker({ photos, onChange }: { photos: PhotoItem[]; onChang
   );
 }
 
+/** 메모 목록(홈 최근 메모·S-13 내 메모)의 작은 사진 줄. 사진이 없으면 그리지 않는다. 목록 안이라 링크가 대신 읽으므로 alt는 비운다 */
+export function PhotoStrip({ photos }: { photos?: string[] }) {
+  if (!photos?.length) return null;
+  return (
+    <span className="photos mini" aria-hidden="true">
+      {photos.map((src, i) => (
+        <span className="photo" key={i}>
+          <img src={src} alt="" />
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function toggleIn<T>(list: T[], item: T): T[] {
   return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
 }

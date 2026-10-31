@@ -2508,6 +2508,18 @@ hr.divider {
   object-fit: cover;
 }
 
+/* 메모 목록의 작은 사진 줄(홈 최근 메모·S-13 내 메모). 지우기 버튼 없이 보이기만 한다 */
+.photos.mini {
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.photos.mini .photo {
+  display: block;
+  width: 56px;
+  height: 56px;
+}
+
 .photo .rm {
   position: absolute;
   top: 4px;
