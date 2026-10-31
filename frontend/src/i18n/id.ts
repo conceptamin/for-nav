@@ -139,7 +139,7 @@ export const id: Record<MessageKey, string> = {
   toCenter: 'Minta bantuan pusat bantuan',
   resultGoGroup: 'Saat pergi ke rumah sakit',
   resultMoreGroup: 'Jika perlu bantuan lain',
-  resultNoDiag: 'Ini panduan klinik yang perlu didatangi, bukan diagnosis.',
+  resultNoDiag: 'Ini panduan klinik yang perlu didatangi,\nbukan diagnosis.',
 
   // S-08
   covTitle: 'Tempat bertanya soal biaya lebih dulu',

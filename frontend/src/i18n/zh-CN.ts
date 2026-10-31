@@ -139,7 +139,7 @@ export const zhCN: Record<MessageKey, string> = {
   toCenter: '请中心帮忙',
   resultGoGroup: '去医院时',
   resultMoreGroup: '如需更多帮助',
-  resultNoDiag: '这只是告诉您该看哪个科，不是诊断。',
+  resultNoDiag: '这只是告诉您该看哪个科，\n不是诊断。',
 
   // S-08
   covTitle: '费用问题先问哪里',
