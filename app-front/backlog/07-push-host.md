@@ -1,6 +1,6 @@
 # 07. 앱 푸시 알림: 호스트의 FCM 등록과 알림으로 센터 채팅 열기
 
-상태: 대기
+상태: 진행 중 (코드 완료, Firebase 프로젝트와 실기기 알림 확인 남음)
 의존: 06(호스트의 `init.features`·요청-응답 메시지 모양), backend 28(기기 등록·FCM 발송), 08(같은 PR, 결정 1), frontend 46(센터 채팅 시트를 사례로 여는 `openCase`)
 
 ## 목표
@@ -9,8 +9,10 @@
 ## 결정이 필요한 것
 권장안으로 적었다. 사용자 확인 뒤 결과와 날짜를 남긴다.
 
+결정(2026-10-31): 1~5 모두 권장안. 사용자가 #164의 backlog 셋을 "구현하자"고 했다. 1의 근로자 화면 항목은 frontend 47이 메신저 읽음 표시로 쓰여 frontend 48(`frontend/host-push-slot`)로 썼고, 이 브랜치는 그 위에서 시작했다. 3의 iOS `aps-environment`는 파일만 두고 Xcode capability는 연결하지 않았다(`## 결과`).
+
 1. **07(호스트)·08(웹 다리)을 어떻게 나누어 올리나.** `CLAUDE.md`는 "계약 변경은 웹·호스트를 같은 PR에서 고친다"고 한다.
-   - 권장: 문서는 영역별로 둘이지만 **한 브랜치(`app/push-notification`), 한 PR로 구현한다.** `README.md` "호스트 계약"을 먼저 고치고 `app/lib/`·`src/bridge/`를 함께 고친다. 근로자 화면의 등록·시트 열기(frontend 47, 가칭)는 `@fe` 안이라 그보다 먼저 `frontend/` 브랜치로 따로 한다(06과 frontend 35의 관계와 같다)
+   - 권장: 문서는 영역별로 둘이지만 **한 브랜치(`app/push-notification`), 한 PR로 구현한다.** `README.md` "호스트 계약"을 먼저 고치고 `app/lib/`·`src/bridge/`를 함께 고친다. 근로자 화면의 등록·시트 열기(frontend 48)는 `@fe` 안이라 그보다 먼저 `frontend/` 브랜치로 따로 한다(06과 frontend 35의 관계와 같다)
    - 대안: 07을 먼저 올리고 웹은 모르는 `type`을 무시하게 둔다. 계약 규칙을 어기므로 권장하지 않는다
 2. **Firebase 설정을 앱에 어떻게 넣나.**
    - 권장: `google-services.json`·`GoogleService-Info.plist`·`firebase_options.dart`를 **커밋하지 않고**, `Firebase.initializeApp(options: FirebaseOptions(...))`에 넣을 값(`FIREBASE_API_KEY`, `FIREBASE_APP_ID_ANDROID`, `FIREBASE_APP_ID_IOS`, `FIREBASE_SENDER_ID`, `FIREBASE_PROJECT_ID`)을 `APP_URL`·Google 클라이언트 ID처럼 `--dart-define`으로 받는다. 값이 없는 빌드는 Firebase를 초기화하지 않고 `init.features`에 `push`를 넣지 않는다(googleSignIn과 같은 규칙: 설정이 없으면 기능이 없을 뿐 앱은 그대로다). Android Gradle `google-services` 플러그인도 쓰지 않는다
@@ -42,7 +44,7 @@
     - `init.features`에 `push`: Firebase가 초기화됐을 때만 넣는다
     - 로그에는 `type`과 `error`만 남긴다. FCM 토큰·`caseId`·알림 본문은 찍지 않는다
     - `fvm flutter test`: `pushToken`·`pushOpen` 메시지 만들기, `data` → `caseId` 거르기(형식이 아니면 버림), `ready` 전 보관·`init` 뒤 한 번 보내기
-  - 웹 다리(`src/bridge/`)는 08, 근로자 화면의 등록·시트 열기는 frontend 47(가칭)
+  - 웹 다리(`src/bridge/`)는 08, 근로자 화면의 등록·시트 열기는 frontend 48
 - 하지 않는 것
   - 앱이 앞에 있을 때의 알림 표시, 앱 아이콘 숫자 배지
   - 통화 착신 알림(전체 화면 알림·CallKit). backend 28 `## 메모`
@@ -52,7 +54,7 @@
   - 단독 웹앱의 웹 푸시(08 결정 4)
 
 ## 화면·계약·파일
-- 화면: 바뀌는 웹 화면 없음(근로자 화면 변화는 frontend 47). 네이티브로는 시스템 권한 창과 시스템 알림만 보인다
+- 화면: 바뀌는 웹 화면 없음(근로자 화면 변화는 frontend 48). 네이티브로는 시스템 권한 창과 시스템 알림만 보인다
 - 계약 초안(`README.md` "메시지 형식" 표에 더한다)
 
   **웹 → 호스트**
@@ -67,7 +69,7 @@
   | `type` | 필드 | 언제 | 웹이 할 일 |
   |---|---|---|---|
   | `init`(값 추가) | `features`에 `"push"` | Firebase가 초기화된 빌드 | `pushRegister`를 보낼 수 있다 |
-  | `pushToken` | 성공: `token`(FCM 등록 토큰). 실패: `error`(`denied` \| `failed`) | `pushRegister`의 응답, 그리고 토큰이 바뀔 때 | 서버에 기기를 등록한다(08, frontend 47). 토큰을 저장하거나 로그에 찍지 않는다 |
+  | `pushToken` | 성공: `token`(FCM 등록 토큰). 실패: `error`(`denied` \| `failed`) | `pushRegister`의 응답, 그리고 토큰이 바뀔 때 | 서버에 기기를 등록한다(08, frontend 48). 토큰을 저장하거나 로그에 찍지 않는다 |
   | `pushOpen` | `caseId` | 근로자가 센터 알림을 눌러 앱이 열렸을 때, `init` 뒤 한 번 | 이 계정의 사례면 센터 채팅 시트를 그 사례로 연다(frontend 46 `openCase`). 아니면 무시한다 |
 
   ```json
@@ -88,8 +90,8 @@
   - `app/README.md`: Firebase 준비(콘솔에서 Android·iOS 앱 등록, APNs 키), `--dart-define` 값, 확인 방법, "계약 구현 위치" 표, "하지 않는 것"에서 푸시를 뺀다
 
 ## 완료 기준
-- [ ] `cd app && fvm flutter analyze` 통과, `fvm flutter test` 통과(위 단위 테스트 포함). `cd app-front && npm run build` 통과(08과 같은 PR)
-- [ ] Firebase 값 없이 빌드한 앱: `/__host`의 features에 `push`가 없고, 지금 앱과 똑같이 동작한다(권한 창 없음)
+- [x] `cd app && fvm flutter analyze` 통과, `fvm flutter test` 통과(위 단위 테스트 포함). `cd app-front && npm run build` 통과(08과 같은 PR)
+- [x] Firebase 값 없이 빌드한 앱: `/__host`의 features에 `push`가 없고, 지금 앱과 똑같이 동작한다(권한 창 없음)
 - [ ] Android 에뮬레이터(Google Play 이미지, API 33 이상)·실기기, Firebase 값과 `PUSH=fcm` 서버(backend 28): 앱을 처음 열 때 권한 창이 뜨지 않는다. 센터 요청을 보내면 권한 창이 뜨고, 허용하면 서버에 기기가 등록된다(`/__host`의 "푸시 시험"이 `token 받음`, 토큰 값은 보이지 않는다)
 - [ ] 앱을 백그라운드로 보내고 센터가 C-02에서 채팅에 쓰면 근로자 언어의 알림 한 줄("for nav" + 등록한 문구)이 뜬다. 메시지 본문·상태·사례 번호가 알림에 없다
 - [ ] 그 알림을 누르면 앱이 앞으로 오고 센터 채팅 시트가 그 사례로 열려 센터 글이 보인다
@@ -100,10 +102,29 @@
 - [ ] iOS: 결정 3대로 Developer 계정·APNs 키가 있으면 실기기에서 위 넷을 확인하고, 없으면 시뮬레이터에서 빌드·실행과 `pushToken`이 `failed`로 끝나 앱이 멈추지 않는 것만 확인했다고 `## 결과`에 적는다
 
 ## 결과
-(구현 후 작성)
+- `cd app && fvm flutter analyze` → No issues found, `fvm flutter test` → 19개 통과(새 4개: `pushToken`·`pushOpen` 메시지, `caseId` 거르기, `ready` 전 보관·`init` 뒤 한 번, Firebase 값 확인·모양 검사)
+- `cd app-front && npm run build` → 통과(08과 같은 PR)
+- `fvm flutter build apk --debug` → 통과. iOS는 `xcodebuild -sdk iphonesimulator -destination id=<iPhone 17 Pro, iOS 26.4>` → BUILD SUCCEEDED(`fvm flutter build ios --simulator`는 이 맥에서 바꾸기 전 앱도 `Flutter.framework`에 x86_64가 없다며 실패한다. 이 항목과 관계없다)
+- iOS 시뮬레이터 `/__host`
+  - Firebase 값 없음: features `speech`, 권한 창 없음. 지금 앱과 같다
+  - 모양이 맞는 가짜 값: features `speech, push`, 앱을 열 때 권한 창 없음
+  - 모양이 틀린 API 키: features `speech`, 앱이 멈추지 않는다(아래 결정)
+- 웹 다리는 08 `## 결과`(가짜 호스트 + backend 28 서버로 등록·해제·`pushOpen` 확인)
+- 바뀐 계약(`README.md` "호스트 계약"): 웹 → 호스트 `pushRegister`·`pushUnregister`, 호스트 → 웹 `pushToken`(`token` | `error: denied|failed`)·`pushOpen`(`caseId`), `init.features`의 `push`. 필드를 더한 것이라 `protocol`은 1
+- 의존성: `firebase_core` ^4.0.0, `firebase_messaging` ^16.7.1(FCM 토큰·알림 탭 처리를 플랫폼마다 직접 짜지 않으려고). `flutter_local_notifications`는 더하지 않았다(결정 5)
+- 결정·차이
+  - firebase_messaging을 16.x에 묶었다. 17(Firebase iOS SDK 13)은 `gtm-session-fetcher` 4 이상을 요구하는데 `google_sign_in_ios` 6.3.8(최신, GoogleSignIn-iOS 9)은 3.x만 받아 iOS Swift 패키지가 풀리지 않는다. Google 로그인 쪽이 올라가면 함께 올린다(메모)
+  - 17은 `getToken`·`onTokenRefresh`·`deleteToken`을 deprecated로 두고 Firebase 설치 ID(FID) 직접 발송(`register`·`onRegistered`)을 들였다. backend 28은 FCM HTTP v1의 등록 토큰으로 보내므로 등록 토큰 API를 쓴다. 16.x에서는 deprecated가 아니지만 올릴 때를 위해 `// ignore: deprecated_member_use`를 남겼다(메모)
+  - Firebase 값의 모양을 앱에서 먼저 거른다(API 키 `AIza`+35자, 앱 ID `1:<번호>:<플랫폼>:<16진수>`). iOS SDK(`FIRInstallations validateAPIKey`)는 모양이 틀린 키를 받으면 Dart가 잡을 수 없는 네이티브 예외로 앱을 시작하자마자 멈춘다(시뮬레이터에서 38자 가짜 키로 재현). 값을 잘못 넣어도 `push`가 없을 뿐 앱은 그대로다
+  - `analysis_options.yaml`에 `build/**` 제외를 더했다. Flutter가 iOS Swift 패키지를 `build/ios/SourcePackages`에 풀어 두는데 firebase_messaging은 그 안에 자기 테스트 mock까지 있어 `flutter analyze`가 오류 121개를 냈다
+  - iOS: `Info.plist`에 `UIBackgroundModes` `remote-notification`, `ios/Runner/Runner.entitlements`(`aps-environment`)는 파일만 두었다. Xcode 프로젝트의 `CODE_SIGN_ENTITLEMENTS`로 연결하면 개인 팀(무료) 서명의 실기기 빌드가 Push Notifications capability 때문에 실패하므로, Developer 계정을 준비한 뒤 Xcode에서 capability를 켤 때 연결한다(`app/README.md` "푸시 알림" 5)
+  - iOS는 `getToken()` 전에 APNs 토큰을 10초까지 기다리고, 없으면 `pushToken { error: failed }`로 끝낸다(앱은 그대로)
+  - 토큰 갱신(`onTokenRefresh`)은 그 페이지가 `pushRegister`를 보낸 뒤에만 `pushToken`으로 넘긴다. 페이지가 다시 `ready`하거나 `pushUnregister`를 받으면 멈춘다
+- 확인하지 못한 것: Firebase 프로젝트·서비스 계정이 아직 없어 Android 실기기·에뮬레이터 알림 수신·탭, 권한 창·거부, 로그아웃 뒤 알림 없음, `flutter run` 로그 확인을 못 했다. 시뮬레이터에서 "푸시 시험"을 눌러 `failed`로 끝나는지도 화면을 누를 도구가 없어 보지 못했다. 위 완료 기준의 Android·iOS 줄은 값이 준비되면 확인해 여기에 덧붙인다
 
 ## 메모
 - frontend 46 `## 메모`의 앱 몫(FCM 등록, 알림을 누르면 시트를 연 채 앱 열기)이다. 서버 몫은 backend 28
 - 앞에 있을 때 받은 알림을 웹에 넘겨 곧바로 다시 읽는 `pushReceived`는 결정 5로 하지 않았다. 15초 주기가 느리다는 말이 나오면 이 계약에 메시지 하나를 더하는 후속으로 한다
 - Android 알림 작은 아이콘은 흰색 단색이어야 제대로 보인다. 지금은 앱 아이콘이 회색 사각형으로 보일 수 있다. 스토어 아이콘을 정할 때 `default_notification_icon` 메타데이터와 함께 넣는다
 - 통화 착신 알림(센터가 걸 때)은 FCM 데이터 메시지 + 전체 화면 알림·CallKit이라 이 항목보다 크다. backend 28과 함께 따로 쓴다
+- firebase_messaging 17로 올리려면 `google_sign_in_ios`가 `gtm-session-fetcher` 4 이상을 받는 버전으로 먼저 올라가야 한다. FID 직접 발송으로 옮기려면 서버(backend 28)의 발송 대상과 다리의 `pushToken` 뜻이 함께 바뀐다. 등록 토큰 API가 실제로 빠지는 버전이 나오면 backend·app-front 항목으로 같이 한다

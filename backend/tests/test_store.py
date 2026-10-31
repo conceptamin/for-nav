@@ -1,6 +1,7 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
 # 상담 채팅의 토큰·메시지(backlog 14)와 통화 자막(backlog 18)도 같은 방식으로 본다.
 
+import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -9,7 +10,7 @@ import pytest
 from app import clock
 from app.schemas import CenterCase
 from app.settings import load_settings
-from app.store import CenterStore, MemoryStore, open_store
+from app.store import CenterStore, MemoryStore, MessageTranslation, open_store
 from app.store_sqlite import SqliteStore
 
 STARTED = datetime(2026, 10, 26, 12, 0, 0, tzinfo=clock.SEOUL)
@@ -82,10 +83,54 @@ def test_chat_messages_per_case_in_order(store: CenterStore):
     store.add_message("C-1002", "center", "다른 방", AT)
     store.add_message("C-1001", "center", "둘", AT)
 
-    assert first.model_dump(by_alias=True) == {"id": "m-1", "caseId": "C-1001", "from": "worker", "text": "하나", "at": clock.iso_utc(AT)}
+    # 번역을 넘기지 않으면 번역 필드는 None이다(backlog 30 전에 저장된 메시지와 같다).
+    no_translation = {"lang": None, "translated": None, "translatedLang": None, "translation": None}
+    assert first.model_dump(by_alias=True) == {
+        "id": "m-1",
+        "caseId": "C-1001",
+        "from": "worker",
+        "text": "하나",
+        **no_translation,
+        "at": clock.iso_utc(AT),
+    }
     assert [(m.id, m.from_, m.text) for m in store.messages("C-1001")] == [("m-1", "worker", "하나"), ("m-2", "center", "둘")]
     assert [m.id for m in store.messages("C-1002")] == ["m-1"]
     assert store.messages("C-0") == []
+
+
+def test_chat_message_keeps_translation(store: CenterStore):
+    ok = store.add_message("C-1001", "worker", "Tay tôi đau", AT, MessageTranslation("vi", "ko", "ok", "손이 아파요"))
+    store.add_message("C-1001", "center", "괜찮으세요?", AT, MessageTranslation("ko", "vi", "skipped"))
+
+    assert (ok.lang, ok.translated, ok.translated_lang, ok.translation) == ("vi", "손이 아파요", "ko", "ok")
+    assert [(m.lang, m.translated, m.translated_lang, m.translation) for m in store.messages("C-1001")] == [
+        ("vi", "손이 아파요", "ko", "ok"),
+        ("ko", None, "vi", "skipped"),
+    ]
+
+
+def test_sqlite_adds_translation_columns_to_old_file(tmp_path: Path):
+    """backlog 30 전에 만든 DB 파일(chat_messages에 번역 열 없음)을 열면 열이 더해지고 옛 메시지는 번역 필드가 None이다."""
+    path = str(tmp_path / "center.db")
+    db = sqlite3.connect(path)
+    with db:
+        db.execute(
+            "CREATE TABLE chat_messages (id TEXT NOT NULL, case_id TEXT NOT NULL, sender TEXT NOT NULL, text TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (case_id, id))"
+        )
+        db.execute("INSERT INTO chat_messages VALUES ('m-1', 'C-1001', 'worker', '하나', ?)", (clock.iso_utc(AT),))
+    db.close()
+
+    store = SqliteStore(path, STARTED)
+    try:
+        [old] = store.messages("C-1001")
+        assert (old.id, old.text, old.lang, old.translated, old.translated_lang, old.translation) == ("m-1", "하나", None, None, None, None)
+        new = store.add_message("C-1001", "center", "둘", AT, MessageTranslation("ko", "vi", "ok", "hai"))
+        assert new.id == "m-2"
+        assert store.messages("C-1001")[1] == new
+    finally:
+        store.close()
+    # 두 번째로 열 때는 이미 열이 있다
+    SqliteStore(path, STARTED).close()
 
 
 def test_chat_token(store: CenterStore):
@@ -384,3 +429,78 @@ def test_sqlite_keeps_login_data_after_restart(tmp_path: Path):
     assert s.list_staff() == [STAFF]
     assert s.session_email("t1", AT) == STAFF
     s.close()
+
+
+# ---------------------------------------------------------------------------
+# 근로자 앱 푸시 기기 묶음(backlog 28)
+# ---------------------------------------------------------------------------
+def pushed(store: CenterStore, case_id: str, now: datetime = AT) -> list[tuple[str, str, str]]:
+    return [(d.device_token, d.platform, d.notice) for d in store.push_devices(case_id, now)]
+
+
+def test_push_device_add_update_remove(store: CenterStore):
+    store.add_push_device("C-1001", "dev-a", "android", "새 소식", AT)
+    store.add_push_device("C-1002", "dev-a", "android", "새 소식", AT)
+    store.add_push_device("C-1001", "dev-b", "ios", "New", AT)
+    assert pushed(store, "C-1001") == [("dev-a", "android", "새 소식"), ("dev-b", "ios", "New")]
+
+    # 같은 기기·사례는 platform·notice·갱신 시각만 바뀐다
+    later = AT + timedelta(minutes=1)
+    store.add_push_device("C-1001", "dev-a", "ios", "Tin mới", later)
+    rows = store.push_devices("C-1001", later)
+    assert sorted((d.device_token, d.platform, d.notice, d.updated_at) for d in rows) == [
+        ("dev-a", "ios", "Tin mới", clock.iso_utc(later)),
+        ("dev-b", "ios", "New", clock.iso_utc(AT)),
+    ]
+
+    store.remove_push_device("dev-a")
+    assert pushed(store, "C-1001", later) == [("dev-b", "ios", "New")]
+    assert pushed(store, "C-1002", later) == []
+    store.remove_push_device("never")
+
+
+def test_push_devices_expire_after_30_days(store: CenterStore):
+    store.add_push_device("C-1001", "dev-old", "android", "x", AT)
+    store.add_push_device("C-1001", "dev-new", "android", "x", AT + timedelta(days=10))
+    assert [d for d, _, _ in pushed(store, "C-1001", AT + timedelta(days=30) - timedelta(seconds=1))] == ["dev-old", "dev-new"]
+    assert [d for d, _, _ in pushed(store, "C-1001", AT + timedelta(days=30))] == ["dev-new"]
+    # 등록할 때도 정리한다
+    store.add_push_device("C-1002", "dev-x", "android", "x", AT + timedelta(days=41))
+    assert pushed(store, "C-1001", AT) == []
+
+
+def test_push_limits_drop_least_recent(store: CenterStore):
+    # 기기 하나에 사례 20개까지
+    for n in range(21):
+        store.add_push_device(f"C-{2000 + n}", "dev-a", "android", "x", AT + timedelta(seconds=n))
+    assert pushed(store, "C-2000") == []
+    assert len(pushed(store, "C-2001")) == 1
+    # 다시 등록한 묶음은 가장 최근이 된다
+    store.add_push_device("C-2001", "dev-a", "android", "x", AT + timedelta(seconds=30))
+    store.add_push_device("C-2099", "dev-a", "android", "x", AT + timedelta(seconds=31))
+    assert len(pushed(store, "C-2001")) == 1
+    assert pushed(store, "C-2002") == []
+
+    # 사례 하나에 기기 5개까지
+    for n in range(6):
+        store.add_push_device("C-1001", f"dev-{n}", "android", "x", AT + timedelta(seconds=n))
+    assert [d for d, _, _ in pushed(store, "C-1001")] == [f"dev-{n}" for n in range(1, 6)]
+
+
+def test_reset_clears_push_devices(store: CenterStore):
+    store.add_push_device("C-1001", "dev-a", "android", "x", AT)
+    store.reset()
+    assert pushed(store, "C-1001") == []
+
+
+def test_sqlite_push_devices_survive_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    first.add_push_device("C-1001", "dev-a", "android", "새 소식", AT)
+    first.close()
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert pushed(second, "C-1001") == [("dev-a", "android", "새 소식")]
+    finally:
+        second.close()

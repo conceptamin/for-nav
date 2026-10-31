@@ -1,9 +1,10 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
 # 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
-# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지(번역 열은 backlog 30, 옛 파일에는 열 때 더한다). chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
+# 근로자 앱 푸시(backlog 28)는 push_devices 하나다(사례 id·기기 토큰·플랫폼·notice·갱신 시각, 계정과 잇지 않는다). reset이 비운다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지·자막이 평문으로 남는다(데모 범위, README "센터 저장소").
 # live_cases 본문은 저장할 때의 계약 그대로 남는다. 읽을 때 옛 계약을 지금 계약으로 바꾸고, 그래도 못 읽는 본문은 건너뛴다(backlog 29).
@@ -20,7 +21,22 @@ from pydantic import ValidationError
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
 from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
-from app.store import CODE_REQUEST_KEEP, AuthCode, caption_number, latest_first, make_message, next_case_id, read_ids, with_status
+from app.store import (
+    CODE_REQUEST_KEEP,
+    PUSH_CASES_PER_DEVICE,
+    PUSH_DEVICE_KEEP,
+    PUSH_DEVICES_PER_CASE,
+    AuthCode,
+    MessageTranslation,
+    PushDevice,
+    caption_number,
+    latest_first,
+    make_message,
+    next_case_id,
+    oldest_over,
+    read_ids,
+    with_status,
+)
 from app.vocab import Lang
 
 logger = logging.getLogger(__name__)
@@ -45,6 +61,10 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     sender TEXT NOT NULL,
     text TEXT NOT NULL,
     at TEXT NOT NULL,
+    lang TEXT,
+    translated TEXT,
+    translated_lang TEXT,
+    translation TEXT,
     PRIMARY KEY (case_id, id)
 );
 CREATE TABLE IF NOT EXISTS chat_reads (
@@ -92,6 +112,14 @@ CREATE TABLE IF NOT EXISTS worker_sessions (
     created_at TEXT NOT NULL,
     expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS push_devices (
+    case_id TEXT NOT NULL,
+    device_token TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    notice TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (case_id, device_token)
+);
 """
 
 CAPTION_SELECT = "SELECT n, sender, text, lang, translated, translated_lang, translation, at FROM call_captions"
@@ -130,6 +158,17 @@ def _case_from_body(body: str) -> CenterCase | None:
         return None
 
 
+# 채팅 번역(backlog 30)이 더한 열. 이 항목 전에 만든 DB 파일에는 없으므로 열 때 더한다(옛 메시지는 NULL).
+CHAT_TRANSLATION_COLUMNS = ("lang", "translated", "translated_lang", "translation")
+
+
+def _add_missing_columns(db: sqlite3.Connection, table: str, columns: tuple[str, ...]) -> None:
+    have = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
+    for column in columns:
+        if column not in have:
+            db.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
+
+
 class SqliteStore:
     def __init__(self, path: str, now: datetime | None = None) -> None:
         started = now or clock.now()
@@ -138,6 +177,7 @@ class SqliteStore:
         self._db = sqlite3.connect(path, check_same_thread=False)
         with self._db:
             self._db.executescript(SCHEMA)
+            _add_missing_columns(self._db, "chat_messages", CHAT_TRANSLATION_COLUMNS)
         self._mock = build_mock_cases(started)
         self.stat_records: list[StatRecord] = build_stat_records(started)
 
@@ -198,23 +238,32 @@ class SqliteStore:
             row = self._db.execute("SELECT token FROM chat_tokens WHERE case_id = ?", (case_id,)).fetchone()
         return row[0] if row else None
 
-    def add_message(self, case_id: str, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
+    def add_message(
+        self, case_id: str, sender: ChatRole, text: str, at: datetime, translation: MessageTranslation | None = None
+    ) -> ChatMessage:
         with self._lock:
             (count,) = self._db.execute("SELECT COUNT(*) FROM chat_messages WHERE case_id = ?", (case_id,)).fetchone()
-            m = make_message(case_id, count, sender, text, at)
+            m = make_message(case_id, count, sender, text, at, translation)
             with self._db:
                 self._db.execute(
-                    "INSERT INTO chat_messages (id, case_id, sender, text, at) VALUES (?, ?, ?, ?, ?)",
-                    (m.id, m.case_id, m.from_, m.text, m.at),
+                    "INSERT INTO chat_messages (id, case_id, sender, text, at, lang, translated, translated_lang, translation)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (m.id, m.case_id, m.from_, m.text, m.at, m.lang, m.translated, m.translated_lang, m.translation),
                 )
         return m
 
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             rows = self._db.execute(
-                "SELECT id, sender, text, at FROM chat_messages WHERE case_id = ? ORDER BY rowid", (case_id,)
+                "SELECT id, sender, text, at, lang, translated, translated_lang, translation FROM chat_messages WHERE case_id = ? ORDER BY rowid",
+                (case_id,),
             ).fetchall()
-        return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
+        return [
+            ChatMessage(
+                id=i, case_id=case_id, from_=sender, text=text, at=at, lang=lang, translated=tr, translated_lang=tr_lang, translation=status
+            )
+            for (i, sender, text, at, lang, tr, tr_lang, status) in rows
+        ]
 
     def mark_read(self, case_id: str, role: ChatRole, n: int) -> bool:
         with self._lock, self._db:
@@ -363,10 +412,38 @@ class SqliteStore:
         with self._lock, self._db:
             self._db.execute("DELETE FROM worker_sessions WHERE token_hash = ?", (token_hash,))
 
-    def reset(self) -> None:
-        """사례 표 여섯을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
+    def _push_rows(self, where: str, arg: str) -> list[PushDevice]:
+        rows = self._db.execute(
+            f"SELECT case_id, device_token, platform, notice, updated_at FROM push_devices WHERE {where} = ? ORDER BY rowid", (arg,)
+        ).fetchall()
+        return [PushDevice(*r) for r in rows]
+
+    def add_push_device(self, case_id: str, device_token: str, platform: str, notice: str, at: datetime) -> None:
         with self._lock, self._db:
-            for table in ("live_cases", "case_status", "chat_tokens", "chat_messages", "chat_reads", "call_captions"):
+            self._db.execute("DELETE FROM push_devices WHERE updated_at <= ?", (clock.iso_utc(at - PUSH_DEVICE_KEEP),))
+            # REPLACE는 지우고 다시 넣어 rowid가 끝으로 간다(메모리 저장소의 넣은 순서와 같다)
+            self._db.execute(
+                "INSERT OR REPLACE INTO push_devices (case_id, device_token, platform, notice, updated_at) VALUES (?, ?, ?, ?, ?)",
+                (case_id, device_token, platform, notice, clock.iso_utc(at)),
+            )
+            for where, arg, limit in (("device_token", device_token, PUSH_CASES_PER_DEVICE), ("case_id", case_id, PUSH_DEVICES_PER_CASE)):
+                for d in oldest_over(self._push_rows(where, arg), limit):
+                    self._db.execute("DELETE FROM push_devices WHERE case_id = ? AND device_token = ?", (d.case_id, d.device_token))
+
+    def push_devices(self, case_id: str, now: datetime) -> list[PushDevice]:
+        with self._lock:
+            with self._db:
+                self._db.execute("DELETE FROM push_devices WHERE updated_at <= ?", (clock.iso_utc(now - PUSH_DEVICE_KEEP),))
+            return self._push_rows("case_id", case_id)
+
+    def remove_push_device(self, device_token: str) -> None:
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM push_devices WHERE device_token = ?", (device_token,))
+
+    def reset(self) -> None:
+        """사례 표 여섯과 푸시 기기 묶음을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
+        with self._lock, self._db:
+            for table in ("live_cases", "case_status", "chat_tokens", "chat_messages", "chat_reads", "call_captions", "push_devices"):
                 self._db.execute(f"DELETE FROM {table}")
 
     def close(self) -> None:

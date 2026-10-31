@@ -5,7 +5,8 @@
 // - googleSignIn을 받으면 네이티브 Google 로그인(signOut → authenticate)의 ID 토큰을 googleSignInResult로 돌려준다(app-front backlog 06).
 // - 통화 매체(app-front backlog 04): WebView의 마이크 요청은 앱 권한을 받은 뒤 허용하고, Android 파일 선택기는 사진 선택기로 연다.
 //   speechStart·speechStop은 네이티브 받아쓰기(speech.dart)를 켜고 끈다. 원격 음성은 손짓 없이 재생한다(자동 재생 <audio>).
-// - 로그에는 메시지 type만 남긴다. openExternal.url·이동 주소·메시지 본문·ID 토큰·계정 정보·받아쓴 글을 찍지 않는다.
+// - 푸시(app-front backlog 07): pushRegister·pushUnregister는 push.dart가 받고, 알림을 눌러 열린 사례는 init 뒤에 pushOpen으로 한 번 보낸다.
+// - 로그에는 메시지 type만 남긴다. openExternal.url·이동 주소·메시지 본문·ID 토큰·계정 정보·받아쓴 글·FCM 토큰·caseId를 찍지 않는다.
 
 import 'dart:io';
 
@@ -24,6 +25,7 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'bridge.dart';
 import 'navigation.dart';
 import 'offline_view.dart';
+import 'push.dart';
 import 'speech.dart';
 
 /// Google OAuth 클라이언트 ID(--dart-define, app/README.md "Google 로그인"). 비밀값이 아니지만 코드에 적지 않는다.
@@ -67,14 +69,26 @@ class _HostPageState extends State<HostPage> {
     log: _log,
   );
 
+  late final NativePush _push = NativePush(post: _post, onOpen: _onPushOpen, log: _log);
+
+  /// Firebase 초기화. init은 이것이 끝난 뒤에 보낸다(features의 push)
+  late final Future<bool> _pushInit;
+
+  /// 알림으로 열린 사례. init을 보내기 전에 온 것은 들고 있다가 init 바로 뒤에 보낸다
+  final PushOpenGate _pushOpen = PushOpenGate();
+
   @override
   void initState() {
     super.initState();
     PackageInfo.fromPlatform().then((info) => _appVersion = info.version);
+    _pushInit = _push.init();
 
     final PlatformWebViewControllerCreationParams params = WebViewPlatform.instance is WebKitWebViewPlatform
         // 통화 상대 음성(<audio autoplay>)이 손짓 없이 재생되게 한다
-        ? WebKitWebViewControllerCreationParams(allowsInlineMediaPlayback: true, mediaTypesRequiringUserAction: const {})
+        ? WebKitWebViewControllerCreationParams(
+            allowsInlineMediaPlayback: true,
+            mediaTypesRequiringUserAction: const {},
+          )
         : const PlatformWebViewControllerCreationParams();
     _controller = WebViewController.fromPlatformCreationParams(params, onPermissionRequest: _onPermissionRequest)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -120,6 +134,8 @@ class _HostPageState extends State<HostPage> {
         _signInSeq++;
         _signInPending = false;
         _speech.stop();
+        _push.resetPage();
+        _pushOpen.close();
         _sendInit();
       case 'openExternal':
         final url = msg['url'];
@@ -131,6 +147,10 @@ class _HostPageState extends State<HostPage> {
         if (lang != null && speechPlatformSupported) _speech.start(lang);
       case 'speechStop':
         _speech.stop();
+      case 'pushRegister':
+        _push.register();
+      case 'pushUnregister':
+        _push.unregister();
     }
   }
 
@@ -162,6 +182,7 @@ class _HostPageState extends State<HostPage> {
 
   Future<void> _sendInit() async {
     if (_appVersion.isEmpty) _appVersion = (await PackageInfo.fromPlatform()).version;
+    final push = await _pushInit;
     if (!mounted) return;
     _post(
       initMessage(
@@ -170,9 +191,20 @@ class _HostPageState extends State<HostPage> {
         // Platform.localeName은 iOS에서 앱 번들이 지원하는 언어로 좁혀지므로 기기 첫 번째 언어(BCP-47)를 쓴다
         locale: PlatformDispatcher.instance.locale.toLanguageTag(),
         padding: _padding ?? MediaQuery.paddingOf(context),
-        features: [if (_signInEnabled) featureGoogleSignIn, if (speechPlatformSupported) featureSpeech],
+        features: [
+          if (_signInEnabled) featureGoogleSignIn,
+          if (speechPlatformSupported) featureSpeech,
+          if (push) featurePush,
+        ],
       ),
     );
+    final held = _pushOpen.opened();
+    if (held != null) _post(pushOpenMessage(held));
+  }
+
+  void _onPushOpen(String caseId) {
+    final now = _pushOpen.tap(caseId);
+    if (now != null) _post(pushOpenMessage(now));
   }
 
   /// 늘 계정 선택이 뜨게 먼저 signOut한다(웹에서 로그아웃해도 호스트에는 Google 로그인이 남는다)
@@ -272,6 +304,7 @@ class _HostPageState extends State<HostPage> {
   @override
   void dispose() {
     _speech.dispose();
+    _push.dispose();
     super.dispose();
   }
 

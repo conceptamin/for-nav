@@ -538,38 +538,83 @@ function CaseDetail({ c }: { c: CenterCase }) {
           {side && info}
         </div>
         <div>
-          {isCallAvailable() && (
-            <section className="panel">
-              <h2>{TEXT.callTitle}</h2>
-              <p className="footer-note">{c.live ? TEXT.callNote : TEXT.callMock}</p>
-              <CallPanel
-                caseId={c.id}
-                auth={{ role: 'center' }}
-                lang="ko"
-                labels={CALL_LABELS}
-                locale="ko-KR"
-                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-              />
-            </section>
-          )}
-          {isChatAvailable() && (
-            <section className="panel">
-              <h2>{TEXT.chatTitle}</h2>
-              <p className="footer-note">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
-              <ChatPanel
-                caseId={c.id}
-                auth={{ role: 'center' }}
-                me="center"
-                labels={CHAT_LABELS}
-                locale="ko-KR"
-                relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-              />
-            </section>
-          )}
+          {isCallAvailable() && <CenterCall c={c} />}
+          {isChatAvailable() && <CenterChat c={c} />}
           {!side && info}
         </div>
       </div>
     </div>
+  );
+}
+
+// C-02 통화·채팅 카드(backlog 49). 근로자 센터 채팅 시트와 같은 메신저 틀이다: 머리 / 대화 줄기 / 아래 고정 칸.
+// 자리는 그대로 오른쪽 열의 통화(위)·채팅(아래)이고, 시트와 달리 둘을 오가지 않고 함께 보인다(전화가 오는 것을 놓치지 않게).
+
+/** 카드 머리. 시트 머리(.sheet-head)와 같은 틀이고 시작 쪽은 상대(근로자) 표시다 */
+function TalkHead({ id, title, c }: { id: string; title: string; c: CenterCase }) {
+  return (
+    <header className="sheet-head">
+      <span className="sheet-avatar talk-avatar" aria-hidden="true">
+        <svg className="sheet-icon" width="22" height="22" viewBox="0 0 24 24" focusable="false">
+          <circle cx="12" cy="8.5" r="3.5" />
+          <path d="M5 19.5c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5" />
+        </svg>
+      </span>
+      <div className="sheet-title">
+        <h2 id={id}>{title}</h2>
+        <p>근로자 · {LANGUAGE_NAMES_KO[c.language]}</p>
+      </div>
+    </header>
+  );
+}
+
+function CenterCall({ c }: { c: CenterCase }) {
+  const body = useRef<HTMLDivElement>(null);
+  // 상태 줄·버튼 줄을 그릴 아래 고정 칸. CallPanel이 포털로 그린다
+  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
+  return (
+    <section className="panel talk talk-call" aria-labelledby="talk-call-title">
+      <TalkHead id="talk-call-title" title={TEXT.callTitle} c={c} />
+      <div className="sheet-body" ref={body}>
+        <p className="chat-sys">{c.live ? TEXT.callNote : TEXT.callMock}</p>
+        <CallPanel
+          caseId={c.id}
+          auth={{ role: 'center' }}
+          lang="ko"
+          labels={CALL_LABELS}
+          locale="ko-KR"
+          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+          scroller={body}
+          footer={foot}
+        />
+      </div>
+      <div className="sheet-foot" ref={setFoot} />
+    </section>
+  );
+}
+
+function CenterChat({ c }: { c: CenterCase }) {
+  const body = useRef<HTMLDivElement>(null);
+  // 채팅 상태 줄과 입력줄을 그릴 아래 고정 칸. ChatPanel이 포털로 그린다
+  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
+  return (
+    <section className="panel talk talk-chat" aria-labelledby="talk-chat-title">
+      <TalkHead id="talk-chat-title" title={TEXT.chatTitle} c={c} />
+      <div className="sheet-body" ref={body}>
+        <p className="chat-sys">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
+        <ChatPanel
+          caseId={c.id}
+          auth={{ role: 'center' }}
+          me="center"
+          labels={CHAT_LABELS}
+          locale="ko-KR"
+          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
+          scroller={body}
+          footer={foot}
+        />
+      </div>
+      <div className="sheet-foot" ref={setFoot} />
+    </section>
   );
 }
 

@@ -366,7 +366,7 @@ export function ResultPage() {
           📞 {t('toCall')}
         </Link>
         <Link className="btn block" to="/visit/desk">
-          🪪 {t('toDesk')}
+          📋 {t('toDesk')}
         </Link>
         <Link className="btn block" to="/report/new">
           🩺 {t('toReport')}

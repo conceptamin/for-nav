@@ -17,6 +17,7 @@ from app.google_id import make_verifier
 from app.llm_limit import LLMLimiter
 from app.mail import make_mailer
 from app.model import load_model
+from app.push import PushNotifier, make_push_sender
 from app.routers import auth, center, worker
 from app.schemas import Meta
 from app.settings import get_llm_client, settings
@@ -46,6 +47,8 @@ app.state.llm_limiter = LLMLimiter(settings.llm_rate_per_min, settings.llm_daily
 app.state.mail = make_mailer(settings)
 # 근로자 Google 로그인 ID 토큰 검증(backlog 21). WORKER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
 app.state.google_id = make_verifier(settings)
+# 근로자 앱 푸시(backlog 28). PUSH=off이거나 설정이 모자라면 발송기가 None이라 아무것도 보내지 않는다. 테스트는 가짜 발송기로 바꿔 끼운다.
+app.state.push = PushNotifier(make_push_sender(settings))
 
 errors.install(app)
 # 프론트는 Vite 프록시로 같은 출처에서 부른다. 개발 중 직접 호출에 대비해 허용 출처(CORS_ORIGINS, 기본 프론트 개발 서버)만 연다.

@@ -1,7 +1,8 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
-# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)과 통화 시그널링·자막 번역(backlog 16)을 연다.
+# 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14, 메시지 번역 backlog 30)과 통화 시그널링·자막 번역(backlog 16)을 연다.
 # CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17).
 # 근로자 전송(POST /cases)은 직원 세션을 보지 않고, WORKER_AUTH=google일 때만 근로자 세션이 있어야 한다(backlog 21).
+# 근로자 앱 푸시(backlog 28): 채팅 토큰으로 기기를 사례에 묶고, 센터 채팅 글·상태 변경 뒤 응답을 막지 않고 백그라운드로 보낸다.
 
 import asyncio
 import logging
@@ -20,6 +21,7 @@ from app import auth, clock
 from app.chat import CallHub, ChatHub
 from app.data.mock import StatRecord
 from app.llm import LLMClient
+from app.push import PushNotifier
 from app.routers.worker import llm_client
 from app.rules.coverage import is_after_hours, next_open_day
 from app.rules.urgency import rate_urgency
@@ -37,13 +39,16 @@ from app.schemas import (
     MyCaseView,
     NewCaseRequest,
     NewCaseResponse,
+    PushDeviceRemove,
+    PushDeviceRequest,
+    PushDeviceResponse,
     StatCell,
     StatusPatch,
 )
 from app.settings import settings
-from app.store import message_number, store
+from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
-from app.templates.translate import translate_line, translate_note
+from app.templates.translate import translate_line, translate_message, translate_note
 from app.vocab import INDUSTRIES, District, Lang
 
 logger = logging.getLogger(__name__)
@@ -114,6 +119,14 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
     return NewCaseResponse(case=c, next_open_date=next_open_day(now).isoformat(), chat_token=token)
 
 
+def _owned_case(case_id: str, token: str) -> CenterCase | None:
+    """채팅 토큰이 맞는 사례. 토큰이 틀리거나 사례가 없으면 None이다(이유를 나누지 않는다)."""
+    expected = store.chat_token(case_id)
+    if not expected or not secrets.compare_digest(token.encode(), expected.encode()):
+        return None
+    return store.get(case_id)
+
+
 @router.post("/my-cases", dependencies=[Depends(require_worker)])
 def my_cases(req: MyCasesRequest) -> list[MyCaseView]:
     """S-13·센터 채팅 시트: 근로자가 채팅 토큰으로 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27).
@@ -122,15 +135,45 @@ def my_cases(req: MyCasesRequest) -> list[MyCaseView]:
     """
     out: list[MyCaseView] = []
     for ref in req.cases:
-        expected = store.chat_token(ref.id)
-        if not expected or not secrets.compare_digest(ref.token.encode(), expected.encode()):
-            continue
-        c = store.get(ref.id)
+        c = _owned_case(ref.id, ref.token)
         if c is None:
             continue
         count, last = store.center_message_summary(ref.id)
         out.append(MyCaseView(id=c.id, status=c.status, center_messages=count, last_center_at=last))
     return out
+
+
+@router.post("/push-devices", dependencies=[Depends(require_worker)])
+def register_push_device(req: PushDeviceRequest) -> PushDeviceResponse:
+    """근로자 앱이 FCM 기기 토큰을 채팅 토큰이 맞는 사례에 묶는다(backlog 28). PUSH=off여도 그대로 동작한다.
+
+    틀린 토큰·없는 사례는 my-cases와 같이 오류 없이 빠진다. 같은 기기·사례를 다시 보내면 platform·notice·갱신 시각만 바뀐다.
+    """
+    now = clock.now()
+    bound: list[str] = []
+    for ref in req.cases:
+        if ref.id in bound or _owned_case(ref.id, ref.token) is None:
+            continue
+        store.add_push_device(ref.id, req.device_token, req.platform, req.notice, now)
+        bound.append(ref.id)
+    return PushDeviceResponse(cases=bound)
+
+
+@router.post("/push-devices/remove", status_code=status.HTTP_204_NO_CONTENT)
+def remove_push_device(req: PushDeviceRemove) -> Response:
+    """그 기기의 묶음을 모두 지운다. 없는 토큰도 204다.
+
+    근로자 세션을 보지 않는다: 웹이 로그아웃 직후(세션이 이미 끝났을 때) 부르고, 기기 토큰 자체가 열쇠다.
+    """
+    store.remove_push_device(req.device_token)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+def _notify(app_state, case_id: str) -> None:
+    """푸시 발송을 띄운다. 근로자가 그 사례 채팅을 보고 있으면 건너뛴다. 기다리지 않는다."""
+    hub: ChatHub = app_state.chat
+    push: PushNotifier = app_state.push
+    push.notify(store, case_id, clock.now(), watching=hub.has_worker(case_id))
 
 
 @router.get("/cases", dependencies=staff_only)
@@ -159,11 +202,14 @@ def get_case(case_id: str) -> CenterCase:
 
 
 @router.patch("/cases/{case_id}", dependencies=staff_only)
-def patch_case(case_id: str, body: StatusPatch) -> CenterCase:
-    """C-02: 상태 변경."""
+async def patch_case(case_id: str, body: StatusPatch, request: Request) -> CenterCase:
+    """C-02: 상태 변경. 상태가 실제로 바뀌었을 때만 근로자 기기에 알린다(backlog 28)."""
+    before = store.get(case_id)
     c = store.set_status(case_id, body.status)
-    if c is None:
+    if before is None or c is None:
         raise _not_found(case_id)
+    if c.status != before.status:
+        _notify(request.app.state, case_id)
     return c
 
 
@@ -219,7 +265,7 @@ def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | No
 @router.websocket("/cases/{case_id}/chat")
 async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
     """근로자·센터 상담 채팅. 연결 직후 이전 메시지와 역할별 읽은 자리(history)를 한 번 보내고,
-    이후 메시지와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
+    이후 메시지(상대 언어 번역을 붙여, backlog 30)와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
     await ws.accept()
     denied = _chat_denied(ws, case_id, role, token)
     if denied:
@@ -227,8 +273,12 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
         return
     sender: ChatRole = "center" if role == "center" else "worker"
     hub: ChatHub = ws.app.state.chat
+    # 번역 방향은 통화 자막과 같다. 근로자 언어는 클라이언트 값이 아니라 사례의 언어다(backlog 30).
+    case_lang = store.get(case_id).language
+    source, target = (case_lang, "ko") if sender == "worker" else ("ko", case_lang)
+    llm: LLMClient | None = ws.app.state.llm_limiter.wrap(getattr(ws.app.state, "llm", None), ws)
     # join과 이전 메시지 읽기 사이에 await가 없어야 그 사이 메시지를 놓치거나 두 번 받지 않는다.
-    hub.join(case_id, ws)
+    hub.join(case_id, ws, sender)
     history = [m.model_dump(by_alias=True) for m in store.messages(case_id)]
     try:
         await ws.send_json({"type": "history", "messages": history, "read": store.read_marks(case_id)})
@@ -249,8 +299,14 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
                 elif store.mark_read(case_id, sender, n):
                     await hub.broadcast(case_id, {"type": "read", "role": sender, "upTo": frame.up_to})
                 continue
-            m = store.add_message(case_id, sender, frame.text, clock.now())
+            # 번역이 끝난 뒤 저장·방송한다. 번역 전 상태가 없어 번호·읽음·history가 그대로다(보낸 쪽에도 그만큼 늦게 돌아간다).
+            tr = await translate_message(frame.text, source, target, llm, timeout_s=settings.llm_timeout_s)
+            logger.info("chat translation=%s", tr.status)
+            translation = MessageTranslation(source, target, tr.status, tr.text)
+            m = store.add_message(case_id, sender, frame.text, clock.now(), translation)
             await hub.broadcast(case_id, {"type": "message", "message": m.model_dump(by_alias=True)})
+            if sender == "center":
+                _notify(ws.app.state, case_id)
     except WebSocketDisconnect:
         pass
     finally:

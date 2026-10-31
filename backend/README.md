@@ -39,10 +39,11 @@ backend/
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
-    chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 데모 초기화 때 닫기
+    chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 데모 초기화 때 닫기, 근로자 접속 여부(푸시 건너뛰기)
     auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장). 근로자 Google 로그인 계정 키·세션
     google_id.py       근로자 Google ID 토큰 검증 — TokenVerifier 프로토콜, google-auth(서명·발급자·대상·만료), sub만 돌려준다
     mail.py            로그인 코드 메일 — Mailer 프로토콜, Resend(httpx), 로컬 개발용 console
+    push.py            근로자 앱 푸시 — PushSender 프로토콜, FcmSender(FCM HTTP v1, 서비스 계정 JWT·httpx, 접근 토큰 캐시), PushNotifier(사례별 60초 제한, 채팅 접속 중 건너뛰기, 백그라운드 발송, 없는 토큰 지우기)
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
     vocab.py           ← domain/vocab.ts (20개 언어 Lang, 부위·증상·진료과·업종·구군 어휘, josa, 언어 묶음 PACKS 읽기)
@@ -56,12 +57,12 @@ backend/
       common.py        pick·joinTerms 등 공통 도우미
       guard.py         LLM이 쓴 한국어 문장 검사(금지어·60자·한국어 여부)
       llm_slots.py     템플릿 슬롯 LLM 채우기(자유 입력 → 상황 줄), 실패 시 기본 템플릿
-      translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시. 통화 자막 한 문장 번역(translate_line)
+      translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시. 통화 자막 한 문장 번역(translate_line), 채팅 메시지 번역(translate_message)
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션, 근로자 세션
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, chat_reads, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions 표)
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션, 근로자 세션, 푸시 기기 묶음(30일·기기당 사례 20·사례당 기기 5)
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, chat_reads, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions, push_devices 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
@@ -79,10 +80,11 @@ backend/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지, 옛 본문 읽기
-    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 데모 초기화, 로그에 토큰·본문 없음)
+    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 메시지 번역, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
+    test_push.py       근로자 앱 푸시(기기 등록·해제·422 경계, 센터 글·상태 변경 발송, 60초 제한, 채팅 접속 중 건너뛰기, 메시지 모양, 없는 토큰 지우기, 실패·시간 초과에도 응답 그대로, 30일 정리, PUSH=off, 로그, 테스트 서비스 계정 키와 가짜 전송으로 FcmSender)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단), 호스트별 앱용 웹 빌드
     test_llm.py        LLM 호출 계층·어댑터(가짜 LLM·가짜 전송, 네트워크 없음)
@@ -91,7 +93,7 @@ backend/
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
     test_llm_limit.py  LLM 호출 제한(IP별·하루, 대체 동작, 재시도 없음, 루프백일 때만 IP 헤더, 통화 자막, 로그에 IP 없음)
-    fakes.py           FakeLLMClient, FakeMailer
+    fakes.py           FakeLLMClient, FakeMailer, FakeVerifier, FakePushSender
 ```
 
 ## 공통 규칙
@@ -143,7 +145,9 @@ backend/
 | `GET /api/center/cases/{id}` | — | C-02 | — | `CenterCase` / 404 |
 | `PATCH /api/center/cases/{id}` | `setCaseStatus` | C-02 | `{ status }` | `CenterCase` |
 | `POST /api/center/my-cases` | — (frontend 46) | S-13·센터 채팅 시트 | `{ cases: [{ id, token }] }` (1~20개) | `MyCaseView[]` (토큰이 맞는 사례만) |
-| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다) |
+| `POST /api/center/push-devices` | — (frontend 48) | 근로자 앱 시작·언어 변경 | `{ deviceToken, platform, notice, cases: [{ id, token }] }` (1~20개) | `{ cases: string[] }` (토큰이 맞아 묶인 사례 id) |
+| `POST /api/center/push-devices/remove` | — (frontend 48) | 로그아웃·계정 바꾸기·내 데이터 지우기 | `{ deviceToken }` | `204` (없는 토큰도) |
+| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다, 푸시 기기 묶음도 지운다) |
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `GET /api/center/stats` | `StatsPage`의 집계 | C-03 | `?days=30\|90\|180&district=` | 아래 참고 |
@@ -157,7 +161,7 @@ backend/
 
 `CENTER_AUTH=email`이면 센터 읽기·쓰기(`GET /api/center/cases`, `GET`·`PATCH /api/center/cases/{id}`, `POST /api/center/reset`, `GET /api/center/stats`)와 채팅·통화의 `role=center`는 직원 세션 쿠키가 있어야 한다(없으면 401, WS는 `4401`). 근로자 전송(`POST /api/center/cases`)과 `role=worker`는 그대로 열려 있다. 기본값 `off`에서는 지금처럼 로그인 없이 열린다(backlog 17).
 
-`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`)과 내 요청 상태(`POST /api/center/my-cases`, backlog 27)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
+`WORKER_AUTH=google`이면 근로자 전송(`POST /api/center/cases`), 내 요청 상태(`POST /api/center/my-cases`, backlog 27), 푸시 기기 등록(`POST /api/center/push-devices`, backlog 28)만 근로자 세션 쿠키가 있어야 한다(없으면 401). 푸시 기기 해제(`/push-devices/remove`)는 웹이 로그아웃 직후 부르므로 세션을 보지 않는다(기기 토큰이 열쇠다). 판정·안내 경로(`/api/extract`, `/api/triage`, `/api/route`, `/api/visit-helper`, `/api/report/*`)는 응급 판정이 로그인에 묶이지 않도록 열어 둔다. 기본값 `off`에서는 근로자 전송도 지금처럼 열려 있다(backlog 21).
 
 ### 요청·응답 예시
 
@@ -276,6 +280,33 @@ backend/
 - `centerMessages`는 센터가 보낸 채팅 메시지 수(근로자 글은 세지 않는다), `lastCenterAt`은 마지막 센터 메시지 시각이고 없으면 `null`이다. 사례 본문(요약·원문·긴급도)은 돌려주지 않는다.
 - 빈 목록, 21개 이상, 형식 오류는 422.
 
+**`POST /api/center/push-devices`** — 근로자 앱이 FCM 기기 토큰을 자기 사례에 묶는다(backlog 28)
+
+```jsonc
+// 요청: notice는 근로자 앱 언어로 번역된 알림 본문 한 문장(80자 이내, 제어 문자 없음). 앱을 열 때·언어를 바꿀 때 다시 보낸다
+{ "deviceToken": "fcm-token…", "platform": "android", "notice": "Có tin mới từ trung tâm",
+  "cases": [{ "id": "C-48213", "token": "kqr6VTRE…" }, { "id": "C-0", "token": "wrong" }] }
+// 응답: 채팅 토큰이 맞아 묶인 사례 id
+{ "cases": ["C-48213"] }
+```
+
+- 토큰이 틀리거나 사례가 없으면 my-cases와 같이 그 항목만 빠진다. 같은 기기·사례를 다시 보내면 `platform`·`notice`·갱신 시각만 바뀐다. `deviceToken`은 4096자 이내, `platform`은 `android` \| `ios`. 빈 목록·21개 이상·긴 `notice`·제어 문자는 422.
+- 서버는 `(사례 id, 기기 토큰, 플랫폼, notice, 갱신 시각)`만 저장하고 계정·세션과 잇지 않는다. 마지막 등록 뒤 30일이 지나거나, `remove`·데모 초기화·FCM이 없는 토큰이라고 답하면 지운다. 기기 하나에 사례 20개, 사례 하나에 기기 5개까지(넘으면 가장 오래 갱신하지 않은 묶음을 지운다).
+- `PUSH=off`(기본)여도 등록·해제는 그대로 동작한다(보내지만 않는다).
+- `POST /api/center/push-devices/remove` `{ "deviceToken": "…" }` → `204`. 그 기기의 묶음을 모두 지우고, 없는 토큰도 `204`다.
+
+발송(`PUSH=fcm`): 채팅에 **센터**가 글을 쓰거나 `PATCH /api/center/cases/{id}`로 상태가 **실제로 바뀌면**, 응답을 먼저 끝내고 그 사례에 묶인 기기로 FCM 알림 한 줄을 백그라운드로 보낸다(시간 제한 5초, 재시도 없음). 사례마다 60초에 한 번까지이고, 근로자가 그 사례 채팅 WebSocket에 붙어 있으면 보내지 않는다. 메시지는 아래 모양 하나이고 메시지 본문·상태 이름·사례 번호를 알림 문구에 넣지 않는다.
+
+```jsonc
+{ "message": { "token": "<deviceToken>",
+  "notification": { "title": "for nav", "body": "<notice>" },
+  "data": { "kind": "center", "caseId": "C-48213" },
+  "android": { "collapse_key": "C-48213", "notification": { "tag": "C-48213" } },
+  "apns": { "headers": { "apns-collapse-id": "C-48213" } } } }
+```
+
+FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토큰을 지운다. 실패는 `push failed kind=<종류>` 한 줄만 남기고 기기 토큰·채팅 토큰·`notice`·메시지 본문은 로그에 없다. 60초 제한·접속 확인은 프로세스 메모리라 `--workers 1`(채팅과 같다)에서만 맞다.
+
 **`WS /api/center/cases/{id}/chat`** — 근로자·센터 상담 채팅(backlog 14)
 
 사례 하나가 방 하나다. 근로자는 `?role=worker&token=<chatToken>`, 센터는 `?role=center`로 붙는다(`CENTER_AUTH=email`이면 직원 세션 쿠키도 있어야 한다). 서버는 먼저 연결을 받은 뒤 검사하고, 실패하면 이유 코드로 닫는다.
@@ -295,8 +326,9 @@ backend/
 
 // 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다). read는 역할별 마지막으로 읽은 메시지 id, 없으면 null
 { "type": "history", "messages": [ /* ChatMessage, 보낸 순서 */ ], "read": { "worker": "m-3", "center": null } }
-// 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다
-{ "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu", "at": "2026-10-30T11:50:47.646Z" } }
+// 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다. 상대 언어 번역을 붙여 보낸다(backlog 30)
+{ "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu",
+  "lang": "vi", "translated": "손에서 아직 피가 납니다", "translatedLang": "ko", "translation": "ok", "at": "2026-10-30T11:50:47.646Z" } }
 // 서버 → 클라이언트: 읽은 자리가 앞으로 옮겨졌다. 보낸 쪽을 포함해 방의 모든 연결에 간다
 { "type": "read", "role": "center", "upTo": "m-5" }
 // 서버 → 클라이언트: 잘못된 프레임(빈 글, 1000자 초과, JSON 아님, 다른 type, 바이너리, 없는 메시지의 읽음). 연결은 끊지 않는다
@@ -304,6 +336,8 @@ backend/
 ```
 
 읽은 자리는 역할마다 하나이고 앞으로만 옮겨진다. 저장된 값보다 앞이거나 같은 `read`는 저장도 방송도 하지 않는다. 데모 초기화가 함께 지운다.
+
+메시지 번역(backlog 30): 서버는 받은 메시지를 **번역한 뒤에** 저장하고 보낸다(보낸 사람에게도 번역 시간만큼 늦게 돌아간다). 근로자 메시지는 사례 언어 → 한국어, 센터 메시지는 한국어 → 사례 언어이고, `lang`·`translatedLang`이 그 두 언어다. `translation`이 `ok`일 때만 `translated`가 있다. LLM이 없거나 호출 실패·시간 초과·호출 제한이면 `skipped`, 한국어 번역이 금지어 검사에 걸리면 `rejected`이고 원문만 보낸다. 사례 언어가 `ko`면 부르지 않는다(`skipped`). 이 항목 전에 저장된 메시지는 네 필드가 `null`이다. 로그에는 `chat translation=<상태>`만 남는다.
 
 `id`·`from`·`at`은 **서버가 정한다**. `id`는 사례 안에서 `m-1`, `m-2`…로 늘어나고, `from`은 연결 때 확인한 역할이다. 접근 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`만 남고 쿼리 문자열(토큰)과 메시지 본문은 남지 않는다. uvicorn이 따로 남기는 `"WebSocket <경로?쿼리>" [accepted]` 줄은 앱에서 버린다.
 
@@ -493,6 +527,9 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `WORKER_AUTH` | `off` | `off` \| `google` | 근로자 Google 로그인(backlog 21). `google`이면 `DB_PATH`·`GOOGLE_CLIENT_ID`가 있어야 한다 |
 | `GOOGLE_CLIENT_ID` | (없음) | `….apps.googleusercontent.com` | Google OAuth 웹 클라이언트 ID. ID 토큰의 `aud`와 비교한다. 프론트 `VITE_GOOGLE_CLIENT_ID`와 같은 값(비밀값이 아니다) |
 | `WORKER_SESSION_DAYS` | `30` | 1 이상 정수 | 근로자 세션 길이(일) |
+| `PUSH` | `off` | `off` \| `fcm` | 근로자 앱 푸시 발송(backlog 28). `fcm`인데 아래 둘이 없거나 키 파일을 못 읽으면 시작 때 경고 한 줄(`push off: …`)을 남기고 `off`처럼 동작한다(서버는 뜬다). 기기 등록 경로는 값과 관계없이 동작한다 |
+| `FCM_PROJECT_ID` | (없음) | Firebase 프로젝트 id, 예: `for-nav-demo` | FCM HTTP v1 발송 주소(비밀값이 아니다) |
+| `FCM_CREDENTIALS_FILE` | (없음) | 파일 경로, 예: `/Users/<사용자>/keys/fcm-sender.json` | FCM 발송 서비스 계정 키 JSON. 저장소·`deploy/` 밖에 두고 커밋하지 않는다 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -601,6 +638,19 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    GOOGLE_CLIENT_ID=123-abc.apps.googleusercontent.com
    ```
 4. 프론트·앱용 웹 빌드에는 `deploy.sh`가 같은 값을 `VITE_GOOGLE_CLIENT_ID`로 넣는다(frontend 28). 따로 할 일은 없다. 배포 로그의 `▶ Google 클라이언트 ID: 있음`으로 확인한다.
+
+근로자 앱 푸시 켜기(backlog 28):
+
+1. Firebase 콘솔에서 근로자 Google 로그인 클라이언트가 있는 **같은 Google Cloud 프로젝트**를 골라 Firebase를 붙인다(프로젝트 추가 → 기존 Google Cloud 프로젝트 선택). Android·iOS 앱을 등록하고(패키지·번들 ID와 앱에 넘길 값은 `app/README.md` "푸시 알림"), `google-services.json`·`GoogleService-Info.plist`는 쓰지 않는다(앱은 `--dart-define`으로 값을 받는다, app-front 07 결정 2). iOS는 Apple Developer 계정의 APNs 인증 키(.p8)를 프로젝트 설정 → 클라우드 메시징에 올려야 한다.
+2. Google Cloud 콘솔 → IAM 및 관리자 → 서비스 계정에서 발송 전용 계정(예: `fcm-sender`)을 만들고 역할 **Firebase Cloud Messaging API 관리자**(`roles/firebasecloudmessaging.admin`)만 준다. API 및 서비스에서 **Firebase Cloud Messaging API**가 사용 설정인지 확인한다. 그 계정의 키 → 새 키 만들기 → JSON을 받는다.
+3. 키 파일을 맥미니의 클론·`deploy/` 밖에 둔다(예: `mkdir -p ~/keys && chmod 700 ~/keys`, 파일은 `chmod 600`). 키 내용은 코드·로그·PR·채팅에 붙이지 않는다.
+4. `~/srv/for-nav/backend/.env`에 넣고 `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 다시 띄운다.
+   ```sh
+   PUSH=fcm
+   FCM_PROJECT_ID=<Firebase 프로젝트 id>
+   FCM_CREDENTIALS_FILE=/Users/<사용자>/keys/fcm-sender.json
+   ```
+5. `pm2 logs for-nav`에 `push off: …`가 없으면 발송기가 켜진 것이다. 값이 빠졌거나 키를 못 읽으면 이 경고 한 줄을 남기고 보내지 않은 채 뜬다.
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
@@ -647,11 +697,12 @@ backend:
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
 | 상담 채팅 센터 인증 | `CENTER_AUTH=email`이면 직원 이메일 코드 로그인 세션이 있어야 `role=center`로 붙는다 — 붙임(backlog 17). `off`(기본)이면 역할만으로 붙는다 | 상담자별 권한, 담당자 지정, 처리 직원 기록 |
-| 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 14) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
+| 상담 채팅 번역 | 키가 있으면 메시지마다 상대 언어로 한 번 번역(통화 자막과 같은 방식, 한국어 쪽은 guard 검사)해 `ChatMessage`의 선택 필드(`lang`, `translated`, `translatedLang`, `translation`)로 함께 보낸다. 없거나 실패·검사 탈락이면 원문만 — 붙임(backlog 30) | 오역이 문제가 되면 역번역 검사(backlog 05)를 더한다 |
 | 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
 | 통화 기록 | 자막을 사례별로 저장, 음성은 저장하지 않음 — 붙임(backlog 18). 연결 직후 `history`로 다시 준다 | 자막 기록 동의, 보존 기간·자동 삭제·암호화(채팅 메시지와 함께 정한다) |
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 | LLM 호출 제한 | IP별 60초·서버 전체 하루 호출 수, 프로세스 메모리, 넘으면 대체 동작 — 붙임(backlog 20) | 공유 저장소(Redis 등)의 제한, 사용자·기관별 할당, 토큰·금액 기준 예산 |
+| 근로자 앱 푸시 | `PUSH=fcm`이면 센터 채팅 글·상태 변경 때 사례에 묶인 기기로 FCM 알림 한 줄(근로자 언어 `notice`), 사례별 60초 제한·채팅 접속 중 건너뛰기는 프로세스 메모리 — 붙임(backlog 28) | 다중 프로세스면 제한·접속 확인을 공유 저장소로. 센터가 걸 때 통화 착신 알림(FCM 데이터 메시지 + CallKit·전체 화면 알림)은 따로 |
 
 모델 결과는 선택 필드 `TriageResult.model`(`{ departmentProba }`)로 더했다. 규칙표가 먼저고, 모델은 막연한 분기만 바꾼다. 응급 여부 판정(응급 키워드·보조 점수·응급도 모델)은 backlog 26에서 지웠다.
 
