@@ -225,6 +225,8 @@ export const th: Record<MessageKey, string> = {
   chatSend: 'ส่ง',
   chatMe: 'ฉัน',
   chatCenter: 'ศูนย์',
+  chatRead: 'อ่านแล้ว',
+  chatUnread: 'ยังไม่อ่าน',
   chatConnecting: 'กำลังเชื่อมต่อ…',
   chatReconnecting: 'การเชื่อมต่อขาดหาย กำลังเชื่อมต่อใหม่…',
   chatStopped: 'แชตนี้สิ้นสุดแล้ว โปรดติดต่อศูนย์ด้วยวิธีอื่น',

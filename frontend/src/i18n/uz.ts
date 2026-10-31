@@ -238,6 +238,8 @@ export const uz: Record<MessageKey, string> = {
   chatSend: 'Yuborish',
   chatMe: 'Men',
   chatCenter: 'Markaz',
+  chatRead: 'Oʻqildi',
+  chatUnread: 'Oʻqilmagan',
   chatConnecting: 'Ulanmoqda…',
   chatReconnecting: 'Aloqa uzildi. Qayta ulanmoqda…',
   chatStopped: 'Bu suhbat tugadi. Iltimos, markaz bilan boshqa yoʻl bilan bogʻlaning.',

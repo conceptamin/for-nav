@@ -5,8 +5,9 @@
 // 부르는 쪽(WorkerLayout)은 한 번 연 시트를 닫아도 숨기기만 한다. 채팅 연결·통화가 끊기지 않게 하려는 것이다.
 // S-12 페이지(/center-request)와 전송·연락 문구를 같이 쓴다(useSendCenterRequest, workerChatLabels, workerCallLabels).
 // S-12에서 요청을 보내면 그 페이지도 이 시트를 연다(backlog 44). 시트는 가장 최근 요청의 채팅을 보이고, 📞로 통화로 바꿀 수 있다고 안내한다.
+// 흔한 메신저 틀이다(backlog 47): 머리(센터 마크·제목·요청 번호) / 대화 한 줄기 / 아래 고정 입력줄. 채팅 입력줄은 ChatPanel이 아래 칸에 그린다.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { isSessionEnded } from '../api/auth';
 import { isCallAvailable } from '../api/call';
 import { sendCase } from '../api/center';
@@ -41,6 +42,8 @@ export function workerChatLabels(t: T): ChatLabels {
     send: t('chatSend'),
     me: t('chatMe'),
     other: t('chatCenter'),
+    read: t('chatRead'),
+    unread: t('chatUnread'),
     connecting: t('chatConnecting'),
     reconnecting: t('chatReconnecting'),
     stopped: { denied: t('chatStopped'), missing: t('chatStopped'), reset: t('chatStopped') },
@@ -169,6 +172,15 @@ export function CenterHoursNotice({ sent }: { sent: NewCaseResponse }) {
   );
 }
 
+/** 시트 머리의 선 아이콘. 독 채팅 아이콘과 같은 선 굵기 */
+function Icon({ children }: { children: ReactNode }) {
+  return (
+    <svg className="sheet-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {children}
+    </svg>
+  );
+}
+
 export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; open: boolean; onClose: () => void; focusCaseId: string | null }) {
   const app = useApp();
   const { t, lang } = useT();
@@ -199,6 +211,8 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
 
   const sheet = useRef<HTMLElement>(null);
   const body = useRef<HTMLDivElement>(null);
+  // 채팅 입력줄을 그릴 아래 고정 칸. ChatPanel이 포털로 그린다
+  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
 
   // 열면 시트로 초점을 옮기고 Esc로 닫는다. 뒤 화면은 스크롤되지 않게 묶는다
   useEffect(() => {
@@ -216,10 +230,10 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
     };
   }, [open, onClose]);
 
-  // 보내고 나면 이어지는 채팅이 보이게 대화 맨 아래로 옮긴다
+  // 열 때와 보낸 뒤에는 대화 맨 아래(최근 글)를 보인다. 숨겨 둔 사이 온 글은 숨긴 상자라 스크롤되지 않았다
   useEffect(() => {
-    if (sent && body.current) body.current.scrollTop = body.current.scrollHeight;
-  }, [sent]);
+    if (open && body.current) body.current.scrollTop = body.current.scrollHeight;
+  }, [open, sent]);
 
   const typeLabel = (k: RequestType) => t(`req.${k}` as MessageKey);
 
@@ -228,7 +242,16 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
       {open && <div className="sheet-scrim" onClick={onClose} aria-hidden="true" />}
       <section id={id} className="sheet" role="dialog" aria-labelledby={`${id}-title`} hidden={!open} ref={sheet} tabIndex={-1}>
         <header className="sheet-head">
-          <h2 id={`${id}-title`}>{talk === 'call' && canCall ? t('liveCallTitle') : t('chatTitle')}</h2>
+          <img className="sheet-avatar" src="/mark.png" alt="" width="36" height="36" />
+          <div className="sheet-title">
+            <h2 id={`${id}-title`}>{talk === 'call' && canCall ? t('liveCallTitle') : t('chatTitle')}</h2>
+            {caseId && (
+              <p>
+                {t('cenCaseNo')} {caseId}
+                {status && <MyCaseStatus status={status} />}
+              </p>
+            )}
+          </div>
           {canCall && (
             <button
               type="button"
@@ -236,11 +259,21 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
               aria-label={talk === 'call' ? t('chatTitle') : t('liveCallTitle')}
               onClick={() => setTalk(talk === 'call' ? 'chat' : 'call')}
             >
-              <span aria-hidden="true">{talk === 'call' ? '💬' : '📞'}</span>
+              {talk === 'call' ? (
+                <Icon>
+                  <path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.15-2.9-.42L4.5 19.5l1.3-3.6C4.3 14.6 3.5 12.9 3.5 11c0-3.9 3.8-7 8.5-7Z" />
+                </Icon>
+              ) : (
+                <Icon>
+                  <path d="M6.6 3.5h2.2l1.4 4-2 1.3a11 11 0 0 0 7 7l1.3-2 4 1.4v2.2a2.1 2.1 0 0 1-2.3 2.1A15.6 15.6 0 0 1 4.5 5.8a2.1 2.1 0 0 1 2.1-2.3Z" />
+                </Icon>
+              )}
             </button>
           )}
           <button type="button" className="sheet-btn" aria-label={t('close')} onClick={onClose}>
-            <span aria-hidden="true">✕</span>
+            <Icon>
+              <path d="M6 6l12 12M18 6 6 18" />
+            </Icon>
           </button>
         </header>
         <div className="sheet-body" ref={body}>
@@ -302,12 +335,11 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
               )}
               {sent && (
                 <>
-                  <div className="chat-msg">
-                    <p>
-                      ✅ <strong>{t('cenSentTitle')}</strong>
-                    </p>
-                    <p>{t('cenSentBody')}</p>
-                  </div>
+                  <p className="chat-sys">
+                    ✅ <strong>{t('cenSentTitle')}</strong>
+                    <br />
+                    {t('cenSentBody')}
+                  </p>
                   <CenterHoursNotice sent={sent} />
                 </>
               )}
@@ -319,18 +351,10 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
           )}
           {caseId && (
             <>
-              <p className="sheet-case small muted">
-                {t('cenCaseNo')}: <strong>{caseId}</strong>
-                {status && <MyCaseStatus status={status} />}
-              </p>
               {/* 연락 방법을 따로 묻지 않으므로 통화로 바꾸는 머리의 📞을 알려 준다(backlog 44) */}
-              {canCall && talk === 'chat' && (
-                <div className="chat-msg">
-                  <p>{t('chatCallHint')}</p>
-                </div>
-              )}
+              {canCall && talk === 'chat' && <p className="chat-sys">{t('chatCallHint')}</p>}
               {!online || !token ? (
-                <div className="notice info">{t('talkOffline')}</div>
+                <p className="chat-sys">{t('talkOffline')}</p>
               ) : talk === 'call' && canCall ? (
                 <CallPanel caseId={caseId} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} />
               ) : (
@@ -340,12 +364,16 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
                   me="worker"
                   labels={workerChatLabels(t)}
                   locale={LOCALES[lang]}
+                  active={open}
+                  scroller={body}
+                  footer={foot}
                   onSeen={onSeen}
                 />
               )}
             </>
           )}
         </div>
+        <div className="sheet-foot" ref={setFoot} />
       </section>
     </>
   );
