@@ -231,6 +231,8 @@ def test_send_case_flow():
     assert case["urgencyReasons"] == ["업무 중 발생", "건강보험증 없음"]
     assert case["contact"] == "010-0000-0000"
     assert case["id"].startswith("C-")
+    # 분야는 접수 규칙으로, 조치·연계 기관은 비어 있다(frontend backlog 41)
+    assert (case["category"], case["actions"], case["referredTo"]) == ("medical", [], [])
     assert len(out["nextOpenDate"]) == 10
 
     # 채팅 토큰(backlog 14)은 전송 응답에만 있고 센터 목록·상세에는 없다.
@@ -281,6 +283,52 @@ def test_patch_status_and_reset():
     cases = client.get("/api/center/cases").json()
     assert len(cases) == 24
     assert next(c for c in cases if c["id"] == "C-1024")["status"] == "new"
+
+
+@both_stores
+def test_send_case_default_category():
+    assert _send(requestTypes=["policy"]).json()["case"]["category"] == "insurance"
+    assert _send(requestTypes=["policy", "interpret"]).json()["case"]["category"] == "medical"
+    cost = client.post("/api/route", json={"workRelated": "no", "insurance": "no", "ulsan90": "yes"}).json()
+    assert cost["path"] == "ulsanSupport"
+    r = _send(coverage=cost)
+    assert r.status_code == 201, r.text
+    assert r.json()["case"]["category"] == "cost"
+
+
+@both_stores
+def test_patch_category_and_actions():
+    """PATCH는 보낸 필드만 바꾼다. 상태만 보내는 옛 요청도 그대로 된다(frontend backlog 41)."""
+    r = client.patch("/api/center/cases/C-1024", json={"category": "insurance", "actions": ["referral", "info"]})
+    assert r.status_code == 200
+    assert (r.json()["category"], r.json()["actions"], r.json()["referredTo"]) == ("insurance", ["info", "referral"], [])
+    r = client.patch("/api/center/cases/C-1024", json={"referredTo": ["nhis"]})
+    assert (r.status_code, r.json()["referredTo"]) == (200, ["nhis"])
+    r = client.patch("/api/center/cases/C-1024", json={"status": "progress"})
+    assert r.status_code == 200
+    got = client.get("/api/center/cases/C-1024").json()
+    assert (got["status"], got["category"], got["actions"], got["referredTo"]) == ("progress", "insurance", ["info", "referral"], ["nhis"])
+    # 연계를 빼면 기관도 비운다
+    r = client.patch("/api/center/cases/C-1024", json={"actions": ["info"], "referredTo": []})
+    assert (r.status_code, r.json()["referredTo"]) == (200, [])
+
+
+@both_stores
+@pytest.mark.parametrize(
+    "body",
+    [
+        {},
+        {"status": None},
+        {"category": "legal"},
+        {"actions": ["call"]},
+        {"actions": ["info", "info"]},
+        {"actions": ["referral"], "referredTo": ["nhis", "nhis"]},
+        {"referredTo": ["nhis"]},
+        {"actions": ["info"], "referredTo": ["nhis"]},
+    ],
+)
+def test_patch_rejects_bad_body(body):
+    assert client.patch("/api/center/cases/C-1023", json=body).status_code == 422
 
 
 @both_stores

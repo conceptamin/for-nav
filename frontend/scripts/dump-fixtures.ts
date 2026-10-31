@@ -8,8 +8,8 @@
 // 운영 시간·mock 시각은 로컬 시각을 쓰므로 반드시 TZ=Asia/Seoul로 실행한다.
 
 import { buildMockCases, buildStatRecords, rng } from '../src/data/mock';
-import { rateUrgency } from '../src/domain/centerCase';
-import type { CoverageInput } from '../src/domain/coverage';
+import { defaultCategory, rateUrgency } from '../src/domain/centerCase';
+import type { CoverageInput, CoveragePath } from '../src/domain/coverage';
 import { isAfterHours, nextOpenDay, routeCoverage } from '../src/domain/coverage';
 import type { ContactMethod, Profile, ReportField, RequestType } from '../src/domain/templates';
 import { buildCallScript, buildCenterSummary, buildClinicianReport, buildDeskSheet, REPORT_FIELDS } from '../src/domain/templates';
@@ -127,6 +127,16 @@ const urgencyCases = [...YNU, null].flatMap((workRelated) =>
   }),
 );
 
+// 센터 사례 분야 기본값(backlog 41): 경로 다섯(없음 포함) × 요청 종류 조합
+const PATHS: (CoveragePath | null)[] = ['industrial', 'nhis', 'ulsanSupport', 'center', null];
+const CATEGORY_REQUESTS: RequestType[][] = [[], ['policy'], ['interpret'], ['policy', 'interpret'], ['booking', 'policy'], ['referral'], ['other']];
+const categoryCases = PATHS.flatMap((coveragePath) =>
+  CATEGORY_REQUESTS.map((requestTypes) => {
+    const input = { coveragePath, requestTypes };
+    return { input, output: defaultCategory(input) };
+  }),
+);
+
 // ---------------------------------------------------------------------------
 // 템플릿: 언어 20종 × 첫 방문 여부 × 업무 관련 여부
 // ---------------------------------------------------------------------------
@@ -229,6 +239,7 @@ const out = {
   extract: extractCases,
   route: routeCases,
   urgency: urgencyCases,
+  category: categoryCases,
   desk: deskCases,
   call: callCases,
   clinician: clinicianCases,

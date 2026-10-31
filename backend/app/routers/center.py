@@ -24,11 +24,12 @@ from app.llm import LLMClient
 from app.push import PushNotifier
 from app.routers.worker import llm_client
 from app.rules.coverage import is_after_hours, next_open_day
-from app.rules.urgency import rate_urgency
+from app.rules.urgency import default_category, rate_urgency
 from app.schemas import (
     CallCaptionIn,
     CallIn,
     Caption,
+    CasePatch,
     CaseStatus,
     CenterCase,
     CenterStats,
@@ -43,7 +44,6 @@ from app.schemas import (
     PushDeviceRequest,
     PushDeviceResponse,
     StatCell,
-    StatusPatch,
 )
 from app.settings import settings
 from app.store import MessageTranslation, message_number, store
@@ -88,6 +88,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
     summary = build_center_summary(req, note_translation=tr.ko)
     urgency, reasons = rate_urgency(req.intake.work_related, req.insurance)
     contact = (req.contact or "").strip() or None
+    coverage_path = req.coverage.path if req.coverage else None
 
     def make(case_id: str) -> CenterCase:
         return CenterCase(
@@ -100,10 +101,13 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
             district=req.intake.district,
             industry=req.intake.industry,
             status="new",
+            category=default_category(coverage_path, req.request_types),
+            actions=[],
+            referred_to=[],
             summary_ko=summary.ko,
             original_native=summary.native,
             consented_items=req.consented_items,
-            coverage_path=req.coverage.path if req.coverage else None,
+            coverage_path=coverage_path,
             contact_method=req.contact_method,
             contact=contact,
             after_hours=is_after_hours(now),
@@ -202,11 +206,16 @@ def get_case(case_id: str) -> CenterCase:
 
 
 @router.patch("/cases/{case_id}", dependencies=staff_only)
-async def patch_case(case_id: str, body: StatusPatch, request: Request) -> CenterCase:
-    """C-02: 상태 변경. 상태가 실제로 바뀌었을 때만 근로자 기기에 알린다(backlog 28)."""
+async def patch_case(case_id: str, body: CasePatch, request: Request) -> CenterCase:
+    """C-02: 상태·분야·조치·연계 기관 변경. 보낸 필드만 바꾼다. 상태가 실제로 바뀌었을 때만 근로자 기기에 알린다(backlog 28)."""
     before = store.get(case_id)
-    c = store.set_status(case_id, body.status)
-    if before is None or c is None:
+    if before is None:
+        raise _not_found(case_id)
+    actions = body.actions if body.actions is not None else before.actions
+    if body.referred_to and "referral" not in actions:
+        raise HTTPException(status_code=422, detail="연계 기관은 관계기관 연계 조치가 있을 때만 적는다")
+    c = store.update_case(case_id, body)
+    if c is None:
         raise _not_found(case_id)
     if c.status != before.status:
         _notify(request.app.state, case_id)

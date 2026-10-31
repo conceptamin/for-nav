@@ -1,5 +1,5 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
-# 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
+# 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태·분야·조치·연계 기관(분야 열부터는 frontend backlog 41, 옛 파일에는 열 때 더한다),
 # chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지(번역 열은 backlog 30, 옛 파일에는 열 때 더한다). chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
@@ -15,12 +15,14 @@ import sqlite3
 from collections.abc import Callable
 from datetime import datetime
 from threading import Lock
+from typing import Any
 
 from pydantic import ValidationError
 
 from app import clock
 from app.data.mock import StatRecord, build_mock_cases, build_stat_records
-from app.schemas import Caption, CaseStatus, CenterCase, ChatMessage, ChatRole, TranslationStatus
+from app.rules.urgency import default_category
+from app.schemas import Caption, CasePatch, CenterCase, ChatMessage, ChatRole, TranslationStatus
 from app.store import (
     CODE_REQUEST_KEEP,
     PUSH_CASES_PER_DEVICE,
@@ -29,13 +31,13 @@ from app.store import (
     AuthCode,
     MessageTranslation,
     PushDevice,
+    apply_changes,
     caption_number,
     latest_first,
     make_message,
     next_case_id,
     oldest_over,
     read_ids,
-    with_status,
 )
 from app.vocab import Lang
 
@@ -151,6 +153,12 @@ def _case_from_body(body: str) -> CenterCase | None:
     # backlog 23 전 본문은 요청 종류가 하나(requestType)다. 한 칸 배열로 읽는다
     if "requestTypes" not in data and "requestType" in data:
         data["requestTypes"] = [data.pop("requestType")]
+    # frontend backlog 41 전 본문에는 분야·조치가 없다. 분야는 접수 때와 같은 규칙으로, 조치·연계 기관은 []로 채운다
+    if "category" not in data:
+        request_types = data.get("requestTypes")
+        data["category"] = default_category(data.get("coveragePath"), request_types if isinstance(request_types, list) else [])
+    data.setdefault("actions", [])
+    data.setdefault("referredTo", [])
     try:
         return CenterCase.model_validate(data)
     except ValidationError as exc:
@@ -160,6 +168,8 @@ def _case_from_body(body: str) -> CenterCase | None:
 
 # 채팅 번역(backlog 30)이 더한 열. 이 항목 전에 만든 DB 파일에는 없으므로 열 때 더한다(옛 메시지는 NULL).
 CHAT_TRANSLATION_COLUMNS = ("lang", "translated", "translated_lang", "translation")
+# 사례 분야·조치(frontend backlog 41)가 더한 열. 옛 파일의 행은 NULL이고 NULL은 "바꾸지 않음"이다. actions·referred_to는 JSON 배열
+CASE_CHANGE_COLUMNS = ("category", "actions", "referred_to")
 
 
 def _add_missing_columns(db: sqlite3.Connection, table: str, columns: tuple[str, ...]) -> None:
@@ -178,6 +188,7 @@ class SqliteStore:
         with self._db:
             self._db.executescript(SCHEMA)
             _add_missing_columns(self._db, "chat_messages", CHAT_TRANSLATION_COLUMNS)
+            _add_missing_columns(self._db, "case_status", CASE_CHANGE_COLUMNS)
         self._mock = build_mock_cases(started)
         self.stat_records: list[StatRecord] = build_stat_records(started)
 
@@ -187,13 +198,24 @@ class SqliteStore:
         # 사례 하나를 못 읽어도 접수함 전체가 500이 되지 않게 그 사례만 뺀다
         return [c for (body,) in rows if (c := _case_from_body(body)) is not None]
 
-    def _status(self) -> dict[str, CaseStatus]:
-        return dict(self._db.execute("SELECT id, status FROM case_status").fetchall())
+    def _changes(self, case_id: str | None = None) -> dict[str, dict[str, Any]]:
+        """사례 id → 바꾼 필드. case_id를 주면 그 사례만 읽는다."""
+        sql = "SELECT id, status, category, actions, referred_to FROM case_status"
+        rows = self._db.execute(sql + " WHERE id = ?", (case_id,)) if case_id else self._db.execute(sql)
+        return {
+            i: {
+                "status": status,
+                "category": category,
+                "actions": json.loads(actions) if actions else None,
+                "referred_to": json.loads(referred_to) if referred_to else None,
+            }
+            for (i, status, category, actions, referred_to) in rows
+        }
 
     def all(self) -> list[CenterCase]:
         with self._lock:
-            status = self._status()
-            cases = [with_status(c, status.get(c.id)) for c in [*self._live(), *self._mock]]
+            changes = self._changes()
+            cases = [apply_changes(c, changes.get(c.id)) for c in [*self._live(), *self._mock]]
         return latest_first(cases)
 
     def get(self, case_id: str) -> CenterCase | None:
@@ -202,8 +224,8 @@ class SqliteStore:
             c = _case_from_body(row[0]) if row else next((m for m in self._mock if m.id == case_id), None)
             if c is None:
                 return None
-            status = self._db.execute("SELECT status FROM case_status WHERE id = ?", (case_id,)).fetchone()
-        return with_status(c, status[0] if status else None)
+            changes = self._changes(case_id).get(case_id)
+        return apply_changes(c, changes)
 
     def add_live(self, at: datetime, make: Callable[[str], CenterCase]) -> CenterCase:
         with self._lock:
@@ -216,13 +238,27 @@ class SqliteStore:
                 )
         return c
 
-    def set_status(self, case_id: str, status: CaseStatus) -> CenterCase | None:
-        if self.get(case_id) is None:
+    def update_case(self, case_id: str, patch: CasePatch) -> CenterCase | None:
+        c = self.get(case_id)
+        if c is None:
             return None
+        # status 열은 NOT NULL이라 행을 처음 만들 때 지금 상태를 함께 적는다. 보내지 않은 필드는 그대로 둔다(COALESCE)
         with self._lock, self._db:
             self._db.execute(
-                "INSERT INTO case_status (id, status) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET status = excluded.status",
-                (case_id, status),
+                "INSERT INTO case_status (id, status, category, actions, referred_to) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT(id) DO UPDATE SET status = COALESCE(?, status), category = COALESCE(?, category), "
+                "actions = COALESCE(?, actions), referred_to = COALESCE(?, referred_to)",
+                (
+                    case_id,
+                    patch.status or c.status,
+                    patch.category,
+                    None if patch.actions is None else json.dumps(patch.actions),
+                    None if patch.referred_to is None else json.dumps(patch.referred_to),
+                    patch.status,
+                    patch.category,
+                    None if patch.actions is None else json.dumps(patch.actions),
+                    None if patch.referred_to is None else json.dumps(patch.referred_to),
+                ),
             )
         return self.get(case_id)
 

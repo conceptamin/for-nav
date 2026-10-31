@@ -2799,6 +2799,23 @@ table.cases tr.fresh {
   gap: 6px;
 }
 
+/* 필터 묶음 이름(C-01 `분야`). 앞 묶음과 12px 띄운다(backlog 41) */
+.filters .filter-label {
+  margin-inline-start: 12px;
+  font-size: var(--t4);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+/* C-02 상담 기록: 분야(하나)·조치(여럿)·연계 기관(여럿) 줄. 버튼은 필터 버튼과 같다(backlog 41) */
+.record .kv {
+  align-items: center;
+}
+
+.record .kv dd.filters {
+  margin: 0;
+}
+
 /* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
 .detail-head {
   display: flex;

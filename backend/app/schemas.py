@@ -4,10 +4,23 @@
 import unicodedata
 from typing import Annotated, Any, Literal
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from pydantic.alias_generators import to_camel
 
-from app.vocab import BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
+from app.vocab import (
+    BodyPart,
+    CaseAction,
+    CaseCategory,
+    Department,
+    District,
+    Industry,
+    Lang,
+    Onset,
+    ReferralTarget,
+    Symptom,
+    WorkType,
+    YesNoUnknown,
+)
 
 
 class CamelModel(BaseModel):
@@ -253,6 +266,11 @@ class CenterCase(CamelModel):
     district: District | None
     industry: Industry | None
     status: CaseStatus
+    # 상담 분야(frontend backlog 41). 접수 때 default_category로 채우고 직원이 바꾼다
+    category: CaseCategory
+    # 직원이 기록한 조치와 연계 기관. 처음 []. referral이 없으면 referred_to는 비어 있다
+    actions: list[CaseAction]
+    referred_to: list[ReferralTarget]
     summary_ko: str
     original_native: str
     # 근로자가 센터 전송에 동의한 항목(한국어 표시)
@@ -280,8 +298,25 @@ class NewCaseResponse(CamelModel):
     chat_token: str | None = absent_if_none()
 
 
-class StatusPatch(CamelModel):
-    status: CaseStatus
+def _no_duplicates[T](v: list[T] | None) -> list[T] | None:
+    if v is not None and len(set(v)) != len(v):
+        raise ValueError("같은 값을 두 번 보낼 수 없다")
+    return v
+
+
+class CasePatch(CamelModel):
+    """C-02 상태·분야·조치 변경. 보낸 필드만 바꾼다. 적어도 하나는 있어야 한다."""
+
+    status: CaseStatus | None = None
+    category: CaseCategory | None = None
+    actions: Annotated[list[CaseAction] | None, AfterValidator(_no_duplicates)] = None
+    referred_to: Annotated[list[ReferralTarget] | None, AfterValidator(_no_duplicates)] = None
+
+    @model_validator(mode="after")
+    def _not_empty(self) -> "CasePatch":
+        if not self.model_fields_set or all(getattr(self, f) is None for f in self.model_fields_set):
+            raise ValueError("바꿀 필드가 하나는 있어야 한다")
+        return self
 
 
 # ---------------------------------------------------------------------------

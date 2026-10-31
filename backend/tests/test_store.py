@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from app import clock
-from app.schemas import CenterCase
+from app.schemas import CasePatch, CenterCase
 from app.settings import load_settings
 from app.store import CenterStore, MemoryStore, MessageTranslation, open_store
 from app.store_sqlite import SqliteStore
@@ -57,20 +57,42 @@ def test_same_millisecond_ids_get_suffix(store: CenterStore):
     assert [c.id for c in store.all()[:3]] == [third.id, second.id, first.id]
 
 
+def set_status(store: CenterStore, case_id: str, status) -> CenterCase | None:
+    return store.update_case(case_id, CasePatch(status=status))
+
+
 def test_set_status_on_mock_and_live(store: CenterStore):
     c = live_case(store)
 
-    assert store.set_status("C-1024", "done").status == "done"
-    assert store.set_status(c.id, "progress").status == "progress"
-    assert store.set_status(c.id, "done").status == "done"
+    assert set_status(store, "C-1024", "done").status == "done"
+    assert set_status(store, c.id, "progress").status == "progress"
+    assert set_status(store, c.id, "done").status == "done"
     assert {x.id: x.status for x in store.all()}[c.id] == "done"
-    assert store.set_status("C-0", "done") is None
+    assert set_status(store, "C-0", "done") is None
     assert store.get("C-0") is None
+
+
+def test_update_case_keeps_earlier_changes(store: CenterStore):
+    """보낸 필드만 바꾸고 앞서 바꾼 필드는 남는다. 조치·기관은 열거 순서로 맞추고, 연계를 빼면 기관도 비운다(frontend backlog 41)."""
+    c = live_case(store)
+
+    store.update_case(c.id, CasePatch(category="cost"))
+    store.update_case(c.id, CasePatch(actions=["referral", "info"]))
+    got = store.update_case(c.id, CasePatch(referred_to=["ulsan", "nhis"]))
+    assert (got.status, got.category, got.actions, got.referred_to) == (c.status, "cost", ["info", "referral"], ["nhis", "ulsan"])
+    got = store.update_case(c.id, CasePatch(status="progress"))
+    assert (got.status, got.category, got.actions, got.referred_to) == ("progress", "cost", ["info", "referral"], ["nhis", "ulsan"])
+    got = store.update_case(c.id, CasePatch(actions=["info"]))
+    assert (got.actions, got.referred_to) == (["info"], [])
+    assert {x.id: x for x in store.all()}[c.id] == got
+    # mock 사례도 같다
+    assert store.update_case("C-1024", CasePatch(category="insurance")).category == "insurance"
 
 
 def test_reset_clears_live_and_status(store: CenterStore):
     live_case(store)
-    store.set_status("C-1024", "done")
+    set_status(store, "C-1024", "done")
+    store.update_case("C-1023", CasePatch(category="cost", actions=["info"]))
     store.reset()
 
     cases = store.all()
@@ -173,8 +195,9 @@ def test_sqlite_survives_restart(tmp_path: Path):
     path = str(tmp_path / "center.db")
     first = SqliteStore(path, STARTED)
     c = live_case(first)
-    first.set_status(c.id, "progress")
-    first.set_status("C-1024", "done")
+    set_status(first, c.id, "progress")
+    set_status(first, "C-1024", "done")
+    first.update_case("C-1023", CasePatch(category="cost", actions=["referral"], referred_to=["kcomwel"]))
     first.close()
 
     # 재시작: 시작 시각이 달라도 mock id는 같고, live 사례와 상태가 남는다.
@@ -182,6 +205,8 @@ def test_sqlite_survives_restart(tmp_path: Path):
     try:
         assert second.get(c.id) == c.model_copy(update={"status": "progress"})
         assert second.get("C-1024").status == "done"
+        moved = second.get("C-1023")
+        assert (moved.category, moved.actions, moved.referred_to) == ("cost", ["referral"], ["kcomwel"])
         assert len(second.all()) == 25
     finally:
         second.close()
@@ -235,6 +260,46 @@ def test_sqlite_opens_old_cases_with_single_request_type(tmp_path: Path):
         assert len(second.all()) == 25
     finally:
         second.close()
+
+
+def test_sqlite_opens_old_cases_without_category(tmp_path: Path):
+    """frontend backlog 41 전에 저장한 사례 본문에는 분야·조치가 없다. 분야는 접수 규칙으로, 조치·연계 기관은 []로 읽는다."""
+    import json
+
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    c = live_case(first)
+    first.close()
+    old = {k: v for k, v in c.model_dump(by_alias=True).items() if k not in ("category", "actions", "referredTo")}
+    _rewrite_body(path, c.id, json.dumps({**old, "coveragePath": "ulsanSupport"}))
+
+    second = SqliteStore(path, STARTED)
+    try:
+        got = second.get(c.id)
+        assert (got.category, got.actions, got.referred_to) == ("cost", [], [])
+        assert len(second.all()) == 25
+    finally:
+        second.close()
+
+
+def test_sqlite_adds_case_change_columns_to_old_file(tmp_path: Path):
+    """frontend backlog 41 전 DB 파일(case_status에 status만)을 열면 열이 더해지고, 옛 상태는 그대로 읽힌다."""
+    path = str(tmp_path / "center.db")
+    db = sqlite3.connect(path)
+    with db:
+        db.execute("CREATE TABLE case_status (id TEXT PRIMARY KEY, status TEXT NOT NULL)")
+        db.execute("INSERT INTO case_status VALUES ('C-1024', 'done')")
+    db.close()
+
+    store = SqliteStore(path, STARTED)
+    try:
+        before = MemoryStore(STARTED).get("C-1024")
+        got = store.get("C-1024")
+        assert got == before.model_copy(update={"status": "done"})
+        got = store.update_case("C-1024", CasePatch(actions=["followUp"]))
+        assert (got.status, got.category, got.actions) == ("done", before.category, ["followUp"])
+    finally:
+        store.close()
 
 
 @pytest.mark.parametrize("body", ["{not json", "[]", '{"id": "C-9999", "summaryKo": "읽지 못할 본문"}'])

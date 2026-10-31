@@ -4,8 +4,8 @@
 
 import type { StatRecord } from '../data/mock';
 import { buildMockCases, buildStatRecords } from '../data/mock';
-import type { CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse, StatCell } from '../domain/centerCase';
-import { MIN_CELL, rateUrgency } from '../domain/centerCase';
+import type { CasePatch, CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse, StatCell } from '../domain/centerCase';
+import { applyCasePatch, defaultCategory, MIN_CELL, rateUrgency, withCaseDefaults } from '../domain/centerCase';
 import type { CenterHours } from '../domain/coverage';
 import { isAfterHours, nextOpenDay } from '../domain/coverage';
 import type { RequestType } from '../domain/templates';
@@ -15,20 +15,30 @@ import { INDUSTRIES, LANGS } from '../domain/vocab';
 import { readJson, writeJson } from './storage';
 
 const LIVE_KEY = 'umn.center.liveCases';
+// 사례 id → 직원이 바꾼 값. 상태만 바꾸던 때(backlog 41 전)는 값이 상태 문자열이다
 const STATUS_KEY = 'umn.center.statusOverrides';
 const CHANGE_EVENT = 'umn-center-change';
 
 const mockCases = buildMockCases();
 
-/** 요청 종류가 하나였던 때(backlog 37 전) 이 브라우저에 저장된 사례를 배열로 읽는다 */
-const withRequestTypes = (c: CenterCase & { requestType?: RequestType }): CenterCase =>
-  c.requestTypes ? c : { ...c, requestTypes: c.requestType ? [c.requestType] : [] };
+type StoredCase = Omit<CenterCase, 'category' | 'actions' | 'referredTo'> & Partial<CenterCase> & { requestType?: RequestType };
+
+/**
+ * 이 브라우저에 예전에 저장된 사례를 지금 모양으로 읽는다.
+ * 요청 종류가 하나였던 때(backlog 37 전)는 배열로, 분야·조치가 없던 때(backlog 41 전)는 규칙 분야와 빈 조치로 채운다
+ */
+const upgrade = (c: StoredCase): CenterCase => withCaseDefaults({ ...c, requestTypes: c.requestTypes ?? (c.requestType ? [c.requestType] : []) });
+
+function loadOverrides(): Record<string, CasePatch> {
+  const raw = readJson<Record<string, CaseStatus | CasePatch>>(localStorage, STATUS_KEY, {});
+  return Object.fromEntries(Object.entries(raw).map(([id, v]) => [id, typeof v === 'string' ? { status: v } : v]));
+}
 
 export function loadAllLocal(): CenterCase[] {
-  const live = readJson<CenterCase[]>(localStorage, LIVE_KEY, []).map(withRequestTypes);
-  const overrides = readJson<Record<string, CaseStatus>>(localStorage, STATUS_KEY, {});
+  const live = readJson<StoredCase[]>(localStorage, LIVE_KEY, []).map(upgrade);
+  const overrides = loadOverrides();
   return [...live, ...mockCases]
-    .map((c) => (overrides[c.id] ? { ...c, status: overrides[c.id]! } : c))
+    .map((c) => (overrides[c.id] ? applyCasePatch(c, overrides[c.id]!) : c))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
@@ -64,6 +74,9 @@ export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseR
     district: req.intake.district,
     industry: req.intake.industry,
     status: 'new',
+    category: defaultCategory({ coveragePath: req.coverage?.path ?? null, requestTypes: req.requestTypes }),
+    actions: [],
+    referredTo: [],
     summaryKo: summary.ko,
     originalNative: summary.native,
     consentedItems: req.consentedItems,
@@ -81,9 +94,10 @@ export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseR
   return { case: c, nextOpenDate: ymd(nextOpenDay(now, hours)) };
 }
 
-export function setCaseStatusLocal(id: string, status: CaseStatus): void {
-  const overrides = readJson<Record<string, CaseStatus>>(localStorage, STATUS_KEY, {});
-  writeJson(localStorage, STATUS_KEY, { ...overrides, [id]: status });
+/** 서버 `PATCH`와 같이 보낸 필드만 바꾼다. 앞서 바꾼 필드는 남는다 */
+export function updateCaseLocal(id: string, patch: CasePatch): void {
+  const overrides = loadOverrides();
+  writeJson(localStorage, STATUS_KEY, { ...overrides, [id]: { ...overrides[id], ...patch } });
   changed();
 }
 

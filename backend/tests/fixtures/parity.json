@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-31T12:25:20.282Z",
+ "generatedAt": "2026-10-31T12:59:13.396Z",
  "now": "2026-10-26T01:00:00.000Z",
  "triage": [
   {
@@ -9037,6 +9037,323 @@
     "urgency": "low",
     "reasons": []
    }
+  }
+ ],
+ "category": [
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": []
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "policy"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "policy",
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "booking",
+     "policy"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "referral"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "industrial",
+    "requestTypes": [
+     "other"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": []
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "policy"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "interpret"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "policy",
+     "interpret"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "booking",
+     "policy"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "referral"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "nhis",
+    "requestTypes": [
+     "other"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": []
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "policy"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "interpret"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "policy",
+     "interpret"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "booking",
+     "policy"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "referral"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "ulsanSupport",
+    "requestTypes": [
+     "other"
+    ]
+   },
+   "output": "cost"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": []
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "policy"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "policy",
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "booking",
+     "policy"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "referral"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": "center",
+    "requestTypes": [
+     "other"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": []
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "policy"
+    ]
+   },
+   "output": "insurance"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "policy",
+     "interpret"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "booking",
+     "policy"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "referral"
+    ]
+   },
+   "output": "medical"
+  },
+  {
+   "input": {
+    "coveragePath": null,
+    "requestTypes": [
+     "other"
+    ]
+   },
+   "output": "medical"
   }
  ],
  "desk": [
@@ -115480,6 +115797,9 @@
    "district": "buk",
    "industry": "shipbuilding",
    "status": "new",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(북구, 조선 업종). 이·잇몸 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Боль — Зубы, десны (2–3 дня назад).\nСлучилось на работе: нет.\nРайон: Пук-гу.\nОтрасль: Судостроение.\nМои слова: \"Уже неделю болит зуб. Нужен переводчик у стоматолога.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -115509,6 +115829,9 @@
    "district": "ulju",
    "industry": "shipbuilding",
    "status": "new",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(울주군, 조선 업종). 배 통증, 구토·메스꺼움, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
    "originalNative": "Masalah: Nyeri, Mual, muntah — Perut (Kemarin).\nTerjadi di tempat kerja: tidak.\nWilayah: Ulju-gun.\nIndustri: Galangan kapal.\nCatatan saya: \"Sakit perut dan muntah sejak kemarin. Harus ke rumah sakit mana?\"\nPermintaan: Saran asuransi & bantuan.",
    "consentedItems": [
@@ -115540,6 +115863,9 @@
    "district": "dong",
    "industry": "other",
    "status": "new",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(동구, 기타 업종). 손·손가락 베인 상처, 출혈, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
    "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (2–3 hari lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Lainnya.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Lainnya.",
    "consentedItems": [
@@ -115569,6 +115895,9 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "new",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 배 통증, 어제 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Боль — Живот (Вчера).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Болит низ живота. Хочу к гинекологу с переводчиком.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -115601,6 +115930,9 @@
    "district": "dong",
    "industry": "other",
    "status": "new",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 없음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Tulong sa booking.",
    "consentedItems": [
@@ -115632,6 +115964,9 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "new",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 눈 눈의 이물감, 통증, 2~3일 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (2–3 дня назад).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Направление в учреждение.",
    "consentedItems": [
@@ -115661,6 +115996,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "new",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Температура, Кашель — Все тело (Сегодня).\nСлучилось на работе: нет.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Температура и кашель три дня. Карту медстраховки ещё не получил.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -115692,6 +116030,9 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "progress",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 조선 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Ожог — Рука, плечо (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Небольшой ожог руки от сварки.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -115723,6 +116064,9 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "progress",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Masalah: Nyeri, Sulit bergerak — Kaki, lutut (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Lutut sakit, susah berjalan.\"\nPermintaan: Bantuan janji temu.",
    "consentedItems": [
@@ -115754,6 +116098,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "progress",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 피부 발진·가려움, 어제 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Сыпь, зуд — Кожа (Вчера).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Зудящая сыпь на руках, возможно от краски.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -115785,6 +116132,9 @@
    "district": "dong",
    "industry": "construction",
    "status": "new",
+   "category": "cost",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 건설 업종). 머리 어지러움, 2~3일 전 시작. 업무 중 발생: 모름. 건강보험증: 없음. 제도 경로 결과: 울산 의료비 지원 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Проблема: Головокружение — Голова (2–3 дня назад).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Строительство.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -115816,6 +116166,9 @@
    "district": "dong",
    "industry": "construction",
    "status": "progress",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "필리핀어 사용 근로자(동구, 건설 업종). 귀·코·목 기침, 통증, 2~3일 전 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 전화.",
    "originalNative": "Problema: Ubo, Pananakit — Tainga, ilong, lalamunan (2–3 araw na ang nakaraan).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Konstruksyon.\nAking tala: \"Masakit ang lalamunan at may ubo, amoy kemikal sa trabaho.\"\nRequest: Iba pa.",
    "consentedItems": [
@@ -115847,6 +116200,9 @@
    "district": "buk",
    "industry": "autoparts",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "싱할라어 사용 근로자(북구, 자동차 부품 업종). 이·잇몸 통증, 일주일 이상 전 시작. 업무 중 발생: 아니요. 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "ප්‍රශ්නය: වේදනාව — දත්, විදුරුමස් (සතියකට වඩා කලින්).\nවැඩේදී වුණා: නැහැ.\nප්‍රදේශය: බුක්-ගු (Buk-gu).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"සතියක් තිස්සේ දතේ කැක්කුමක් තියෙනවා. දන්ත වෛද්‍යවරයා ළඟ භාෂා පරිවර්තකයෙක් ඕනේ.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
    "consentedItems": [
@@ -115876,6 +116232,9 @@
    "district": "ulju",
    "industry": "construction",
    "status": "done",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(울주군, 건설 업종). 배 통증, 구토·메스꺼움, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Проблема: Боль, Тошнота, рвота — Живот (Сегодня).\nСлучилось на работе: нет.\nРайон: Ульджу-гун.\nОтрасль: Строительство.\nМои слова: \"Со вчерашнего дня болит живот и рвота. В какую больницу идти?\"\nЗапрос: Советы о страховке и помощи.",
    "consentedItems": [
@@ -115907,6 +116266,9 @@
    "district": "dong",
    "industry": "shipbuilding",
    "status": "done",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 일주일 이상 전 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Tangan saya teriris pelat baja di galangan kapal.\"\nPermintaan: Saran asuransi & bantuan.",
    "consentedItems": [
@@ -115936,6 +116298,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 배 통증, 2~3일 전 시작. 업무 중 발생: 아니요. 건강보험증: 모름. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "Masalah: Nyeri — Perut (2–3 hari lalu).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Perut bagian bawah sakit. Saya ingin ke dokter kandungan dengan penerjemah.\"\nPermintaan: Penerjemahan.",
    "consentedItems": [
@@ -115967,6 +116332,9 @@
    "district": "dong",
    "industry": "other",
    "status": "done",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "필리핀어 사용 근로자(동구, 기타 업종). 허리·등 통증, 오늘 시작. 업무 중 발생: 예(중량물 운반). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 전화.",
    "originalNative": "Problema: Pananakit — Likod, baywang (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Iba pa.\nAking tala: \"Masakit ang likod pagkatapos magbuhat ng mabibigat na piyesa.\"\nRequest: Payo tungkol sa insurance at tulong.",
    "consentedItems": [
@@ -115998,6 +116366,9 @@
    "district": "dong",
    "industry": "chemical",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 화학 업종). 눈 눈의 이물감, 통증, 오늘 시작. 업무 중 발생: 예(절단·연마). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "Проблема: Что-то попало в глаз, Боль — Глаз (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Химическая промышленность.\nМои слова: \"Во время шлифовки что-то попало в глаз.\"\nЗапрос: Помощь с записью.",
    "consentedItems": [
@@ -116027,6 +116398,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "done",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "인도네시아어 사용 근로자(동구, 자동차 부품 업종). 온몸 열, 기침, 오늘 시작. 업무 중 발생: 아니요. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Masalah: Demam, Batuk — Seluruh badan (Hari ini).\nTerjadi di tempat kerja: tidak.\nWilayah: Dong-gu.\nIndustri: Suku cadang mobil.\nCatatan saya: \"Demam dan batuk tiga hari. Kartu asuransi kesehatan saya belum datang.\"\nPermintaan: Penerjemahan.",
    "consentedItems": [
@@ -116058,6 +116432,9 @@
    "district": "dong",
    "industry": "chemical",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "영어 사용 근로자(동구, 화학 업종). 팔·어깨 화상, 오늘 시작. 업무 중 발생: 예(용접). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Problem: Burn — Arm, shoulder (Today).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Chemical.\nMy note: \"Small burn on my arm from welding.\"\nRequest: Interpretation.",
    "consentedItems": [
@@ -116089,6 +116466,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "progress",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "영어 사용 근로자(동구, 자동차 부품 업종). 다리·무릎 통증, 움직이기 어려움, 일주일 이상 전 시작. 업무 중 발생: 예(조립). 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "Problem: Pain, Hard to move — Leg, knee (Over a week ago).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Auto parts.\nMy note: \"Knee hurts, hard to walk.\"\nRequest: Interpretation.",
    "consentedItems": [
@@ -116120,6 +116500,9 @@
    "district": "dong",
    "industry": "chemical",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "싱할라어 사용 근로자(동구, 화학 업종). 피부 발진·가려움, 오늘 시작. 업무 중 발생: 모름(도장·화학물질 취급). 건강보험증: 없음. 제도 경로 결과: 센터 상담. 요청 유형: 통번역. 연락 희망: 전화.",
    "originalNative": "ප්‍රශ්නය: කුෂ්ඨ, කැසීම — සම (අද).\nවැඩේදී වුණා: විශ්වාස නැහැ.\nප්‍රදේශය: දොං-ගු (Dong-gu).\nක්ෂේත්‍රය: රසායන.\nමගේ සටහන: \"අත්වල කසන බිබිලි, සමහරවිට තීන්ත නිසා වෙන්න ඇති.\"\nඉල්ලීම: භාෂා පරිවර්තනය.",
    "consentedItems": [
@@ -116149,6 +116532,9 @@
    "district": "dong",
    "industry": "autoparts",
    "status": "done",
+   "category": "insurance",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "러시아어 사용 근로자(동구, 자동차 부품 업종). 머리 어지러움, 오늘 시작. 업무 중 발생: 모름. 건강보험증: 있음. 제도 경로 결과: 건강보험 진료. 요청 유형: 통번역. 연락 희망: 센터 방문.",
    "originalNative": "Проблема: Головокружение — Голова (Сегодня).\nСлучилось на работе: не знаю.\nРайон: Тон-гу.\nОтрасль: Автозапчасти.\nМои слова: \"Часто кружится голова после ночной смены.\"\nЗапрос: Перевод.",
    "consentedItems": [
@@ -116180,6 +116566,9 @@
    "district": "ulju",
    "industry": "autoparts",
    "status": "done",
+   "category": "medical",
+   "actions": [],
+   "referredTo": [],
    "summaryKo": "싱할라어 사용 근로자(울주군, 자동차 부품 업종). 귀·코·목 기침, 통증, 오늘 시작. 업무 중 발생: 예(도장·화학물질 취급). 건강보험증: 모름. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 전화.",
    "originalNative": "ප්‍රශ්නය: කැස්ස, වේදනාව — කන, නාසය, උගුර (අද).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: උල්ජු-ගුන් (Ulju-gun).\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nමගේ සටහන: \"උගුරේ අමාරුවයි කැස්සයි, වැඩපොළේ රසායන ගඳක් තියෙනවා.\"\nඉල්ලීම: වෙන් කිරීමට සහාය.",
    "consentedItems": [
