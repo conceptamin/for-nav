@@ -304,7 +304,6 @@ export const ru: Record<MessageKey, string> = {
   caseNewMsg: 'Новое сообщение',
   pushNotice: 'Есть новости от центра',
   caseStatusFailed: 'Не удалось загрузить статус. Показан последний полученный.',
-  casePrevDone: 'Прошлый запрос завершён. Можно отправить новый.',
   myCaseSent: 'Отправлен',
   myDelete: 'Удалить все мои данные на этом телефоне',
   myDeleteConfirm: 'Удалить все сохраненные данные на этом телефоне?',

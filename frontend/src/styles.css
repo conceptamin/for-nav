@@ -27,6 +27,7 @@
   --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #0a1c1c; /* 민트 채움 위 글자. #73e1dc 위 11.3:1 · Lc 76.9. 흰 글자는 1.6:1이라 쓰지 않는다 */
   --on-danger: #ffffff; /* 빨강 바탕(119, 끊기) 위 글자 */
+  --on-brand-fg: #ffffff; /* 진한 틸(--brand-fg) 채움 위 글자. 안 읽은 수 배지(backlog 53). 7.5:1 */
   --accent: #f0a500; /* 포커스 윤곽, 실제 전송 칩·행 띠 */
   --info: #0b4596; /* fg-informative-contrast, blue-900. 신규 상태 칩 글자 */
   --info-bg: #eff6ff; /* blue-100 */
@@ -730,17 +731,11 @@ a.brand-pill:active {
   stroke: none;
 }
 
-/* 읽지 않은 센터 메시지 점(backlog 46, SEED notification-badge Small). 숫자 없이 점 하나.
-   119와 헷갈리지 않게 빨강이 아니라 말풍선과 같은 진한 틸이고, 유리 위에서 떠 보이게 흰 테를 두른다 */
-.bar-chat-dot {
+/* 안 읽은 센터 메시지 수 배지(backlog 53, SEED notification-badge Large). 말풍선 끝 쪽 위에 걸친다 */
+.bar-chat-badge {
   position: absolute;
-  top: 7px;
-  inset-inline-end: 13px;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--brand-fg);
-  box-shadow: 0 0 0 2px var(--card-solid);
+  top: 2px;
+  inset-inline-end: 6px;
 }
 
 /* 센터 채팅 시트(backlog 39·47, design.md "센터 채팅 시트"). 하단 독 바로 위에 떠 있는 유리 면. 올라오는 움직임은 없다.
@@ -884,6 +879,26 @@ a.brand-pill:active {
 
 .sheet-body > :first-child {
   margin-top: auto;
+}
+
+/* 채팅 목록(backlog 53)은 대화와 달리 위에서부터 쌓는다 */
+.sheet-body.list > :first-child {
+  margin-top: 0;
+}
+
+/* 채팅·통화 칸. 대화 줄기에 그대로 끼고, 목록·새 요청을 보는 동안에는 연결을 지킨 채 숨긴다 */
+.sheet-pane {
+  display: contents;
+}
+
+.sheet-pane[hidden],
+.sheet-foot[hidden] {
+  display: none;
+}
+
+/* 목록으로 ← (backlog 53). RTL에서는 끝 쪽을 가리킨다 */
+:root[dir='rtl'] .sheet-back .sheet-icon {
+  transform: scaleX(-1);
 }
 
 .sheet .chat-msg:not(.mine),
@@ -1284,6 +1299,24 @@ button.my-case {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
+}
+
+/* 안 읽은 센터 메시지 수(backlog 53, SEED notification-badge Large): 독 채팅 아이콘과 요청 줄이 같이 쓴다.
+   119와 헷갈리지 않게 빨강이 아니라 진한 틸 바탕 + 흰 숫자이고, 유리 위에서 떠 보이게 흰 테를 두른다. 10 이상은 9+ */
+.count-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--brand-fg);
+  color: var(--on-brand-fg);
+  box-shadow: 0 0 0 2px var(--card-solid);
+  font-size: var(--t2);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .btn {
@@ -2664,11 +2697,6 @@ table.cases tr.fresh {
 }
 
 /* 근로자 S-13 요청 줄의 "새 메시지"(backlog 46). 독의 점과 같은 틸 */
-.pill.unread {
-  background: var(--brand-2);
-  color: var(--brand-fg);
-}
-
 .filters {
   display: flex;
   gap: 8px;
@@ -2703,6 +2731,13 @@ table.cases tr.fresh {
   background: var(--brand-paint);
   color: var(--on-brand);
   box-shadow: var(--glass-color-in);
+}
+
+/* C-01 채팅 필터: 말풍선 선 아이콘 + 글 + 새 채팅 사례 수 칩(backlog 53) */
+.filters .filter-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */

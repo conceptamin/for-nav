@@ -62,9 +62,9 @@ export interface MyCaseView {
   lastCenterAt: string | null;
 }
 
-/** 서버가 센 센터 메시지가 근로자가 채팅에서 본 수보다 많으면 새 메시지가 있다 */
-export function hasUnread(view: MyCaseView | undefined, seen: number | undefined): boolean {
-  return (view?.centerMessages ?? 0) > (seen ?? 0);
+/** 서버가 센 센터 메시지 중 근로자가 채팅에서 아직 보지 않은 수(backlog 53) */
+export function unreadCount(view: MyCaseView | undefined, seen: number | undefined): number {
+  return Math.max(0, (view?.centerMessages ?? 0) - (seen ?? 0));
 }
 
 /** 상담 채팅에서 보낸 쪽. 연결할 때 서버가 확인한 역할이다 */

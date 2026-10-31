@@ -304,7 +304,6 @@ export const ne: Record<MessageKey, string> = {
   caseNewMsg: 'नयाँ सन्देश',
   pushNotice: 'केन्द्रबाट नयाँ खबर छ',
   caseStatusFailed: 'स्थिति ल्याउन सकिएन। पछिल्लो पटक पाएको स्थिति देखाइँदैछ।',
-  casePrevDone: 'अघिल्लो अनुरोध सकियो। नयाँ अनुरोध पठाउन सक्नुहुन्छ।',
   myCaseSent: 'पठाएको',
   myDelete: 'यो फोनमा भएको मेरो सबै जानकारी मेटाउनुहोस्',
   myDeleteConfirm: 'यो फोनमा सेभ भएको सबै जानकारी मेटाउने?',

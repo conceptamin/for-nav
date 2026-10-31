@@ -291,7 +291,6 @@ export const vi: Record<MessageKey, string> = {
   caseNewMsg: 'Tin nhắn mới',
   pushNotice: 'Có tin mới từ trung tâm',
   caseStatusFailed: 'Không tải được trạng thái. Đang hiện trạng thái nhận được gần nhất.',
-  casePrevDone: 'Yêu cầu trước đã hoàn tất. Bạn có thể gửi yêu cầu mới.',
   myCaseSent: 'Đã gửi',
   myDelete: 'Xóa toàn bộ dữ liệu của tôi trên điện thoại này',
   myDeleteConfirm: 'Xóa toàn bộ dữ liệu đã lưu trên điện thoại này?',

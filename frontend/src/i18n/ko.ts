@@ -291,7 +291,6 @@ export const ko: Record<MessageKey, string> = {
   caseNewMsg: '새 메시지',
   pushNotice: '센터에서 새 소식이 있습니다',
   caseStatusFailed: '상태를 불러오지 못했습니다. 마지막으로 받은 상태를 보여 줍니다.',
-  casePrevDone: '지난 요청은 완료되었습니다. 새 요청을 보낼 수 있습니다.',
   myCaseSent: '보낸 날',
   myDelete: '이 휴대폰에 있는 내 정보 모두 지우기',
   myDeleteConfirm: '이 휴대폰에 저장된 정보를 모두 지울까요?',
