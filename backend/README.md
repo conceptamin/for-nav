@@ -454,7 +454,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `MODEL_DIR` | (없음) | 있는 폴더(`../modeling/models`) | 응급도·진료과 모델. 비어 있으면 모델 없이 규칙·보조 점수로 동작한다 |
-| `CENTER_AUTH` | `off` | `off` \| `email` | 센터 직원 로그인(backlog 17). `email`이면 `DB_PATH`가 있어야 한다 |
+| `CENTER_AUTH` | `off` | `off` \| `email` | 센터 직원 로그인(backlog 17). `email`이면 `DB_PATH`가 있어야 한다. 공개 주소(Funnel, backlog 19)에서는 `email` 필수 |
 | `MAIL_PROVIDER` | `resend` | `resend` \| `console` | 로그인 코드 메일. `console`은 코드를 서버 표준 출력에 찍는다(로컬 개발 전용, `CENTER_COOKIE_SECURE=false`일 때만 허용) |
 | `MAIL_API_KEY` | (없음) | Resend API 키 | `resend`이면 있어야 한다 |
 | `MAIL_FROM` | (없음) | 예: `for-nav 센터 <no-reply@for-nav.com>` | 보내는 사람. `resend`이면 있어야 한다(Resend에서 인증한 도메인) |
@@ -553,7 +553,48 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅도 이 파일에 평문으로 남는다.
 3. 직원을 등록한다: `cd ~/srv/for-nav/backend && uv run --env-file .env python scripts/staff.py add staff@example.org` (`list`, `remove`도 같다). 서버를 다시 띄울 필요는 없다.
 4. `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 한 번 다시 띄운다(`.env`를 새로 읽는다).
-- 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
+- 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다. 휴대폰 마이크·통화 시연은 HTTPS가 있어야 하므로 아래 "휴대폰 시연 HTTPS(공개)"를 쓴다.
+
+### 휴대폰 시연 HTTPS(공개)
+
+휴대폰 브라우저는 `http://<IP>:8000/`에서 마이크(`getUserMedia`)와 음성 인식을 열지 않는다. 그래서 휴대폰 통화 시연을 하려면 맥미니 앞에 Tailscale Funnel을 둬서 `https://<맥미니 이름>.<tailnet>.ts.net/`을 **인터넷에 공개**한다(backlog 19). 정식 인증서(Let's Encrypt, 자동 갱신)를 쓰고, 공유기 포트를 열지 않으며, WebSocket(`wss`)도 그대로 오간다. 관객 휴대폰도 앱 없이 열 수 있다. 서버 코드와 배포(`deploy.sh`·pm2·워크플로)는 바뀌지 않는다. 같은 Wi-Fi의 `http://<IP>:8000/`도 그대로 남는다. Funnel은 그 앞에 하나 더 둔 입구다.
+
+처음 한 번 준비할 것:
+
+1. 맥미니에 Tailscale을 설치하고 로그인한다. 터미널에서 `tailscale` 명령이 되는지 확인한다(macOS 앱이면 앱 설정에서 CLI를 켠다).
+2. Tailscale 관리 화면(DNS)에서 **MagicDNS**와 **HTTPS Certificates**를 켠다.
+3. tailnet 정책(Access controls)의 `nodeAttrs`에 이 기기의 Funnel을 허용한다(`"attr": ["funnel"]`). 허용이 없으면 처음 `tailscale funnel`을 돌릴 때 켜는 링크가 나온다.
+
+**공개 주소 규칙.** Funnel을 켜기 전에 확인한다. 이 주소는 누구나 열 수 있다.
+
+| 무엇 | 왜 | 어떻게 |
+|---|---|---|
+| **센터 로그인 켜기** | `CENTER_AUTH=off`(기본)이면 센터 경로(`/api/center/cases` 목록·상세·상태 변경, `/reset`, `/stats`)와 센터 채팅·통화 연결이 로그인 없이 열린다. 공개 주소에서는 누구나 실제 전송 사례 요약을 읽고 데모를 초기화할 수 있다 | 위 "센터 직원 로그인 켜기"대로 `backend/.env`에 `CENTER_AUTH=email`, `MAIL_PROVIDER=resend`와 키를 넣고 직원 이메일을 등록한다. `CENTER_COOKIE_SECURE=true`(기본)는 그대로 둔다 |
+| 공개 시간 줄이기 | 근로자 경로(`/api/extract`, `/api/report/*`, `/api/visit-helper`)와 통화 자막 번역은 로그인 없이 LLM을 부른다(설계상 근로자는 비회원도 쓴다). 호출 제한이 없다 | 리허설·발표 때만 켜고 끝나면 바로 끈다. 켠 시간과 끈 시간을 적어 둔다. LLM 공급자 콘솔에 사용 한도(예산 알림)를 건다 |
+| 로그 확인 | 공개 중에 이상한 호출이 몰리는지 본다 | `pm2 logs for-nav`의 `app.access` 줄(경로·상태·ms만 있고 본문은 없다) |
+| 시연 데이터만 | 실제 근로자 정보를 넣지 않는다 | 발표 전에 접수함을 초기화한다(`POST /api/center/reset`, 로그인 뒤 C-01 버튼) |
+
+켜기·확인·끄기(맥미니에서):
+
+```sh
+tailscale funnel --bg --https=443 http://127.0.0.1:8000   # 켜기. --bg라 터미널을 닫아도, 배포로 서버가 다시 떠도 유지된다
+tailscale funnel status                                     # 공개 주소(https://<맥미니>.<tailnet>.ts.net)와 연결 대상 확인
+tailscale funnel --https=443 off                            # 끄기
+```
+
+- 처음 접속할 때 인증서를 발급받느라 몇 초 걸린다. 공개 DNS가 퍼지기까지는 몇 분 걸릴 수 있다. 바로 안 열리면 잠시 뒤에 다시 연다.
+- 켠 뒤 Tailscale에 붙지 않은 기기(휴대폰 LTE)에서 확인한다. `https://<주소>/api/health`가 200이어야 하고, 로그인 없이 `GET /api/center/cases`가 401이어야 하며, `/center`를 열면 C-00 로그인으로 가야 한다.
+- 로그인한 센터 화면에서 채팅·통화가 `4403`으로 닫히면 Funnel이 넘겨준 `Host`가 공개 주소와 달라 같은 사이트 검사(`Origin`)에 걸린 것이다. 이때는 `.env`의 `CORS_ORIGINS`에 `https://<주소>`를 더하고 다시 띄운다.
+- 끈 뒤에는 같은 주소가 더 이상 열리지 않는지 확인한다.
+
+휴대폰 통화 시연 순서:
+
+1. PC 브라우저로 `https://<주소>/center`를 열고 로그인한다(실제 메일 코드). 새로고침해도 로그인이 유지되는지 본다.
+2. 근로자 휴대폰(LTE 또는 다른 Wi-Fi)으로 `https://<주소>/`를 열고 S-12까지 진행해 센터로 보낸다.
+3. PC에서 그 사례(C-02)를 열고 상담 채팅으로 메시지가 서로 오가는지 본다(`wss://…/api/center/cases/{id}/chat`).
+4. 통화를 건다. 휴대폰에서 마이크 권한 요청이 떠야 하고, 서로 목소리가 들려야 하고, 받아쓰기 자막과 번역이 양쪽에 붙어야 한다(`wss://…/call`).
+5. 이어폰을 쓴다. 스피커로 들으면 상대 목소리가 다시 받아써진다.
+- 서버에는 TURN이 없다. 이동통신망끼리(휴대폰 LTE ↔ 휴대폰 LTE)는 통화가 안 붙을 수 있다. 시연은 휴대폰 ↔ PC(Wi-Fi)로 한다.
 
 ## CI
 
