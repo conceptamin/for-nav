@@ -31,7 +31,7 @@ VITE_API_BASE=/api npm run dev                          # Vite 프록시가 /api
 - 근로자 화면(모바일): `http://localhost:5180/`
 - 센터 화면(PC): `http://localhost:5180/center` — 다른 탭이나 다른 기기에 열어 두면 근로자가 보낸 사례가 2초 안에 맨 위에 나타난다. 다른 기기 시연은 API 모드에서만 된다.
 - 센터 접수함의 **접수함 초기화** 버튼으로 실제 전송 사례를 지울 수 있다.
-- 근로자·센터 통화(backlog 26)는 마이크와 음성 인식이 안전한 출처(HTTPS 또는 `localhost`)에서만 열리므로, 지금은 `localhost`에서 PC 브라우저 창 두 개(근로자 360px, 센터 1280px)로 확인한다. STUN 서버는 `VITE_ICE_SERVERS`(JSON 배열)로 바꿀 수 있다. 비우면 Google 공개 STUN(`stun:stun.l.google.com:19302`), `[]`이면 같은 망에서만 붙는다.
+- 근로자·센터 통화(backlog 26)는 마이크와 음성 인식이 안전한 출처(HTTPS 또는 `localhost`)에서만 열리므로, 지금은 `localhost`에서 PC 브라우저 창 두 개(근로자 360px, 센터 1280px)로 확인한다. 통화를 걸거나 받을 때마다 서버 `GET /api/center/cases/{id}/call/ice-servers`에서 TURN이 든 목록을 받아 쓴다(backend 31, backlog 56). 서버에 TURN이 없거나(빈 목록) 4초 안에 받지 못하면 `VITE_ICE_SERVERS`(JSON 배열)를 쓰고, 그것도 비우면 Google 공개 STUN(`stun:stun.l.google.com:19302`), `[]`이면 같은 망에서만 붙는다.
 - 발표용으로 서버 하나만 띄우는 방법(프론트 빌드를 FastAPI가 서빙)은 backend 08 이후 `backend/README.md`에 적는다.
 
 ## 배포
@@ -200,7 +200,7 @@ backlog/            작업 항목(NN-short-name.md)
 | 접수 문장·리포트 | 기본 템플릿 | LLM 슬롯 채우기 + 기본 템플릿 대체 |
 | 자유 입력 번역 | "(원문, 번역 미연결)" | LLM 번역 + 역번역 검사 |
 | 센터 DB | 단독 모드 localStorage / API 모드 서버 메모리 | 서버 DB(backend 07) |
-| 통화 | PC 브라우저끼리만 확인했다(휴대폰은 배포 주소가 HTTPS라 열 수 있지만 실기기로는 확인하지 않았다). STUN만 있고 TURN이 없어 이동통신망끼리는 붙지 않을 수 있다. 웹 앱이라 근로자가 S-12 화면을 열어 두어야 전화를 받는다(푸시 없음). 센터의 상태 변경·채팅 답은 앱을 다시 열면 S-13과 채팅 아이콘 점으로 보이지만(backlog 46), 앱이 닫혀 있을 때는 알림이 없다 받아쓰기는 브라우저 공급자(Chrome은 Google 음성 인식)가 하고 Firefox에는 없다 | TURN 서버, 푸시 알림 |
+| 통화 | PC 브라우저끼리만 확인했다(휴대폰은 배포 주소가 HTTPS라 열 수 있지만 실기기로는 확인하지 않았다). 서버에 TURN(`TURN=cloudflare`, backend 31)을 켜야 이동통신망·회사 방화벽 뒤에서도 붙는다. 꺼져 있으면 STUN만이라 붙지 않을 수 있다. 웹 앱이라 근로자가 S-12 화면을 열어 두어야 전화를 받는다(푸시 없음). 센터의 상태 변경·채팅 답은 앱을 다시 열면 S-13과 채팅 아이콘 점으로 보이지만(backlog 46), 앱이 닫혀 있을 때는 알림이 없다 받아쓰기는 브라우저 공급자(Chrome은 Google 음성 인식)가 하고 Firefox에는 없다 | 푸시 알림 |
 | 근로자 로그인 | API 모드 + 서버 `WORKER_AUTH=google`일 때만 실제 Google 로그인. 단독 모드·서버 `off`는 기기 안 데모 계정. 프로필·리포트는 기기에만 있고 기기 사이 동기화가 없다. Flutter 앱(WebView) 안에서는 Google이 웹 로그인을 막아, 앱이 네이티브 로그인을 등록하면(`setNativeGoogleSignIn`, backlog 35) GIS 대신 앱 로그인 버튼이 같은 서버 경로로 로그인한다 | 서버 저장·동기화(미정) |
 | 테스트 | 타입 검사(`npm run build`)와 백엔드 동기화 테스트만. 프론트 단위 테스트는 없다 | — |
 | CI | PR마다 `.github/workflows/ci.yml`의 `frontend` 잡이 같은 `npm run build`를 돌려 타입 오류를 잡는다 | — |

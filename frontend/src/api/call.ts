@@ -2,6 +2,7 @@
 // 음성은 브라우저끼리 WebRTC로 직접 오가고, 서버는 signal을 상대에게 그대로 중계하고 받아쓴 확정 문장(caption)을 번역해 양쪽에 보낸다.
 // 걸기·받기·끊기와 SDP·ICE, 말하는 중 글은 모두 signal.data 안에 담는다(아래 "signal.data"). 서버는 data를 열어 보지 않는다.
 // 단독 모드에는 서버가 없으므로 통화가 없다. 화면은 isCallAvailable()로 패널째 숨긴다.
+// 걸거나 받을 때마다 서버에서 TURN이 든 ICE 서버 목록을 받는다(backend 31, backlog 56). 없거나 실패하면 STUN 기본값으로 건다.
 // 다시 연결·멈춤 규칙은 useChat과 같다. 통화 중에 신호 연결이 끊겨도 이미 붙은 음성은 끊지 않는다.
 // 자막 본문·SDP·ICE(IP 주소)·토큰은 console에 찍지 않는다. 끊김 기록은 닫힘 코드만 남긴다.
 
@@ -10,11 +11,14 @@ import type { Caption, ChatRole } from '../domain/centerCase';
 import { CAPTION_MAX_LEN } from '../domain/centerCase';
 import type { Lang } from '../domain/vocab';
 import { CHAT_RECONNECT_MS, type ChatAuth, type ChatState, type ChatStopReason } from './chat';
-import { isApiMode, wsUrl } from './http';
+import { isApiMode, logFallback, requestJson, wsUrl } from './http';
 import { isSpeechSupported, startSpeech } from './speech';
 
 /** 거는 쪽이 이만큼 기다려도 상대가 받지 않으면 끊는다 */
 export const CALL_RING_TIMEOUT_MS = 30000;
+
+/** ICE 서버 목록을 기다리는 시간. 서버의 Cloudflare 호출 제한(3초)보다 조금 길다. 넘으면 STUN 기본값으로 건다 */
+export const ICE_FETCH_TIMEOUT_MS = 4000;
 
 /** 채팅과 같은 열쇠로 붙는다(근로자 chatToken, 센터 역할) */
 export type CallAuth = ChatAuth;
@@ -100,6 +104,22 @@ function iceServers(): RTCIceServer[] {
   return DEFAULT_ICE_SERVERS;
 }
 
+/**
+ * 서버가 주는 통화 ICE 서버(TURN 자격 증명 포함). 서버에 TURN이 없으면 빈 목록이고, 그때와 실패하면 fallback을 쓴다.
+ * 주소에 토큰이 들어 있어 로그에는 고정된 경로 이름만 남긴다. 자격 증명은 찍지 않는다
+ */
+async function fetchIceServers(caseId: string, role: ChatRole, token: string | null, fallback: RTCIceServer[]): Promise<RTCIceServer[]> {
+  const q = new URLSearchParams({ role });
+  if (token) q.set('token', token);
+  try {
+    const r = await requestJson<{ iceServers?: unknown }>(`/center/cases/${encodeURIComponent(caseId)}/call/ice-servers?${q}`, { timeoutMs: ICE_FETCH_TIMEOUT_MS });
+    if (Array.isArray(r?.iceServers) && r.iceServers.length > 0) return r.iceServers as RTCIceServer[];
+  } catch (e) {
+    logFallback('/center/cases/{id}/call/ice-servers', e);
+  }
+  return fallback;
+}
+
 /*
  * signal.data(이 앱끼리만 쓰는 형태, 서버는 그대로 중계한다)
  *   { call: 'ring' | 'accept' | 'decline' | 'hangup' }
@@ -177,6 +197,8 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
     let isMuted = false;
     let lastInterim = '';
     let iceQueue: RTCIceCandidateInit[] = [];
+    // 이번 통화의 ICE 서버. 걸거나 받을 때 마이크와 함께 받기 시작해 음성 연결을 만들 때 기다린다
+    let iceReq: Promise<RTCIceServer[]> | null = null;
     // signal 처리는 앞의 것이 끝난 뒤에 한다(setRemoteDescription 전에 ICE를 넣지 않게)
     let chain: Promise<void> = Promise.resolve();
     const present: Record<ChatRole, boolean> = { ...NO_ONE };
@@ -241,6 +263,7 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
       local?.getTracks().forEach((t) => t.stop());
       local = null;
       iceQueue = [];
+      iceReq = null;
       isMuted = false;
       setMuted(false);
       setRemoteStream(null);
@@ -259,8 +282,16 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
 
     const getMic = () => navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
 
-    const makePc = () => {
-      const p = new RTCPeerConnection({ iceServers: ice });
+    const loadIce = () => {
+      iceReq = fetchIceServers(caseId, role, token, ice);
+    };
+
+    /** ICE 서버를 기다린 뒤 음성 연결을 만든다. 그사이 통화가 끝나거나 화면을 떠났으면 null */
+    const makePc = async () => {
+      const req = iceReq;
+      const servers = await (req ?? Promise.resolve(ice));
+      if (disposed || st !== 'connecting' || iceReq !== req) return null;
+      const p = new RTCPeerConnection({ iceServers: servers });
       local?.getTracks().forEach((t) => p.addTrack(t, local!));
       p.onicecandidate = (e) => {
         if (e.candidate) signal({ ice: e.candidate.toJSON() });
@@ -306,7 +337,8 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
         if (st !== 'calling' || !local) return;
         clearRing();
         set('connecting');
-        const p = makePc();
+        const p = await makePc();
+        if (!p) return;
         await p.setLocalDescription(await p.createOffer());
         signal({ sdp: p.localDescription });
       } else if (d.call === 'decline') {
@@ -317,7 +349,8 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
       } else if (d.sdp) {
         if (st !== 'connecting' || !local) return;
         if (d.sdp.type === 'offer') {
-          const p = pc ?? makePc();
+          const p = pc ?? (await makePc());
+          if (!p) return;
           await p.setRemoteDescription(d.sdp);
           await flushIce(p);
           await p.setLocalDescription(await p.createAnswer());
@@ -419,6 +452,7 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
         setEndReason(null);
         setMicDenied(false);
         set('calling');
+        loadIce();
         getMic().then(
           (stream) => {
             if (disposed || st !== 'calling') {
@@ -443,6 +477,7 @@ export function useCall(caseId: string, auth: CallAuth, lang: Lang): Call {
         if (st !== 'ringing') return;
         setMicDenied(false);
         set('connecting');
+        loadIce();
         getMic().then(
           (stream) => {
             if (disposed || st !== 'connecting') {
