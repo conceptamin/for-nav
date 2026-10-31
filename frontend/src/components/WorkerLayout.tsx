@@ -17,7 +17,7 @@ import { CenterLinkContext, type CenterLink } from './centerLink';
 import { CenterSheet } from './CenterSheet';
 import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
-import { WorkerDrawer } from './WorkerDrawer';
+import { MenuButton, WorkerDrawer } from './WorkerDrawer';
 
 export interface ScreenBar {
   /** 화면 이름. 브라우저 탭 제목에 쓴다(앱 바에는 보이지 않는다) */
@@ -119,6 +119,7 @@ export function WorkerLayout() {
     setDrawerOpen(true);
   }, []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const menuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     setDrawerOpen(false);
   }, [pathname]);
@@ -217,6 +218,8 @@ export function WorkerLayout() {
   // 그 밖은 ← + 로고(로그인하고 프로필까지 있으면 로고가 홈 링크).
   // 앱 바를 숨기는 화면(S-01, S-03 로그인, 분석 중)도 좌측 상단에 로고 알약 하나를 둔다(backlog 25)
   const isRoot = pathname === '/' || pathname === '/home';
+  // 메뉴 서랍(backlog 50)은 홈 밖에서 로그인하고 프로필까지 있을 때만. 앱 바를 숨긴 화면(분석 중)에는 메뉴 버튼도 없다
+  const hasDrawer = app.ready && !isRoot && !bar.hidden;
   const logo = <img className="logo" src="/mark.png" width="28" height="28" alt="" />;
 
   return (
@@ -249,6 +252,7 @@ export function WorkerLayout() {
               </div>
             )}
             <LangMenu />
+            {hasDrawer && <MenuButton ref={menuButton} open={drawerOpen} controls="worker-drawer" onClick={openDrawer} />}
           </header>
         )}
         <main className="w-main" ref={mainRef}>
@@ -257,10 +261,7 @@ export function WorkerLayout() {
           </OpenCenterSheetContext.Provider>
         </main>
         {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} focusCaseId={sheetCase} />}
-        {/* 서랍은 홈 밖에서 로그인하고 프로필까지 있을 때만. 앱 바를 숨긴 화면(분석 중)에도 두지 않는다. 시트가 열려 있으면 손잡이를 감춘다 */}
-        {app.ready && !isRoot && !bar.hidden && (
-          <WorkerDrawer id="worker-drawer" open={drawerOpen} showHandle={!sheetOpen} appName={appName} onOpen={openDrawer} onClose={closeDrawer} />
-        )}
+        {hasDrawer && <WorkerDrawer id="worker-drawer" open={drawerOpen} appName={appName} trigger={menuButton} onClose={closeDrawer} />}
         {bar119}
       </div>
       </CenterLinkContext.Provider>

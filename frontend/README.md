@@ -75,7 +75,7 @@ PRD 8장 경로 그대로다. 경로 표는 `src/main.tsx` 한 곳에 있다.
 | C-00 | `/center/login` | 센터 직원 로그인(API 모드 + 서버 `CENTER_AUTH=email`일 때만 쓰인다, backlog 27): 이메일 → 메일로 받은 6자리 코드. 로그인 뒤 `from`(센터 경로)으로 돌아간다 |
 | C-01~C-03 | `/center`, `/center/cases/:id`, `/center/stats` | 접수함(mock 24건 + 실제 전송), 상세·상태 변경·통화(음성 + 번역 자막, 근로자가 화면에 있을 때만 걸 수 있다)·상담 채팅(API 모드), 익명 통계(5건 미만 칸은 `<5`). 들어올 때 로그인을 확인하고, 필요하면 C-00으로 보낸다. 머리글에 직원 이메일·로그아웃 |
 
-근로자 화면의 진입 순서(언어 → 동의 → 로그인 → 프로필)는 `WorkerLayout`이 지킨다. 앞 단계를 건너뛰고 들어오면 그 단계로 되돌린다. 로그인과 프로필이 있어야 홈 이후 화면(증상 확인 포함)이 열린다. 하단 119 띠는 로그인 화면에서도 보인다. 홈 밖의 화면에서는 끝 쪽 가장자리 손잡이로 홈과 같은 메뉴를 담은 서랍을 열어 바로 옮겨 갈 수 있다(경로 없음, backlog 50).
+근로자 화면의 진입 순서(언어 → 동의 → 로그인 → 프로필)는 `WorkerLayout`이 지킨다. 앞 단계를 건너뛰고 들어오면 그 단계로 되돌린다. 로그인과 프로필이 있어야 홈 이후 화면(증상 확인 포함)이 열린다. 하단 119 띠는 로그인 화면에서도 보인다. 홈 밖의 화면에서는 앱 바 언어 버튼 옆 메뉴 버튼(☰)으로 홈과 같은 메뉴를 담은 서랍을 열어 바로 옮겨 갈 수 있다(경로 없음, backlog 50).
 
 ## 폴더 구조
 
@@ -84,7 +84,7 @@ src/
   main.tsx          경로 표. PRD 화면 ID를 주석으로 단다
   pages/            worker/ (S-01~S-13, /guide), center/ (C-00 로그인, C-01~C-03)
                     화면은 api/·state/·i18n/·components/만 부른다. domain/을 직접 부르지 않는다(아래 "API 연결")
-  components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅, 메신저 모양·읽음 표시), CallPanel(근로자·센터 통화와 번역 자막), CenterSheet(하단 채팅 아이콘이 여는 센터 채팅 시트, S-12와 같이 쓰는 요청 전송 훅), centerLink(내 센터 요청 상태와 시트 열기를 S-13·시트에 나눠 주는 컨텍스트, backlog 46), WorkerDrawer(홈 밖 화면의 끝 쪽 손잡이와 메뉴 서랍, backlog 50), workerMenu(홈 목록과 서랍이 같이 쓰는 메뉴 표)
+  components/       WorkerLayout(스플래시·앱 바 ←·로고·언어 변경·하단 119 버튼·진입 순서 가드, useScreenBar), reveal(스크롤 등장 훅 useReveal), common(Chip·Steps·YesNoSeg·SingleSelect·PhotoPicker·Worse119·PolicyDisclaimer), ChatPanel(근로자·센터 상담 채팅, 메신저 모양·읽음 표시), CallPanel(근로자·센터 통화와 번역 자막), CenterSheet(하단 채팅 아이콘이 여는 센터 채팅 시트, S-12와 같이 쓰는 요청 전송 훅), centerLink(내 센터 요청 상태와 시트 열기를 S-13·시트에 나눠 주는 컨텍스트, backlog 46), WorkerDrawer(홈 밖 화면의 앱 바 메뉴 버튼과 메뉴 서랍, backlog 50), workerMenu(홈 목록과 서랍이 같이 쓰는 메뉴 표)
   api/              호출 계층. http(요청·오류·WebSocket 주소), worker(근로자 경로·조용한 대체), center(센터 경로·대체 없음·접수함 구독), chat(상담 채팅 WebSocket·다시 연결·읽음), call(통화 신호 WebSocket·WebRTC 음성·자막 목록), speech(통화 중 받아쓰기, Web Speech API, 앱이 등록하는 호스트 음성 인식 자리), auth(센터 직원 로그인·세션 끝 알림, 근로자 Google 로그인 상태), googleId(Google Identity Services 스크립트·공식 버튼, 앱이 등록하는 네이티브 로그인 자리), push(앱이 등록하는 호스트 푸시 자리, 기기 등록·해제, backlog 48), meta
                     단독/API 모드 선택과 경로별 대체 정책은 여기에만 있다
   domain/           규칙 엔진(triage·coverage·centerCase)과 템플릿(templates), 어휘(vocab) — 타입·규칙·문장의 원본
