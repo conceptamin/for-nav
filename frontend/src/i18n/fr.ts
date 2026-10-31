@@ -284,7 +284,7 @@ export const fr: Record<MessageKey, string> = {
   cenSentBody: 'Un conseiller va lire votre demande et vous contacter.',
   cenAfterHours: 'Le centre est fermé maintenant. Nous vous contacterons le prochain jour ouvré :',
   cenInHours: 'Le centre est ouvert maintenant. Attendez qu’on vous contacte, s’il vous plaît.',
-  cenHoursNote: 'Horaires du centre (à confirmer) : en semaine 09:00–18:00',
+  cenHoursNote: 'Horaires du centre : du dimanche au jeudi 09:00–18:00',
   cenCaseNo: 'Numéro de demande',
 
   // S-13

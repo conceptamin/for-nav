@@ -478,7 +478,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 
 | 환경 변수 | 기본값 | 형식 | 쓰는 곳 |
 |---|---|---|---|
-| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(평일, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
+| `CENTER_HOURS` | `09:00-18:00` | `HH:00-HH:00`(일~목 고정, 시 단위) | `/api/meta`, 운영 시간 외 판정(`afterHours`), 다음 운영일, mock 사례·통계 |
 | `INFO_DATE` | `2026-10-24` | `YYYY-MM-DD` | `/api/meta`, `/api/route`의 `infoDate` |
 | `CORS_ORIGINS` | `http://localhost:5180` | 쉼표 구분 출처 목록 | CORS 허용 출처 |
 | `LLM_PROVIDER` | `anthropic` | `anthropic`만 지원 | LLM 어댑터 선택 |
@@ -562,7 +562,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 `main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·`app-front/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
 
-`deploy.sh` 흐름: 프론트를 API 모드로 `backend/deploy/static.next`에, 앱용 웹(`app-front`)을 `backend/deploy/static-app.next`에 빌드 → `uv sync --frozen --no-dev` → 둘을 `static`·`static-app`으로 함께 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 `static`·`static-app`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+`deploy.sh` 흐름: `backend/.env`의 `GOOGLE_CLIENT_ID`를 읽어 두 빌드에 `VITE_GOOGLE_CLIENT_ID`로 넘긴다(없으면 빈 값) → 프론트를 API 모드로 `backend/deploy/static.next`에, 앱용 웹(`app-front`)을 `backend/deploy/static-app.next`에 빌드 → `uv sync --frozen --no-dev` → 둘을 `static`·`static-app`으로 함께 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 `static`·`static-app`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
 
 호스트별 빌드(backlog 22): `Host`가 `app.for-nav.com`인 요청에는 앱용 웹 빌드(`static-app`, Flutter 앱이 불러오는 화면. 브라우저에서도 같은 근로자 화면이다)를, 나머지(`www.for-nav.com` 등)에는 `frontend` 빌드(`static`)를 준다. `/api/*`는 호스트와 관계없이 같다. Cloudflare 터널은 공개 주소의 `Host`를 그대로 넘긴다(터널 설정에 `httpHostHeader`를 두지 않는다).
 
@@ -610,7 +610,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    WORKER_AUTH=google
    GOOGLE_CLIENT_ID=123-abc.apps.googleusercontent.com
    ```
-4. 프론트 빌드에도 같은 값을 `VITE_GOOGLE_CLIENT_ID`로 넣는다(frontend 28).
+4. 프론트·앱용 웹 빌드에는 `deploy.sh`가 같은 값을 `VITE_GOOGLE_CLIENT_ID`로 넣는다(frontend 28). 따로 할 일은 없다. 배포 로그의 `▶ Google 클라이언트 ID: 있음`으로 확인한다.
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
@@ -670,7 +670,7 @@ backend:
 
 프론트 `README.md`의 미결 사항을 그대로 따른다. 코드를 고치지 않고 바꿀 수 있도록 환경 변수로 빼 두었다("실행"의 환경 변수 표).
 
-- 센터 운영 시간(평일 09:00~18:00 가정) → `CENTER_HOURS`
+- 센터 운영 시간: 일~목 09:00~18:00(센터 확인 2026-10-31). 시간은 `CENTER_HOURS`, 요일은 `app/settings.py`의 `WORKDAYS`
 - 정보 기준일 → `INFO_DATE`. 발표 전 재확인
 - 기관 대표번호(`KCOMWEL`, `NHIS`)는 공개 번호라 `app/rules/coverage.py` 상수로 둔다. 발표 전 재확인
 - 센터·울산시 지원 연락처는 미확인이므로 `phone: null` 유지

@@ -13,7 +13,7 @@ from app.llm import DEFAULT_ATTEMPTS, DEFAULT_TIMEOUT_S, LLMClient
 from app.llm_providers.anthropic import AnthropicClient
 from app.schemas import CenterHours
 
-# 센터 운영 시간. PRD Q1 미결: 확인 전까지 평일 09:00~18:00으로 가정한다.
+# 센터 운영 시간. PRD Q1 센터 확인(2026-10-31): 일~목 09:00~18:00.
 DEFAULT_CENTER_HOURS = "09:00-18:00"
 # 제도 정보 기준일. 실제 운영 시 담당자가 확인한 날짜로 바꾼다.
 DEFAULT_INFO_DATE = "2026-10-24"
@@ -32,8 +32,8 @@ DEFAULT_CENTER_SESSION_DAYS = 30
 WORKER_AUTH_MODES = ("off", "google")
 DEFAULT_WORKER_SESSION_DAYS = 30
 
-# 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일. 운영일은 평일로 고정한다.
-WEEKDAYS = [1, 2, 3, 4, 5]
+# 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일. 운영일은 일~목으로 고정한다.
+WORKDAYS = [0, 1, 2, 3, 4]
 
 _HOURS = re.compile(r"(\d{2}):00-(\d{2}):00")
 
@@ -92,7 +92,7 @@ def _center_hours(raw: str) -> CenterHours:
     open_hour, close_hour = int(m[1]), int(m[2])
     if not 0 <= open_hour < close_hour <= 24:
         raise ValueError(f"CENTER_HOURS는 0 ≤ 시작 < 끝 ≤ 24여야 한다: {raw!r}")
-    return CenterHours(open_hour=open_hour, close_hour=close_hour, workdays=WEEKDAYS)
+    return CenterHours(open_hour=open_hour, close_hour=close_hour, workdays=WORKDAYS)
 
 
 def _info_date(raw: str) -> str:

@@ -61,7 +61,7 @@ export const PATH_KO: Record<CoveragePath, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// 센터 운영 시간(설정값). PRD Q1 미결: 확인 전까지 평일 09:00~18:00으로 가정한다.
+// 센터 운영 시간(설정값). PRD Q1 센터 확인(2026-10-31): 일~목 09:00~18:00.
 // ---------------------------------------------------------------------------
 export interface CenterHours {
   openHour: number;
@@ -70,7 +70,7 @@ export interface CenterHours {
   workdays: number[];
 }
 
-export const CENTER_HOURS: CenterHours = { openHour: 9, closeHour: 18, workdays: [1, 2, 3, 4, 5] };
+export const CENTER_HOURS: CenterHours = { openHour: 9, closeHour: 18, workdays: [0, 1, 2, 3, 4] };
 
 /** 서버 설정값(GET /api/meta). 단독 모드와 서버 실패 시에는 브라우저 상수를 쓴다. */
 export interface Meta {

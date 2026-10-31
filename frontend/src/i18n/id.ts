@@ -284,7 +284,7 @@ export const id: Record<MessageKey, string> = {
   cenSentBody: 'Konselor akan memeriksa permintaan Anda dan menghubungi Anda.',
   cenAfterHours: 'Pusat bantuan sedang tutup. Kami akan menghubungi Anda pada hari kerja berikutnya:',
   cenInHours: 'Pusat bantuan sedang buka. Mohon tunggu dihubungi.',
-  cenHoursNote: 'Jam buka pusat bantuan (belum pasti): hari kerja 09:00–18:00',
+  cenHoursNote: 'Jam buka pusat bantuan: Minggu–Kamis 09:00–18:00',
   cenCaseNo: 'Nomor permintaan',
 
   // S-13
