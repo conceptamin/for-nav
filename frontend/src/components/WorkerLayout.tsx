@@ -129,12 +129,21 @@ export function WorkerLayout() {
     [feed],
   );
 
-  // 앱 푸시(backlog 48). 브라우저·단독 모드에서는 아무 일도 없다. 알림이 이 계정의 사례가 아니면(다른 계정·지운 사례) 열지 않는다.
-  // 언어를 고르기 전(앱을 껐다 켜 세션 언어가 사라졌을 때)에는 등록하지 않는다. 영어 문장으로 덮어쓰지 않게
-  usePushDevice(app.account, refs, app.lang ? t('pushNotice') : null);
-  usePushOpen((caseId) => {
-    if (app.ready && app.chatTokens[caseId]) centerLink.openCase(caseId);
-  });
+  // 앱 푸시(backlog 48). 브라우저·단독 모드에서는 아무 일도 없다. 기기 등록과 알림으로 시트 열기는 진입 순서(언어 → 동의 → 로그인 →
+  // 프로필)를 다 지난 뒤에만 한다. 앱을 완전히 껐다 켜면 세션의 언어·동의가 사라지는데, 그 사이 영어 문장으로 등록하거나
+  // S-01 위에 시트를 열지 않는다. 알림으로 열린 사례는 들고 있다가 근로자가 언어·동의를 다시 고르면 연다(app-front 07 결정 6).
+  // 이 계정의 사례가 아니면(다른 계정·지운 사례) 열지 않는다
+  const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
+  const entered = Boolean(app.lang) && consented && app.ready;
+  usePushDevice(app.account, refs, entered ? t('pushNotice') : null);
+  const [pushCase, setPushCase] = useState<string | null>(null);
+  usePushOpen(setPushCase);
+  const { openCase } = centerLink;
+  useEffect(() => {
+    if (!pushCase || !entered) return;
+    if (app.chatTokens[pushCase]) openCase(pushCase);
+    setPushCase(null);
+  }, [pushCase, entered, app.chatTokens, openCase]);
 
   const appName = app.lang ? t('appName') : 'for nav';
 
@@ -194,7 +203,6 @@ export function WorkerLayout() {
 
   // 진입 순서: 언어 → 동의 → 로그인 → 프로필. 앞 단계를 건너뛰면 되돌린다. 로그인과 프로필은 둘 다 /signup이고,
   // 가던 화면(세션이 끝난 S-12 등)을 next에 담아 로그인 뒤 그리로 돌아간다
-  const consented = app.consents.terms && app.consents.sensitive && app.consents.ai;
   if (!app.lang && pathname !== '/') return <Navigate to="/" replace />;
   if (app.lang && !consented && !['/', '/consent'].includes(pathname)) return <Navigate to="/consent" replace />;
   if (app.lang && consented && !app.ready && !['/', '/consent', '/signup'].includes(pathname)) {

@@ -14,6 +14,9 @@
 3. **`notice`(알림 본문) 문구.** backend 28 결정 2대로 근로자 언어의 한 문장(`pushNotice`)을 등록 때 보낸다. 화면에는 보이지 않는다. 메시지 내용·상태 이름·사례 번호·의료 낱말을 넣지 않는다.
    - 결정(2026-10-31): 권장안. ko "센터에서 새 소식이 있습니다", en "New update from the centre"
 
+4. **꺼진 앱을 알림으로 열 때(app-front 07 결정 6).** 앱을 완전히 끄면 세션의 언어·동의가 사라져 S-01부터 시작하지만 계정·프로필은 남는다.
+   - 결정(2026-10-31): 사용자가 "언어·동의 뒤에 열기"를 골랐다. 알림 사례는 들고 있다가 근로자가 언어·동의를 다시 고르면 그 사례로 시트를 연다. 기기 등록도 같은 가드를 지난 뒤에만 보낸다(그 전에는 영어 문장으로 덮어쓰거나 동의 전에 등록하지 않는다)
+
 ## 범위
 - 하는 것
   - `src/api/push.ts`(새)
@@ -22,7 +25,7 @@
     - 계정이 바뀌거나 비면 `POST /api/center/push-devices/remove` → `unregister()` 순서. 서버가 실패해도 토큰은 지운다(FCM이 거절하면 서버가 지운다, backend 28). 해제 전에 시작한 등록은 끝나도 보내지 않는다
     - `usePushOpen(cb)`: 알림으로 열린 사례 id
     - 기기 토큰은 이 파일의 메모리에만 둔다. 저장소·`console`에 남기지 않는다
-  - `src/components/WorkerLayout.tsx`: `usePushDevice(app.account, refs, t('pushNotice'))`(`refs`는 frontend 46의 내 요청 목록 그대로), `usePushOpen`: 로그인하고 프로필까지 있고(`app.ready`) 이 계정의 `chatTokens`에 있는 사례면 `openCase`, 아니면 무시
+  - `src/components/WorkerLayout.tsx`: `usePushDevice(app.account, refs, <진입 순서를 다 지났으면 t('pushNotice'), 아니면 null>)`(`refs`는 frontend 46의 내 요청 목록 그대로), `usePushOpen`: 받은 사례를 들고 있다가 진입 순서(언어 → 동의 → 로그인 → 프로필)를 다 지나면 이 계정의 `chatTokens`에 있는 사례일 때 `openCase`, 아니면 버린다(결정 4)
   - `src/i18n/*.ts`: `pushNotice` 20개 언어
   - `README.md`: 폴더 구조의 `api/` 줄, "경로별 대체 정책" 표에 푸시 등록 줄, "상태의 경계"에 기기 토큰. `CLAUDE.md` "백엔드·모델링과의 경계"의 공유 import 목록
 - 하지 않는 것
@@ -54,6 +57,7 @@
   - S-13 로그아웃: `POST /api/center/push-devices/remove`(지금 토큰) → `unregister()` 순서
   - `localStorage`·`sessionStorage`·`console`에 기기 토큰 없음
 - 실제 앱(FCM 토큰·알림 탭)은 app-front 07·08에서 확인한다
+- 결정 4(2026-10-31): Playwright 360px, 세션에 언어·동의 없이 계정·프로필만 있는 상태(꺼진 앱을 연 것과 같음)에서 알림 사례를 받으면 S-01·S-02에서는 시트도 등록도 없고, vi와 "Đồng ý tất cả"를 고르자 `/home`에서 시트가 그 사례로 열리고 vi 문장으로 한 번 등록. 이 계정에 없는 사례는 가드를 지난 뒤에도 열지 않는다. 앞의 15개 확인도 그대로 통과
 - 고친 것(2026-10-31, app-front 07 실기기 확인 중 발견): 앱을 완전히 껐다 켜면 세션의 언어가 사라져 S-01부터 시작하는데, 계정·프로필은 남아 있어 그때 영어 `pushNotice`로 다시 등록해 서버의 근로자 언어 문장을 덮어썼다(에뮬레이터에서 다음 알림이 "New update from the centre"로 옴). 언어를 고르기 전에는 등록하지 않게 했다(`notice`가 `null`이면 보내지 않음). Playwright로 언어 없는 세션에서 등록 0건 확인
 
 ## 메모

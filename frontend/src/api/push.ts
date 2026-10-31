@@ -111,8 +111,8 @@ async function unregister(push: HostPush): Promise<void> {
 /**
  * 이 기기를 이 계정의 사례(채팅 토큰이 있는 것, 최대 20개)에 묶는다. API 모드이고 앱이 푸시를 등록했을 때만 보낸다.
  * 사례 목록·문구(언어)·토큰이 바뀌면 다시 보내고, 계정이 바뀌거나 비면(로그아웃·지우기) 앞 계정의 묶음을 푼다.
- * `notice`는 알림 본문으로 쓰일 근로자 언어의 한 문장이다(backend 28 결정 2). 언어를 아직 고르지 않았으면(앱을 완전히 껐다 켜면
- * 세션의 언어가 사라진다) null을 넘긴다. 그때는 보내지 않아, 서버에 등록된 근로자 언어 문장을 영어로 덮어쓰지 않는다.
+ * `notice`는 알림 본문으로 쓰일 근로자 언어의 한 문장이다(backend 28 결정 2). 진입 순서(언어·동의)를 아직 다 지나지 않았으면
+ * (앱을 완전히 껐다 켜면 세션의 언어·동의가 사라진다) null을 넘긴다. 그때는 보내지 않아, 서버에 등록된 근로자 언어 문장을 영어로 덮어쓰지 않는다.
  */
 export function usePushDevice(account: string | null, refs: MyCaseRef[], notice: string | null): void {
   const push = useHostPush();
