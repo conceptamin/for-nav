@@ -46,6 +46,11 @@ class Settings:
     llm_api_key: str = field(default="", repr=False)
     llm_timeout_s: float = DEFAULT_TIMEOUT_S
     llm_attempts: int = DEFAULT_ATTEMPTS
+    # LLM 호출 제한(backlog 20). 0이면 그 제한을 끈다. 넘으면 LLM 없이 대체 동작으로 응답한다
+    llm_rate_per_min: int = 0
+    llm_daily_limit: int = 0
+    # 클라이언트 IP를 담은 헤더(소문자, 예: cf-connecting-ip). TCP 상대가 루프백(터널)일 때만 믿는다. 빈 값이면 상대 주소
+    llm_client_ip_header: str = ""
     # 센터 사례 SQLite 파일. 빈 문자열이면 메모리 저장소(재시작하면 mock 시드 상태)
     db_path: str = ""
 
@@ -121,6 +126,16 @@ def _llm_attempts(raw: str) -> int:
     return value
 
 
+def _limit(name: str, raw: str) -> int:
+    try:
+        value = int(raw)
+    except ValueError:
+        raise ValueError(f"{name}는 정수여야 한다: {raw!r}") from None
+    if value < 0:
+        raise ValueError(f"{name}는 0 이상이어야 한다(0이면 끈다): {raw!r}")
+    return value
+
+
 def _db_path(raw: str) -> str:
     path = raw.strip()
     if path and not Path(path).parent.is_dir():
@@ -191,6 +206,9 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
             llm_api_key=env.get("LLM_API_KEY", "").strip(),
             llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
             llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
+            llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
+            llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
+            llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
             db_path=_db_path(env.get("DB_PATH", "")),
             static_dir=_static_dir(env.get("STATIC_DIR", "")),
             model_dir=_model_dir(env.get("MODEL_DIR", "")),

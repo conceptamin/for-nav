@@ -20,6 +20,11 @@ module.exports = {
       env: {
         STATIC_DIR: path.join(__dirname, 'static'),
         MODEL_DIR: path.resolve(backend, '../modeling/models'),
+        // LLM 호출 제한(backlog 20). 공개 주소라 .env를 빠뜨려도 켜지게 여기 둔다. 넘으면 LLM 없이 대체 동작으로 응답한다
+        LLM_RATE_PER_MIN: '60',
+        LLM_DAILY_LIMIT: '3000',
+        // Cloudflare 터널(같은 기기, 루프백)이 붙이는 실제 클라이언트 IP
+        LLM_CLIENT_IP_HEADER: 'cf-connecting-ip',
       },
       autorestart: true,
       max_restarts: 10,

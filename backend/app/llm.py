@@ -41,6 +41,10 @@ class LLMClient(Protocol):
         ...
 
 
+# 서버 안 호출 제한(backlog 20)에 걸렸다는 LLMError 종류. 공급자의 RateLimitError와 달리 다시 불러도 막히므로 재시도하지 않는다.
+LIMITED = "limited"
+
+
 class LLMError(Exception):
     """공급자 호출 실패. `kind`는 짧은 식별자(SDK 예외 이름, stop_reason)이고 프롬프트·응답 원문을 넣지 않는다."""
 
@@ -78,5 +82,7 @@ async def generate[OutputT: BaseModel](
             return output_type.model_validate_json(raw)
         except (TimeoutError, LLMError, ValidationError) as exc:
             logger.warning("llm attempt=%d/%d failed=%s", attempt, attempts, _failure(exc))
+            if isinstance(exc, LLMError) and exc.kind == LIMITED:
+                break
     # except 블록 밖에서 올려 원문이 담긴 예외가 __context__로 이어지지 않게 한다.
     raise LLMUnavailableError
