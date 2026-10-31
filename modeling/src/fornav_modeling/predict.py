@@ -1,10 +1,10 @@
 # 백엔드가 부를 예측 함수(backlog 08). 입력은 백엔드 Intake 필드 이름(snake_case)의 dict, 출력은 TriageResult.model 자리에 넣을 dict.
+# - 진료과만 예측한다. 응급도 모델은 앱이 응급 여부를 판정하지 않기로 해서 지웠다(backlog 15).
 # - 아티팩트(models/<이름>/v2/)만 읽는다. 학습 코드(fornav_modeling.models.*, scikit-learn)를 import하지 않는다
 #   (tests/test_predict_contract.py가 확인한다). 불러올 때 metadata.json에 적힌 sha256과 파일이 다르면 멈춘다.
-# - 레드플래그·명확 케이스 규칙은 백엔드가 이 함수 앞에서 실행한다. 여기에는 규칙이 없다.
-# - 응급도 입력의 "모름"(사용자와 정함, 2026-10-28, backlog 10): 의식 상태를 모르면 alert(앱을 쓰는 사람). 성별·나이대·손상 여부·
-#   통증 점수는 모르면 결측 그대로 넘긴다. 응급도 v2는 이 값들이 빈 행을 함께 학습했고, 임계값도 이 값들을 모르는 입력에서
-#   재현율 목표를 넘게 정했다. (08의 v1은 결측을 학습하지 않아 최악값으로 채웠는데, 응급 예측이 81%로 늘었다.)
+# - 진료과 규칙표는 백엔드가 이 함수 앞에서 실행한다. 여기에는 규칙이 없다.
+# - 백엔드 Intake에 없는 피처(통증 점수·의식 상태·나이대·성별)는 NaN이다. 모델 A는 이 넷과 발생 시점·손상 여부를 쓰지 않고(피처 중요도 0),
+#   모델 B는 부위·증상에 손상 여부만 더 쓴다.
 # - 진료과: 모델 A·B 분포의 가중 평균. 최대 확률이 폴백 기준값 미만이면 상위 2개를 가정의학과·내과로 바꾼다.
 # 앙상블·모델 B 추론 함수(combine, top2, predict_from_weights)는 학습 코드도 이 모듈에서 가져다 쓴다 — 서빙과 학습이 같은 함수다.
 
@@ -18,19 +18,11 @@ from typing import Any
 import lightgbm as lgb
 import numpy as np
 
-from fornav_modeling.explain import top_contributions
 from fornav_modeling.features.buttons import FEATURE_NAMES, featurize
 from fornav_modeling.schema import DEPARTMENTS, Department
 
-ACUITIES = ("emergency", "today", "outpatient")  # labels/ktas.py와 같은 순서(test_predict_contract가 확인)
-EMERGENCY = 0
 MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 VERSION = "v2"
-SHAP_TOP_N = 3
-
-# 응급도 "모름" 처리. 이 키들은 백엔드 Intake에 아직 없어 같은 dict에 더 받는다(features/buttons.py)
-UNKNOWN_MENTAL = "alert"
-UNKNOWN_RULE = "의식 상태 모름 → alert. 성별·나이대·손상 여부·통증 점수·발생 시점 모름 → 결측 그대로(모델이 결측이 섞인 행으로 학습함)"
 
 
 class ArtifactError(RuntimeError):
@@ -41,38 +33,17 @@ class ArtifactError(RuntimeError):
 # 예측
 # ---------------------------------------------------------------------------
 def predict(intake: Mapping[str, Any], models_dir: Path | None = None) -> dict:
-    """Intake dict → {acuity, acuityProba, departmentProba, departmentTop2, departmentFallback, shap}."""
+    """Intake dict → {departmentProba, departmentTop2, departmentFallback}."""
     a = load_artifacts(str(models_dir or MODELS_DIR))
-    x = acuity_features(intake)
-    acuity_proba = a["acuity_booster"].predict(x.reshape(1, -1))[0]
-    acuity = decide_acuity(acuity_proba, a["acuity_threshold"])
     department = combine(dept_a_proba(a, intake), dept_b_proba(a, intake), a["weight_a"])
     top, fallback = top2(department, a["fallback_threshold"], a["fallback"])  # 조정·평가(models/ensemble.py)와 같은 값으로 고른다
     # 모델 A의 질환별 진료과 비율은 소수 넷째 자리로 반올림돼 행 합이 1에서 1e-4쯤 벗어난다. 내보내는 분포만 합 1로 맞춘다
     department = department / department.sum()
     return {
-        "acuity": acuity,
-        "acuityProba": {k: float(p) for k, p in zip(ACUITIES, acuity_proba, strict=True)},
         "departmentProba": {d: float(p) for d, p in zip(DEPARTMENTS, department, strict=True)},
         "departmentTop2": top,
         "departmentFallback": fallback,
-        "shap": top_contributions(a["acuity_booster"], x, ACUITIES.index(acuity), SHAP_TOP_N),
     }
-
-
-def acuity_features(intake: Mapping[str, Any]) -> np.ndarray:
-    """응급도 모델에 넣을 피처 벡터. 모르는 값은 UNKNOWN_RULE대로 둔다."""
-    base = dict(intake)
-    if base.get("mental") is None:
-        base["mental"] = UNKNOWN_MENTAL
-    return np.array(featurize(base), dtype=np.float64)
-
-
-def decide_acuity(proba: np.ndarray, threshold: float) -> str:
-    """응급 확률 ≥ 임계값이면 emergency, 아니면 today·outpatient 중 큰 쪽(models/acuity.decide와 같다)."""
-    if proba[EMERGENCY] >= threshold:
-        return "emergency"
-    return ACUITIES[1 + int(np.argmax(proba[1:]))]
 
 
 def dept_a_proba(a: Mapping[str, Any], intake: Mapping[str, Any]) -> np.ndarray:
@@ -134,22 +105,17 @@ def softmax(z: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 @lru_cache(maxsize=4)
 def load_artifacts(models_dir: str) -> dict[str, Any]:
-    """models/{acuity,dept_a,dept_b,ensemble}/v1/을 읽어 검증한다. 파일 내용(텍스트·JSON)만 읽고 코드를 실행하지 않는다."""
+    """models/{dept_a,dept_b,ensemble}/<VERSION>/을 읽어 검증한다. 파일 내용(텍스트·JSON)만 읽고 코드를 실행하지 않는다."""
     root = Path(models_dir)
-    texts = {name: read_verified(root / name / VERSION) for name in ("acuity", "dept_a", "dept_b", "ensemble")}
-    acuity_meta, ensemble = json.loads(texts["acuity"]["metadata.json"]), json.loads(texts["ensemble"]["ensemble.json"])
+    texts = {name: read_verified(root / name / VERSION) for name in ("dept_a", "dept_b", "ensemble")}
+    ensemble = json.loads(texts["ensemble"]["ensemble.json"])
     departments = json.loads(texts["dept_a"]["departments.json"])
-    if "threshold" not in acuity_meta:
-        raise ArtifactError(f"acuity/{VERSION}/metadata.json에 서빙 항목이 없다. scripts/export_models.py를 다시 돌린다")
-    for name in ("acuity", "dept_a"):
-        meta = json.loads(texts[name]["metadata.json"])
-        if meta["feature_names"] != list(FEATURE_NAMES) or meta["labels"] != list(ACUITIES if name == "acuity" else DEPARTMENTS):
-            raise ArtifactError(f"{name}/{VERSION}의 피처·라벨 순서가 지금 코드와 다르다")
+    meta = json.loads(texts["dept_a"]["metadata.json"])
+    if meta["feature_names"] != list(FEATURE_NAMES) or meta["labels"] != list(DEPARTMENTS):
+        raise ArtifactError(f"dept_a/{VERSION}의 피처·라벨 순서가 지금 코드와 다르다")
     if departments["labels"] != list(DEPARTMENTS) or list(ensemble["fallback"]) == [] or set(ensemble["fallback"]) - set(DEPARTMENTS):
         raise ArtifactError("dept_a 진료과 순서나 ensemble 폴백 값이 열거값과 다르다")
     return {
-        "acuity_booster": lgb.Booster(model_str=texts["acuity"]["model.txt"]),
-        "acuity_threshold": float(acuity_meta["threshold"]),
         "dept_a_booster": lgb.Booster(model_str=texts["dept_a"]["model.txt"]),
         "class_departments": np.array(departments["class_departments"], dtype=np.float64),
         "dept_b_weights": json.loads(texts["dept_b"]["weights.json"]),

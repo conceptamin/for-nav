@@ -30,18 +30,6 @@ class Source:
 
 
 SOURCES: tuple[Source, ...] = (
-    # Kaggle "Emergency Service - Triage Application"은 라이선스 표시가 없어, 같은 데이터의 원 출처인
-    # PLOS ONE 논문(Moon et al. 2019, CC BY 4.0)의 S1 Appendix를 받는다. 폴더 이름은 데이터셋 이름을 따라 그대로 둔다.
-    Source(
-        key="kaggle_triage",
-        files=(
-            RawFile(
-                name="pone.0216972.s001.xlsx",
-                sha256="f631c951178799179d0fbd74fe979464b955ea1b426222bf015b163b8a24beb0",
-                url="https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0216972.s001",
-            ),
-        ),
-    ),
     Source(
         key="kaggle_symptom",
         kaggle="itachi9604/disease-symptom-description-dataset",

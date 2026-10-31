@@ -182,7 +182,7 @@ backend/
 ```
 
 - `department`: 규칙표가 명시적으로 정한 조합은 규칙표다. 막연한 분기(배·가슴·온몸·발열·구토·어지러움 → 내과 묶음, 그리고 기본값)만 진료과 앙상블 상위 2개(`modeling` 폴백 포함)로 바꾼다. 단 가슴 + 통증, 숨참은 막연한 분기여도 규칙표로 고정한다(모델이 가슴 통증에 정형외과를 먼저 내기도 한다, backlog 06·26).
-- `model`에는 `departmentProba`만 나간다. `modeling` `predict()`가 응급도 출력(`acuity`·`acuityProba`·`shap`)을 함께 돌려줘도 읽지 않는다(modeling 15에서 지운다).
+- `model`에는 `departmentProba`만 나간다. `modeling` `predict()`는 응급도 출력을 내지 않고(modeling 15), 예전 묶음이 `acuity`·`acuityProba`·`shap`을 돌려줘도 읽지 않는다.
 - 예측 중 오류가 나면 `model` 없이 규칙표 결과를 돌려준다(로그에는 예외 종류만).
 
 **`Intake`의 손상 여부(선택)** — 모든 `Intake` 요청은 `injury`(`true` · `false`, 손상·외상 여부)를 선택으로 더 받는다(backlog 10). 규칙은 이 값을 쓰지 않고, `MODEL_DIR`이 있으면 진료과 모델 B 입력으로 넘긴다. 값이 없으면 응답(`/api/extract`의 `intake` 등)에 키를 넣지 않는다. 타입이 다른 값(`injury: "yes"`)은 422다. 예전 응급도 입력(`ageGroup`·`sex`·`painScore`·`mental`)은 backlog 26에서 지웠고, 보내도 무시한다.
