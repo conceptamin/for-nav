@@ -1,4 +1,5 @@
 # 리포트 자유 입력 번역(backlog 05): 성공, 역번역 불일치 거부, 호출 실패, 금지어 거부, 원문 유지, 번역 건너뛰기.
+# 통화 자막(backlog 16)과 채팅 메시지(backlog 30)의 한 번 호출 번역.
 # LLM은 FakeLLMClient로 바꾸고 외부 네트워크를 쓰지 않는다.
 
 import asyncio
@@ -20,6 +21,7 @@ from app.templates.translate import (
     TranslateOutput,
     system_back,
     translate_line,
+    translate_message,
 )
 
 FREE_TEXT = "Ngón tay bị kẹp vào máy dập, bị sưng."
@@ -214,3 +216,34 @@ def test_line_to_worker_language_skips_korean_guard():
     assert line("병원에 오세요", "ko", "vi", ok) == LineTranslation("ok", "Hãy đến bệnh viện")
     empty = FakeLLMClient([LineOutput(text=" ").model_dump_json()])
     assert line("병원에 오세요", "ko", "vi", empty) == LineTranslation("rejected")
+
+
+# ---------------------------------------------------------------------------
+# 채팅 메시지 번역(backlog 30): 자막과 같은 규칙에 채팅용 프롬프트를 쓴다.
+# ---------------------------------------------------------------------------
+def message(text: str, source: str, target: str, client: FakeLLMClient | None) -> LineTranslation:
+    return asyncio.run(translate_message(text, source, target, client))
+
+
+def test_message_ok_uses_chat_prompt():
+    fake = FakeLLMClient([LineOutput(text=f" {KO} ").model_dump_json()])
+    assert message(FREE_TEXT, "vi", "ko", fake) == LineTranslation("ok", KO)
+    [prompt] = fake.prompts
+    assert "chat message" in prompt.system
+    assert prompt.user == FREE_TEXT
+
+
+@pytest.mark.parametrize(
+    ("source", "client"),
+    [("ko", FakeLLMClient([])), ("vi", None), ("vi", FakeLLMClient([provider_error(), LineOutput(text=KO).model_dump_json()]))],
+    ids=["same-language", "no-llm", "llm-error"],
+)
+def test_message_skips(source, client):
+    assert message("손이 아파요", source, "ko", client) == LineTranslation("skipped")
+    if client is not None:
+        assert len(client.prompts) == (0 if source == "ko" else 1)
+
+
+def test_message_korean_guard_rejects():
+    fake = FakeLLMClient([LineOutput(text="손가락 골절입니다").model_dump_json()])
+    assert message(FREE_TEXT, "vi", "ko", fake) == LineTranslation("rejected")

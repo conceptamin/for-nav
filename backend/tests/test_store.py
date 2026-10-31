@@ -1,6 +1,7 @@
 # 센터 저장소(backlog 07): 메모리·SQLite 두 구현에 같은 테스트를 돌리고, SQLite는 재시작 뒤에도 남는지 본다.
 # 상담 채팅의 토큰·메시지(backlog 14)와 통화 자막(backlog 18)도 같은 방식으로 본다.
 
+import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -9,7 +10,7 @@ import pytest
 from app import clock
 from app.schemas import CenterCase
 from app.settings import load_settings
-from app.store import CenterStore, MemoryStore, open_store
+from app.store import CenterStore, MemoryStore, MessageTranslation, open_store
 from app.store_sqlite import SqliteStore
 
 STARTED = datetime(2026, 10, 26, 12, 0, 0, tzinfo=clock.SEOUL)
@@ -82,10 +83,54 @@ def test_chat_messages_per_case_in_order(store: CenterStore):
     store.add_message("C-1002", "center", "다른 방", AT)
     store.add_message("C-1001", "center", "둘", AT)
 
-    assert first.model_dump(by_alias=True) == {"id": "m-1", "caseId": "C-1001", "from": "worker", "text": "하나", "at": clock.iso_utc(AT)}
+    # 번역을 넘기지 않으면 번역 필드는 None이다(backlog 30 전에 저장된 메시지와 같다).
+    no_translation = {"lang": None, "translated": None, "translatedLang": None, "translation": None}
+    assert first.model_dump(by_alias=True) == {
+        "id": "m-1",
+        "caseId": "C-1001",
+        "from": "worker",
+        "text": "하나",
+        **no_translation,
+        "at": clock.iso_utc(AT),
+    }
     assert [(m.id, m.from_, m.text) for m in store.messages("C-1001")] == [("m-1", "worker", "하나"), ("m-2", "center", "둘")]
     assert [m.id for m in store.messages("C-1002")] == ["m-1"]
     assert store.messages("C-0") == []
+
+
+def test_chat_message_keeps_translation(store: CenterStore):
+    ok = store.add_message("C-1001", "worker", "Tay tôi đau", AT, MessageTranslation("vi", "ko", "ok", "손이 아파요"))
+    store.add_message("C-1001", "center", "괜찮으세요?", AT, MessageTranslation("ko", "vi", "skipped"))
+
+    assert (ok.lang, ok.translated, ok.translated_lang, ok.translation) == ("vi", "손이 아파요", "ko", "ok")
+    assert [(m.lang, m.translated, m.translated_lang, m.translation) for m in store.messages("C-1001")] == [
+        ("vi", "손이 아파요", "ko", "ok"),
+        ("ko", None, "vi", "skipped"),
+    ]
+
+
+def test_sqlite_adds_translation_columns_to_old_file(tmp_path: Path):
+    """backlog 30 전에 만든 DB 파일(chat_messages에 번역 열 없음)을 열면 열이 더해지고 옛 메시지는 번역 필드가 None이다."""
+    path = str(tmp_path / "center.db")
+    db = sqlite3.connect(path)
+    with db:
+        db.execute(
+            "CREATE TABLE chat_messages (id TEXT NOT NULL, case_id TEXT NOT NULL, sender TEXT NOT NULL, text TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (case_id, id))"
+        )
+        db.execute("INSERT INTO chat_messages VALUES ('m-1', 'C-1001', 'worker', '하나', ?)", (clock.iso_utc(AT),))
+    db.close()
+
+    store = SqliteStore(path, STARTED)
+    try:
+        [old] = store.messages("C-1001")
+        assert (old.id, old.text, old.lang, old.translated, old.translated_lang, old.translation) == ("m-1", "하나", None, None, None, None)
+        new = store.add_message("C-1001", "center", "둘", AT, MessageTranslation("ko", "vi", "ok", "hai"))
+        assert new.id == "m-2"
+        assert store.messages("C-1001")[1] == new
+    finally:
+        store.close()
+    # 두 번째로 열 때는 이미 열이 있다
+    SqliteStore(path, STARTED).close()
 
 
 def test_chat_token(store: CenterStore):

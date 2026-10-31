@@ -135,12 +135,16 @@ async def translate_line(
     text: str, source: Lang, target: Lang, client: LLMClient | None, *, timeout_s: float = DEFAULT_TIMEOUT_S
 ) -> LineTranslation:
     """받아쓴 한 문장을 옮긴다. 같은 언어·LLM 없음·호출 실패는 skipped, 한국어 번역이 guard에 걸리면 rejected다."""
+    return await _translate_once(system_line(source, target), text, source, target, client, timeout_s=timeout_s)
+
+
+async def _translate_once(
+    system: str, text: str, source: Lang, target: Lang, client: LLMClient | None, *, timeout_s: float
+) -> LineTranslation:
     if client is None or source == target:
         return LineTranslation("skipped")
     try:
-        out = (
-            await generate(client, LLMPrompt(system_line(source, target), text), LineOutput, timeout_s=timeout_s, attempts=1)
-        ).text.strip()
+        out = (await generate(client, LLMPrompt(system, text), LineOutput, timeout_s=timeout_s, attempts=1)).text.strip()
     except LLMUnavailableError:
         return LineTranslation("skipped")
     # 한국어 쪽만 검사할 수 있다(guard는 한국어 금지어). 근로자 언어로 옮긴 문장은 빈 값만 거른다.
@@ -149,3 +153,26 @@ async def translate_line(
         logger.info("line translation rejected=%s", failure)
         return LineTranslation("rejected")
     return LineTranslation("ok", out)
+
+
+# ---------------------------------------------------------------------------
+# 상담 채팅 메시지 번역(backlog 30). 통화 자막과 같이 한 번만 부르고 원문을 항상 함께 보낸다. 프롬프트만 채팅용이다.
+# ---------------------------------------------------------------------------
+def system_message(source: Lang, target: Lang) -> str:
+    return f"""You translate one chat message between a foreign worker in Ulsan, Korea, and a Korean counselor at a support center.
+{_DATA_ONLY}
+
+Translate from {LANGUAGE_NAMES_KO[source]} into {LANGUAGE_NAMES_KO[target]}.
+Rules:
+- Translate faithfully. Keep every fact and add nothing. Do not answer, explain, diagnose or name diseases.
+- Keep names, numbers, dates, addresses and phone numbers as written.
+- Plain polite language.
+
+Answer with JSON that matches the schema."""
+
+
+async def translate_message(
+    text: str, source: Lang, target: Lang, client: LLMClient | None, *, timeout_s: float = DEFAULT_TIMEOUT_S
+) -> LineTranslation:
+    """채팅 메시지 하나를 옮긴다. 같은 언어·LLM 없음·호출 실패는 skipped, 한국어 번역이 guard에 걸리면 rejected다."""
+    return await _translate_once(system_message(source, target), text, source, target, client, timeout_s=timeout_s)

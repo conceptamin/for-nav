@@ -5,7 +5,7 @@
 # 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta
 from threading import Lock
 from typing import Protocol
@@ -18,6 +18,16 @@ from app.vocab import Lang
 
 # 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
 CODE_REQUEST_KEEP = timedelta(hours=1)
+
+
+@dataclass(frozen=True)
+class MessageTranslation:
+    """채팅 메시지 번역 결과(backlog 30). 필드 뜻은 `ChatMessage`와 같다."""
+
+    lang: Lang
+    translated_lang: Lang
+    translation: TranslationStatus
+    translated: str | None = None
 
 
 @dataclass(frozen=True)
@@ -50,8 +60,10 @@ class CenterStore(Protocol):
         """근로자 채팅 토큰. mock 사례에는 없다."""
         ...
 
-    def add_message(self, case_id: str, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
-        """사례 채팅 끝에 메시지를 더한다(id 규칙은 `make_message`)."""
+    def add_message(
+        self, case_id: str, sender: ChatRole, text: str, at: datetime, translation: MessageTranslation | None = None
+    ) -> ChatMessage:
+        """사례 채팅 끝에 메시지를 더한다(id 규칙은 `make_message`). 번역(backlog 30)이 없으면 번역 필드는 None이다."""
         ...
 
     def messages(self, case_id: str) -> list[ChatMessage]:
@@ -167,9 +179,12 @@ def with_status(c: CenterCase, status: CaseStatus | None) -> CenterCase:
     return c.model_copy(update={"status": status}) if status else c
 
 
-def make_message(case_id: str, count: int, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
+def make_message(
+    case_id: str, count: int, sender: ChatRole, text: str, at: datetime, translation: MessageTranslation | None = None
+) -> ChatMessage:
     """`count`는 그 사례에 이미 있는 메시지 수다. id는 사례 안에서 m-1, m-2…로 늘어난다."""
-    return ChatMessage(id=f"m-{count + 1}", case_id=case_id, from_=sender, text=text, at=clock.iso_utc(at))
+    tr = asdict(translation) if translation else {}
+    return ChatMessage(id=f"m-{count + 1}", case_id=case_id, from_=sender, text=text, at=clock.iso_utc(at), **tr)
 
 
 def message_number(message_id: str) -> int | None:
@@ -240,10 +255,12 @@ class MemoryStore:
         with self._lock:
             return self._tokens.get(case_id)
 
-    def add_message(self, case_id: str, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
+    def add_message(
+        self, case_id: str, sender: ChatRole, text: str, at: datetime, translation: MessageTranslation | None = None
+    ) -> ChatMessage:
         with self._lock:
             msgs = self._messages.setdefault(case_id, [])
-            m = make_message(case_id, len(msgs), sender, text, at)
+            m = make_message(case_id, len(msgs), sender, text, at, translation)
             msgs.append(m)
         return m
 

@@ -56,7 +56,7 @@ backend/
       common.py        pick·joinTerms 등 공통 도우미
       guard.py         LLM이 쓴 한국어 문장 검사(금지어·60자·한국어 여부)
       llm_slots.py     템플릿 슬롯 LLM 채우기(자유 입력 → 상황 줄), 실패 시 기본 템플릿
-      translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시. 통화 자막 한 문장 번역(translate_line)
+      translate.py     리포트 자유 입력 번역 → 역번역 → 비교, 실패·불일치 시 원문 표시. 통화 자막 한 문장 번역(translate_line), 채팅 메시지 번역(translate_message)
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
@@ -79,7 +79,7 @@ backend/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
     test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지, 옛 본문 읽기
-    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 데모 초기화, 로그에 토큰·본문 없음)
+    test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 읽음, 메시지 번역, 데모 초기화, 로그에 토큰·본문 없음)
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
@@ -295,8 +295,9 @@ backend/
 
 // 서버 → 클라이언트: 연결 직후 한 번(재접속하면 다시 받는다). read는 역할별 마지막으로 읽은 메시지 id, 없으면 null
 { "type": "history", "messages": [ /* ChatMessage, 보낸 순서 */ ], "read": { "worker": "m-3", "center": null } }
-// 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다
-{ "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu", "at": "2026-10-30T11:50:47.646Z" } }
+// 서버 → 클라이언트: 새 메시지. 보낸 사람 자신에게도 간다. 상대 언어 번역을 붙여 보낸다(backlog 30)
+{ "type": "message", "message": { "id": "m-1", "caseId": "C-47625", "from": "worker", "text": "Tay tôi vẫn còn chảy máu",
+  "lang": "vi", "translated": "손에서 아직 피가 납니다", "translatedLang": "ko", "translation": "ok", "at": "2026-10-30T11:50:47.646Z" } }
 // 서버 → 클라이언트: 읽은 자리가 앞으로 옮겨졌다. 보낸 쪽을 포함해 방의 모든 연결에 간다
 { "type": "read", "role": "center", "upTo": "m-5" }
 // 서버 → 클라이언트: 잘못된 프레임(빈 글, 1000자 초과, JSON 아님, 다른 type, 바이너리, 없는 메시지의 읽음). 연결은 끊지 않는다
@@ -304,6 +305,8 @@ backend/
 ```
 
 읽은 자리는 역할마다 하나이고 앞으로만 옮겨진다. 저장된 값보다 앞이거나 같은 `read`는 저장도 방송도 하지 않는다. 데모 초기화가 함께 지운다.
+
+메시지 번역(backlog 30): 서버는 받은 메시지를 **번역한 뒤에** 저장하고 보낸다(보낸 사람에게도 번역 시간만큼 늦게 돌아간다). 근로자 메시지는 사례 언어 → 한국어, 센터 메시지는 한국어 → 사례 언어이고, `lang`·`translatedLang`이 그 두 언어다. `translation`이 `ok`일 때만 `translated`가 있다. LLM이 없거나 호출 실패·시간 초과·호출 제한이면 `skipped`, 한국어 번역이 금지어 검사에 걸리면 `rejected`이고 원문만 보낸다. 사례 언어가 `ko`면 부르지 않는다(`skipped`). 이 항목 전에 저장된 메시지는 네 필드가 `null`이다. 로그에는 `chat translation=<상태>`만 남는다.
 
 `id`·`from`·`at`은 **서버가 정한다**. `id`는 사례 안에서 `m-1`, `m-2`…로 늘어나고, `from`은 연결 때 확인한 역할이다. 접근 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`만 남고 쿼리 문자열(토큰)과 메시지 본문은 남지 않는다. uvicorn이 따로 남기는 `"WebSocket <경로?쿼리>" [accepted]` 줄은 앱에서 버린다.
 
@@ -647,7 +650,7 @@ backend:
 | 리포트 `note` 번역 | 키가 있으면 LLM 번역 + 역번역 검사, 없거나 실패·불일치면 원문 + "(원문, 번역 미연결)" — 붙임(backlog 05) | 같음 |
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
 | 상담 채팅 센터 인증 | `CENTER_AUTH=email`이면 직원 이메일 코드 로그인 세션이 있어야 `role=center`로 붙는다 — 붙임(backlog 17). `off`(기본)이면 역할만으로 붙는다 | 상담자별 권한, 담당자 지정, 처리 직원 기록 |
-| 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 14) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
+| 상담 채팅 번역 | 키가 있으면 메시지마다 상대 언어로 한 번 번역(통화 자막과 같은 방식, 한국어 쪽은 guard 검사)해 `ChatMessage`의 선택 필드(`lang`, `translated`, `translatedLang`, `translation`)로 함께 보낸다. 없거나 실패·검사 탈락이면 원문만 — 붙임(backlog 30) | 오역이 문제가 되면 역번역 검사(backlog 05)를 더한다 |
 | 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
 | 통화 기록 | 자막을 사례별로 저장, 음성은 저장하지 않음 — 붙임(backlog 18). 연결 직후 `history`로 다시 준다 | 자막 기록 동의, 보존 기간·자동 삭제·암호화(채팅 메시지와 함께 정한다) |
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
