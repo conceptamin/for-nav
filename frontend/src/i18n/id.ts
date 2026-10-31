@@ -235,7 +235,7 @@ export const id: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'Obrolan dengan pusat',
-  chatIntro: 'Konselor akan membalas di sini setelah memeriksa permintaan Anda. Pesan dikirim apa adanya, tanpa terjemahan.',
+  chatIntro: 'Konselor akan membalas di sini setelah memeriksa permintaan Anda. Pesan diterjemahkan oleh mesin ke bahasa lawan bicara, dan teks aslinya juga ditampilkan.',
   chatEmpty: 'Belum ada pesan. Anda bisa menulis lebih dulu.',
   chatPlaceholder: 'Tulis pesan',
   chatSend: 'Kirim',

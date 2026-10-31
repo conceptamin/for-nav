@@ -35,7 +35,7 @@ const TEXT = {
   statsLoading: '통계를 불러오는 중입니다.',
   chatTitle: '상담 채팅',
   chatMock: '예시 사례라 근로자 채팅 토큰이 없습니다. 근로자는 이 채팅에 들어올 수 없습니다.',
-  chatNote: '근로자가 쓴 글은 번역 없이 원문 그대로 보입니다.',
+  chatNote: '근로자가 쓴 글은 한국어로, 센터가 쓴 글은 근로자 언어로 기계 번역되어 원문과 함께 보입니다.',
   callTitle: '통화',
   callNote: '근로자와 인터넷으로 통화합니다. 두 사람의 말이 자막으로 남고 기계 번역이 붙습니다. 자막은 이 화면을 떠나면 사라집니다(서버에 저장하지 않음).',
   callMock: '예시 사례라 근로자가 이 통화에 들어올 수 없습니다.',
@@ -63,6 +63,8 @@ const CHAT_LABELS: ChatLabels = {
     unauthorized: '로그인이 끝났습니다. 다시 로그인해 주세요.',
   },
   rejected: '메시지를 보내지 못했습니다. 1~1000자로 써 주세요.',
+  translating: '번역 중…',
+  machineTranslated: '기계 번역',
 };
 
 const CALL_LABELS: CallLabels = {
