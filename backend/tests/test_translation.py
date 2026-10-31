@@ -39,7 +39,14 @@ INTAKE = {
     "createdAt": "2026-10-26T01:00:00.000Z",
 }
 CLINICIAN = {"intake": INTAKE, "included": ["symptoms", "note"], "profile": None, "meds": ""}
-CENTER = {"intake": INTAKE, "emergencyFlag": False, "requestType": "booking", "coverage": None, "insurance": "no", "contactMethod": "zalo"}
+CENTER = {
+    "intake": INTAKE,
+    "emergencyFlag": False,
+    "requestTypes": ["booking"],
+    "coverage": None,
+    "insurance": "no",
+    "contactMethod": "zalo",
+}
 UNTRANSLATED_NOTE = f"{FREE_TEXT} (원문, 번역 미연결)"
 
 
