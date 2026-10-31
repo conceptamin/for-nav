@@ -1,0 +1,65 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import type { RouteObject } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
+import { WorkerLayout } from '@fe/components/WorkerLayout';
+import { CenterRequestPage, GuidePage, MyPage } from '@fe/pages/worker/CenterRequest';
+import { CoveragePage } from '@fe/pages/worker/Coverage';
+import { EmergencyPage, IntakePage, ResultPage } from '@fe/pages/worker/Intake';
+import { ConsentPage, HomePage, LanguagePage, SignupPage } from '@fe/pages/worker/Onboarding';
+import { ReportBuilderPage, ReportViewPage } from '@fe/pages/worker/Report';
+import { CallPage, DeskPage } from '@fe/pages/worker/Visit';
+import { AppStateProvider } from '@fe/state/AppState';
+import '@fe/styles.css';
+import { installBackPolicy } from './bridge/back';
+import { installHost } from './bridge/host';
+import { HostProvider } from './bridge/HostProvider';
+import { installLinkInterceptor } from './bridge/links';
+import { HostCheckPage } from './pages/HostCheck';
+import './styles.css';
+
+// 다리는 렌더보다 먼저 선다. 호스트가 있으면 여기서 ready가 나간다(README "호스트 계약").
+installHost();
+installLinkInterceptor();
+installBackPolicy();
+
+// 근로자 화면은 frontend/src/main.tsx의 근로자 경로와 같은 순서·같은 화면 ID다(공유 import, backlog 02).
+// 센터 화면(/center*)은 이 앱에 없다. 알 수 없는 경로는 /로 보낸다.
+const routes: RouteObject[] = [
+  {
+    element: <WorkerLayout />,
+    children: [
+      { path: '/', element: <LanguagePage /> }, // S-01
+      { path: '/consent', element: <ConsentPage /> }, // S-02
+      { path: '/signup', element: <SignupPage /> }, // S-03
+      { path: '/home', element: <HomePage /> }, // S-04
+      { path: '/intake', element: <IntakePage /> }, // S-05
+      { path: '/emergency', element: <EmergencyPage /> }, // S-06
+      { path: '/result', element: <ResultPage /> }, // S-07
+      { path: '/coverage', element: <CoveragePage /> }, // S-08
+      { path: '/visit/desk', element: <DeskPage /> }, // S-09
+      { path: '/visit/call', element: <CallPage /> }, // S-10
+      { path: '/report/new', element: <ReportBuilderPage /> }, // S-11 항목 선택
+      { path: '/report/:id', element: <ReportViewPage /> }, // S-11 리포트
+      { path: '/center-request', element: <CenterRequestPage /> }, // S-12
+      { path: '/my', element: <MyPage /> }, // S-13
+      { path: '/guide', element: <GuidePage /> },
+    ],
+  },
+  { path: '/__host', element: <HostCheckPage /> }, // 호스트 연결 확인(개발용, 메뉴에 없다)
+  { path: '*', element: <Navigate to="/" replace /> },
+];
+
+const root = document.getElementById('root');
+if (!root) throw new Error('#root 요소가 없습니다');
+
+createRoot(root).render(
+  <StrictMode>
+    <HostProvider>
+      <AppStateProvider>
+        <RouterProvider router={createBrowserRouter(routes)} />
+      </AppStateProvider>
+    </HostProvider>
+  </StrictMode>,
+);

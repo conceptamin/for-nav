@@ -1,0 +1,157 @@
+/* app-front 스타일. 토큰·컴포넌트·근로자 화면 스타일은 frontend/src/styles.css를 그대로 import한다(공유 import, backlog 02).
+   이 파일에는 WebView 덧붙임(design.md)과 /__host 확인 화면 스타일만 있다. 여기서 토큰 값을 다시 정하지 않는다. */
+
+:root {
+  /* 호스트가 init·insets로 주는 안전 영역(Android). iOS는 env()가 채우고, 스타일은 둘 중 큰 값을 쓴다(design.md "안전 영역") */
+  --inset-top: 0px;
+  --inset-right: 0px;
+  --inset-bottom: 0px;
+  --inset-left: 0px;
+  /* 아래 덧붙임에서 쓰는 합산 값 */
+  --safe-top: max(env(safe-area-inset-top), var(--inset-top));
+  --safe-bottom: max(env(safe-area-inset-bottom), var(--inset-bottom));
+  --safe-left: max(env(safe-area-inset-left), var(--inset-left));
+  --safe-right: max(env(safe-area-inset-right), var(--inset-right));
+}
+
+/* WebView 덧붙임(design.md "높이와 스크롤", "터치") */
+html,
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+a,
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  -webkit-touch-callout: none;
+}
+
+/* 안전 영역: frontend 스타일은 env()만 보므로 호스트가 준 --inset-*을 더한다. 원래 값(10px, 16px, var(--bar-119))은 frontend/src/styles.css와 같다 */
+.w-header {
+  padding-top: calc(10px + var(--safe-top));
+}
+
+.w-corner-logo {
+  padding-top: calc(12px + var(--safe-top));
+}
+
+.w-shell {
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+.w-main {
+  padding-bottom: calc(var(--bar-119) + 16px + var(--safe-bottom));
+}
+
+.w-footer {
+  bottom: calc(var(--bar-119) + var(--safe-bottom));
+}
+
+.bar-119 {
+  padding-bottom: calc(10px + var(--safe-bottom));
+}
+
+/* 확인 화면(/__host). 근로자 화면 밖(WorkerLayout 없음)이라 안전 영역을 직접 띄운다 */
+.check {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(16px + var(--safe-left));
+}
+
+.check h1 {
+  font-size: var(--t9);
+  margin: 0 0 4px;
+}
+
+.check h2 {
+  font-size: var(--t6);
+  margin: 0 0 8px;
+}
+
+.check p {
+  margin: 0 0 8px;
+}
+
+.check .card {
+  margin: 12px 0;
+}
+
+.check .muted {
+  color: var(--ink-2);
+  font-size: var(--t4);
+}
+
+.check table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t4);
+}
+
+.check th,
+.check td {
+  text-align: left;
+  vertical-align: top;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  word-break: break-word;
+}
+
+.check tr:last-child th,
+.check tr:last-child td {
+  border-bottom: 0;
+}
+
+.check th {
+  width: 42%;
+  font-weight: 600;
+  color: var(--ink-2);
+  padding-right: 8px;
+}
+
+.check .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.check .log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--t4);
+}
+
+.check .log li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.check .log li:last-child {
+  border-bottom: 0;
+}
+
+.check code,
+.check pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--t3);
+}
+
+.check pre {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
