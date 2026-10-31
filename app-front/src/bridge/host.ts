@@ -3,6 +3,8 @@
 // - 웹 → 호스트: send(). 호스트 → 웹: window.fornav.receive(), 동기 window.fornav.onBack().
 // - 메시지 본문(openExternal.url 등)을 console에 찍지 않는다. 기록은 type만 남긴다.
 // - 호스트가 없으면 send()는 false를 돌려주고 아무 일도 하지 않는다. 화면은 그때 브라우저 기본 동작에 맡긴다.
+// - 네이티브 Google 로그인(backlog 06): requestGoogleIdToken()이 googleSignIn을 보내고 googleSignInResult 하나를 기다린다.
+//   ID 토큰은 반환값으로만 지나가고 상태·기록·console에 남기지 않는다.
 
 export const PROTOCOL = 1;
 
@@ -35,16 +37,29 @@ export interface HostState {
   locale: string | null;
   /** 호스트가 준 안전 영역(CSS px). :root의 --inset-*에도 들어간다 */
   insets: Insets;
+  /** 호스트가 init으로 알린 기능(예: googleSignIn). 없으면 빈 배열 */
+  features: string[];
   log: LogEntry[];
 }
 
 /** 웹 → 호스트 */
-export type Outgoing = { type: 'ready'; path: string } | { type: 'openExternal'; url: string };
+export type Outgoing = { type: 'ready'; path: string } | { type: 'openExternal'; url: string } | { type: 'googleSignIn' };
+
+/** 호스트가 네이티브 Google 로그인을 할 수 있다는 init.features 값 */
+export const FEATURE_GOOGLE_SIGN_IN = 'googleSignIn';
+
+/** requestGoogleIdToken()의 실패. canceled는 사용자가 계정 선택을 닫은 것이다 */
+export class GoogleSignInError extends Error {
+  constructor(readonly kind: 'canceled' | 'failed') {
+    super(`googleSignIn ${kind}`);
+  }
+}
 
 /** 호스트 → 웹. 모르는 type은 무시한다 */
 type Incoming =
-  | { type: 'init'; platform?: unknown; appVersion?: unknown; locale?: unknown; insets?: unknown }
-  | { type: 'insets'; insets?: unknown };
+  | { type: 'init'; platform?: unknown; appVersion?: unknown; locale?: unknown; insets?: unknown; features?: unknown }
+  | { type: 'insets'; insets?: unknown }
+  | { type: 'googleSignInResult'; idToken?: unknown; error?: unknown };
 
 interface HostWindow {
   ForNav?: { postMessage?: (message: string) => void };
@@ -63,12 +78,16 @@ let state: HostState = {
   appVersion: null,
   locale: null,
   insets: ZERO_INSETS,
+  features: [],
   log: [],
 };
 const listeners = new Set<() => void>();
 let installed = false;
 /** 뒤로 가기의 앱 규칙(bridge/back.ts). true·false면 그 값이 답이고, undefined면 아래 기본 동작으로 간다 */
 let backHandler: (() => boolean | undefined) | null = null;
+/** 기다리는 googleSignIn 요청. 응답(googleSignInResult)은 이것 하나만 끝낸다 */
+let pendingSignIn: { promise: Promise<string>; resolve: (idToken: string) => void; reject: (e: GoogleSignInError) => void } | null =
+  null;
 
 function hostWindow(): HostWindow {
   return window as unknown as HostWindow;
@@ -150,6 +169,10 @@ function toPlatform(raw: unknown): Platform | null {
   return raw === 'android' || raw === 'ios' ? raw : null;
 }
 
+function toFeatures(raw: unknown): string[] {
+  return Array.isArray(raw) ? raw.filter((v): v is string => typeof v === 'string') : [];
+}
+
 function toText(raw: unknown): string | null {
   return typeof raw === 'string' && raw.trim() !== '' ? raw.trim() : null;
 }
@@ -174,6 +197,7 @@ export function receive(raw: unknown): void {
         platform: toPlatform(m.platform),
         appVersion: toText(m.appVersion),
         locale: toText(m.locale),
+        features: toFeatures(m.features),
       });
       const insets = toInsets(m.insets);
       if (insets) applyInsets(insets);
@@ -184,10 +208,40 @@ export function receive(raw: unknown): void {
       if (insets) applyInsets(insets);
       break;
     }
+    case 'googleSignInResult': {
+      const pending = pendingSignIn;
+      pendingSignIn = null;
+      if (!pending) break; // 기다리는 요청이 없으면 무시한다
+      if (typeof m.idToken === 'string' && m.idToken !== '') pending.resolve(m.idToken);
+      else pending.reject(new GoogleSignInError(m.error === 'canceled' ? 'canceled' : 'failed'));
+      break;
+    }
     default:
       return; // 모르는 type: 기록도 남기지 않는다
   }
   pushLog('in', m.type);
+}
+
+/**
+ * 호스트의 네이티브 Google 로그인으로 ID 토큰을 받는다(backlog 06). init.features에 googleSignIn이 있을 때만 보낸다.
+ * 취소는 GoogleSignInError('canceled'), 그 밖은 'failed'. 시간 제한은 없다(계정 선택 창을 오래 들고 있을 수 있다).
+ * 기다리는 중에 또 부르면 같은 요청을 기다린다.
+ */
+export function requestGoogleIdToken(): Promise<string> {
+  if (pendingSignIn) return pendingSignIn.promise;
+  if (!state.ready || !state.features.includes(FEATURE_GOOGLE_SIGN_IN)) return Promise.reject(new GoogleSignInError('failed'));
+  let resolve!: (idToken: string) => void;
+  let reject!: (e: GoogleSignInError) => void;
+  const promise = new Promise<string>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  pendingSignIn = { promise, resolve, reject };
+  if (!send({ type: 'googleSignIn' })) {
+    pendingSignIn = null;
+    reject(new GoogleSignInError('failed'));
+  }
+  return promise;
 }
 
 /**
