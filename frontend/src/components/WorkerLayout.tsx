@@ -41,6 +41,13 @@ export function useScreenBar(bar: ScreenBar) {
   useEffect(() => () => set({}), [set]);
 }
 
+const OpenCenterSheetContext = createContext<() => void>(() => {});
+
+/** 하단 채팅 아이콘과 같은 센터 채팅 시트를 연다(backlog 44, S-12에서 대화로 보낸 뒤) */
+export function useOpenCenterSheet() {
+  return useContext(OpenCenterSheetContext);
+}
+
 export function WorkerLayout() {
   const app = useApp();
   const { t } = useT();
@@ -76,15 +83,19 @@ export function WorkerLayout() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // 스크롤 등장(backlog 25). 응급 화면은 안내·전화 버튼이 늦게 보이면 안 되므로 끈다
+  // 스크롤 등장(backlog 25). 스플래시 동안은 끈다
   const mainRef = useRef<HTMLElement>(null);
-  useReveal(mainRef, !splash && pathname !== '/emergency');
+  useReveal(mainRef, !splash);
 
   // 센터 채팅 시트(backlog 39). 한 번 열면 닫아도 숨기기만 해서 채팅 연결·통화가 끊기지 않는다.
-  // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다. 응급 화면에서는 숨긴다
+  // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetMounted, setSheetMounted] = useState(false);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
+  const openSheet = useCallback(() => {
+    setSheetMounted(true);
+    setSheetOpen(true);
+  }, []);
   const toggleSheet = () => {
     setSheetMounted(true);
     setSheetOpen((o) => !o);
@@ -97,10 +108,10 @@ export function WorkerLayout() {
     document.title = bar.title ? `${bar.title} · ${appName}` : appName;
   }, [bar.title, appName]);
 
-  // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
+  // 119 버튼은 로딩과 관계없이 보인다. 예외는 1.2초 스플래시(사용자 결정, backlog 24). 응급 여부를 판정하지 않으므로(backlog 43) 늘 같은 자리에 있다
   // 채팅 버튼은 센터 연락(통화·채팅, backlog 29) 시트를 지금 화면 위에 열고 닫는다(backlog 39). 로그인하고 프로필까지 있을 때만 보인다.
   // 두 버튼은 끝 쪽에 뜬 유리 독(.bar-dock) 하나에 담는다(backlog 33)
-  const bar119 = pathname !== '/emergency' && (
+  const bar119 = (
     <div className="bar-119">
       <div className="bar-dock">
         <a className="call-119" href="tel:119">
@@ -192,9 +203,11 @@ export function WorkerLayout() {
           </header>
         )}
         <main className="w-main" ref={mainRef}>
-          <Outlet />
+          <OpenCenterSheetContext.Provider value={openSheet}>
+            <Outlet />
+          </OpenCenterSheetContext.Provider>
         </main>
-        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen && pathname !== '/emergency'} onClose={closeSheet} />}
+        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} />}
         {bar119}
       </div>
     </ScreenBarContext.Provider>

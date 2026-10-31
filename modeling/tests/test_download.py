@@ -43,8 +43,8 @@ def fetched(monkeypatch):
     return responses, calls
 
 
-def test_registry_has_three_sources_with_valid_hashes():
-    assert [s.key for s in download.SOURCES] == ["kaggle_triage", "kaggle_symptom", "hira"]
+def test_registry_has_two_sources_with_valid_hashes():
+    assert [s.key for s in download.SOURCES] == ["kaggle_symptom", "hira"]
     for source in download.SOURCES:
         names = [f.name for f in source.files]
         assert len(names) == len(set(names))

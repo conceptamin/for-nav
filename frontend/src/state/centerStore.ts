@@ -53,7 +53,7 @@ const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart
 export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseResponse {
   const now = new Date();
   const summary = buildCenterSummary(req);
-  const { urgency, reasons } = rateUrgency({ emergencyFlag: req.emergencyFlag, workRelated: req.intake.workRelated, insurance: req.insurance });
+  const { urgency, reasons } = rateUrgency({ workRelated: req.intake.workRelated, insurance: req.insurance });
   const c: CenterCase = {
     id: `C-${now.getTime().toString().slice(-5)}`,
     createdAt: now.toISOString(),
@@ -71,7 +71,6 @@ export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseR
     contactMethod: req.contactMethod,
     contact: req.contact?.trim() || null,
     afterHours: isAfterHours(now, hours),
-    emergencyFlag: req.emergencyFlag,
     workRelated: req.intake.workRelated,
     insurance: req.insurance,
     live: true,

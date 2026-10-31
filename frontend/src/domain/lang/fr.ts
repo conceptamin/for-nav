@@ -59,7 +59,6 @@ export const fr: LangPack = {
       assembly: 'Assemblage',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: 'Moins de 30 ans', '30to44': '30–44 ans', '45to64': '45–64 ans', '65plus': '65 ans ou plus' },
     sexes: { female: 'Femme', male: 'Homme' },
   },
   templates: {
@@ -131,23 +130,5 @@ export const fr: LangPack = {
       referral: 'Orientation vers un organisme',
       other: 'Autre',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['évanoui', 'evanoui', 'perdu connaissance', 'sans connaissance', 'inconscient'],
-      breathing: ['pas respirer', 'pas à respirer', 'pas a respirer', 'respire pas', 'étouffe', 'etouffe'],
-      chest: ['mal à la poitrine', 'mal a la poitrine', 'douleur à la poitrine', 'douleur a la poitrine', 'douleur thoracique'],
-      heavyBleeding: ['saigne beaucoup', 'saigne abondamment', 'beaucoup de sang', 'pas de saigner', 'saignement abondant'],
-      amputation: ['amput', 'sectionn', 'doigt arrach', 'main arrach', 'doigt tranch'],
-      fall: ['tombé de', 'tombé du', 'tombe de l', 'tombe du', 'chute de hauteur'],
-      seizure: ['convuls', 'épilep', 'epilep'],
-      stroke: ['paralys', 'bouche de travers', 'un côté du corps', 'un cote du corps'],
-      severeBurn: ['électrocut', 'electrocut', 'brûlure grave', 'brulure grave', 'décharge électrique', 'decharge electrique'],
-      chemicalEye: ['chimique dans les yeux', 'chimique dans l\'œil', 'chimique dans l\'oeil', 'chimique dans l’œil', 'chimique dans l’oeil'],
-      poisoning: ['fuite de gaz', 'empoisonn', 'intoxiq', 'respiré du gaz', 'respire du gaz'],
-    },
-    headInjury: ['cogné la tête', 'cogne la tete', 'coup à la tête', 'coup a la tete', 'blessure à la tête'],
-    vomit: ['vomi'],
-    severity: ['très mal', 'tres mal', 'insupportable', 'horrible', 'grave'],
   },
 };

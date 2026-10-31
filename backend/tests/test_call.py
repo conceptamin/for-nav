@@ -67,7 +67,6 @@ def open_client(monkeypatch):
 def send_case(client: TestClient, language: str = "vi") -> tuple[str, str]:
     body = {
         "intake": intake(language),
-        "emergencyFlag": False,
         "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "yes",
