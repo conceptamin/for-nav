@@ -481,7 +481,7 @@ for (const lang of LANGS) {
       const input = {
         intake: i,
         emergencyFlag: k % 5 === 0,
-        // 넷에 하나는 둘을 고른다(backlog 35)
+        // 넷에 하나는 둘을 고른다(backlog 37)
         requestTypes: k % 4 === 0 ? [REQUESTS[k % REQUESTS.length]!, REQUESTS[(k + 1) % REQUESTS.length]!] : [REQUESTS[k % REQUESTS.length]!],
         coverage,
         insurance,

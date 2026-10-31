@@ -1,10 +1,10 @@
 # 23. 센터 요청 종류를 여러 개 받기(requestTypes)
 
 상태: 완료
-의존: frontend 35(PR #138, `requestType` → `requestTypes`와 `parity.json` 재생성)
+의존: frontend 37(PR #138, `requestType` → `requestTypes`와 `parity.json` 재생성)
 
 ## 목표
-2026-10-31 사용자 요청으로 근로자 S-12 "무엇이 필요하세요?"가 여러 개 고르기가 되었다(frontend 35). 프론트가 원본이므로 서버의 센터 요약 입력과 센터 사례도 요청 종류를 배열로 받고 돌려준다. 그전까지 API 모드 전송은 422로 거절되고 `backend` CI의 동기화 테스트가 실패한다.
+2026-10-31 사용자 요청으로 근로자 S-12 "무엇이 필요하세요?"가 여러 개 고르기가 되었다(frontend 37). 프론트가 원본이므로 서버의 센터 요약 입력과 센터 사례도 요청 종류를 배열로 받고 돌려준다. 그전까지 API 모드 전송은 422로 거절되고 `backend` CI의 동기화 테스트가 실패한다.
 
 ## 범위
 - 하는 것
@@ -24,7 +24,7 @@
 
 ## 완료 기준
 - [x] `uv run ruff check . && uv run ruff format --check .` 통과
-- [x] frontend 35가 만든 `parity.json`으로 `uv run pytest` 통과
+- [x] frontend 37가 만든 `parity.json`으로 `uv run pytest` 통과
 - [x] 두 종류를 보내면 요약이 `요청 유형: 예약 지원, 통번역.`이고, 빈 배열은 422
 
 ## 결과
@@ -34,7 +34,7 @@
 - 더한 테스트: `test_center_summary_lists_every_request_type`(두 종류 → ko·vi 요청 줄), `test_center_summary_needs_a_request_type`(빈 배열 → 422)
 - 결정
   - 개수 위아래를 서버에서도 막았다(1~5). 프론트는 하나도 안 고르면 보내기를 끄지만, 서버는 클라이언트를 믿지 않는다. 위는 종류 수(5)다. 같은 값이 겹치는 것은 막지 않았다(프론트 `toggleIn`이 겹치지 않게 한다)
-  - "기존 응답 필드의 이름·타입·의미를 바꾸지 않는다" 규칙의 예외다. 사용자가 프론트 전체를 배열로 바꾸기로 정했고(frontend 35), 프론트가 원본이므로 서버를 맞춘다
+  - "기존 응답 필드의 이름·타입·의미를 바꾸지 않는다" 규칙의 예외다. 사용자가 프론트 전체를 배열로 바꾸기로 정했고(frontend 37), 프론트가 원본이므로 서버를 맞춘다
 
 ## 메모
 - 이 PR은 `frontend/center-multi-select`(PR #138)를 기준으로 쌓았다. 이 PR을 #138에 먼저 병합하면 #138의 `backend` CI가 통과한다

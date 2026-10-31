@@ -34,7 +34,7 @@ export function CenterRequestPage() {
   const app = useApp();
   const { t, lang } = useT();
   const [params, setParams] = useSearchParams();
-  // 여러 개를 고른다(backlog 35). 주소에는 쉼표로 잇는다(?type=booking,interpret)
+  // 여러 개를 고른다(backlog 37). 주소에는 쉼표로 잇는다(?type=booking,interpret)
   const preset = (params.get('type') ?? '').split(',').filter((k): k is RequestType => REQUEST_TYPES.includes(k as RequestType));
   const [types, setTypes] = useState<RequestType[]>(preset);
   const [talk, setTalk] = useState<Talk | null>(null);

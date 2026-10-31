@@ -258,7 +258,7 @@ ContactMethod = Literal["phone", "sms", "kakao", "zalo", "visit"]
 class CenterSummaryInput(CamelModel):
     intake: Intake
     emergency_flag: bool
-    # 근로자가 고른 순서(frontend backlog 35). 하나 이상, 종류 수(5)까지
+    # 근로자가 고른 순서(frontend backlog 37). 하나 이상, 종류 수(5)까지
     request_types: list[RequestType] = Field(min_length=1, max_length=5)
     coverage: CoverageResult | None = None
     insurance: YesNoUnknown | None = None

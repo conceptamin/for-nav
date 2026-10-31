@@ -20,7 +20,7 @@ const CHANGE_EVENT = 'umn-center-change';
 
 const mockCases = buildMockCases();
 
-/** 요청 종류가 하나였던 때(backlog 35 전) 이 브라우저에 저장된 사례를 배열로 읽는다 */
+/** 요청 종류가 하나였던 때(backlog 37 전) 이 브라우저에 저장된 사례를 배열로 읽는다 */
 const withRequestTypes = (c: CenterCase & { requestType?: RequestType }): CenterCase =>
   c.requestTypes ? c : { ...c, requestTypes: c.requestType ? [c.requestType] : [] };
 
