@@ -2712,7 +2712,7 @@ table.cases tr.fresh {
   gap: 6px;
 }
 
-/* C-02 제목 줄:제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
+/* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
 .detail-head {
   display: flex;
   flex-wrap: wrap;
