@@ -1,9 +1,10 @@
 // 센터 채팅 시트(backlog 39). 하단 독의 채팅 아이콘이 지금 화면 위에 연다. 페이지를 옮기지 않는다.
 // 보낸 요청이 없으면 요청(종류 → 보낼 내용 → 전송 동의 → 보내기)을 대화로 묻고, 보내면 같은 시트가 센터 채팅으로 이어진다.
-// 이미 보낸 요청(토큰이 있고 완료가 아닌 가장 최근 것, S-13에서 고른 것이 있으면 그것)이 있으면 그 요청의 상태와 채팅만 보인다(backlog 43).
+// 이미 보낸 요청(토큰이 있고 완료가 아닌 가장 최근 것, S-13에서 고른 것이 있으면 그것)이 있으면 그 요청의 상태와 채팅만 보인다(backlog 46).
 // 머리의 📞로 통화 패널과 오간다.
 // 부르는 쪽(WorkerLayout)은 한 번 연 시트를 닫아도 숨기기만 한다. 채팅 연결·통화가 끊기지 않게 하려는 것이다.
 // S-12 페이지(/center-request)와 전송·연락 문구를 같이 쓴다(useSendCenterRequest, workerChatLabels, workerCallLabels).
+// S-12에서 요청을 보내면 그 페이지도 이 시트를 연다(backlog 44). 시트는 가장 최근 요청의 채팅을 보이고, 📞로 통화로 바꿀 수 있다고 안내한다.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { isSessionEnded } from '../api/auth';
@@ -25,7 +26,7 @@ import { Chip, PolicyDisclaimer, toggleIn } from './common';
 
 export const REQUEST_TYPES: RequestType[] = ['booking', 'interpret', 'policy', 'referral', 'other'];
 
-/** 근로자가 보는 내 요청의 처리 상태 칩(backlog 43). 센터 화면의 StatusPill과 같은 pill 색을 쓴다 */
+/** 근로자가 보는 내 요청의 처리 상태 칩(backlog 46). 센터 화면의 StatusPill과 같은 pill 색을 쓴다 */
 export function MyCaseStatus({ status }: { status: CaseStatus }) {
   const { t } = useT();
   return <span className={`pill ${status}`}>{t(`caseStatus.${status}` as MessageKey)}</span>;
@@ -101,7 +102,6 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
     preview && !sent && types.length
       ? {
           intake: { ...intake, language: lang },
-          emergencyFlag: app.emergencySeen,
           requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,
@@ -129,7 +129,6 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
       const r = await sendCase(
         {
           intake: { ...intake, language: lang },
-          emergencyFlag: app.emergencySeen,
           requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,
@@ -186,8 +185,10 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
   const prevDone = !existing && resumable.some((caseId) => feed.cases[caseId]?.status === 'done');
   // 시트를 연 뒤 요청을 보냈으면 그 대화를 이어 보인다. 아니면 이미 있는 요청의 채팅만
   const asking = !existing;
-  const { summary, sent, sending, failed, send } = useSendCenterRequest(types, open && asking);
-  const caseId = sent?.case.id ?? existing;
+  const { summary, sent: sentHere, sending, failed, send } = useSendCenterRequest(types, open && asking);
+  // S-12가 그 뒤에 새 요청을 보냈으면(backlog 44) 새 요청의 채팅을 보이고, 시트 안 요청 대화는 접는다
+  const caseId = existing ?? sentHere?.case.id ?? null;
+  const sent = sentHere && sentHere.case.id === caseId ? sentHere : null;
   const token = caseId ? app.chatTokens[caseId] : undefined;
   const online = Boolean(token) && isChatAvailable();
   const canCall = online && isCallAvailable();
@@ -322,6 +323,12 @@ export function CenterSheet({ id, open, onClose, focusCaseId }: { id: string; op
                 {t('cenCaseNo')}: <strong>{caseId}</strong>
                 {status && <MyCaseStatus status={status} />}
               </p>
+              {/* 연락 방법을 따로 묻지 않으므로 통화로 바꾸는 머리의 📞을 알려 준다(backlog 44) */}
+              {canCall && talk === 'chat' && (
+                <div className="chat-msg">
+                  <p>{t('chatCallHint')}</p>
+                </div>
+              )}
               {!online || !token ? (
                 <div className="notice info">{t('talkOffline')}</div>
               ) : talk === 'call' && canCall ? (

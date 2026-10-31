@@ -163,26 +163,13 @@ export const DISTRICTS = withNative(DISTRICTS_KO, (p) => p.terms.districts);
 
 export type YesNoUnknown = 'yes' | 'no' | 'unknown';
 
-// 응급도 모델 입력(backend backlog 10). 값과 순서는 backend/app/vocab.py의 AgeGroup·Sex·Mental과 같다.
-// 순서가 모델 피처 값(0, 1, 2, …)이므로 바꾸지 않는다. 규칙(triage.ts)은 이 값을 쓰지 않는다.
-const AGE_GROUPS_KO = {
-  under30: { ko: '30세 미만', roman: 'sam-sip-se mi-man', viPron: 'xam-xíp-xê mi-man' },
-  '30to44': { ko: '30~44세', roman: 'sam-sip~sa-sip-sa-se', viPron: 'xam-xíp~xa-xíp-xa-xê' },
-  '45to64': { ko: '45~64세', roman: 'sa-sip-o~yuk-sip-sa-se', viPron: 'xa-xíp-ô~iúc-xíp-xa-xê' },
-  '65plus': { ko: '65세 이상', roman: 'yuk-sip-o-se i-sang', viPron: 'iúc-xíp-ô-xê i-xang' },
-} satisfies Record<string, KoTerm>;
-export type AgeGroup = keyof typeof AGE_GROUPS_KO;
-export const AGE_GROUPS = withNative(AGE_GROUPS_KO, (p) => p.terms.ageGroups);
-
+// 프로필 성별(S-02). 보고서·센터 요청 문장에 쓴다.
 const SEXES_KO = {
   female: { ko: '여성', roman: 'yeo-seong', viPron: 'iơ-xơng' },
   male: { ko: '남성', roman: 'nam-seong', viPron: 'nam-xơng' },
 } satisfies Record<string, KoTerm>;
 export type Sex = keyof typeof SEXES_KO;
 export const SEXES = withNative(SEXES_KO, (p) => p.terms.sexes);
-
-/** 의식 상태(AVPU). 앱을 쓰는 사람은 깨어 있으므로 근로자에게 묻지 않는다(센터·연계 입력 자리). */
-export type Mental = 'alert' | 'verbal' | 'pain' | 'unresponsive';
 
 export const LANGUAGE_NAMES_KO: Record<Lang, string> = {
   en: '영어',

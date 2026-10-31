@@ -1,33 +1,25 @@
 // S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기와 전송은 components/CenterSheet.tsx의 useSendCenterRequest가 한다(하단 채팅 시트와 같이 쓴다).
 // 브라우저 요약을 먼저 그리고 API 모드면 서버 결과로 바꾼다. 전송이 API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
-// 센터 연락 방법은 앱 안 통화(backlog 26)와 채팅(backlog 25) 둘뿐이다(backlog 29). 전송 완료 화면은 고른 쪽 하나를 보인다.
-// 하단 독의 채팅 아이콘은 페이지가 아니라 화면 위 시트를 연다(backlog 39).
-// 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 통화·채팅 대신 안내 한 줄을 보인다.
+// 센터 연락 방법은 앱 안 통화(backlog 26)와 채팅(backlog 25) 둘뿐이다(backlog 29). 연락 방법은 묻지 않고, 보내면 하단 독의 채팅 아이콘과
+// 같은 화면 위 시트(backlog 39)를 열어 그 요청의 채팅을 보인다. 통화는 시트 머리의 📞로 바꾼다(backlog 44).
+// 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 시트를 열지 않고 안내 한 줄을 보인다.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { Chip, PolicyDisclaimer, SingleSelect, toggleIn, Worse119 } from '../../components/common';
-import { CallPanel } from '../../components/CallPanel';
+import { Chip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
 import { canResume, useCenterLink } from '../../components/centerLink';
-import { CenterHoursNotice, MyCaseStatus, REQUEST_TYPES, useSendCenterRequest, workerCallLabels, workerChatLabels } from '../../components/CenterSheet';
-import { ChatPanel } from '../../components/ChatPanel';
-import { useScreenBar } from '../../components/WorkerLayout';
+import { CenterHoursNotice, MyCaseStatus, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
+import { useOpenCenterSheet, useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, formatIsoDate, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { logoutWorker } from '../../api/auth';
-import { isCallAvailable } from '../../api/call';
 import { isChatAvailable } from '../../api/chat';
 import { hasUnread } from '../../domain/centerCase';
 import type { RequestType } from '../../domain/templates';
 import type { Lang } from '../../domain/vocab';
 import { LOCALES, SEXES } from '../../domain/vocab';
-
-type Talk = 'call' | 'chat';
-const TALKS: Talk[] = ['call', 'chat'];
-const TALK_LABEL = { call: 'liveCallTitle', chat: 'chatTitle' } as const;
-const TALK_ICON = { call: '📞', chat: '💬' } as const;
 
 export function CenterRequestPage() {
   const app = useApp();
@@ -36,7 +28,6 @@ export function CenterRequestPage() {
   // 여러 개를 고른다(backlog 37). 주소에는 쉼표로 잇는다(?type=booking,interpret)
   const preset = (params.get('type') ?? '').split(',').filter((k): k is RequestType => REQUEST_TYPES.includes(k as RequestType));
   const [types, setTypes] = useState<RequestType[]>(preset);
-  const [talk, setTalk] = useState<Talk | null>(null);
   const [agreed, setAgreed] = useState(false);
   const { summary, sent, sending, failed: sendFailed, send } = useSendCenterRequest(types, true);
   useScreenBar({ title: t('cenTitle') });
@@ -58,7 +49,7 @@ export function CenterRequestPage() {
         </section>
         <CenterHoursNotice sent={sent} />
         <p className="footer-note">{t('cenHoursNote')}</p>
-        <CenterTalk caseId={sent.case.id} initial={talk ?? 'chat'} />
+        <CenterTalk caseId={sent.case.id} />
         <Worse119 />
         <Link className="btn secondary block" to="/home">
           {t('home')}
@@ -93,10 +84,6 @@ export function CenterRequestPage() {
             </Chip>
           ))}
         </div>
-      </div>
-      <div className="field">
-        <span className="label">{t('cenContactMethod')}</span>
-        <SingleSelect options={TALKS} value={talk} onChange={setTalk} label={(k) => `${TALK_ICON[k]} ${t(TALK_LABEL[k])}`} />
       </div>
 
       {summary && (
@@ -134,36 +121,23 @@ export function CenterRequestPage() {
   );
 }
 
-/** 보낸 요청 하나의 센터 연락. 통화·채팅 중 고른 쪽 하나만 보인다. 단독 모드(토큰 없음)면 안내 한 줄 */
-function CenterTalk({ caseId, initial }: { caseId: string; initial: Talk }) {
+/**
+ * 보낸 요청 하나의 센터 연락(backlog 44). 보낸 직후 하단 채팅 시트를 열고, 닫은 뒤에는 버튼으로 다시 연다.
+ * 채팅·통화는 시트가 맡아 페이지에는 패널을 두지 않는다(같은 요청의 연결이 둘 생기지 않게). 단독 모드(토큰 없음)면 안내 한 줄
+ */
+function CenterTalk({ caseId }: { caseId: string }) {
   const app = useApp();
-  const { t, lang } = useT();
-  const [talk, setTalk] = useState<Talk>(initial);
-  const token = app.chatTokens[caseId];
-  // 이 화면에 채팅이 보이는 동안 읽은 센터 메시지 수를 올린다(backlog 43)
-  const { markCenterSeen } = app;
-  const onSeen = useMemo(() => (n: number) => markCenterSeen(caseId, n), [caseId, markCenterSeen]);
-  if (!token || !isChatAvailable()) return <div className="notice info">{t('talkOffline')}</div>;
-
+  const { t } = useT();
+  const openSheet = useOpenCenterSheet();
+  const online = Boolean(app.chatTokens[caseId]) && isChatAvailable();
+  useEffect(() => {
+    if (online) openSheet();
+  }, [online, openSheet]);
+  if (!online) return <div className="notice info">{t('talkOffline')}</div>;
   return (
-    <>
-      <div className="field">
-        <SingleSelect options={TALKS} value={talk} onChange={setTalk} label={(k) => `${TALK_ICON[k]} ${t(TALK_LABEL[k])}`} />
-      </div>
-      {talk === 'call' && isCallAvailable() ? (
-        <section className="card">
-          <h2>{t('liveCallTitle')}</h2>
-          <p className="small muted">{t('liveCallIntro')}</p>
-          <CallPanel caseId={caseId} auth={{ role: 'worker', token }} lang={lang} labels={workerCallLabels(t)} locale={LOCALES[lang]} />
-        </section>
-      ) : (
-        <section className="card">
-          <h2>{t('chatTitle')}</h2>
-          <p className="small muted">{t('chatIntro')}</p>
-          <ChatPanel caseId={caseId} auth={{ role: 'worker', token }} me="worker" labels={workerChatLabels(t)} locale={LOCALES[lang]} onSeen={onSeen} />
-        </section>
-      )}
-    </>
+    <button type="button" className="btn block" onClick={openSheet}>
+      💬 {t('chatTitle')}
+    </button>
   );
 }
 
@@ -275,8 +249,8 @@ export function MyPage() {
       {app.myCaseIds.length > 0 && (
         <section className="card">
           <h2>{t('myCases')}</h2>
-          {/* 줄마다 보낸 날·처리 상태·새 메시지(backlog 43). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
-              토큰이 없는 요청(backlog 43 이전에 세션이 끝나 열쇠를 잃은 것, 단독 모드)과 서버가 모르는 요청은 누를 수 없다 */}
+          {/* 줄마다 보낸 날·처리 상태·새 메시지(backlog 46). 다시 붙을 수 있으면 눌러 그 대화를 시트로 연다.
+              토큰이 없는 요청(backlog 46 이전에 세션이 끝나 열쇠를 잃은 것, 단독 모드)과 서버가 모르는 요청은 누를 수 없다 */}
           <div className="stack my-cases">
             {app.myCaseIds.map((id) => {
               const view = feed.cases[id];

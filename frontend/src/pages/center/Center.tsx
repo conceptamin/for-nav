@@ -120,7 +120,7 @@ export function CenterHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="c-header">
       <img className="logo" src="/mark.png" width="24" height="24" alt="" />
-      <span className="brand">울산 외국인주민·근로자 통합지원센터 · 의료지원</span>
+      <span className="brand">울산외국인주민·근로자통합지원센터 · 의료지원</span>
       {children}
     </header>
   );
@@ -538,8 +538,6 @@ function CaseDetail({ c }: { c: CenterCase }) {
               <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
               <dt>건강보험증</dt>
               <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
-              <dt>응급 판정 이력</dt>
-              <dd>{c.emergencyFlag ? '있음' : '없음'}</dd>
             </dl>
           </section>
           <section className="panel">

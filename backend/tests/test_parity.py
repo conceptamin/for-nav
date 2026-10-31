@@ -46,7 +46,7 @@ def test_route(case):
 @cases("urgency")
 def test_urgency(case):
     i = case["input"]
-    urgency, reasons = rate_urgency(i["emergencyFlag"], i["workRelated"], i["insurance"])
+    urgency, reasons = rate_urgency(i["workRelated"], i["insurance"])
     assert {"urgency": urgency, "reasons": reasons} == case["output"]
 
 

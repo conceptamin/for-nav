@@ -15,9 +15,9 @@ import { ApiError, isApiMode, logFailure, requestJson } from './http';
 export const CENTER_TIMEOUT_MS = 5000;
 /** 접수함 다시 읽기 주기. 한 번의 요청이 끝난 뒤부터 잰다(요청이 겹치지 않는다) */
 export const CENTER_POLL_MS = 2000;
-/** 근로자가 자기 요청 상태를 다시 읽는 주기(backlog 43). 화면이 보이는 동안만 돈다 */
+/** 근로자가 자기 요청 상태를 다시 읽는 주기(backlog 46). 화면이 보이는 동안만 돈다 */
 export const MY_CASES_POLL_MS = 15000;
-/** 한 번에 읽는 근로자 요청 수(backend 26의 상한). 최근 것부터 */
+/** 한 번에 읽는 근로자 요청 수(backend 27의 상한). 최근 것부터 */
 const MY_CASES_MAX = 20;
 
 const bad = () => new ApiError('BAD_RESPONSE', null, null);
@@ -93,8 +93,8 @@ export async function getStats(days: 30 | 90 | 180, district: District | null): 
 }
 
 // ---------------------------------------------------------------------------
-// 근로자가 자기 요청의 처리 상태와 센터 메시지 수를 읽는다(backlog 43, backend 26).
-// API 모드: `POST /api/center/my-cases`에 채팅 토큰을 실어 보낸다. 토큰이 없는 요청(backlog 43 이전·단독 모드에서 보낸 것)은 읽지 않는다.
+// 근로자가 자기 요청의 처리 상태와 센터 메시지 수를 읽는다(backlog 46, backend 27).
+// API 모드: `POST /api/center/my-cases`에 채팅 토큰을 실어 보낸다. 토큰이 없는 요청(backlog 46 이전·단독 모드에서 보낸 것)은 읽지 않는다.
 // 단독 모드: 같은 브라우저의 센터 접수함(centerStore)에서 상태만 읽는다. 채팅이 없어 메시지 수는 0이다.
 // 센터 경로라 실패를 대체하지 않는다. 화면은 마지막으로 받은 값을 그대로 두고 failed만 본다.
 // ---------------------------------------------------------------------------

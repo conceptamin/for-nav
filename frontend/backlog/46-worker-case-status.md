@@ -1,7 +1,7 @@
-# 43. 근로자에게 센터 요청의 처리 상태와 새 메시지를 보여 주기
+# 46. 근로자에게 센터 요청의 처리 상태와 새 메시지를 보여 주기
 
 상태: 완료
-의존: backend 26(`POST /api/center/my-cases`). 단독 모드 부분은 의존 없이 먼저 동작한다
+의존: backend 27(`POST /api/center/my-cases`). 단독 모드 부분은 의존 없이 먼저 동작한다
 
 ## 목표
 센터 회신(2026-10-31) 4항의 지원 절차 마지막 단계는 "상담 결과 및 후속 절차 안내, 추가 지원이 필요하면 후속 상담"이다. 지금 앱은 센터가 C-02에서 상태를 진행·완료로 바꾸거나 채팅에 답해도 근로자 화면에 아무 표시가 없다. `/my`에는 보낸 요청 id만 있고, 채팅 토큰이 세션(`umn.session`)에 있어 탭을 닫으면 그 요청의 채팅에 다시 붙을 수도 없다. 웹앱이라 푸시도 없으므로 근로자가 시트를 열어 두지 않으면 센터의 답을 놓친다. 앱을 다시 열었을 때 처리 상태와 읽지 않은 센터 메시지가 보이고, 그 대화로 바로 돌아갈 수 있게 한다.
@@ -9,10 +9,10 @@
 ## 범위
 - 하는 것
   - **채팅 토큰을 계정별 기기 저장소로 옮긴다.** `SessionState.chatTokens` → `DeviceState.chatTokens`(`umn.device.<계정 키>`). 세션에 남은 옛 토큰은 처음 읽을 때 기기로 옮긴다. "내 데이터 지우기"가 함께 지운다. 이유: 며칠 뒤 돌아와도 같은 요청의 상태·채팅을 보려면 열쇠가 남아 있어야 한다. 같은 휴대폰의 다른 계정에는 보이지 않는다(기존 계정 분리 그대로)
-  - **읽은 센터 메시지 수** `DeviceState.seenCenterMessages: Record<caseId, number>`. 근로자가 그 사례 채팅(시트 또는 S-12)을 열어 `history`를 받았을 때 센터가 보낸 메시지 수로 올린다
+  - **읽은 센터 메시지 수** `DeviceState.seenCenterMessages: Record<caseId, number>`. 근로자가 그 사례 채팅(시트)을 열어 `history`를 받았을 때 센터가 보낸 메시지 수로 올린다
   - `domain/centerCase.ts`: `MyCaseView { id, status, centerMessages, lastCenterAt }` 타입
   - `src/api/center.ts`: `getMyCases(items: { id, token }[]) → MyCaseView[]`
-    - API 모드: `POST /api/center/my-cases`(backend 26). 토큰이 맞지 않거나 사라진 사례는 응답에 없다
+    - API 모드: `POST /api/center/my-cases`(backend 27). 토큰이 맞지 않거나 사라진 사례는 응답에 없다
     - 단독 모드: 같은 브라우저의 `centerStore`에서 상태만 읽는다(`centerMessages: 0`, 채팅이 없다). 다른 탭의 센터 화면에서 상태를 바꾸면 근로자 화면에도 보인다
   - `useMyCases()` 구독: 로그인·프로필이 있고 보낸 요청이 있을 때, 화면이 보이는 동안(`document.visibilityState === 'visible'`) `MY_CASES_POLL_MS`(15초)마다 읽는다. 화면이 다시 보이면 곧바로 한 번 읽는다. 단독 모드는 `storage` 이벤트로 갱신한다
   - **하단 독 채팅 아이콘에 새 메시지 점**(SEED notification-badge Small): 읽지 않은 센터 메시지가 있는 사례가 하나라도 있으면 보인다. 아이콘의 `aria-label`에 "새 메시지"를 붙인다. 숫자는 쓰지 않는다(남용 금지)
@@ -30,7 +30,7 @@
 
 ## 화면·파일
 - 화면: S-13 `/my`, 센터 채팅 시트(하단 독), 하단 독 채팅 아이콘. 경로 추가 없음
-- API: `POST /api/center/my-cases`(backend 26)
+- API: `POST /api/center/my-cases`(backend 27)
 - 수정: `src/domain/centerCase.ts`, `src/api/center.ts`, `src/components/centerLink.ts`(새), `src/state/AppState.tsx`, `src/components/WorkerLayout.tsx`, `src/components/CenterSheet.tsx`, `src/components/ChatPanel.tsx`(history를 받으면 읽은 수 올리기), `src/pages/worker/CenterRequest.tsx`(S-13 목록), `src/styles.css`, `src/i18n/*.ts`(20개), `README.md`, `design.md`
 - `app-front/`가 `WorkerLayout`·`AppState`·`styles.css`를 공유하므로 `cd app-front && npm run build`도 돌린다
 
@@ -47,7 +47,7 @@
 ## 결과
 - `npm run build` 통과, `cd app-front && npm run build` 통과
 - 브라우저 확인(근로자 360px, 센터 1280px 다른 탭, 데모 로그인을 저장소에 심어 온보딩을 건너뜀)
-  - API 모드(backend 26 브랜치 서버): 시트로 요청 전송 → 토큰·보낸 시각이 `umn.device.demo`에 들어가고 시트 요청 번호 줄에 "Received". 센터가 C-02에서 채팅 한 줄 + 진행 → 근로자 독 점이 약 3초 뒤(15초 주기 안) 뜨고 `aria-label`이 "Chat with the centre · New message". `/my` 줄: "C-65227 · Sent 31 October 2026", "In progress", "New message". 줄을 누르면 시트가 그 사례로 열려 센터 글이 보이고 점·칩이 사라진다(읽은 수 1)
+  - API 모드(backend 27 브랜치 서버): 시트로 요청 전송 → 토큰·보낸 시각이 `umn.device.demo`에 들어가고 시트 요청 번호 줄에 "Received". 센터가 C-02에서 채팅 한 줄 + 진행 → 근로자 독 점이 약 3초 뒤(15초 주기 안) 뜨고 `aria-label`이 "Chat with the centre · New message". `/my` 줄: "C-65227 · Sent 31 October 2026", "In progress", "New message". 줄을 누르면 시트가 그 사례로 열려 센터 글이 보이고 점·칩이 사라진다(읽은 수 1)
   - 다시 열기: 세션을 비우고(새 탭과 같다) 옛 꼴로 세션에 토큰을 두고 다시 열면, 이 계정이 보낸 사례 토큰만 기기로 옮겨지고(남의 id 토큰은 버림) 세션에서 사라진다. `/my` 줄은 버튼이고 상태가 보인다
   - 센터가 완료 → `/my` 칩 "Completed", 독으로 연 시트는 "지난 요청은 완료" 한 줄 + 새 요청 흐름
   - 서버를 끄면 약 8초 뒤 `/my`에 "Couldn’t load the status…" 한 줄, 칩은 마지막 값, 119 링크 그대로
@@ -57,10 +57,12 @@
   - 단독 모드: `/api/` 요청 0건. 시트로 보낸 요청은 토큰 없이 저장되고, 센터 탭에서 진행 → 완료로 바꾸면 근로자 `/my` 칩이 새로고침 없이 따라 바뀐다. 줄은 누를 수 없다(토큰 없음)
 - 동기화 기대값: `dump-fixtures`로 다시 만들어 보니 `generatedAt`만 달라 `parity.json`은 바꾸지 않았다(`domain/`에 더한 것은 타입과 `hasUnread`뿐이고 동기화 대상이 아니다)
 - 결정
-  - 읽은 수는 시트가 열려 있을 때(또는 S-12 화면에서 채팅이 보일 때)만 올린다. 시트는 닫아도 연결을 유지하므로, 닫힌 동안 온 글은 새 메시지로 남아야 한다
+  - 읽은 수는 시트가 열려 있을 때만 올린다(main의 backlog 44로 S-12 화면의 채팅 패널이 시트로 합쳐졌다). 시트는 닫아도 연결을 유지하므로, 닫힌 동안 온 글은 새 메시지로 남아야 한다
   - 상태를 한 번이라도 받은 뒤 응답에 없는 사례(데모 초기화·서버 재시작)는 이어 보지 않는다(`canResume`). 토큰을 기기에 오래 두게 되면서, 서버가 모르는 사례의 멈춘 채팅에 갇히는 것을 막으려고 확인 중에 더했다
   - 점 색은 SEED 기본 빨강이 아니라 `--brand-fg`(119와 헷갈리지 않게)
   - 시트·S-13이 같이 쓰는 상태 컨텍스트는 `components/centerLink.ts`에 따로 두었다(시트와 레이아웃이 서로 import하지 않게)
+- 번호: 처음 43으로 썼으나 main에 응급 판정 삭제(43)·밤 휴일 안내(44)·센터 이름(45)이 먼저 들어와 46으로 옮겼다. 서버 몫도 backend 26 → 27
+- main 병합(backlog 43·44·45) 뒤 다시 `npm run build`·`cd app-front && npm run build` 통과. S-12 전송 뒤 시트를 여는 main의 `openSheet`는 고른 사례를 비워 가장 최근 요청을 연다
 - 남은 문제: 앱이 닫혀 있을 때의 알림은 없다(메모의 후속). 새 문구 7개는 en·ko 외 기계 번역 초안이다
 
 ## 메모

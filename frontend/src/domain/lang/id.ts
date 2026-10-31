@@ -59,7 +59,6 @@ export const id: LangPack = {
       assembly: 'Perakitan',
     },
     districts: { jung: 'Jung-gu', nam: 'Nam-gu', dong: 'Dong-gu', buk: 'Buk-gu', ulju: 'Ulju-gun' },
-    ageGroups: { under30: 'Di bawah 30 tahun', '30to44': '30–44 tahun', '45to64': '45–64 tahun', '65plus': '65 tahun ke atas' },
     sexes: { female: 'Perempuan', male: 'Laki-laki' },
   },
   templates: {
@@ -131,23 +130,5 @@ export const id: LangPack = {
       referral: 'Rujukan ke lembaga',
       other: 'Lainnya',
     },
-  },
-  emergency: {
-    keywords: {
-      unconscious: ['pingsan', 'sadarkan diri', 'hilang kesadaran', 'kolaps'],
-      breathing: ['sesak napas', 'sesak nafas', 'tidak bisa bernapas', 'tidak bisa napas', 'susah bernapas'],
-      chest: ['nyeri dada', 'sakit dada', 'dada sakit', 'dada sesak', 'dada terasa sesak'],
-      heavyBleeding: ['pendarahan hebat', 'perdarahan hebat', 'banyak darah', 'darah tidak berhenti', 'darahnya tidak berhenti'],
-      amputation: ['amputasi', 'jari putus', 'tangan putus', 'kaki putus', 'terpotong putus'],
-      fall: ['jatuh dari', 'jatuh ke bawah', 'terjun dari'],
-      seizure: ['kejang', 'epilepsi'],
-      stroke: ['lumpuh', 'mulut mencong', 'mulut miring', 'bicara pelo', 'separuh badan'],
-      severeBurn: ['tersengat listrik', 'kesetrum', 'kena setrum', 'luka bakar parah', 'luka bakar berat'],
-      chemicalEye: ['kimia masuk mata', 'kimia masuk ke mata', 'kimia kena mata', 'kimia di mata', 'mata kena bahan kimia', 'mata terkena bahan kimia'],
-      poisoning: ['keracunan', 'kebocoran gas', 'gas bocor', 'menghirup gas', 'terhirup gas'],
-    },
-    headInjury: ['kepala terbentur', 'kepalanya terbentur', 'terbentur kepala', 'cedera kepala', 'kepala terpukul'],
-    vomit: ['muntah'],
-    severity: ['parah', 'sakit sekali', 'sangat sakit', 'tidak tahan', 'tak tertahankan'],
   },
 };

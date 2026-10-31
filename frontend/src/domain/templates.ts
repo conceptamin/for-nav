@@ -357,7 +357,6 @@ const summaryText = (lang: Lang): SummaryText => (lang === 'ko' ? SUMMARY_KO : t
 
 export interface CenterSummaryInput {
   intake: Intake;
-  emergencyFlag: boolean;
   /** 근로자가 고른 순서. 하나 이상 */
   requestTypes: RequestType[];
   coverage: CoverageResult | null;
@@ -384,7 +383,6 @@ export function buildCenterSummary(i: CenterSummaryInput): CenterSummary {
   ko.push(`${LANGUAGE_NAMES_KO[lang]} 사용 근로자${where.length ? `(${where.join(', ')})` : ''}.`);
   if (parts.length || syms.length) ko.push(`${joinTerms(parts, 'ko') || '부위 미입력'} ${joinTerms(syms, 'ko') || ''}${intake.onset ? `, ${ONSETS[intake.onset].ko} 시작` : ''}.`);
   if (intake.workRelated) ko.push(`업무 중 발생: ${YES_NO_KO[intake.workRelated]}${intake.workType ? `(${WORK_TYPES[intake.workType].ko})` : ''}.`);
-  ko.push(`응급 판정 이력: ${i.emergencyFlag ? '있음' : '없음'}.`);
   if (i.insurance) ko.push(`건강보험증: ${{ yes: '있음', no: '없음', unknown: '모름' }[i.insurance]}.`);
   if (i.coverage) ko.push(`제도 경로 결과: ${PATH_KO[i.coverage.path]}.`);
   ko.push(`요청 유형: ${requestTypesKo(i.requestTypes)}.`);

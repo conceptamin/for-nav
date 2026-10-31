@@ -6,7 +6,7 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
 
-from app.vocab import Acuity, AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown
+from app.vocab import BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown
 
 
 class CamelModel(BaseModel):
@@ -33,29 +33,8 @@ class Intake(CamelModel):
     industry: Industry | None = None
     district: District | None = None
     created_at: str
-    # 응급도 모델 입력(backlog 10). 프론트 Intake 타입에는 아직 없다. 없으면 응답에 키를 넣지 않는다
-    age_group: AgeGroup | None = absent_if_none()
-    sex: Sex | None = absent_if_none()
+    # 손상(외상) 여부. 진료과 모델 B 입력(backlog 10). 없으면 응답에 키를 넣지 않는다
     injury: bool | None = absent_if_none(strict=True)
-    pain_score: int | None = absent_if_none(ge=0, le=10, strict=True)
-    mental: Mental | None = absent_if_none()
-
-
-EmergencyReason = Literal[
-    "unconscious",
-    "breathing",
-    "chest",
-    "heavyBleeding",
-    "amputation",
-    "fall",
-    "seizure",
-    "stroke",
-    "severeBurn",
-    "chemicalEye",
-    "headInjury",
-    "poisoning",
-    "riskScore",
-]
 
 
 class DepartmentPair(CamelModel):
@@ -63,35 +42,20 @@ class DepartmentPair(CamelModel):
     alt: Department
 
 
-class ShapItem(CamelModel):
-    # 응급도 피처 이름(modeling features/buttons.py FEATURE_NAMES), 입력값(모르면 null), 판정 클래스에 대한 기여도
-    feature: str
-    value: float | None
-    contribution: float
-
-
 class ModelPrediction(CamelModel):
-    """modeling predict()의 출력(app/model.py). 응답에는 앞 네 필드만 내보낸다."""
+    """modeling predict()의 출력(app/model.py). 응답에는 departmentProba만 내보낸다. 응급도 출력(acuity 등)이 와도 읽지 않는다(backlog 26)."""
 
-    acuity: Acuity
-    acuity_proba: dict[Acuity, float]
     department_proba: dict[Department, float]
-    shap: list[ShapItem]
     # 진료과 앙상블 상위 2개(확신이 낮으면 모델 쪽 폴백 family·internal). 규칙표 분기를 대신할 때만 쓴다
     department_top2: list[Department] = Field(exclude=True, min_length=2, max_length=2)
     department_fallback: bool = Field(exclude=True)
 
 
 class TriageResult(CamelModel):
-    emergency: bool
-    reasons: list[EmergencyReason]
-    # 규칙과 보조 점수(모델이 있으면 응급도 모델) 각각의 판정(센터·평가 화면 표시용)
-    by_rule: bool
-    by_model: bool
-    model_score: int
+    # 응급 여부는 판정하지 않는다(backlog 26)
     department: DepartmentPair | None
     missing: list[Literal["bodyParts", "symptoms"]]
-    # 서버 전용 선택 필드. 응급도·진료과 모델 결과(backlog 06), 모델이 없으면 키가 없다
+    # 서버 전용 선택 필드. 진료과 모델 결과(backlog 06), 모델이 없으면 키가 없다
     model: ModelPrediction | None = absent_if_none()
 
 
@@ -257,7 +221,6 @@ ContactMethod = Literal["phone", "sms", "kakao", "zalo", "visit"]
 
 class CenterSummaryInput(CamelModel):
     intake: Intake
-    emergency_flag: bool
     # 근로자가 고른 순서(frontend backlog 37). 하나 이상, 종류 수(5)까지
     request_types: list[RequestType] = Field(min_length=1, max_length=5)
     coverage: CoverageResult | None = None
@@ -297,7 +260,6 @@ class CenterCase(CamelModel):
     contact_method: ContactMethod | None
     contact: str | None
     after_hours: bool
-    emergency_flag: bool
     work_related: YesNoUnknown | None
     insurance: YesNoUnknown | None
     # 데모에서 실제로 전송한 사례(mock과 구분)

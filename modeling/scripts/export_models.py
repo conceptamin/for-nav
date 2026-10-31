@@ -1,4 +1,4 @@
-# 서빙 아티팩트를 models/{acuity,dept_a,dept_b,ensemble}/v1/에 쓴다(backlog 08). 학습·조정·test 평가가 끝난 뒤에 돌린다.
+# 서빙 아티팩트를 models/{dept_a,dept_b,ensemble}/v2/에 쓴다(backlog 08). 학습·조정·test 평가가 끝난 뒤에 돌린다.
 #   uv run python scripts/export_models.py
 
 import json

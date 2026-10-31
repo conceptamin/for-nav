@@ -25,7 +25,6 @@ export interface CenterCase {
   contactMethod: ContactMethod | null;
   contact: string | null;
   afterHours: boolean;
-  emergencyFlag: boolean;
   workRelated: YesNoUnknown | null;
   insurance: YesNoUnknown | null;
   /** 데모에서 실제로 전송한 사례(mock과 구분) */
@@ -47,13 +46,13 @@ export interface NewCaseResponse {
   chatToken?: string;
 }
 
-/** 근로자가 자기 요청을 다시 읽을 때 보내는 열쇠(`POST /api/center/my-cases`, backend 26). 단독 모드는 토큰 없이 id로 읽는다 */
+/** 근로자가 자기 요청을 다시 읽을 때 보내는 열쇠(`POST /api/center/my-cases`, backend 27). 단독 모드는 토큰 없이 id로 읽는다 */
 export interface MyCaseRef {
   id: string;
   token: string | null;
 }
 
-/** 근로자가 보는 자기 요청의 처리 상태(backend 26). 사례 본문은 근로자 기기에 이미 있어 받지 않는다 */
+/** 근로자가 보는 자기 요청의 처리 상태(backend 27). 사례 본문은 근로자 기기에 이미 있어 받지 않는다 */
 export interface MyCaseView {
   id: string;
   status: CaseStatus;
@@ -129,16 +128,11 @@ export interface CenterStats {
 }
 
 export function rateUrgency(input: {
-  emergencyFlag: boolean;
   workRelated: YesNoUnknown | null;
   insurance: YesNoUnknown | null;
 }): { urgency: Urgency; reasons: string[] } {
   let score = 0;
   const reasons: string[] = [];
-  if (input.emergencyFlag) {
-    score += 3;
-    reasons.push('응급 판정 이력');
-  }
   if (input.workRelated === 'yes') {
     score += 2;
     reasons.push('업무 중 발생');

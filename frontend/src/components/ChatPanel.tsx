@@ -22,7 +22,7 @@ export interface ChatLabels {
 
 /**
  * `relogin`: 센터 세션이 끝나 멈췄을 때(4401) 멈춤 줄 안에 붙는 다시 로그인 링크.
- * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 43)
+ * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 46)
  */
 export function ChatPanel({
   caseId,

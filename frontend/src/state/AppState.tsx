@@ -1,7 +1,7 @@
 // 근로자 영역 상태.
 // - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과
 // - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필(여러 개, backlog 34)·리포트·보낸 센터 사례 id와
-//   그 사례의 상담 채팅 토큰·보낸 시각·읽은 센터 메시지 수(backlog 43)(`umn.device.<계정 키>`)
+//   그 사례의 상담 채팅 토큰·보낸 시각·읽은 센터 메시지 수(backlog 46)(`umn.device.<계정 키>`)
 //   → 같은 휴대폰에서 다른 계정으로 들어오면 앞 계정의 프로필·리포트가 보이지 않는다(backlog 28).
 //   데모 로그인(단독 모드·서버 WORKER_AUTH=off)의 계정 키는 `demo`다. 서버 세션은 api/auth.ts가 보고, 여기에는 계정 키만 둔다.
 // - 메모리: 서버 설정값(정보 기준일·센터 운영 시간). 저장하지 않고 시작할 때마다 GET /api/meta로 받는다
@@ -35,8 +35,6 @@ interface SessionState {
   consents: Consents;
   intake: Intake | null;
   triage: TriageResult | null;
-  /** 이번 세션에서 응급 판정이 한 번이라도 있었는지(센터 긴급도에 사용) */
-  emergencySeen: boolean;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
 }
 
@@ -54,10 +52,10 @@ interface DeviceState {
   myCaseIds: string[];
   /**
    * 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례의 채팅·통화·상태 읽기에 붙는 열쇠다.
-   * 며칠 뒤 돌아와도 센터 답을 보도록 세션이 아니라 계정별 기기 저장소에 둔다(backlog 43)
+   * 며칠 뒤 돌아와도 센터 답을 보도록 세션이 아니라 계정별 기기 저장소에 둔다(backlog 46)
    */
   chatTokens: Record<string, string>;
-  /** 사례 id → 보낸 시각(ISO). backlog 43 이전에 보낸 사례에는 없다 */
+  /** 사례 id → 보낸 시각(ISO). backlog 46 이전에 보낸 사례에는 없다 */
   caseSentAt: Record<string, string>;
   /** 사례 id → 근로자가 채팅에서 본 센터 메시지 수. 서버의 센터 메시지 수가 이보다 많으면 새 메시지다 */
   seenCenterMessages: Record<string, number>;
@@ -80,7 +78,6 @@ const initialSession: SessionState = {
   consents: { terms: false, sensitive: false, ai: false },
   intake: null,
   triage: null,
-  emergencySeen: false,
   coverage: null,
 };
 const initialDevice: DeviceState = {
@@ -119,7 +116,7 @@ function readDevice(account: string | null): DeviceState {
 
 /** 지금 쓰는 프로필. id가 가리키는 것이 없으면 첫 프로필이다 */
 /**
- * 시작할 때 세션·계정·기기 저장소를 한 번에 읽는다. backlog 43 이전에는 채팅 토큰이 세션에 있었다.
+ * 시작할 때 세션·계정·기기 저장소를 한 번에 읽는다. backlog 46 이전에는 채팅 토큰이 세션에 있었다.
  * 그 토큰은 이 계정이 보낸 사례의 것만 기기 저장소로 옮기고 세션에서는 버린다
  */
 function readBoot(): { session: SessionState; account: Account | null; device: DeviceState } {
@@ -262,8 +259,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           return { ...d, profiles, activeProfileId: d.activeProfileId === id ? profiles[0].id : d.activeProfileId };
         }),
       setIntake: (intake) => patch({ intake }),
-      setTriage: (triage) =>
-        setSession((s) => ({ ...s, triage, emergencySeen: s.emergencySeen || Boolean(triage?.emergency) })),
+      setTriage: (triage) => patch({ triage }),
       setCoverage: (coverage) => patch({ coverage }),
       saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
       addMyCase: (id, sentAt, chatToken) =>
