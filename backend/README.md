@@ -38,7 +38,7 @@ backend/
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
-    chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 자막 번호, 데모 초기화 때 닫기
+    chat.py            상담 채팅·통화의 열린 연결(ChatHub, CallHub) — 사례별 방, 방송·상대에게만 보내기, 데모 초기화 때 닫기
     auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장)
     mail.py            로그인 코드 메일 — Mailer 프로토콜, Resend(httpx), 로컬 개발용 console
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
@@ -58,8 +58,8 @@ backend/
       visit.py         ← domain/templates.ts (접수 창구 화면, 전화 스크립트)
       reports.py       ← domain/templates.ts (의료진용 리포트, 센터 요약)
     data/mock.py       ← data/mock.ts (시드 고정 mock 사례 24건, 통계 레코드 420건)
-    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 직원·로그인 코드·세션
-    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, center_staff, auth_code_requests, auth_codes, center_sessions 표)
+    store.py           센터 사례 저장소 — CenterStore 프로토콜, 메모리 구현, DB_PATH로 고르기, 채팅 토큰·메시지, 통화 자막, 직원·로그인 코드·세션
+    store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
       center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
@@ -76,9 +76,9 @@ backend/
   tests/
     fixtures/          프론트 규칙으로 만든 기대값 JSON(parity.json)
     test_parity.py     같은 입력 → 프론트와 같은 출력인지 비교
-    test_store.py      센터 저장소 메모리·SQLite 같은 테스트, SQLite 재시작 뒤 유지
+    test_store.py      센터 저장소 메모리·SQLite 같은 테스트(채팅·통화 자막 포함), SQLite 재시작 뒤 유지
     test_chat.py       상담 채팅 WebSocket(방, 토큰, 잘못된 프레임, 데모 초기화, 로그에 토큰·본문 없음)
-    test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 4409, 데모 초기화, 로그에 SDP·자막 없음)
+    test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단)
@@ -306,7 +306,7 @@ backend/
 
 `id`·`from`·`at`은 **서버가 정한다**. `id`는 사례 안에서 `m-1`, `m-2`…로 늘어나고, `from`은 연결 때 확인한 역할이다. 접근 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`만 남고 쿼리 문자열(토큰)과 메시지 본문은 남지 않는다. uvicorn이 따로 남기는 `"WebSocket <경로?쿼리>" [accepted]` 줄은 앱에서 버린다.
 
-**`WS /api/center/cases/{id}/call`** — 근로자·센터 통화와 자막 번역(backlog 16)
+**`WS /api/center/cases/{id}/call`** — 근로자·센터 통화와 자막 번역(backlog 16), 자막 다시 보기(backlog 18)
 
 음성은 브라우저끼리 WebRTC로 직접 오가고 서버는 받지 않는다. 서버는 연결 정보(SDP·ICE)를 상대에게 중계하고, 브라우저가 받아쓴 문장을 번역해 양쪽에 보낸다. 권한(`role`, 근로자 `chatToken`)과 닫힘 코드 `4404`·`4403`·`4000`은 채팅과 같고, 방마다 역할 하나에 연결 하나다(같은 역할 두 번째 연결은 `4409`).
 
@@ -317,6 +317,7 @@ backend/
 
 // 서버 → 클라이언트
 { "type": "joined", "role": "worker", "peers": ["center"] }   // 연결 직후 한 번, 지금 방에 있는 상대
+{ "type": "history", "captions": [Caption, ...] }            // joined 바로 다음 한 번, 번역이 끝난 이전 자막(말한 순서). 다시 붙을 때마다 전체
 { "type": "peer", "role": "center", "present": true }         // 상대가 들어옴(true)·나감(false)
 { "type": "signal", "from": "worker", "data": { … } }         // 상대에게만
 { "type": "caption", "caption": { "id": "c-1", "from": "worker", "text": "Tay tôi bị kẹp vào máy, vẫn còn chảy máu", "lang": "vi",
@@ -326,7 +327,9 @@ backend/
 
 - 근로자 말은 한국어로, 센터 말은 근로자 언어로 옮긴다. 근로자 언어는 클라이언트 값이 아니라 사례의 `language`다. LLM은 한 번만 부르고(재시도·역번역 없음) 원문을 항상 함께 보낸다. 실측 평균 3~4초다.
 - `translation`: `ok` 번역을 썼다 / `rejected` 한국어 번역이 `templates/guard.py`(금지어·한국어 여부)에 걸렸거나 번역이 비었다 / `skipped` 같은 언어(사례 언어 `ko`), LLM 없음, 호출 실패·시간 초과. `ok`가 아니면 `translated`는 `null`이다.
-- 자막은 저장하지 않는다(채팅 기록에도 넣지 않는다). `id`는 사례마다 `c-1`, `c-2`…이고 데모 초기화·서버 재시작 때 처음부터다.
+- 자막은 사례별로 저장한다(채팅 메시지와 같은 저장소, 채팅 기록에는 넣지 않는다). 받자마자 번호·시각을 정해 번역 전 상태로 넣고, 번역이 끝나면 채워 양쪽에 `caption`으로 보낸다. 번역 전 자막은 `history`에 없다(끝나면 `caption`으로 한 번 받는다). `id`는 사례마다 `c-1`, `c-2`…이고 서버를 다시 띄워도 이어지며(`DB_PATH`가 있을 때) 데모 초기화 때 처음부터다. `history`는 번역이 끝난 순서가 아니라 말한 순서다.
+- 말한 쪽이 번역 중에 끊기면 그 자막은 `translation: "skipped"`, `translated: null`로 남고(원문은 남는다) 방에 남은 쪽이 `caption`으로 받는다.
+- 음성은 저장하지 않는다. `signal.data`(말하는 중 글 등)도 열어 보거나 저장하지 않는다.
 - 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`와 `call caption translation=<상태>`만 남는다. 토큰, SDP·ICE(IP 주소가 들어 있다), 자막 원문·번역은 남지 않는다.
 
 **`GET /api/center/stats`** — 익명 집계
@@ -380,7 +383,7 @@ backend/
 - mock 사례의 `createdAt`은 "서버 시작 시각 기준 몇 시간 전"으로 만든다. 서버 시작 시 한 번만 만든다.
 - 근로자가 실제로 보낸 사례는 `live: true`로 같은 저장소에 넣는다. `POST /api/center/reset`은 live 사례와 상태 변경만 지우고 mock은 처음 상태로 되돌린다.
 - `DB_PATH`가 있으면 live 사례(`live_cases`: id, 접수 시각, 본문 JSON)와 상태 변경(`case_status`: id, 상태)만 SQLite 파일에 둔다. mock 사례·통계 레코드는 지금처럼 시작 시 메모리에서 만든다(시드 고정이라 재시작해도 id가 같다). `reset`은 두 표를 비우고 파일은 지우지 않는다.
-- SQLite 파일에는 연락처·자유 입력이 **평문으로** 남는다. 데모 범위에서만 쓰고, 보존 기간·삭제 규칙은 PRD 미결이다. `*.db`는 `.gitignore`에 있다.
+- SQLite 파일에는 연락처·자유 입력(채팅 메시지·통화 자막 포함)이 **평문으로** 남는다. 데모 범위에서만 쓰고, 보존 기간·삭제 규칙은 PRD 미결이다. `*.db`는 `.gitignore`에 있다.
 - 사례 id: mock은 `C-1001`~`C-1024`, live는 `C-` + 접수 시각 밀리초 끝 5자리(프론트와 같음). 겹치면 뒤에 `-2`를 붙인다.
 
 ## 프론트 동기화 테스트
@@ -550,7 +553,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    MAIL_API_KEY=re_...
    MAIL_FROM="for-nav 센터 <no-reply@for-nav.com>"
    ```
-   `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅도 이 파일에 평문으로 남는다.
+   `DB_PATH`는 클론 밖 폴더에 둔다(폴더는 미리 만든다). 연락처·자유 입력·채팅·통화 자막도 이 파일에 평문으로 남는다.
 3. 직원을 등록한다: `cd ~/srv/for-nav/backend && uv run --env-file .env python scripts/staff.py add staff@example.org` (`list`, `remove`도 같다). 서버를 다시 띄울 필요는 없다.
 4. `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 한 번 다시 띄운다(`.env`를 새로 읽는다).
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
@@ -602,7 +605,7 @@ backend:
 | 상담 채팅 센터 인증 | `CENTER_AUTH=email`이면 직원 이메일 코드 로그인 세션이 있어야 `role=center`로 붙는다 — 붙임(backlog 17). `off`(기본)이면 역할만으로 붙는다 | 상담자별 권한, 담당자 지정, 처리 직원 기록 |
 | 상담 채팅 번역 | 원문 그대로 주고받는다(backlog 14) | 리포트 `note` 번역(backlog 05)과 같은 LLM 번역 + 역번역 검사. `ChatMessage`에 선택 필드(`textKo`, `translation`)로 더한다 |
 | 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
-| 통화 기록 | 음성·자막을 저장하지 않는다(backlog 16) | 동의를 받은 자막 기록, 보존 기간 |
+| 통화 기록 | 자막을 사례별로 저장, 음성은 저장하지 않음 — 붙임(backlog 18). 연결 직후 `history`로 다시 준다 | 자막 기록 동의, 보존 기간·자동 삭제·암호화(채팅 메시지와 함께 정한다) |
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 
 모델 결과는 기존 필드를 바꾸지 않고 선택 필드 `TriageResult.model`(`{ acuity, acuityProba, departmentProba, shap }`)로 더했다. 레드플래그 규칙은 모델보다 먼저 실행하고, 규칙이 응급이면 모델 결과와 관계없이 응급이다.

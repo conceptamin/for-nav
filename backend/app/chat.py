@@ -44,11 +44,10 @@ class ChatHub:
 
 class CallHub:
     """통화(backlog 16)의 열린 연결. 사례 하나가 방 하나이고, 방마다 역할 하나에 연결 하나다.
-    자막 번호(c-1, c-2…)도 여기 둔다. 자막은 저장하지 않으므로 프로세스가 다시 뜨면 처음부터다."""
+    자막과 그 번호는 저장소가 정한다(backlog 18)."""
 
     def __init__(self) -> None:
         self._rooms: dict[str, dict[ChatRole, WebSocket]] = {}
-        self._captions: dict[str, int] = {}
 
     def join(self, case_id: str, role: ChatRole, ws: WebSocket) -> bool:
         """같은 역할이 이미 있으면 붙이지 않고 False."""
@@ -71,11 +70,6 @@ class CallHub:
     def peers(self, case_id: str, role: ChatRole) -> list[ChatRole]:
         return [r for r in self._rooms.get(case_id, {}) if r != role]
 
-    def next_caption_id(self, case_id: str) -> str:
-        n = self._captions.get(case_id, 0) + 1
-        self._captions[case_id] = n
-        return f"c-{n}"
-
     async def send(self, case_id: str, frame: dict, *, exclude: ChatRole | None = None) -> None:
         """방의 연결(exclude 역할 빼고)에 보낸다. 이미 끊긴 연결은 건너뛴다(끊긴 쪽이 스스로 방에서 나간다)."""
         for role, ws in list(self._rooms.get(case_id, {}).items()):
@@ -88,7 +82,6 @@ class CallHub:
 
     async def close_all(self, code: int = CLOSE_RESET) -> None:
         rooms, self._rooms = self._rooms, {}
-        self._captions = {}
         for room in rooms.values():
             for ws in room.values():
                 try:
