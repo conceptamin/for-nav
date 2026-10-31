@@ -1,6 +1,6 @@
 # 43. 앱이 응급 여부를 판정하지 않게 하기
 
-상태: 대기
+상태: 완료
 의존: 없음(backend 26과 한 PR로 낸다. 메모)
 
 ## 목표
@@ -45,15 +45,30 @@
 - API: `POST /api/triage` 응답에서 `emergency`·`reasons`·`byRule`·`byModel`·`modelScore`가 빠진다. `Intake`에서 `ageGroup`·`sex`·`painScore`·`mental`이 빠진다. `POST /api/center/cases` 요청과 `CenterCase` 응답에서 `emergencyFlag`가 빠진다
 
 ## 완료 기준
-- [ ] `npm run build` 통과
-- [ ] 360px에서 "숨을 못 쉬어요", "가슴이 아파요"를 입력해도 `/emergency`로 가지 않고 `/result`에 진료과가 나온다. 하단 119 독은 모든 근로자 화면에 그대로 있다
-- [ ] `/emergency`를 직접 열면 없는 경로 처리(홈으로)가 된다
-- [ ] 추가 질문에 통증·나이대·성별이 없고, 손상 여부는 있다
-- [ ] 단독 모드 센터 화면이 열리고, 옛 꼴 사례(`emergencyFlag` 있음)를 localStorage에 넣어도 목록·상세가 열린다
-- [ ] `parity.json` 재생성 → 응급 항목이 빠지고 `generatedAt`이 바뀐다. `packs.json`은 `emergency`·`ageGroups`만 빠진다
-- [ ] 원어민 검수: 빠지는 키만 있고 새 문구 키는 없다
+- [x] `npm run build` 통과
+- [x] 360px에서 "숨을 못 쉬어요", "가슴이 아파요"를 입력해도 `/emergency`로 가지 않고 `/result`에 진료과가 나온다. 하단 119 독은 모든 근로자 화면에 그대로 있다
+- [x] `/emergency`를 직접 열면 없는 경로 처리(홈으로)가 된다
+- [x] 추가 질문에 통증·나이대·성별이 없고, 손상 여부는 있다
+- [x] 단독 모드 센터 화면이 열리고, 옛 꼴 사례(`emergencyFlag` 있음)를 localStorage에 넣어도 목록·상세가 열린다
+- [x] `parity.json` 재생성 → 응급 항목이 빠지고 `generatedAt`이 바뀐다. `packs.json`은 `emergency`·`ageGroups`만 빠진다
+- [x] 원어민 검수: 빠지는 키만 있고 새 문구 키는 없다
 
 ## 결과
+- 검사
+  - `cd frontend && npm run build` → 통과. `cd app-front && npm run build` → 통과(공유 import하는 `EmergencyPage`를 `app-front/src/main.tsx`에서도 뺐다)
+  - `npx rolldown scripts/dump-fixtures.ts … && TZ=Asia/Seoul node … > ../backend/tests/fixtures/parity.json` → 재생성. `triage` 439 → 205건(응급 예문·머리 부상·보조 점수 경계 입력을 뺐다), `urgency` 32 → 16건(응급 이력 축이 빠졌다), `center` 400건·`mockCases` 24건은 내용만 바뀌었다(요약의 "응급 판정 이력" 줄, mock 난수 하나가 빠져 순서가 밀림)
+  - `dump-lang-packs` → `backend/app/lang/packs.json` 재생성. origin/main과 비교해 19개 언어 모두 `emergency`와 `terms.ageGroups`만 빠졌다
+  - backend `uv run pytest` → 2836 통과(backend 26과 같은 PR)
+- 브라우저(Playwright 헤드리스 Chromium, 360×780, 저장소를 채워 온보딩을 건너뜀)
+  - 단독 모드 ko·en·vi: `/intake`에서 가슴 + 통증 + "숨을 못 쉬겠어요, 가슴이 아파요"(언어별 같은 뜻) → 추가 질문 5개(발생 시점·손상 여부·업무 중·업종·구군) → `/result` 내과·가정의학과. 하단 119 독 있음. `/emergency` 직접 열기 → `/`
+  - API 모드 ko(`MODEL_DIR=../modeling/models`로 띄운 서버): 배 + 통증 → `/result` 가정의학과(서버 모델 결과). 같은 서버에 `emergencyFlag` 없는 `POST /api/center/cases` → 201, 업무 중 + 보험증 없음 → 긴급도 높음
+  - 1280px `/center`: 옛 꼴 사례(`emergencyFlag: true`)를 localStorage에 넣어도 목록·상세(`/center/cases/C-99999`)가 열리고, 상세에 "응급 판정 이력" 칸이 없다
+- 바뀐 화면·경로: S-06 `/emergency` 삭제. S-05 추가 질문 9 → 6개(통증 점수·나이대·성별 삭제, 업무 종류는 "예"일 때만이라 보통 5개). C-02 상세에서 "응급 판정 이력" 칸 삭제
+- 결정
+  - 옛 저장 사례·세션의 `emergencyFlag`·`emergency` 같은 남은 키는 따로 지우지 않는다. 읽는 코드가 없어 화면에 영향이 없다
+  - 결과 화면의 응급실 지도 검색(`mapEr`)과 `Worse119`, 하단 119 독은 판정 없는 고정 안내라 남겼다(사용자 결정)
+  - `useReveal`의 `enabled` 인자는 스플래시가 계속 쓰므로 남겼다
+  - `design.md`에서 응급 히어로·응급 전화 버튼·통증 슬라이더 설명을 지웠다. `--radius-lg`는 센터 채팅 시트가 쓰므로 그 용도로 고쳐 적었고, `--t13`은 쓰는 곳이 없어졌다고 적었다
 
 ## 메모
 - backend 26과 한 PR로 낸다(`CLAUDE.md` "백엔드·모델링과의 경계": 같은 PR로 할지는 사용자가 정한다. 이 계획에서 한 PR로 정했다). 프론트만 먼저 들어가면 `emergencyFlag` 없는 `POST /api/center/cases`가 서버에서 422가 되고, 프론트가 다시 만든 `parity.json`으로 backend CI가 깨진다

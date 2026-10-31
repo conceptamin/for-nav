@@ -34,8 +34,6 @@ interface SessionState {
   consents: Consents;
   intake: Intake | null;
   triage: TriageResult | null;
-  /** 이번 세션에서 응급 판정이 한 번이라도 있었는지(센터 긴급도에 사용) */
-  emergencySeen: boolean;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
   /** 사례 id → 상담 채팅 토큰(API 모드 S-12 전송 응답). 그 사례 채팅에 붙는 열쇠라 탭을 닫으면 사라지는 세션에 둔다 */
   chatTokens: Record<string, string>;
@@ -72,7 +70,6 @@ const initialSession: SessionState = {
   consents: { terms: false, sensitive: false, ai: false },
   intake: null,
   triage: null,
-  emergencySeen: false,
   coverage: null,
   chatTokens: {},
 };
@@ -231,8 +228,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           return { ...d, profiles, activeProfileId: d.activeProfileId === id ? profiles[0].id : d.activeProfileId };
         }),
       setIntake: (intake) => patch({ intake }),
-      setTriage: (triage) =>
-        setSession((s) => ({ ...s, triage, emergencySeen: s.emergencySeen || Boolean(triage?.emergency) })),
+      setTriage: (triage) => patch({ triage }),
       setCoverage: (coverage) => patch({ coverage }),
       saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
       addMyCase: (id, chatToken) => {

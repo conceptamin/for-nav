@@ -49,13 +49,13 @@ async def extract(req: ExtractRequest, llm: Annotated[LLMClient | None, Depends(
 
 
 def triage_model(request: Request) -> Predictor | None:
-    """서버 시작 시 읽은 응급도·진료과 모델. MODEL_DIR이 비었거나 lifespan 밖(테스트)이면 None이다."""
+    """서버 시작 시 읽은 진료과 모델. MODEL_DIR이 비었거나 lifespan 밖(테스트)이면 None이다."""
     return getattr(request.app.state, "model", None)
 
 
 @router.post("/triage")
 def triage_(intake: Intake, model: Annotated[Predictor | None, Depends(triage_model)]) -> TriageResult:
-    """S-05: 응급 판정과 진료과 추천. 모델이 있으면 규칙 다음에 모델 결과를 더한다."""
+    """S-05: 진료과 추천. 응급 여부는 판정하지 않는다(backlog 26). 모델이 있으면 규칙표의 막연한 분기만 모델 결과로 바꾼다."""
     return triage(intake, run_model(model, intake))
 
 

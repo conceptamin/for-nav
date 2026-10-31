@@ -1,6 +1,6 @@
 # 울산 외국인 의료 내비게이터 목업 서버.
 # 프론트 브라우저 안의 규칙·템플릿·mock을 같은 입력이면 같은 결과가 나오도록 옮겼다.
-# LLM(추출·템플릿 슬롯·번역)과 응급도·진료과 모델은 설정이 있을 때만 붙고, 없으면 규칙·템플릿으로 동작한다.
+# LLM(추출·템플릿 슬롯·번역)과 진료과 모델은 설정이 있을 때만 붙고, 없으면 규칙·템플릿으로 동작한다.
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager

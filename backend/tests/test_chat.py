@@ -46,7 +46,6 @@ def client(request, tmp_path, monkeypatch):
 def send_case(client: TestClient) -> tuple[str, str]:
     body = {
         "intake": INTAKE,
-        "emergencyFlag": False,
         "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "yes",

@@ -1,6 +1,6 @@
 // 스크롤 등장(backlog 25). 화면 요소가 보이는 영역에 들어오면 아래에서 16px 올라오며 한 번 나타난다.
 // 모양(투명도·이동·시간)은 styles.css의 [data-reveal]이 정하고, 여기서는 언제 보일지만 정한다.
-// 함께 들어오는 요소는 data-reveal-i(0~5)로 40ms씩 차례를 준다. 응급 화면처럼 꺼야 하는 곳은 enabled=false.
+// 함께 들어오는 요소는 data-reveal-i(0~5)로 40ms씩 차례를 준다. 스플래시처럼 꺼야 하는 곳은 enabled=false.
 
 import { useEffect, type RefObject } from 'react';
 
@@ -52,7 +52,7 @@ export function useReveal(root: RefObject<HTMLElement | null>, enabled: boolean)
     return () => {
       io.disconnect();
       mo.disconnect();
-      // 꺼질 때(응급 화면으로 가는 등) 아직 기다리는 요소는 표시를 지워 바로 보이게 한다.
+      // 꺼질 때 아직 기다리는 요소는 표시를 지워 바로 보이게 한다.
       // 'in'으로 바꾸지 않는다: 다시 켜지면(개발 모드 StrictMode의 두 번 실행 등) 다시 기다리게 해야 한다
       el.querySelectorAll<HTMLElement>('[data-reveal="wait"]').forEach((target) => {
         delete target.dataset.reveal;
