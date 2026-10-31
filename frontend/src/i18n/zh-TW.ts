@@ -286,7 +286,7 @@ export const zhTW: Record<MessageKey, string> = {
   cenSentBody: '諮詢人員會查看您的請求並和您聯絡。',
   cenAfterHours: '中心現在沒有上班。我們會在下一個上班日聯絡您：',
   cenInHours: '中心現在有上班，請等候聯絡。',
-  cenHoursNote: '中心服務時間（待確認）：平日 09:00–18:00',
+  cenHoursNote: '中心服務時間：週日至週四 09:00–18:00',
   cenCaseNo: '請求編號',
 
   // S-13

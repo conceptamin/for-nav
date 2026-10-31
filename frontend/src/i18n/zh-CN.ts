@@ -286,7 +286,7 @@ export const zhCN: Record<MessageKey, string> = {
   cenSentBody: '咨询员会查看您的请求并联系您。',
   cenAfterHours: '中心现在已下班。我们会在下一个工作日联系您：',
   cenInHours: '中心现在正在办公，请等待联系。',
-  cenHoursNote: '中心办公时间（待确认）：工作日 09:00–18:00',
+  cenHoursNote: '中心办公时间：周日至周四 09:00–18:00',
   cenCaseNo: '请求编号',
 
   // S-13

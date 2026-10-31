@@ -274,7 +274,7 @@ export const ko: Record<MessageKey, string> = {
   cenSentBody: '상담원이 요청을 확인하고 연락드립니다.',
   cenAfterHours: '지금은 센터 운영 시간이 아닙니다. 다음 운영일에 연락드립니다:',
   cenInHours: '지금 센터 운영 중입니다. 연락을 기다려 주세요.',
-  cenHoursNote: '센터 운영 시간(확인 필요): 평일 09:00~18:00',
+  cenHoursNote: '센터 운영 시간: 일~목 09:00~18:00',
   cenCaseNo: '요청 번호',
 
   myTitle: '내 정보',

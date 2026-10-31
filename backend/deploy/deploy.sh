@@ -27,19 +27,27 @@ done
 
 echo "▶ $(git -C "$ROOT" log -1 --format='%h %s')"
 
+# 근로자 Google 로그인(backlog 21): 서버가 aud와 비교하는 웹 클라이언트 ID를 두 빌드에도 같은 값으로 넣는다.
+# backend/.env는 공백이 든 값(MAIL_FROM 등)이 있어 source하지 않고 이 줄만 읽는다. 없거나 비면 지금처럼 빈 값이다
+GOOGLE_CLIENT_ID=""
+if [ -f "$ROOT/backend/.env" ]; then
+  GOOGLE_CLIENT_ID="$(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?GOOGLE_CLIENT_ID[[:space:]]*=[[:space:]]*//p' "$ROOT/backend/.env" | tail -n 1 | sed -E "s/[[:space:]]+\$//; s/^[\"'](.*)[\"']\$/\\1/")"
+fi
+echo "▶ Google 클라이언트 ID: $([ -n "$GOOGLE_CLIENT_ID" ] && echo 있음 || echo 없음)"
+
 echo "▶ 프론트 빌드(API 모드)"
 # 빌드는 새 폴더에 하고 성공한 뒤에 바꿔 끼운다. 실패해도 지금 서빙 중인 static은 그대로다
 cd "$ROOT/frontend"
 npm ci --no-audit --no-fund
 rm -rf "$DEPLOY_DIR/static.next"
-VITE_API_BASE=/api npm run build -- --outDir "$DEPLOY_DIR/static.next" --emptyOutDir
+VITE_API_BASE=/api VITE_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" npm run build -- --outDir "$DEPLOY_DIR/static.next" --emptyOutDir
 
 echo "▶ 앱용 웹 빌드(API 모드, app.for-nav.com에 서빙)"
 # frontend/src를 공유 import하지만 react 등은 app-front의 node_modules만 쓴다(app-front backlog 02)
 cd "$ROOT/app-front"
 npm ci --no-audit --no-fund
 rm -rf "$DEPLOY_DIR/static-app.next"
-VITE_API_BASE=/api npm run build -- --outDir "$DEPLOY_DIR/static-app.next" --emptyOutDir
+VITE_API_BASE=/api VITE_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" npm run build -- --outDir "$DEPLOY_DIR/static-app.next" --emptyOutDir
 
 echo "▶ 서버 의존성"
 cd "$ROOT/backend"

@@ -205,7 +205,7 @@ backlog/            작업 항목(NN-short-name.md)
 
 ## 확인이 필요한 값(PRD 16장 미결 사항)
 
-- 센터 운영 시간: 평일 09:00~18:00으로 **가정**(`src/domain/coverage.ts`의 `CENTER_HOURS`, API 모드에서는 `/api/meta`) — Q1
+- 센터 운영 시간: 일~목 09:00~18:00, 센터 확인 완료(2026-10-31)(`src/domain/coverage.ts`의 `CENTER_HOURS`, API 모드에서는 `/api/meta`) — Q1
 - 카카오맵 검색 링크 `https://map.kakao.com/link/search/{검색어}` 형식·사용 조건 — Q4
 - 센터·울산시 의료비 지원 연락처는 넣지 않고 "센터 상담으로 확인하세요"로 표시 — Q6
 - 기관 대표번호(근로복지공단 1588-0075, 국민건강보험공단 1577-1000)와 정보 기준일 `INFO_DATE`는 발표 전 재확인 필요

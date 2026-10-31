@@ -286,7 +286,7 @@ export const uz: Record<MessageKey, string> = {
   cenSentBody: 'Maslahatchi soʻrovingizni koʻrib chiqib, siz bilan bogʻlanadi.',
   cenAfterHours: 'Markaz hozir yopiq. Keyingi ish kunida siz bilan bogʻlanamiz:',
   cenInHours: 'Markaz hozir ochiq. Aloqani kuting.',
-  cenHoursNote: 'Markaz ish vaqti (aniqlanadi): ish kunlari 09:00–18:00',
+  cenHoursNote: 'Markaz ish vaqti: yakshanba–payshanba 09:00–18:00',
   cenCaseNo: 'Soʻrov raqami',
 
   // S-13
