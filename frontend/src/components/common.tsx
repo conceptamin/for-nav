@@ -9,6 +9,9 @@ export function kakaoSearchUrl(query: string): string {
   return `https://map.kakao.com/link/search/${encodeURIComponent(query)}`;
 }
 
+/** 응급의료포털 E-Gen 병원 찾기. 지도 검색은 지금 진료 중인 곳만 보인다(2026-10-31 확인, backlog 44) */
+export const EGEN_HOSPITAL_URL = 'https://www.e-gen.or.kr/egen/search_hospital.do';
+
 /** 비응급 결과 화면마다 붙는 "심해지면 119" 안내 */
 export function Worse119() {
   const { t } = useT();

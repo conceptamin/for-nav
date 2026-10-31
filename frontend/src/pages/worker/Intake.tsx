@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import {
   Chip,
+  EGEN_HOSPITAL_URL,
   kakaoSearchUrl,
   PainRange,
   PhotoPicker,
@@ -447,6 +448,16 @@ export function ResultPage() {
         ☎️ {t('mapNotice')}
         <div className="small">{t('mapOpens')}</div>
       </div>
+      {/* 판정과 관계없이 늘 보이는 고정 안내(backlog 44). 갈 곳을 고르는 판단은 119에 맡긴다 */}
+      <section className="card">
+        <h2>🌙 {t('ahTitle')}</h2>
+        <p>📞 {t('ah119')}</p>
+        <p>🔍 {t('ahEgen')}</p>
+        <p>🏪 {t('ahStore')}</p>
+        <a className="btn secondary block" href={EGEN_HOSPITAL_URL} target="_blank" rel="noreferrer">
+          🏥 {t('ahEgenBtn')}
+        </a>
+      </section>
       <div className="stack">
         <Link className="btn block" to="/visit/call">
           📞 {t('toCall')}
