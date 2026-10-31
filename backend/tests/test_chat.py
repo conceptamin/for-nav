@@ -1,18 +1,22 @@
 # 상담 채팅(backlog 14): WebSocket 방, 근로자 토큰, 잘못된 프레임, 데모 초기화, 접근 로그, 읽음(backlog 28). 메모리·SQLite 두 저장소에 돌린다.
+# 메시지 번역(backlog 30)은 LLM을 FakeLLMClient로 바꾸고 외부 네트워크를 쓰지 않는다.
 
 import json
 import logging
 from datetime import datetime
 
 import pytest
+from fakes import FakeLLMClient, provider_error
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
 from app import clock
+from app.llm_limit import LLMLimiter
 from app.main import app
 from app.routers import center
 from app.store import CenterStore, MemoryStore
 from app.store_sqlite import SqliteStore
+from app.templates.translate import LineOutput
 
 MARKER = "MARKER-chat-do-not-log"
 AT = datetime(2026, 10, 30, 14, 12, 0, tzinfo=clock.SEOUL)
@@ -79,7 +83,18 @@ def test_worker_and_center_share_a_room(client):
         worker.send_json({"type": "message", "text": "  Tay tôi vẫn còn chảy máu ", "id": "m-99", "from": "center", "at": "2000-01-01"})
         expected = {
             "type": "message",
-            "message": {"id": "m-1", "caseId": case_id, "from": "worker", "text": "Tay tôi vẫn còn chảy máu", "at": clock.iso_utc(AT)},
+            "message": {
+                "id": "m-1",
+                "caseId": case_id,
+                "from": "worker",
+                "text": "Tay tôi vẫn còn chảy máu",
+                # LLM이 없으면 번역하지 않고 원문만 보낸다(backlog 30)
+                "lang": "vi",
+                "translated": None,
+                "translatedLang": "ko",
+                "translation": "skipped",
+                "at": clock.iso_utc(AT),
+            },
         }
         assert worker.receive_json() == expected
         assert staff.receive_json() == expected
@@ -114,7 +129,8 @@ def test_rooms_are_per_case(client):
         wa.receive_json()
         wb.send_json({"type": "message", "text": "b"})
         # b 방에는 b 메시지만 온다(id도 사례마다 m-1부터).
-        assert wb.receive_json()["message"] == {"id": "m-1", "caseId": b, "from": "center", "text": "b", "at": clock.iso_utc(AT)}
+        m = wb.receive_json()["message"]
+        assert (m["id"], m["caseId"], m["from"], m["text"]) == ("m-1", b, "center", "b")
 
 
 def test_unknown_case_is_4404(client):
@@ -330,3 +346,101 @@ def test_my_cases_log_has_no_token(client, caplog):
     case_id, token = send_case(client)
     my_cases(client, (case_id, token))
     assert token not in "\n".join(r.getMessage() for r in caplog.records)
+
+
+# ---------------------------------------------------------------------------
+# 메시지 번역(backlog 30): 근로자 → 한국어, 센터 → 사례 언어. 실패하면 원문만 보낸다.
+# ---------------------------------------------------------------------------
+VI = "Tay tôi vẫn còn chảy máu"
+KO = "손에서 아직 피가 납니다"
+
+
+def reply(text: str) -> str:
+    return LineOutput(text=text).model_dump_json()
+
+
+@pytest.fixture(params=["memory", "sqlite"])
+def open_llm_client(request, tmp_path, monkeypatch):
+    """가짜 LLM을 붙여 서버를 연다. 호출 제한은 끈다(backlog 20은 test_llm_limit.py가 본다)."""
+    s: CenterStore = MemoryStore() if request.param == "memory" else SqliteStore(str(tmp_path / "center.db"))
+    monkeypatch.setattr(center, "store", s)
+    monkeypatch.setattr(clock, "now", lambda: AT)
+    monkeypatch.setattr(app.state, "llm_limiter", LLMLimiter())
+
+    def make(llm: FakeLLMClient | None):
+        monkeypatch.setattr("app.main.get_llm_client", lambda: llm)
+        return TestClient(app)
+
+    yield make
+    s.close()
+
+
+def translation_of(m: dict) -> tuple:
+    return (m["text"], m["lang"], m["translated"], m["translatedLang"], m["translation"])
+
+
+def test_messages_are_translated_both_ways(open_llm_client):
+    fake = FakeLLMClient([reply(KO), reply("Bạn bị chảy máu từ khi nào?")])
+    with open_llm_client(fake) as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, token=token)) as worker, client.websocket_connect(url(case_id, "center")) as staff:
+            worker.receive_json()
+            staff.receive_json()
+
+            worker.send_json({"type": "message", "text": VI})
+            for ws in (worker, staff):
+                assert translation_of(ws.receive_json()["message"]) == (VI, "vi", KO, "ko", "ok")
+
+            staff.send_json({"type": "message", "text": "언제부터 피가 났나요?"})
+            for ws in (worker, staff):
+                assert translation_of(ws.receive_json()["message"]) == (
+                    "언제부터 피가 났나요?",
+                    "ko",
+                    "Bạn bị chảy máu từ khi nào?",
+                    "vi",
+                    "ok",
+                )
+
+        # 다시 붙어도 번역이 그대로 있다
+        with client.websocket_connect(url(case_id, "center")) as ws:
+            history = ws.receive_json()["messages"]
+    assert [(m["id"], m["translated"]) for m in history] == [("m-1", KO), ("m-2", "Bạn bị chảy máu từ khi nào?")]
+    # 근로자 메시지는 베트남어 → 한국어, 센터 메시지는 한국어 → 베트남어로 부탁했다
+    assert [p.user for p in fake.prompts] == [VI, "언제부터 피가 났나요?"]
+    assert "Translate from 베트남어 into 한국어" in fake.prompts[0].system
+    assert "Translate from 한국어 into 베트남어" in fake.prompts[1].system
+
+
+# 가짜 LLM은 응답을 꺼내 쓰므로 저장소마다 새로 만든다.
+@pytest.mark.parametrize(
+    ("make_llm", "status"),
+    [
+        (lambda: None, "skipped"),
+        (lambda: FakeLLMClient([provider_error()]), "skipped"),
+        (lambda: FakeLLMClient([reply("손가락 골절입니다")]), "rejected"),
+    ],
+    ids=["no-llm", "llm-error", "guard"],
+)
+def test_failed_translation_sends_original(open_llm_client, make_llm, status):
+    with open_llm_client(make_llm()) as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, token=token)) as ws:
+            ws.receive_json()
+            ws.send_json({"type": "message", "text": VI})
+            assert translation_of(ws.receive_json()["message"]) == (VI, "vi", None, "ko", status)
+
+
+def test_translation_log_has_no_text(open_llm_client, caplog):
+    caplog.set_level(logging.INFO, logger="app")
+    translated = "로그에 남으면 안 되는 번역문입니다"
+    with open_llm_client(FakeLLMClient([reply(translated)])) as client:
+        case_id, token = send_case(client)
+        with client.websocket_connect(url(case_id, token=token)) as ws:
+            ws.receive_json()
+            ws.send_json({"type": "message", "text": MARKER})
+            assert ws.receive_json()["message"]["translation"] == "ok"
+
+    log = "\n".join(r.getMessage() for r in caplog.records if r.name.startswith("app"))
+    assert MARKER not in log
+    assert translated not in log
+    assert "chat translation=ok" in log
