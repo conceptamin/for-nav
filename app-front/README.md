@@ -21,7 +21,7 @@
 | 포함 | 제외 |
 |---|---|
 | 근로자 화면 전부(S-01~S-13, `/guide`). 화면·규칙·문구는 `frontend/`와 같다(backlog 02에서 가져온다) | 센터 화면(C-00~C-03). 센터 직원은 PC 브라우저로 `frontend/`를 쓴다 |
-| 호스트 계약: 감지, 메시지 형식, 외부 링크·전화, 뒤로 가기, 안전 영역, 기기 언어 | Flutter 프로젝트 자체(어디에 둘지는 backlog 03의 결정 사항) |
+| 호스트 계약: 감지, 메시지 형식, 외부 링크·전화, 뒤로 가기, 안전 영역, 기기 언어 | Flutter 프로젝트 자체(`../app/`, backlog 03) |
 | WebView에서만 필요한 설정(뷰포트, 탭 하이라이트, 당겨서 튕김, 안전 영역 패딩) | 네이티브 UI(네이티브 탭 바·네비게이션). 화면은 모두 WebView 안이다 |
 | 호스트가 없는 브라우저에서의 동일 동작 | 푸시 알림, 앱 스토어 배포 절차(미정, "나중에 붙일 자리") |
 
@@ -42,7 +42,7 @@ VITE_API_BASE=/api npm run dev
 ```
 
 - 지금(backlog 01)은 호스트 연결 확인 화면 `/__host` 하나만 있다. `/`는 거기로 보낸다. 근로자 화면은 backlog 02부터다.
-- 휴대폰 WebView에서 열려면 Flutter 앱(backlog 03)이 이 주소를 불러온다. 개발 중에는 같은 Wi-Fi의 폰에서 `http://<맥 IP>:5181/`로 열어도 되고(`npm run dev -- --host`), PC 브라우저의 기기 모드(360px)로도 대부분 확인할 수 있다. 호스트가 있을 때만 다른 동작(외부 링크·뒤로 가기)은 실제 앱에서 확인한다.
+- 휴대폰 WebView에서 열려면 Flutter 앱(`../app/`, 실행은 `app/README.md`)이 이 주소를 불러온다. 개발 중에는 같은 Wi-Fi의 폰에서 `http://<맥 IP>:5181/`로 열어도 되고(`npm run dev -- --host`), PC 브라우저의 기기 모드(360px)로도 대부분 확인할 수 있다. 호스트가 있을 때만 다른 동작(외부 링크·뒤로 가기)은 실제 앱에서 확인한다.
 
 ## 폴더 구조
 
@@ -74,7 +74,7 @@ app-front/
 | `flutter_inappwebview` 핸들러 | `window.flutter_inappwebview.callHandler`가 함수다 | `window.flutter_inappwebview.callHandler('ForNav', JSON 문자열)` |
 | 없음 | 둘 다 없다 | 보통 브라우저. 보내지 않는다 |
 
-채널은 문서가 만들어질 때(document start) 생기므로 첫 렌더에서 바로 안다. 늦게 생긴 통로(브라우저에서 흉내 낼 때)도 첫 메시지를 주고받는 순간 같은 길로 감지한다. 어느 라이브러리를 쓸지는 backlog 03에서 정하되, 웹 쪽은 둘 다 받는다.
+채널은 문서가 만들어질 때(document start) 생기므로 첫 렌더에서 바로 안다. 늦게 생긴 통로(브라우저에서 흉내 낼 때)도 첫 메시지를 주고받는 순간 같은 길로 감지한다. 호스트(`../app/`)는 `webview_flutter`를 쓴다(backlog 03). 웹 쪽은 둘 다 받으므로 호스트가 라이브러리를 바꿔도 웹은 그대로다.
 
 ### 메시지 형식
 
@@ -160,45 +160,15 @@ WebView에서 다른 점:
 
 ## Flutter 쪽에서 할 일
 
-Flutter 프로젝트는 이 폴더 밖이다(backlog 03). 이 절은 웹이 기대하는 것을 호스트 쪽 말로 적은 것이고, 아래 예시는 `webview_flutter` 4.x 기준이다. 실제 구현은 backlog 03에서 하고, 계약이 바뀌면 이 문서를 먼저 고친다.
+Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 03). 실행·확인 방법과 계약 항목별 구현 위치는 `app/README.md` "계약 구현 위치"에 있다. 이 절은 웹이 호스트에 기대하는 것을 호스트 쪽 말로 적은 것이고, 계약이 바뀌면 이 문서를 먼저 고친 뒤 `src/bridge/`와 `app/lib/`를 같은 PR에서 고친다.
 
-```dart
-final appOrigin = Uri.parse(appUrl).origin;
-late final WebViewController controller;
-controller = WebViewController()
-  ..setJavaScriptMode(JavaScriptMode.unrestricted)
-  // 웹 → 호스트. 채널 이름 ForNav가 감지 기준이다
-  ..addJavaScriptChannel('ForNav', onMessageReceived: (m) {
-    final msg = jsonDecode(m.message) as Map<String, dynamic>;
-    switch (msg['type']) {
-      case 'ready':
-        controller.runJavaScript('window.fornav?.receive(${jsonEncode({
-          'protocol': 1, 'type': 'init',
-          'platform': Platform.isIOS ? 'ios' : 'android',
-          'appVersion': packageInfo.version,
-          'locale': Platform.localeName.replaceAll('_', '-'),
-          'insets': {'top': padding.top, 'right': padding.right, 'bottom': padding.bottom, 'left': padding.left},
-        })})');
-      case 'openExternal':
-        launchUrl(Uri.parse(msg['url'] as String), mode: LaunchMode.externalApplication);
-    }
-  })
-  ..setNavigationDelegate(NavigationDelegate(
-    // 앱 출처 밖은 WebView 안에서 열지 않는다(두 번째 겹)
-    onNavigationRequest: (req) {
-      if (Uri.parse(req.url).origin == appOrigin) return NavigationDecision.navigate;
-      launchUrl(Uri.parse(req.url), mode: LaunchMode.externalApplication);
-      return NavigationDecision.prevent;
-    },
-  ))
-  ..loadRequest(Uri.parse(appUrl));
-
-// Android 뒤로 가기: 웹이 처리했는지 동기로 묻는다
-Future<bool> handleBack() async {
-  final r = await controller.runJavaScriptReturningResult('window.fornav?.onBack?.() ?? false');
-  return r == true || r == 'true';
-}
-```
+- 채널 `ForNav`(JavaScript 채널)를 문서 시작 때 넣는다. 웹은 이것으로 호스트를 감지한다.
+- `ready`를 받은 뒤에만 `init`을 보낸다(`window.fornav?.receive({...})`). 페이지 로드 이벤트에는 기대지 않는다.
+- `locale`은 기기 첫 번째 언어의 BCP-47 태그다(`PlatformDispatcher.instance.locale.toLanguageTag()`. `Platform.localeName`은 iOS에서 앱 번들 언어로 좁혀진다).
+- `insets`는 `MediaQuery.padding`(논리 픽셀 = CSS px, 키보드 제외)이고, 바뀔 때(회전·창 크기) `insets` 메시지로 다시 보낸다.
+- `openExternal`과, `NavigationDelegate`에 걸린 앱 출처 밖 이동(`tel:`·`mailto:`·`sms:` 포함)은 막고 외부 앱으로 연다. 앱 출처는 `--dart-define=APP_URL`의 출처 하나다.
+- Android 뒤로 가기는 `window.fornav?.onBack?.() ?? false`를 동기로 묻고, `false`면 앱을 뒤로 보낸다. iOS는 WebView의 가장자리 스와이프를 켠다.
+- 로그에는 메시지 `type`만 남긴다.
 
 호스트가 더 챙겨야 하는 것(웹은 관여하지 않는다):
 
@@ -220,9 +190,9 @@ Future<bool> handleBack() async {
 ## 결정이 필요한 것
 
 1. **근로자 화면을 어떻게 가져오나(backlog 02).** `frontend/src`의 `pages/`·`components/`·`state/`·`api/`·`domain/`·`i18n/`·`styles.css`를 경로 별칭으로 **공유 import**할지, 이 폴더로 **복사**할지. 권장은 공유 import다. 화면과 규칙의 원본이 하나로 남고, `frontend/`의 수정이 그대로 앱에 반영된다. 대신 두 폴더에 `node_modules`가 둘 다 있어야 하고 React를 하나로 묶는 설정(`resolve.dedupe`)이 필요하며, `frontend/` 쪽 파일 이동이 이 앱 빌드를 깨뜨릴 수 있다(CI가 잡는다).
-2. **배포 출처.** 같은 출처(`/app/` 경로로 백엔드가 서빙, backend 항목 필요) / 다른 출처(Vercel 등 + `CORS_ORIGINS`) / 앱 안 번들. 1차 권장은 다른 출처(지금 `frontend/`와 같은 방식, 서버 코드 변경 없음)이고, 발표가 맥미니 한 대라면 같은 출처가 낫다. backlog 03에서 Flutter가 불러올 주소를 정할 때 함께 정한다.
-3. **Flutter 프로젝트 위치.** 이 저장소의 `app/`(권장: 계약 문서와 같은 PR에서 고칠 수 있다) / 별도 저장소. backlog 03.
-4. **WebView 라이브러리.** `webview_flutter`(공식, 가벼움, 파일 선택기·권한은 직접) / `flutter_inappwebview`(파일 선택기·권한·`onPermissionRequest` 내장, 의존성 큼). 웹은 둘 다 감지하므로 backlog 03에서 정한다.
+2. **배포 출처.** 같은 출처(`/app/` 경로로 백엔드가 서빙, backend 항목 필요) / 다른 출처(Vercel 등 + `CORS_ORIGINS`) / 앱 안 번들. 1차 권장은 다른 출처(지금 `frontend/`와 같은 방식, 서버 코드 변경 없음)이고, 발표가 맥미니 한 대라면 같은 출처가 낫다. Flutter 앱은 주소를 `--dart-define=APP_URL=`로 받으므로(backlog 03, 2026-10-31) 어느 쪽을 골라도 앱 코드는 바뀌지 않는다. 배포 주소가 생길 때 정한다.
+3. **Flutter 프로젝트 위치.** → **이 저장소의 `app/`으로 결정(2026-10-31, backlog 03).** 계약 문서와 웹·호스트를 같은 PR에서 고칠 수 있다.
+4. **WebView 라이브러리.** → **`webview_flutter`로 결정(2026-10-31, backlog 03).** 공식이고 가볍다. 파일 선택기·권한은 backlog 04에서 직접 붙인다. 웹은 `flutter_inappwebview`도 감지하므로 바꿔도 웹은 그대로다.
 
 ## 확인이 필요한 값
 
@@ -234,7 +204,7 @@ Future<bool> handleBack() async {
 
 | 항목 | 지금 | 실서비스 |
 |---|---|---|
-| 호스트 | 없음(브라우저로 확인). Flutter 앱은 backlog 03 | Android·iOS 앱 |
+| 호스트 | `../app/`(개발 주소를 `--dart-define`으로 불러온다. 번들·서명·스토어 설정 없음) | Android·iOS 앱 |
 | 화면 | `/__host` 확인 화면 | 근로자 화면 전부 |
 | 받아쓰기 | 브라우저 공급자 | 호스트 음성 인식 또는 서버 음성 인식(미정) |
 | 테스트 | `npm run build`(타입 검사)뿐. 다리는 `/__host` 화면에서 눈으로 확인 | — |

@@ -12,7 +12,7 @@
 3. `app-front/design.md` — 화면을 그릴 때. 토큰·컴포넌트는 `frontend/design.md`이고, 여기에는 WebView에서 더 지키는 것만 있다.
 4. `app-front/backlog/` — 작업 항목. 사용자가 지정한 항목 하나만 구현한다.
 5. 근로자 화면·규칙·API 정책을 볼 때는 `frontend/README.md`("화면 구성", "API 연결", "상태의 경계")와 `frontend/CLAUDE.md`. 이 앱은 그 정책을 다시 정하지 않고 그대로 따른다.
-6. 호스트(Flutter) 쪽을 고칠 때는 `README.md` "Flutter 쪽에서 할 일"과 backlog 03. 계약이 바뀌면 코드보다 `README.md`를 먼저 고친다.
+6. 호스트(Flutter) 쪽을 고칠 때는 `README.md` "Flutter 쪽에서 할 일"과 `../app/CLAUDE.md`. 계약이 바뀌면 코드보다 `README.md`를 먼저 고친다.
 
 ## backlog 문서로 일한다
 
@@ -82,7 +82,7 @@
 
 - `frontend/` 코드는 이 폴더의 작업에서 고치지 않는다. 화면·규칙을 바꿔야 하면 `frontend/` 브랜치로 따로 한다. 예외는 backlog 02가 공유 import를 택했을 때 `frontend/CLAUDE.md` "경계" 절에 "app-front가 이 경로들을 import한다"는 한 줄을 더하는 것이다(그 뒤로 `frontend/` 작업이 파일을 옮길 때 이 앱 빌드를 함께 돌리게 하기 위해서).
 - `backend/` 코드는 고치지 않는다. 같은 출처 서빙 경로(`/app/`)나 `CORS_ORIGINS` 기본값처럼 서버 쪽이 필요하면 backlog 문서 `## 메모`에 적고 사용자에게 알린다.
-- Flutter 프로젝트는 이 폴더 밖이다(위치는 backlog 03). 이 폴더는 호스트가 지켜야 할 계약(`README.md`)과 예시 코드만 둔다. 계약 변경은 웹·호스트를 같은 PR에서 고친다(같은 저장소일 때).
+- Flutter 프로젝트는 이 폴더 밖의 `../app/`이다(backlog 03). 이 폴더는 호스트가 지켜야 할 계약(`README.md`)만 둔다. 계약 변경은 웹(`src/bridge/`)·호스트(`app/lib/`)를 같은 PR에서 고친다.
 - `.github/workflows/ci.yml`에 이 폴더의 잡을 더하는 것은 `chore/` 영역의 별도 작업이다. 그 전까지는 PR 본문에 `npm run build` 결과를 적는다.
 
 ## 검사와 커밋
@@ -93,7 +93,7 @@ npm ci
 npm run build
 ```
 
-브라우저에서 바뀐 경로를 직접 확인한다. 휴대폰 폭(360px)으로 보고, 호스트 없음 동작(링크·전화가 브라우저 기본대로 열리는지, `/__host`가 "브라우저"로 보이는지)을 확인한다. 호스트가 있어야 하는 동작은 Flutter 앱(backlog 03 이후)에서 확인하고, 그 전에는 `/__host` 화면의 메시지 기록으로 대신한다. 근로자 화면이 생기면(backlog 02) `frontend/CLAUDE.md`의 확인 방법(언어 여러 개, 베트남어로 넘침 확인)을 그대로 따른다.
+브라우저에서 바뀐 경로를 직접 확인한다. 휴대폰 폭(360px)으로 보고, 호스트 없음 동작(링크·전화가 브라우저 기본대로 열리는지, `/__host`가 "브라우저"로 보이는지)을 확인한다. 호스트가 있어야 하는 동작은 Flutter 앱(`../app/`, 실행은 `app/README.md`)에서 확인한다. 근로자 화면이 생기면(backlog 02) `frontend/CLAUDE.md`의 확인 방법(언어 여러 개, 베트남어로 넘침 확인)을 그대로 따른다.
 
 ```sh
 npm run dev                                   # 단독 모드, http://localhost:5181
