@@ -109,7 +109,11 @@
   - Firebase 값 없음: features `speech`, 권한 창 없음. 지금 앱과 같다
   - 모양이 맞는 가짜 값: features `speech, push`, 앱을 열 때 권한 창 없음
   - 모양이 틀린 API 키: features `speech`, 앱이 멈추지 않는다(아래 결정)
-- 웹 다리는 08 `## 결과`(가짜 호스트 + backend 28 서버로 등록·해제·`pushOpen` 확인)
+- Android 에뮬레이터(`fornav_api36`, Google Play, API 36, vi-VN), 실제 Firebase 프로젝트 값(2026-10-31, 사용자가 만든 프로젝트 `for-nav-c25dd`의 Android 앱), `/__host`
+  - features `speech, push`. 앱을 새로 깔고 열 때 권한 창이 뜨지 않는다
+  - "푸시 시험"(`pushRegister`)을 누르자 시스템 알림 권한 창(기기 언어 vi)이 떴고, 허용하자 `token 받음 · received`. 메시지 기록은 `pushRegister` → `pushToken`
+  - `flutter run` 로그는 `[host] ← pushRegister`, `[host] → pushToken`뿐이고, `adb logcat`에도 FCM 토큰 값이 없다
+- - 웹 다리는 08 `## 결과`(가짜 호스트 + backend 28 서버로 등록·해제·`pushOpen` 확인)
 - 바뀐 계약(`README.md` "호스트 계약"): 웹 → 호스트 `pushRegister`·`pushUnregister`, 호스트 → 웹 `pushToken`(`token` | `error: denied|failed`)·`pushOpen`(`caseId`), `init.features`의 `push`. 필드를 더한 것이라 `protocol`은 1
 - 의존성: `firebase_core` ^4.0.0, `firebase_messaging` ^16.7.1(FCM 토큰·알림 탭 처리를 플랫폼마다 직접 짜지 않으려고). `flutter_local_notifications`는 더하지 않았다(결정 5)
 - 결정·차이
