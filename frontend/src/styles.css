@@ -44,7 +44,7 @@
   --radius: 20px;
   --radius-sm: 16px;
   --radius-lg: 28px;
-  --bar-119: 72px; /* 하단 119 독 자리 높이(위아래 10px + 독 52px = 버튼 44px + 안쪽 4px×2). .w-main 아래 여백과 .w-footer가 붙는 자리 */
+  --bar-119: 72px; /* 하단 119 독 자리 높이(위아래 10px + 독 52px = 버튼 44px + 안쪽 4px×2). .w-main 아래 여백 */
 
   /* 유리 면(design.md "글래스모피즘" › "그림자와 흐림"). 값은 여기에만 둔다 */
   --glass-edge: rgb(255 255 255 / 70%); /* 유리 가장자리 1px */
@@ -152,14 +152,7 @@ p {
   color: var(--ink);
 }
 
-/* 앱 바는 맨 위에서는 띠(면) 없이 투명하다(backlog 32). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있다.
-   내용이 스크롤되어 앱 바 밑으로 들어가면 .w-footer와 같은 유리 띠(--card + 흐림 + 아래 1px 선)가 생겨 글자가 겹쳐 보이지 않는다(backlog 35) */
-.w-header.scrolled {
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: 0 1px 0 var(--glass-edge);
-}
+/* 앱 바는 스크롤해도 띠(면) 없이 투명하다(backlog 32, 2026-10-31 사용자 결정). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있다 */
 
 /* 앱 바 왼쪽 알약(backlog 32). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
    홈은 로고 + 워드마크(통째로 홈 링크), 그 밖은 ← + 로고, 앱 바를 숨기는 화면은 로고 하나 */
@@ -423,18 +416,12 @@ a.brand-pill:active {
   flex-direction: column;
 }
 
-/* 바닥에 붙는 주 동작 버튼 한 자리. 띠가 화면 바닥까지 내려와 119 독 자리를 함께 덮는다(backlog 35). 버튼 아래 띠 안에
-   독이 떠서, 주 버튼 띠와 독 사이에 바탕이 비치는 틈이 없다. 끝까지 내려도 같은 자리다 */
+/* 본문 맨 끝의 주 동작 버튼 한 자리(backlog 38). 스크롤을 따라 떠 있지 않고 배경 띠 없이 버튼만 놓인다.
+   화면 위에 계속 떠 있는 것은 119·채팅 독뿐이다. 본문이 짧으면 .w-screen이 화면 바닥으로 밀고, 길면 끝까지 내려야 보인다.
+   아래는 .w-main이 독 자리(--bar-119)만큼 비워 두어, 끝까지 내려도 독이 버튼을 가리지 않는다.
+   위 간격은 padding으로 둔다. .w-screen의 margin-top: auto는 본문이 길면 0이 된다 */
 .w-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 5;
-  margin: 16px -16px calc(-1 * (var(--bar-119) + 16px + env(safe-area-inset-bottom))); /* .w-main의 좌우·아래 여백까지 띠를 넓힌다 */
-  padding: 12px 16px calc(var(--bar-119) + env(safe-area-inset-bottom));
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: 0 -1px 0 var(--glass-edge);
+  padding-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;

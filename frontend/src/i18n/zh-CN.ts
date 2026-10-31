@@ -230,6 +230,7 @@ export const zhCN: Record<MessageKey, string> = {
   cenTitle: '咨询援助中心',
   cenIntro: '中心可以帮忙预约医院、翻译，并提供援助项目咨询。',
   cenType: '您需要什么帮助？',
+  cenTypeHint: '符合的都可以选。',
   'req.booking': '预约帮助',
   'req.interpret': '翻译',
   'req.policy': '保险与援助咨询',

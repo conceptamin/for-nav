@@ -258,7 +258,8 @@ ContactMethod = Literal["phone", "sms", "kakao", "zalo", "visit"]
 class CenterSummaryInput(CamelModel):
     intake: Intake
     emergency_flag: bool
-    request_type: RequestType
+    # 근로자가 고른 순서(frontend backlog 37). 하나 이상, 종류 수(5)까지
+    request_types: list[RequestType] = Field(min_length=1, max_length=5)
     coverage: CoverageResult | None = None
     insurance: YesNoUnknown | None = None
     contact_method: ContactMethod | None = None
@@ -282,7 +283,7 @@ class CenterCase(CamelModel):
     id: str
     created_at: str
     language: Lang
-    request_type: RequestType
+    request_types: list[RequestType]
     urgency: Urgency
     urgency_reasons: list[str]
     district: District | None

@@ -141,7 +141,8 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
         )
         insurance = weighted(r, INS_W)
         emergency_flag = r() < 0.08
-        request_type = weighted(r, REQ_W)
+        # 사례마다 하나씩 뽑는다(프론트와 같은 시드 순서)
+        request_types = [weighted(r, REQ_W)]
         contact_method = weighted(r, CONTACT_W)
         ulsan90 = weighted(r, [("yes", 1), ("no", 1)]) if insurance == "no" else None
         coverage = route_coverage(CoverageInput(work_related=sc.work, insurance=insurance, ulsan90=ulsan90))
@@ -149,7 +150,7 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
             CenterSummaryInput(
                 intake=intake,
                 emergency_flag=emergency_flag,
-                request_type=request_type,
+                request_types=request_types,
                 coverage=coverage,
                 insurance=insurance,
                 contact_method=contact_method,
@@ -168,7 +169,7 @@ def build_mock_cases(now: datetime) -> list[CenterCase]:
                 id=f"C-{1000 + 24 - n}",
                 created_at=clock.iso_utc(created),
                 language=language,
-                request_type=request_type,
+                request_types=request_types,
                 urgency=urgency,
                 urgency_reasons=reasons,
                 district=intake.district,

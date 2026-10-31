@@ -240,7 +240,7 @@ def build_center_summary(i: CenterSummaryInput, note_translation: str | None = N
         ko.append(f"건강보험증: {INSURANCE_KO[i.insurance]}.")
     if i.coverage:
         ko.append(f"제도 경로 결과: {PATH_KO[i.coverage.path]}.")
-    ko.append(f"요청 유형: {REQUEST_TYPE_KO[i.request_type]}.")
+    ko.append(f"요청 유형: {', '.join(REQUEST_TYPE_KO[r] for r in i.request_types)}.")
     if i.contact_method:
         ko.append(f"연락 희망: {CONTACT_METHOD_KO[i.contact_method]}.")
     if note_translation:
@@ -258,7 +258,7 @@ def build_center_summary(i: CenterSummaryInput, note_translation: str | None = N
         nv.append(f"{t['industry']}: {pick(INDUSTRIES[intake.industry], lang)}.")
     if intake.free_text:
         nv.append(f'{t["myNote"]}: "{intake.free_text}"')
-    nv.append(f"{t['request']}: {request_type_native(i.request_type, lang)}.")
+    nv.append(f"{t['request']}: {', '.join(request_type_native(r, lang) for r in i.request_types)}.")
     return CenterSummary(ko=" ".join(ko), native="\n".join(nv))
 
 

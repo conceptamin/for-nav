@@ -229,6 +229,7 @@ export const en = {
   cenTitle: 'Ask the support centre',
   cenIntro: 'The centre helps with hospital booking, interpretation and advice on support programmes.',
   cenType: 'What do you need?',
+  cenTypeHint: 'Choose all that apply.',
   'req.booking': 'Booking support',
   'req.interpret': 'Interpretation',
   'req.policy': 'Insurance & support advice',

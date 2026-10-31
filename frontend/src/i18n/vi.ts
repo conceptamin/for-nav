@@ -218,6 +218,7 @@ export const vi: Record<MessageKey, string> = {
   cenTitle: 'Hỏi trung tâm hỗ trợ',
   cenIntro: 'Trung tâm giúp đặt lịch khám, phiên dịch và tư vấn chương trình hỗ trợ.',
   cenType: 'Bạn cần gì?',
+  cenTypeHint: 'Chọn tất cả mục phù hợp.',
   'req.booking': 'Hỗ trợ đặt lịch',
   'req.interpret': 'Phiên dịch',
   'req.policy': 'Tư vấn bảo hiểm, chế độ',
