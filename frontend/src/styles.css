@@ -152,12 +152,10 @@ p {
   color: var(--ink);
 }
 
-/* 앱 바는 맨 위에서는 띠(면) 없이 투명하다(backlog 32). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있다.
-   내용이 스크롤되어 앱 바 밑으로 들어가면 .w-footer와 같은 유리 띠(--card + 흐림 + 아래 1px 선)가 생겨 글자가 겹쳐 보이지 않는다(backlog 35) */
+/* 앱 바는 스크롤해도 띠(면) 없이 투명하다(backlog 32, 2026-10-31 사용자 결정). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있다 */
 
-/* 위·아래 고정 띠의 면. 480px 기둥보다 화면이 넓어도(태블릿·PC·가로 화면) 띠가 화면 양 끝까지 닿도록 가상 요소로 화면 폭만큼 그린다.
-   띠 자신(앱 바·.w-footer)은 투명하고 z-index가 있어, 면(-1)은 그 안의 버튼 아래·내용 위에 깔린다 */
-.w-header.scrolled::before,
+/* 아래 주 동작 띠(.w-footer)의 면. 480px 기둥보다 화면이 넓어도(태블릿·PC·가로 화면) 띠가 화면 양 끝까지 닿도록 가상 요소로 화면 폭만큼 그린다.
+   띠 자신(.w-footer)은 투명하고 z-index가 있어, 면(-1)은 그 안의 버튼 아래·내용 위에 깔린다 */
 .w-footer::before {
   content: '';
   position: absolute;
@@ -170,10 +168,6 @@ p {
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
   pointer-events: none;
-}
-
-.w-header.scrolled::before {
-  box-shadow: 0 1px 0 var(--glass-edge);
 }
 
 /* 띠를 화면 폭(100vw)으로 그리면 PC의 세로 스크롤바 폭만큼 가로로 넘친다. 근로자 화면에서만 가로 넘침을 자른다 */
