@@ -137,6 +137,8 @@ export const my: Record<MessageKey, string> = {
   toReport: 'ဆရာဝန်အတွက် အစီရင်ခံစာ',
   toCoverage: 'အာမခံနှင့် အထောက်အပံ့',
   toCenter: 'စင်တာကို အကူအညီ တောင်းပါ',
+  resultGoGroup: 'ဆေးရုံသွားတဲ့အခါ',
+  resultMoreGroup: 'အကူအညီ ထပ်လိုရင်',
   resultNoDiag: 'ဒါက ဘယ်ဆေးခန်းသွားရမလဲ လမ်းညွှန်ချက်သာ ဖြစ်ပြီး ရောဂါရှာဖွေ သတ်မှတ်ချက် မဟုတ်ပါ။',
 
   // S-08

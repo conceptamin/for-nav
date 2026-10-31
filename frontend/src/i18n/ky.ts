@@ -137,6 +137,8 @@ export const ky: Record<MessageKey, string> = {
   toReport: 'Дарыгер үчүн отчет',
   toCoverage: 'Камсыздандыруу жана жардам',
   toCenter: 'Борбордон жардам суроо',
+  resultGoGroup: 'Ооруканага барганда',
+  resultMoreGroup: 'Кошумча жардам керек болсо',
   resultNoDiag: 'Бул кайсы клиникага баруу боюнча кеңеш, диагноз эмес.',
 
   // S-08

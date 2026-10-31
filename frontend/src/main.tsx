@@ -6,7 +6,7 @@ import { RouterProvider } from 'react-router/dom';
 import { WorkerLayout } from './components/WorkerLayout';
 import { CaseDetailPage, CenterLayout, InboxPage, StatsPage } from './pages/center/Center';
 import { CenterLoginPage } from './pages/center/Login';
-import { AfterHoursPage, CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
+import { CenterRequestPage, GuidePage, MyPage } from './pages/worker/CenterRequest';
 import { CoveragePage } from './pages/worker/Coverage';
 import { IntakePage, ResultPage } from './pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from './pages/worker/Onboarding';
@@ -34,7 +34,6 @@ const routes: RouteObject[] = [
       { path: '/center-request', element: <CenterRequestPage /> }, // S-12
       { path: '/my', element: <MyPage /> }, // S-13
       { path: '/guide', element: <GuidePage /> },
-      { path: '/after-hours', element: <AfterHoursPage /> }, // S-07에서 여는 밤·휴일 안내
     ],
   },
   {

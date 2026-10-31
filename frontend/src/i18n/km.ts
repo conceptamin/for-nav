@@ -129,6 +129,8 @@ export const km: Record<MessageKey, string> = {
   toReport: 'របាយការណ៍សម្រាប់វេជ្ជបណ្ឌិត',
   toCoverage: 'ធានារ៉ាប់រង និងជំនួយ',
   toCenter: 'សុំជំនួយពីមជ្ឈមណ្ឌល',
+  resultGoGroup: 'ពេលទៅមន្ទីរពេទ្យ',
+  resultMoreGroup: 'បើត្រូវការជំនួយបន្ថែម',
   resultNoDiag: 'នេះជាការណែនាំថាគួរទៅគ្លីនិកណា មិនមែនជារោគវិនិច្ឆ័យទេ។',
 
   covTitle: 'គួរសួរពីថ្លៃចំណាយនៅកន្លែងណាមុន',
