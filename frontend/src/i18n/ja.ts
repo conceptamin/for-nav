@@ -8,6 +8,7 @@ export const ja: Record<MessageKey, string> = {
   back: '戻る',
   next: '次へ',
   home: 'ホーム',
+  menu: 'メニュー',
   yes: 'はい',
   no: 'いいえ',
   unknown: 'わからない',

@@ -8,6 +8,7 @@ export const si: Record<MessageKey, string> = {
   back: 'ආපසු',
   next: 'ඊළඟ',
   home: 'මුල් පිටුව',
+  menu: 'මෙනුව',
   yes: 'ඔව්',
   no: 'නැහැ',
   unknown: 'විශ්වාස නැහැ',

@@ -8,6 +8,7 @@ export const zhCN: Record<MessageKey, string> = {
   back: '返回',
   next: '下一步',
   home: '首页',
+  menu: '菜单',
   yes: '是',
   no: '否',
   unknown: '不确定',

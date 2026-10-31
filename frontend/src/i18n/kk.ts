@@ -8,6 +8,7 @@ export const kk: Record<MessageKey, string> = {
   back: 'Артқа',
   next: 'Әрі қарай',
   home: 'Басты бет',
+  menu: 'Мәзір',
   yes: 'Иә',
   no: 'Жоқ',
   unknown: 'Білмеймін',
