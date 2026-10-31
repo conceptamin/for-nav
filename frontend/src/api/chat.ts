@@ -2,6 +2,7 @@
 // 단독 모드에는 서버가 없으므로 채팅이 없다. 화면은 isChatAvailable()로 패널째 숨긴다.
 // 센터 경로처럼 대체하지 않는다. 끊기면 CHAT_RECONNECT_MS 뒤 다시 붙고, 4403·4404·4000·4401이면 멈춘 이유를 보인다.
 // 역할별 "어디까지 읽었나"는 history.read와 read 프레임으로 받고, 내가 읽은 자리는 markRead로 보낸다(backend 28).
+// 서버는 번역한 뒤에 메시지를 되돌려 준다(backend 30). 그동안 보낸 글은 pending으로 들고 있다.
 // 메시지 본문·토큰은 console에 찍지 않는다. 끊김 기록은 닫힘 코드만 남긴다.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,6 +25,8 @@ const STOP_CODES: Record<number, ChatStopReason> = { 4403: 'denied', 4404: 'miss
 export interface Chat {
   /** 서버가 준 순서 그대로. 내 메시지도 서버가 되돌려 준 것만 있다 */
   messages: ChatMessage[];
+  /** 보냈지만 서버가 아직 되돌려 주지 않은 내 글(번역 중, backend 30). 보낸 순서 */
+  pending: PendingMessage[];
   state: ChatState;
   stopReason: ChatStopReason | null;
   /** 마지막으로 보낸 글을 서버가 받지 않았다(error 프레임). 다음에 보내면 지워진다 */
@@ -47,6 +50,11 @@ export function chatMessageNumber(id: string): number {
   return m ? Number(m[1]) : 0;
 }
 
+export interface PendingMessage {
+  key: number;
+  text: string;
+}
+
 const NO_READ: Record<ChatRole, number> = { worker: 0, center: 0 };
 
 const readNumber = (v: unknown) => (typeof v === 'string' ? chatMessageNumber(v) : 0);
@@ -63,6 +71,8 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
   const [stopReason, setStopReason] = useState<ChatStopReason | null>(null);
   const [rejected, setRejected] = useState(false);
   const [read, setRead] = useState<Record<ChatRole, number>>(NO_READ);
+  const [pending, setPending] = useState<PendingMessage[]>([]);
+  const pendingKey = useRef(0);
   const socket = useRef<WebSocket | null>(null);
   // 서버가 알려 준 내 역할의 읽은 자리. 같은 값을 다시 보내지 않으려고 렌더와 따로 둔다
   const myRead = useRef(0);
@@ -98,6 +108,8 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
         if (frame.type === 'history' && Array.isArray(frame.messages)) {
           // 다시 붙을 때마다 서버가 전체를 다시 준다. 통째로 바꿔야 겹치지 않는다
           setMessages(frame.messages.filter(isMessage));
+          // 끊긴 사이 보낸 글이 서버에 닿았는지 알 수 없다. 닿았으면 history에 있다
+          setPending([]);
           const marks = { worker: readNumber(frame.read?.worker), center: readNumber(frame.read?.center) };
           myRead.current = marks[role];
           setRead(marks);
@@ -109,13 +121,22 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
         } else if (frame.type === 'message' && isMessage(frame.message)) {
           const m = frame.message;
           setMessages((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
+          // 되돌아온 내 글과 같은 글의 번역 중 줄을 하나 지운다. 같은 글이 없으면 가장 오래된 것
+          if (m.from === role)
+            setPending((list) => {
+              const i = list.findIndex((p) => p.text === m.text);
+              return list.filter((_, j) => j !== (i < 0 ? 0 : i));
+            });
         } else if (frame.type === 'error') {
+          // 받지 않은 글은 되돌아오지 않는다. 어느 글인지 알 수 없어 가장 오래된 번역 중 줄을 지운다
+          setPending((list) => list.slice(1));
           setRejected(true);
         }
       };
       ws.onclose = (e) => {
         if (disposed) return;
         socket.current = null;
+        setPending([]);
         const reason = STOP_CODES[e.code];
         if (reason) {
           console.warn(`[chat] 닫힘 ${e.code} → 멈춤`);
@@ -132,6 +153,7 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
     };
 
     setMessages([]);
+    setPending([]);
     setRead(NO_READ);
     myRead.current = 0;
     setStopReason(null);
@@ -153,6 +175,8 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
     const ws = socket.current;
     if (!t || t.length > CHAT_MAX_LEN || !ws || ws.readyState !== WebSocket.OPEN) return false;
     ws.send(JSON.stringify({ type: 'message', text: t }));
+    const key = ++pendingKey.current;
+    setPending((list) => [...list, { key, text: t }]);
     setRejected(false);
     return true;
   }, []);
@@ -166,5 +190,5 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
     ws.send(JSON.stringify({ type: 'read', upTo: id }));
   }, []);
 
-  return { messages, state, stopReason, rejected, read, markRead, send };
+  return { messages, pending, state, stopReason, rejected, read, markRead, send };
 }

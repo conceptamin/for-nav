@@ -2,6 +2,7 @@
 // 문구는 props로 받는다(근로자는 i18n, 센터는 한국어 고정). 연결·다시 연결·읽음은 api/chat.ts의 useChat이 한다.
 // 단독 모드에서는 부르는 쪽이 isChatAvailable()로 이 패널을 그리지 않는다.
 // 흔한 메신저처럼 같은 사람이 같은 분에 이어 보낸 글을 묶고, 시각과 내 글의 읽음은 묶음 끝 말풍선 옆에 한 번만 쓴다(backlog 47).
+// 번역이 붙은 글(backend 30)은 통화 자막처럼 상대 글은 번역을, 내 글은 원문을 크게 쓰고 다른 쪽을 작은 줄로 단다(backlog 49).
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
@@ -24,6 +25,10 @@ export interface ChatLabels {
   /** unauthorized(4401)는 센터에만 온다. 근로자 문구에는 없고, 없으면 denied 문구를 쓴다 */
   stopped: Record<Exclude<ChatStopReason, 'unauthorized'>, string> & { unauthorized?: string };
   rejected: string;
+  /** 보낸 글이 번역을 거쳐 되돌아오기 전(backlog 49) */
+  translating: string;
+  /** 번역이 붙은 말풍선의 작은 줄 앞 표시 */
+  machineTranslated: string;
 }
 
 const PEER: Record<ChatRole, ChatRole> = { worker: 'center', center: 'worker' };
@@ -81,7 +86,7 @@ export function ChatPanel({
   useEffect(() => {
     const box = scroller?.current ?? log.current;
     if (box) box.scrollTop = box.scrollHeight;
-  }, [chat.messages.length, scroller]);
+  }, [chat.messages.length, chat.pending.length, scroller]);
 
   // 상대의 마지막 글까지 읽었다고 알린다. 숨긴 시트·다른 탭이면 보내지 않고, 다시 보이면 보낸다
   const lastPeer = [...chat.messages].reverse().find((m) => m.from !== me)?.id ?? null;
@@ -131,6 +136,14 @@ export function ChatPanel({
     return { m, mine, read, day, last };
   });
 
+  // 상대 글은 번역이 크고 원문이 작다. 내 글은 원문이 크고 번역이 작다. 번역이 없으면 원문 하나(CallPanel과 같다)
+  const lines = (m: ChatMessage, mine: boolean) => {
+    const original = { text: m.text, lang: m.lang ?? undefined };
+    if (m.translation !== 'ok' || !m.translated) return { main: original, sub: null };
+    const translated = { text: m.translated, lang: m.translatedLang ?? undefined };
+    return mine ? { main: original, sub: translated } : { main: translated, sub: original };
+  };
+
   const bottom = (
     <>
       {chat.state === 'stopped' && chat.stopReason ? (
@@ -175,16 +188,28 @@ export function ChatPanel({
   return (
     <div className="chat">
       <div className="chat-log" ref={log} aria-live="polite">
-        {rows.length === 0 ? (
+        {rows.length === 0 && chat.pending.length === 0 ? (
           <p className="chat-sys">{labels.empty}</p>
         ) : (
-          rows.map(({ m, mine, read, day, last }) => (
+          rows.map(({ m, mine, read, day, last }) => {
+            const { main, sub } = lines(m, mine);
+            return (
             <div key={m.id} className="chat-item">
               {day && <p className="chat-day">{day}</p>}
               <div className={`chat-row${mine ? ' mine' : ''}${last ? ' last' : ''}`}>
                 <div className={`chat-msg${mine ? ' mine' : ''}`}>
                   <span className="sr-only">{mine ? labels.me : labels.other}: </span>
-                  <p dir="auto">{m.text}</p>
+                  <p dir="auto" lang={main.lang}>
+                    {main.text}
+                  </p>
+                  {sub && (
+                    <div className="chat-sub">
+                      <span className="chat-mt">{labels.machineTranslated}</span>
+                      <p dir="auto" lang={sub.lang}>
+                        {sub.text}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {last && (
                   <span className="chat-meta">
@@ -194,8 +219,20 @@ export function ChatPanel({
                 )}
               </div>
             </div>
-          ))
+            );
+          })
         )}
+        {chat.pending.map((p) => (
+          <div key={`pending-${p.key}`} className="chat-row mine last">
+            <div className="chat-msg mine pending">
+              <span className="sr-only">{labels.me}: </span>
+              <p dir="auto">{p.text}</p>
+            </div>
+            <span className="chat-meta" role="status">
+              {labels.translating}
+            </span>
+          </div>
+        ))}
       </div>
       {footer ? createPortal(bottom, footer) : bottom}
     </div>

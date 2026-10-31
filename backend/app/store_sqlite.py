@@ -1,6 +1,6 @@
 # 센터 사례 SQLite 저장소(backlog 07). DB_PATH가 있을 때 store.py가 고른다. 표준 라이브러리 sqlite3만 쓴다.
 # 사례 표는 다섯이다. live_cases: 근로자가 보낸 사례 본문(JSON), case_status: mock·live 사례의 바뀐 상태,
-# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
+# chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지(번역 열은 backlog 30, 옛 파일에는 열 때 더한다). chat_reads: 역할별 읽은 자리(backlog 28). call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
@@ -27,6 +27,7 @@ from app.store import (
     PUSH_DEVICE_KEEP,
     PUSH_DEVICES_PER_CASE,
     AuthCode,
+    MessageTranslation,
     PushDevice,
     caption_number,
     latest_first,
@@ -60,6 +61,10 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     sender TEXT NOT NULL,
     text TEXT NOT NULL,
     at TEXT NOT NULL,
+    lang TEXT,
+    translated TEXT,
+    translated_lang TEXT,
+    translation TEXT,
     PRIMARY KEY (case_id, id)
 );
 CREATE TABLE IF NOT EXISTS chat_reads (
@@ -153,6 +158,17 @@ def _case_from_body(body: str) -> CenterCase | None:
         return None
 
 
+# 채팅 번역(backlog 30)이 더한 열. 이 항목 전에 만든 DB 파일에는 없으므로 열 때 더한다(옛 메시지는 NULL).
+CHAT_TRANSLATION_COLUMNS = ("lang", "translated", "translated_lang", "translation")
+
+
+def _add_missing_columns(db: sqlite3.Connection, table: str, columns: tuple[str, ...]) -> None:
+    have = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
+    for column in columns:
+        if column not in have:
+            db.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
+
+
 class SqliteStore:
     def __init__(self, path: str, now: datetime | None = None) -> None:
         started = now or clock.now()
@@ -161,6 +177,7 @@ class SqliteStore:
         self._db = sqlite3.connect(path, check_same_thread=False)
         with self._db:
             self._db.executescript(SCHEMA)
+            _add_missing_columns(self._db, "chat_messages", CHAT_TRANSLATION_COLUMNS)
         self._mock = build_mock_cases(started)
         self.stat_records: list[StatRecord] = build_stat_records(started)
 
@@ -221,23 +238,32 @@ class SqliteStore:
             row = self._db.execute("SELECT token FROM chat_tokens WHERE case_id = ?", (case_id,)).fetchone()
         return row[0] if row else None
 
-    def add_message(self, case_id: str, sender: ChatRole, text: str, at: datetime) -> ChatMessage:
+    def add_message(
+        self, case_id: str, sender: ChatRole, text: str, at: datetime, translation: MessageTranslation | None = None
+    ) -> ChatMessage:
         with self._lock:
             (count,) = self._db.execute("SELECT COUNT(*) FROM chat_messages WHERE case_id = ?", (case_id,)).fetchone()
-            m = make_message(case_id, count, sender, text, at)
+            m = make_message(case_id, count, sender, text, at, translation)
             with self._db:
                 self._db.execute(
-                    "INSERT INTO chat_messages (id, case_id, sender, text, at) VALUES (?, ?, ?, ?, ?)",
-                    (m.id, m.case_id, m.from_, m.text, m.at),
+                    "INSERT INTO chat_messages (id, case_id, sender, text, at, lang, translated, translated_lang, translation)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (m.id, m.case_id, m.from_, m.text, m.at, m.lang, m.translated, m.translated_lang, m.translation),
                 )
         return m
 
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             rows = self._db.execute(
-                "SELECT id, sender, text, at FROM chat_messages WHERE case_id = ? ORDER BY rowid", (case_id,)
+                "SELECT id, sender, text, at, lang, translated, translated_lang, translation FROM chat_messages WHERE case_id = ? ORDER BY rowid",
+                (case_id,),
             ).fetchall()
-        return [ChatMessage(id=i, case_id=case_id, from_=sender, text=text, at=at) for (i, sender, text, at) in rows]
+        return [
+            ChatMessage(
+                id=i, case_id=case_id, from_=sender, text=text, at=at, lang=lang, translated=tr, translated_lang=tr_lang, translation=status
+            )
+            for (i, sender, text, at, lang, tr, tr_lang, status) in rows
+        ]
 
     def mark_read(self, case_id: str, role: ChatRole, n: int) -> bool:
         with self._lock, self._db:

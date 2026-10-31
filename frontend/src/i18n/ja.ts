@@ -238,7 +238,7 @@ export const ja: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: 'センターとチャット',
-  chatIntro: '相談員が依頼を確認したあと、ここで返信します。メッセージは翻訳されず、そのまま届きます。',
+  chatIntro: '相談員が依頼を確認したあと、ここで返信します。メッセージは相手の言語に機械翻訳され、原文も一緒に表示されます。',
   chatEmpty: 'まだメッセージはありません。先に書いても大丈夫です。',
   chatPlaceholder: 'メッセージを入力',
   chatSend: '送信',

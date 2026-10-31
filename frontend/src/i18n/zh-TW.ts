@@ -238,7 +238,7 @@ export const zhTW: Record<MessageKey, string> = {
 
   // S-12 상담 채팅
   chatTitle: '與中心聊天',
-  chatIntro: '諮詢員查看您的請求後會在這裡回覆。訊息按原文傳送，不會翻譯。',
+  chatIntro: '諮詢員查看您的請求後會在這裡回覆。訊息會機器翻譯成對方的語言，並同時顯示原文。',
   chatEmpty: '還沒有訊息。您可以先傳訊息。',
   chatPlaceholder: '輸入訊息',
   chatSend: '傳送',
