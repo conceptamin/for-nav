@@ -275,7 +275,7 @@ backend/
 {
   "intake": { /* Intake */ },
   "emergencyFlag": true,            // 세션 중 응급 판정 이력(AppState.emergencySeen)
-  "requestType": "booking",
+  "requestTypes": ["booking", "interpret"],   // 고른 순서, 1~5개. 빈 배열은 422
   "coverage": { /* CoverageResult 또는 null */ },
   "insurance": "no",
   "contactMethod": "zalo",
