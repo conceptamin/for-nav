@@ -245,6 +245,7 @@ export const id: Record<MessageKey, string> = {
   talkNoCase: 'Kirim permintaan ke pusat terlebih dahulu. Setelah itu Anda bisa menelepon atau mengobrol dengan pusat di sini.',
   talkOffline: 'Panggilan dan obrolan dengan pusat hanya bisa dilakukan saat aplikasi terhubung ke server.',
   close: 'Tutup',
+  chatCallHint: 'Anda juga bisa berbicara lewat suara: ketuk 📞 di atas untuk menelepon pusat.',
   liveCallTitle: 'Telepon pusat',
   liveCallIntro: 'Bicara dengan konselor lewat internet. Ucapan kalian berdua muncul di bawah sebagai teks dengan terjemahan mesin. Pakai earphone agar suara lawan bicara tidak tercatat sebagai teks Anda.',
   liveCallStart: 'Telepon',
