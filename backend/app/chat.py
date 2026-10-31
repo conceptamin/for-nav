@@ -11,18 +11,23 @@ CLOSE_RESET = 4000
 
 class ChatHub:
     def __init__(self) -> None:
-        self._rooms: dict[str, set[WebSocket]] = {}
+        # 방마다 연결과 그 연결의 역할. 역할은 근로자가 지금 채팅을 보고 있는지(푸시를 건너뛸지, backlog 28) 묻는 데만 쓴다
+        self._rooms: dict[str, dict[WebSocket, ChatRole]] = {}
 
-    def join(self, case_id: str, ws: WebSocket) -> None:
-        self._rooms.setdefault(case_id, set()).add(ws)
+    def join(self, case_id: str, ws: WebSocket, role: ChatRole) -> None:
+        self._rooms.setdefault(case_id, {})[ws] = role
 
     def leave(self, case_id: str, ws: WebSocket) -> None:
         room = self._rooms.get(case_id)
         if room is None:
             return
-        room.discard(ws)
+        room.pop(ws, None)
         if not room:
             del self._rooms[case_id]
+
+    def has_worker(self, case_id: str) -> bool:
+        """그 사례 방에 근로자 연결이 하나라도 있는지."""
+        return "worker" in self._rooms.get(case_id, {}).values()
 
     async def broadcast(self, case_id: str, frame: dict) -> None:
         """같은 방의 모든 연결에 보낸다. 이미 끊긴 연결은 건너뛰고 방에서 뺀다."""

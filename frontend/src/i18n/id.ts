@@ -130,9 +130,7 @@ export const id: Record<MessageKey, string> = {
   mapOpens: 'Membuka Kakao Map (bahasa Korea). Nama klinik dicari dalam bahasa Korea.',
   ahTitle: 'Pada malam hari atau hari libur',
   ah119: 'Tidak tahu harus ke mana? Telepon 119 dan tanyakan. Siang dan malam, mereka memberi tahu rumah sakit dan apotek yang buka sekarang serta memberi konsultasi medis lewat telepon.',
-  ahEgen: 'Anda juga bisa mencari rumah sakit dan apotek yang buka sekarang di situs E-Gen (bahasa Korea).',
   ahStore: 'Banyak minimarket 24 jam menjual obat dasar: obat demam dan nyeri, obat flu, obat maag, dan koyok pereda nyeri.',
-  ahEgenBtn: 'Cari rumah sakit yang buka (E-Gen)',
   toDesk: 'Tunjukkan di resepsionis',
   toCall: 'Naskah telepon',
   toReport: 'Laporan untuk dokter',
@@ -322,6 +320,6 @@ export const id: Record<MessageKey, string> = {
   guide5t: '5. Jika terjadi di tempat kerja',
   guide5b: 'Catat kapan, di mana, dan bagaimana kejadiannya. Anda bisa bertanya tentang asuransi kecelakaan kerja. Tanya pusat bantuan jika perlu bantuan.',
   guide6t: '6. Pada malam hari atau hari libur',
-  guide6b: 'Jika klinik di dekat Anda tutup, telepon 119 dan tanyakan harus ke mana. Siang dan malam, 119 memberi tahu rumah sakit dan apotek yang buka sekarang serta memberi konsultasi medis lewat telepon. Banyak minimarket 24 jam menjual obat dasar. Anda juga bisa mencari di situs E-Gen (bahasa Korea).',
+  guide6b: 'Jika klinik di dekat Anda tutup, telepon 119 dan tanyakan harus ke mana. Siang dan malam, 119 memberi tahu rumah sakit dan apotek yang buka sekarang serta memberi konsultasi medis lewat telepon. Banyak minimarket 24 jam menjual obat dasar.',
   guideCheck: 'Detail bisa berbeda di setiap rumah sakit. Silakan tanyakan ke rumah sakit atau pusat bantuan.',
 };

@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import {
   Chip,
-  EGEN_HOSPITAL_URL,
   kakaoSearchUrl,
   PhotoPicker,
   Progress,
@@ -358,22 +357,16 @@ export function ResultPage() {
         ☎️ {t('mapNotice')}
         <div className="small">{t('mapOpens')}</div>
       </div>
-      {/* 늘 보이는 고정 안내(backlog 44 after-hours-guide). 갈 곳을 고르는 판단은 119에 맡긴다 */}
-      <section className="card">
-        <h2>🌙 {t('ahTitle')}</h2>
-        <p>📞 {t('ah119')}</p>
-        <p>🔍 {t('ahEgen')}</p>
-        <p>🏪 {t('ahStore')}</p>
-        <a className="btn secondary block" href={EGEN_HOSPITAL_URL} target="_blank" rel="noreferrer">
-          🏥 {t('ahEgenBtn')}
-        </a>
-      </section>
+      {/* 밤·휴일 안내는 따로 연다(backlog 44 after-hours-guide) */}
+      <Link className="btn secondary block" to="/after-hours">
+        🌙 {t('ahTitle')}
+      </Link>
       <div className="stack">
         <Link className="btn block" to="/visit/call">
           📞 {t('toCall')}
         </Link>
         <Link className="btn block" to="/visit/desk">
-          🪪 {t('toDesk')}
+          📋 {t('toDesk')}
         </Link>
         <Link className="btn block" to="/report/new">
           🩺 {t('toReport')}

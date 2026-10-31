@@ -130,9 +130,7 @@ export const uz: Record<MessageKey, string> = {
   mapOpens: 'Kakao Map (koreys tilida) ochiladi. Klinika nomi koreyscha qidiriladi.',
   ahTitle: 'Kechasi yoki dam olish kunida',
   ah119: 'Qayerga borishni bilmaysizmi? 119 ga qoʻngʻiroq qilib soʻrang. Kechayu kunduz hozir ochiq kasalxona va dorixonalarni aytib beradi va telefonda tibbiy maslahat beradi.',
-  ahEgen: 'Hozir ochiq kasalxona va dorixonalarni E-Gen saytida ham topish mumkin (koreys tilida).',
   ahStore: '24 soat ishlaydigan koʻp doʻkonlarda oddiy dorilar sotiladi: isitma va ogʻriq, shamollash, oshqozon uchun dorilar va ogʻriq qoldiruvchi plastirlar.',
-  ahEgenBtn: 'Ochiq kasalxonani topish (E-Gen)',
   toDesk: 'Qabulxonada koʻrsatish',
   toCall: 'Telefonda nima deyish',
   toReport: 'Shifokor uchun hisobot',
@@ -322,6 +320,6 @@ export const uz: Record<MessageKey, string> = {
   guide5t: '5. Agar ishda yuz bergan boʻlsa',
   guide5b: 'Qachon, qayerda va qanday boʻlganini yozib qoʻying. Ishlab chiqarishdagi baxtsiz hodisa sugʻurtasi haqida soʻrashingiz mumkin. Yordam kerak boʻlsa, markazdan soʻrang.',
   guide6t: '6. Kechasi yoki dam olish kunida',
-  guide6b: 'Yaqin atrofdagi klinikalar yopiq boʻlsa, 119 ga qoʻngʻiroq qilib, qayerga borishni soʻrang. 119 kechayu kunduz hozir ochiq kasalxona va dorixonalarni aytib beradi va telefonda tibbiy maslahat beradi. 24 soat ishlaydigan koʻp doʻkonlarda oddiy dorilar sotiladi. E-Gen saytida ham qidirish mumkin (koreys tilida).',
+  guide6b: 'Yaqin atrofdagi klinikalar yopiq boʻlsa, 119 ga qoʻngʻiroq qilib, qayerga borishni soʻrang. 119 kechayu kunduz hozir ochiq kasalxona va dorixonalarni aytib beradi va telefonda tibbiy maslahat beradi. 24 soat ishlaydigan koʻp doʻkonlarda oddiy dorilar sotiladi.',
   guideCheck: 'Tafsilotlar shifoxonaga qarab farq qilishi mumkin. Shifoxona yoki markazdan aniqlang.',
 };
