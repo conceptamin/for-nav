@@ -50,6 +50,7 @@ interface Row {
  * `footer`: 입력줄과 상태 줄을 그릴 자리(시트 아래 고정 칸). 없으면 목록 바로 아래
  * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 46)
  * `onPeerCount`: 받은 상대 메시지 수가 바뀔 때마다 알린다. 센터 상담 카드가 스크립트를 보는 사이 온 글을 표시한다(backlog 51)
+ * `suggestions`: 입력줄 위 추천 답장 칩. 누르면 입력줄에 넣기만 한다(센터 C-02). `suggestionsLabel`은 칩 줄의 이름
  */
 export function ChatPanel({
   caseId,
@@ -63,6 +64,8 @@ export function ChatPanel({
   footer,
   onSeen,
   onPeerCount,
+  suggestions,
+  suggestionsLabel,
 }: {
   caseId: string;
   auth: ChatAuth;
@@ -75,10 +78,13 @@ export function ChatPanel({
   footer?: HTMLElement | null;
   onSeen?: (centerMessages: number) => void;
   onPeerCount?: (peerMessages: number) => void;
+  suggestions?: { label: string; text: string }[];
+  suggestionsLabel?: string;
 }) {
   const chat = useChat(caseId, auth);
   const [draft, setDraft] = useState('');
   const log = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLTextAreaElement>(null);
 
   const centerCount = chat.messages.filter((m) => m.from === 'center').length;
   useEffect(() => {
@@ -171,9 +177,30 @@ export function ChatPanel({
           {labels.rejected}
         </div>
       )}
+      {chat.state === 'open' && suggestions && suggestions.length > 0 && (
+        <div className="chat-suggest" role="group" aria-label={suggestionsLabel}>
+          {suggestionsLabel && <p className="chat-suggest-label">{suggestionsLabel}</p>}
+          <div className="chat-suggest-row">
+            {suggestions.map((s) => (
+              <button
+                key={s.label}
+                type="button"
+                title={s.text}
+                onClick={() => {
+                  setDraft(s.text);
+                  input.current?.focus();
+                }}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {(chat.state !== 'stopped' || unauthorized) && (
         <form className="chat-input" onSubmit={submit}>
           <textarea
+            ref={input}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}

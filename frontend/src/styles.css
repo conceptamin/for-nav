@@ -2799,6 +2799,194 @@ table.cases tr.fresh {
   gap: 6px;
 }
 
+/* AX 표시(센터가 손으로 하던 일 중 앱이 대신한 것). ✦ 표시와 칩은 진한 틸 글자 + 옅은 민트 바탕 */
+.ax-mark {
+  color: var(--brand-fg);
+}
+
+.pill.ax {
+  background: var(--brand-2);
+  color: var(--brand-fg);
+  vertical-align: 2px;
+}
+
+/* C-01 접수함 맨 위 띠: 이름 + 자동 처리한 일의 수 */
+.ax-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: linear-gradient(90deg, var(--brand-2), var(--card) 40%);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius);
+  box-shadow: var(--glass);
+}
+
+.ax-strip h2 {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--t6);
+  color: var(--brand-ink);
+  white-space: nowrap;
+}
+
+.ax-strip ul {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ax-strip li {
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid var(--brand);
+}
+
+.ax-strip li strong {
+  font-size: var(--t9);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-strip li strong small {
+  margin-inline-start: 2px;
+  font-size: var(--t4);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.ax-strip li span {
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+/* C-01 요청 유형 칸 아래 자동 요약 한 줄. 표 칸 폭을 넘으면 말줄임 */
+table.cases .row-summary {
+  display: block;
+  max-width: 340px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+/* C-02 자동 처리 단계. 끝난 단계는 민트 원 안 ✓ */
+.ax-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  list-style: none;
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius);
+  box-shadow: var(--glass);
+}
+
+.ax-flow li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.ax-flow li div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ax-flow strong {
+  font-size: var(--t4);
+}
+
+.ax-flow li div span {
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+.ax-step {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-size: var(--t4);
+  font-weight: 700;
+}
+
+.ax-flow li.done .ax-step {
+  background: var(--brand-paint);
+  color: var(--on-brand);
+}
+
+.ax-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ax-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.ax-reasons .label {
+  margin-inline-end: 4px;
+  font-size: var(--t4);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+/* C-02 채팅 입력줄 위 추천 답장 칩 */
+.chat-suggest-label {
+  margin: 0 0 6px;
+  font-size: var(--t2);
+  color: var(--brand-fg);
+  font-weight: 700;
+}
+
+.chat-suggest-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chat-suggest-row button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand-2);
+  color: var(--brand-fg);
+  font: inherit;
+  font-size: var(--t3);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--glass-sm);
+}
+
+.chat-suggest-row button:active {
+  box-shadow: var(--glass-in);
+}
+
 /* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
 .detail-head {
   display: flex;
@@ -2953,6 +3141,15 @@ table.cases tr.fresh {
 
   .detail,
   .charts {
+    grid-template-columns: 1fr;
+  }
+
+  .ax-strip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ax-flow {
     grid-template-columns: 1fr;
   }
 

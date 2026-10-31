@@ -269,6 +269,86 @@ function ChatIcon({ size }: { size: number }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// AX 표시(센터가 손으로 하던 일 중 앱이 대신한 것). 값은 사례 필드에서만 센다. 지어낸 수치(절약 시간 등)는 쓰지 않는다
+// ---------------------------------------------------------------------------
+
+/** C-01 접수함 위 띠: 지금 접수함에서 앱이 대신 처리한 일 */
+function AxStrip({ cases, chatOn }: { cases: CenterCase[]; chatOn: boolean }) {
+  const langs = new Set(cases.map((c) => c.language)).size;
+  const items = [
+    { n: cases.length, unit: '건', l: '모국어 입력 → 한국어 요약 자동 정리' },
+    { n: langs, unit: '개 언어', l: '통역 없이 바로 읽음' },
+    { n: cases.filter((c) => c.urgencyReasons.length > 0).length, unit: '건', l: '긴급도 근거 자동 표시' },
+    { n: cases.filter((c) => c.coveragePath).length, unit: '건', l: '제도 경로 미리 안내됨' },
+    ...(chatOn ? [{ n: cases.filter((c) => c.live).length, unit: '건', l: 'AI 번역 채팅·통화 연결' }] : []),
+  ];
+  return (
+    <section className="ax-strip" aria-labelledby="ax-strip-title">
+      <h2 id="ax-strip-title">
+        <span className="ax-mark" aria-hidden="true">
+          ✦
+        </span>
+        AX 자동 처리
+      </h2>
+      <ul>
+        {items.map((x) => (
+          <li key={x.l}>
+            <strong>
+              {x.n}
+              <small>{x.unit}</small>
+            </strong>
+            <span>{x.l}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** C-02 맨 위: 이 사례가 근로자 입력에서 센터 상담까지 거친 자동 처리 단계 */
+function AxFlow({ c, talk }: { c: CenterCase; talk: boolean }) {
+  const steps = [
+    { t: '모국어 입력 접수', d: `${LANGUAGE_NAMES_KO[c.language]} · 버튼·사진·자유 입력`, done: true },
+    { t: '한국어 요약 자동 생성', d: '사실만 정리, 판단 없음', done: true },
+    { t: '긴급도 자동 분류', d: `${URGENCY_KO[c.urgency]} · 근거 ${c.urgencyReasons.length}개`, done: true },
+    { t: '제도 경로 안내', d: c.coveragePath ? PATH_KO[c.coveragePath] : '근로자가 확인하지 않음', done: c.coveragePath !== null },
+    { t: 'AI 통역 상담', d: !talk ? 'API 모드에서 열림' : c.live ? '채팅·통화 실시간 번역' : '예시 사례(근로자 없음)', done: talk && c.live },
+  ];
+  return (
+    <ol className="ax-flow" aria-label="AX 처리 단계">
+      {steps.map((s, i) => (
+        <li key={s.t} className={s.done ? 'done' : undefined}>
+          <span className="ax-step" aria-hidden="true">
+            {s.done ? '✓' : i + 1}
+          </span>
+          <div>
+            <strong>{s.t}</strong>
+            <span>{s.d}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/**
+ * C-02 채팅 입력줄 위 추천 답장. 사례 필드(업무 중 발생·보험·요청 유형·긴급도)로 고르는 고정 문장이다.
+ * 누르면 입력줄에 넣기만 하고, 보내면 서버가 근로자 언어로 번역한다(backend 30)
+ */
+function suggestReplies(c: CenterCase): { label: string; text: string }[] {
+  const out = [{ label: '첫 인사', text: '안녕하세요, 울산외국인주민·근로자통합지원센터입니다. 보내 주신 내용을 확인했어요. 지금 몸 상태는 어떠세요?' }];
+  if (c.workRelated === 'yes' || c.coveragePath === 'industrial')
+    out.push({ label: '산재 안내', text: '일하다 다치거나 아프면 산재로 치료비를 받을 수 있어요. 회사 이름과 다친 날짜를 알려 주세요.' });
+  if (c.insurance === 'no' || c.insurance === 'unknown' || c.coveragePath === 'ulsanSupport')
+    out.push({ label: '의료비 지원', text: '건강보험이 없어도 울산시 의료비 지원을 받을 수 있는지 함께 확인해 드릴게요.' });
+  if (c.requestTypes.includes('booking')) out.push({ label: '예약 지원', text: '병원 예약을 도와드릴게요. 가능한 날짜와 시간을 알려 주세요.' });
+  if (c.requestTypes.includes('interpret')) out.push({ label: '통역', text: '병원에서 통역이 필요하면 전화로 통역해 드릴 수 있어요.' });
+  if (c.urgency === 'high') out.push({ label: '119 안내', text: '증상이 갑자기 심해지면 바로 119에 전화하세요.' });
+  out.push({ label: '통화 권유', text: '통화가 편하시면 위의 📞 버튼을 눌러 주세요. 서로의 말이 자동으로 번역돼요.' });
+  return out.slice(0, 5);
+}
+
 type InboxFilter = CaseStatus | 'all' | 'chat';
 type InboxSort = 'time' | 'urgency' | 'chat';
 
@@ -327,6 +407,7 @@ export function InboxPage() {
 
   return (
     <div>
+      <AxStrip cases={cases} chatOn={chatOn} />
       <div className="c-grid">
         <div className="kpi">
           <div className="n">{counts.new}</div>
@@ -426,7 +507,15 @@ export function InboxPage() {
                   </td>
                   {chatOn && <td>{chatAt(c) ? fmt(chatAt(c)) : '—'}</td>}
                   <td>{LANGUAGE_NAMES_KO[c.language]}</td>
-                  <td>{requestTypesKo(c.requestTypes)}</td>
+                  <td>
+                    {requestTypesKo(c.requestTypes)}
+                    <span className="row-summary" title={c.summaryKo}>
+                      <span className="ax-mark" aria-hidden="true">
+                        ✦
+                      </span>{' '}
+                      {c.summaryKo}
+                    </span>
+                  </td>
                   <td>
                     <UrgencyPill u={c.urgency} />
                   </td>
@@ -442,7 +531,7 @@ export function InboxPage() {
         </div>
       )}
       <p className="footer-note">
-        mock 사례 24건 + 근로자 화면에서 실제 전송한 사례. 근로자 화면에서 전송하면 2초 안에 이 목록에 나타납니다. 🌙 = 운영 시간 외 접수
+        mock 사례 24건 + 근로자 화면에서 실제 전송한 사례. 근로자 화면에서 전송하면 2초 안에 이 목록에 나타납니다. 🌙 = 운영 시간 외 접수 · ✦ = 앱이 자동 정리한 한국어 요약
         {chatOn && ' · 새 채팅 = 센터가 아직 읽지 않은 근로자 글. 사례를 열어 채팅을 보면 사라집니다. 채팅 시각 = 근로자 마지막 글 시각'}
       </p>
     </div>
@@ -562,15 +651,34 @@ function CaseDetail({ c }: { c: CenterCase }) {
         </section>
       </div>
       {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
+      <AxFlow c={c} talk={side} />
       <div className="detail">
         <div>
-          <section className="panel">
-            <h2>한국어 사례 요약</h2>
+          <section className="panel ax-panel">
+            <h2>
+              <span className="ax-mark" aria-hidden="true">
+                ✦
+              </span>
+              한국어 사례 요약 <span className="pill ax">자동 생성</span>
+            </h2>
             <p style={{ fontSize: '1.05rem', lineHeight: 1.7 }}>{c.summaryKo}</p>
+            <div className="ax-reasons">
+              <span className="label">긴급도 자동 분류</span>
+              <UrgencyPill u={c.urgency} />
+              {c.urgencyReasons.length > 0 ? (
+                c.urgencyReasons.map((r) => (
+                  <span key={r} className="pill low">
+                    {r}
+                  </span>
+                ))
+              ) : (
+                <span className="small muted">해당 근거 없음</span>
+              )}
+            </div>
             <p className="footer-note">근로자 입력과 버튼 응답을 사실 그대로 요약했습니다. 판단·추측은 포함하지 않습니다.</p>
           </section>
           <section className="panel">
-            <h2>모국어 원문 ({LANGUAGE_NAMES_KO[c.language]})</h2>
+            <h2>근로자가 쓴 모국어 원문 ({LANGUAGE_NAMES_KO[c.language]}) → 위 한국어 요약의 원본</h2>
             <div className="native-box" lang={c.language}>
               {c.originalNative}
             </div>
@@ -635,8 +743,10 @@ function CenterTalk({ c }: { c: CenterCase }) {
           </svg>
         </span>
         <div className="sheet-title">
-          <h2 id="talk-title">{TEXT.talkTitle}</h2>
-          <p>근로자 · {LANGUAGE_NAMES_KO[c.language]}</p>
+          <h2 id="talk-title">
+            {TEXT.talkTitle} <span className="pill ax">✦ AI 실시간 통역</span>
+          </h2>
+          <p>근로자 · {LANGUAGE_NAMES_KO[c.language]} ⇄ 한국어</p>
         </div>
         {chat && call && (
           <div className="toggle talk-mode" role="group" aria-label={TEXT.talkMode}>
@@ -672,6 +782,8 @@ function CenterTalk({ c }: { c: CenterCase }) {
               // 스크립트를 볼 때는 입력줄을 숨긴 칸 안에 그린다(입력 중인 글은 남는다)
               footer={mode === 'chat' ? foot : null}
               onPeerCount={setPeerCount}
+              suggestions={c.live ? suggestReplies(c) : undefined}
+              suggestionsLabel="✦ 추천 답장 (누르면 입력줄에 들어가고, 보내면 근로자 언어로 번역됩니다)"
             />
           </div>
         )}
