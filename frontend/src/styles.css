@@ -475,6 +475,16 @@ p {
   margin: 0;
 }
 
+/* 앱 이름 워드마크(public/wordmark.png, backlog 28). 글자 대신 그림, 가로:세로 = 487:128. 크기는 img의 width·height 속성이 정한다 */
+.wordmark {
+  display: block;
+  max-width: none;
+}
+
+.w-logo .wordmark {
+  margin: 0 auto;
+}
+
 /* S-01 언어 격자(backlog 24). 질문 → 20개 언어 격자 하나. 모든 칸이 같은 크기·같은 모양이고 폰 언어 하나만 맨 앞에 온다.
    칸 = 국기 + (모국어 이름 위, 영어 이름 아래).
    칸은 바닥 위에 바로 놓이지만 칩처럼 흐림을 달지 않는다(20개를 한 화면에서 흐리면 저가형 폰이 끊긴다) */
