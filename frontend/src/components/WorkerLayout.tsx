@@ -95,7 +95,7 @@ export function WorkerLayout() {
       </a>
       {app.ready && (
         <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>
-          <svg className="bar-chat-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <svg className="bar-chat-icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z" />
             <path d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01" />
           </svg>
