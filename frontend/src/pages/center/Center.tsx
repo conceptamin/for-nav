@@ -440,15 +440,76 @@ function CaseDetail({ c }: { c: CenterCase }) {
     }
   };
   const yn = (v: YesNoUnknown | null, map: Record<YesNoUnknown, string>) => (v ? map[v] : '—');
+  // 통화·채팅이 있으면 오른쪽 열을 그 둘에 주고 읽기만 하는 정보는 왼쪽 아래로 보낸다. 없으면(단독 모드) 오른쪽 열에 둔다(backlog 48)
+  const side = isCallAvailable() || isChatAvailable();
+  const info = (
+    <>
+      <section className="panel">
+        <h2>사례 정보</h2>
+        <dl className="kv">
+          <dt>접수 시각</dt>
+          <dd>
+            {new Date(c.createdAt).toLocaleString('ko-KR')} {c.afterHours && '(운영 시간 외)'}
+          </dd>
+          <dt>요청 유형</dt>
+          <dd>{requestTypesKo(c.requestTypes)}</dd>
+          <dt>긴급도 근거</dt>
+          <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
+          <dt>구·군</dt>
+          <dd>{c.district ? DISTRICTS[c.district].ko : '—'}</dd>
+          <dt>업종</dt>
+          <dd>{c.industry ? INDUSTRIES[c.industry].ko : '—'}</dd>
+          <dt>업무 중 발생</dt>
+          <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
+          <dt>건강보험증</dt>
+          <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
+        </dl>
+      </section>
+      <section className="panel">
+        <h2>제도 경로 결과</h2>
+        <p style={{ fontWeight: 700 }}>{c.coveragePath ? PATH_KO[c.coveragePath] : '근로자가 확인하지 않음'}</p>
+        <p className="footer-note">규칙 기반 "먼저 상담할 곳" 안내이며 지원 여부 판정이 아닙니다.</p>
+      </section>
+      <section className="panel">
+        <h2>연락 희망 방법</h2>
+        <dl className="kv">
+          <dt>방법</dt>
+          <dd>{c.contactMethod ? CONTACT_METHOD_KO[c.contactMethod] : '선택 안 함'}</dd>
+          <dt>연락처</dt>
+          <dd>{c.contact ?? '미입력'}</dd>
+        </dl>
+      </section>
+    </>
+  );
   return (
     <div>
-      <div className="row" style={{ marginBottom: 12 }}>
-        <Link to="/center">← 접수함</Link>
-        <h1 style={{ margin: '0 0 0 8px', fontSize: '1.3rem' }}>사례 {c.id}</h1>
-        <UrgencyPill u={c.urgency} />
-        <StatusPill s={c.status} />
-        {c.live && <span className="pill live">실제 전송</span>}
+      <div className="detail-head">
+        <div className="row">
+          <Link to="/center">← 접수함</Link>
+          <h1 style={{ margin: '0 0 0 8px', fontSize: '1.3rem' }}>사례 {c.id}</h1>
+          <UrgencyPill u={c.urgency} />
+          <StatusPill s={c.status} />
+          {c.live && <span className="pill live">실제 전송</span>}
+        </div>
+        <section className="status-box" aria-labelledby="status-box-label">
+          <span className="label" id="status-box-label">
+            상태 변경
+          </span>
+          {flow.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`btn ${c.status === s ? '' : 'secondary'}`}
+              aria-pressed={c.status === s}
+              disabled={busy}
+              onClick={() => void change(s)}
+            >
+              {STATUS_KO[s]}
+            </button>
+          ))}
+        </section>
       </div>
+      {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
       <div className="detail">
         <div>
           <section className="panel">
@@ -472,6 +533,7 @@ function CaseDetail({ c }: { c: CenterCase }) {
               ))}
             </div>
           </section>
+          {side && info}
         </div>
         <div>
           {isCallAvailable() && (
@@ -502,60 +564,7 @@ function CaseDetail({ c }: { c: CenterCase }) {
               />
             </section>
           )}
-          <section className="panel">
-            <h2>상태 변경</h2>
-            <div className="row">
-              {flow.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={`btn ${c.status === s ? '' : 'secondary'}`}
-                  style={{ minHeight: 40, flex: 1 }}
-                  aria-pressed={c.status === s}
-                  disabled={busy}
-                  onClick={() => void change(s)}
-                >
-                  {STATUS_KO[s]}
-                </button>
-              ))}
-            </div>
-            {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
-          </section>
-          <section className="panel">
-            <h2>사례 정보</h2>
-            <dl className="kv">
-              <dt>접수 시각</dt>
-              <dd>
-                {new Date(c.createdAt).toLocaleString('ko-KR')} {c.afterHours && '(운영 시간 외)'}
-              </dd>
-              <dt>요청 유형</dt>
-              <dd>{requestTypesKo(c.requestTypes)}</dd>
-              <dt>긴급도 근거</dt>
-              <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
-              <dt>구·군</dt>
-              <dd>{c.district ? DISTRICTS[c.district].ko : '—'}</dd>
-              <dt>업종</dt>
-              <dd>{c.industry ? INDUSTRIES[c.industry].ko : '—'}</dd>
-              <dt>업무 중 발생</dt>
-              <dd>{yn(c.workRelated, { yes: '예', no: '아니요', unknown: '모름' })}</dd>
-              <dt>건강보험증</dt>
-              <dd>{yn(c.insurance, { yes: '있음', no: '없음', unknown: '모름' })}</dd>
-            </dl>
-          </section>
-          <section className="panel">
-            <h2>제도 경로 결과</h2>
-            <p style={{ fontWeight: 700 }}>{c.coveragePath ? PATH_KO[c.coveragePath] : '근로자가 확인하지 않음'}</p>
-            <p className="footer-note">규칙 기반 "먼저 상담할 곳" 안내이며 지원 여부 판정이 아닙니다.</p>
-          </section>
-          <section className="panel">
-            <h2>연락 희망 방법</h2>
-            <dl className="kv">
-              <dt>방법</dt>
-              <dd>{c.contactMethod ? CONTACT_METHOD_KO[c.contactMethod] : '선택 안 함'}</dd>
-              <dt>연락처</dt>
-              <dd>{c.contact ?? '미입력'}</dd>
-            </dl>
-          </section>
+          {!side && info}
         </div>
       </div>
     </div>

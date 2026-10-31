@@ -2328,10 +2328,51 @@ table.cases tr.fresh {
   box-shadow: var(--glass-color-in);
 }
 
+/* C-02 제목 줄: 제목·칩은 시작 쪽, 상태 변경 상자는 끝 쪽. 좁으면 상자가 다음 줄로 내려간다(backlog 48) */
+.detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.status-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+  padding-block: 8px;
+  padding-inline: 16px 8px;
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius);
+  box-shadow: var(--glass);
+}
+
+.status-box .label {
+  margin-inline-end: 4px;
+  font-size: var(--t4);
+  font-weight: 700;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.status-box .btn {
+  min-height: 40px;
+}
+
 .detail {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: 16px;
+}
+
+/* C-02 오른쪽 열에는 통화·채팅만 남아 채팅 목록을 길게 고정한다(backlog 48). 시트 안 목록은 아래 `.sheet .chat-log` 그대로 */
+.detail .chat-log {
+  height: clamp(320px, 60dvh, 600px);
+  max-height: none;
 }
 
 .panel {
