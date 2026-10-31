@@ -1,11 +1,12 @@
 // 호스트 계약(app-front/README.md "호스트 계약")의 호스트 쪽 메시지. 계약이 바뀌면 그 문서를 먼저 고친다.
-// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal).
-// - 호스트 → 웹: window.fornav.receive(객체)(init, insets), 동기 window.fornav.onBack().
-// - 메시지 본문(특히 openExternal.url)은 로그에 찍지 않는다. type만 남긴다.
+// - 웹 → 호스트: JavaScript 채널 ForNav로 JSON 문자열(ready, openExternal, googleSignIn).
+// - 호스트 → 웹: window.fornav.receive(객체)(init, insets, googleSignInResult), 동기 window.fornav.onBack().
+// - 메시지 본문(특히 openExternal.url, googleSignInResult.idToken)은 로그에 찍지 않는다. type만 남긴다.
 
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 const int protocol = 1;
 
@@ -31,11 +32,16 @@ Map<String, double> insetsOf(EdgeInsets padding) => {
   'left': padding.left,
 };
 
+/// init.features 값. 네이티브 Google 로그인을 할 수 있다(app-front backlog 06)
+const String featureGoogleSignIn = 'googleSignIn';
+
+/// features가 비면 필드를 넣지 않는다(웹은 없으면 빈 배열로 본다)
 Map<String, Object> initMessage({
   required String platform,
   required String appVersion,
   required String locale,
   required EdgeInsets padding,
+  List<String> features = const [],
 }) => {
   'protocol': protocol,
   'type': 'init',
@@ -43,6 +49,7 @@ Map<String, Object> initMessage({
   'appVersion': appVersion,
   'locale': locale,
   'insets': insetsOf(padding),
+  if (features.isNotEmpty) 'features': features,
 };
 
 Map<String, Object> insetsMessage(EdgeInsets padding) => {
@@ -59,3 +66,24 @@ const String onBackScript = 'window.fornav?.onBack?.() ?? false';
 
 /// runJavaScriptReturningResult의 불리언은 플랫폼마다 bool·"true"·1로 온다
 bool isTrueResult(Object? result) => result == true || result == 'true' || result == 1;
+
+/// googleSignIn의 성공 응답. 토큰은 이 메시지로 웹에 한 번 넘기고 호스트에 남기지 않는다
+Map<String, Object> googleSignInSuccess(String idToken) => {
+  'protocol': protocol,
+  'type': 'googleSignInResult',
+  'idToken': idToken,
+};
+
+/// googleSignIn의 실패 응답. error는 canceled(사용자가 닫음) | failed(그 밖)
+Map<String, Object> googleSignInFailure({required bool canceled}) => {
+  'protocol': protocol,
+  'type': 'googleSignInResult',
+  'error': canceled ? 'canceled' : 'failed',
+};
+
+/// 사용자가 계정 선택을 닫은 것만 canceled다. 설정 오류·네트워크·Google Play 서비스 없음은 failed
+bool isSignInCanceled(Object error) => error is GoogleSignInException && error.code == GoogleSignInExceptionCode.canceled;
+
+/// 네이티브 로그인을 켤 수 있는 빌드인가. Android는 웹 클라이언트 ID(serverClientId)만, iOS는 iOS 클라이언트 ID도 있어야 한다
+bool nativeSignInConfigured({required bool isIOS, required String webClientId, required String iosClientId}) =>
+    webClientId.isNotEmpty && (!isIOS || iosClientId.isNotEmpty);

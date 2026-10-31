@@ -2,6 +2,9 @@
 // 버튼을 누르면 Google 팝업이 ID 토큰(credential)을 주고, 화면은 그것을 auth.ts의 loginWithGoogle로 서버에 보낸다.
 // 화면은 전역 `google`을 직접 쓰지 않고 이 파일만 부른다. ID 토큰은 저장하거나 console에 찍지 않는다.
 // 타입은 쓰는 부분만 여기 적는다(@types/google.accounts를 들이지 않는다).
+// 앱(app-front 06)은 WebView 안에서 GIS가 막혀(403 disallowed_useragent) 네이티브 로그인을 setNativeGoogleSignIn으로 등록한다(backlog 35).
+
+import { useSyncExternalStore } from 'react';
 
 const GSI_SRC = 'https://accounts.google.com/gsi/client';
 /** 스크립트를 기다리는 시간. 넘기면 실패로 보인다 */
@@ -90,4 +93,32 @@ export async function renderGoogleButton(parent: HTMLElement, locale: string, on
   const width = Math.round(Math.min(400, Math.max(200, parent.clientWidth)));
   parent.replaceChildren();
   id.renderButton(parent, { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'left', locale, width });
+}
+
+/**
+ * 네이티브 Google 로그인(backlog 35). ID 토큰을 돌려주고, 사용자가 계정 선택을 닫았으면 null, 그 밖의 실패는 예외다.
+ * 화면은 다리를 모르고 이 함수만 부른다. 토큰은 반환값으로만 지나가고 저장하지 않는다.
+ */
+export type NativeGoogleSignIn = () => Promise<string | null>;
+
+let nativeSignIn: NativeGoogleSignIn | null = null;
+const nativeListeners = new Set<() => void>();
+
+/** 앱(app-front)이 호스트가 네이티브 로그인을 알릴 때 등록한다. 브라우저에서는 아무도 부르지 않는다 */
+export function setNativeGoogleSignIn(fn: NativeGoogleSignIn | null): void {
+  if (nativeSignIn === fn) return;
+  nativeSignIn = fn;
+  nativeListeners.forEach((l) => l());
+}
+
+/** 등록된 네이티브 로그인. 없으면 null — 화면은 GIS 공식 버튼을 그린다 */
+export function useNativeGoogleSignIn(): NativeGoogleSignIn | null {
+  return useSyncExternalStore(
+    (l) => {
+      nativeListeners.add(l);
+      return () => nativeListeners.delete(l);
+    },
+    () => nativeSignIn,
+    () => nativeSignIn,
+  );
 }
