@@ -294,6 +294,8 @@ export const ru: Record<MessageKey, string> = {
   profileOthers: 'Другие профили (нажмите, чтобы переключить)',
   profileDelete: 'Удалить этот профиль',
   profileDeleteConfirm: 'Удалить этот профиль?',
+  reportDelete: 'Удалить этот отчет',
+  reportDeleteConfirm: 'Удалить этот отчет?',
   mySettings: 'Настройки',
   myReports: 'Мои отчеты',
   myEmpty: 'Отчетов пока нет.',

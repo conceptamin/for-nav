@@ -294,6 +294,8 @@ export const id: Record<MessageKey, string> = {
   profileOthers: 'Profil lain (ketuk untuk beralih)',
   profileDelete: 'Hapus profil ini',
   profileDeleteConfirm: 'Hapus profil ini?',
+  reportDelete: 'Hapus laporan ini',
+  reportDeleteConfirm: 'Hapus laporan ini?',
   mySettings: 'Pengaturan',
   myReports: 'Laporan saya',
   myEmpty: 'Belum ada laporan.',

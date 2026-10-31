@@ -294,6 +294,8 @@ export const fr: Record<MessageKey, string> = {
   profileOthers: 'Autres profils (touchez pour changer)',
   profileDelete: 'Supprimer ce profil',
   profileDeleteConfirm: 'Supprimer ce profil ?',
+  reportDelete: 'Supprimer ce rapport',
+  reportDeleteConfirm: 'Supprimer ce rapport ?',
   mySettings: 'Réglages',
   myReports: 'Mes rapports',
   myEmpty: 'Aucun rapport pour le moment.',

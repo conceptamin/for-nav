@@ -294,6 +294,8 @@ export const ky: Record<MessageKey, string> = {
   profileOthers: 'Башка профилдер (алмаштыруу үчүн басыңыз)',
   profileDelete: 'Бул профилди өчүрүү',
   profileDeleteConfirm: 'Бул профилди өчүрөсүзбү?',
+  reportDelete: 'Бул отчетту өчүрүү',
+  reportDeleteConfirm: 'Бул отчетту өчүрөсүзбү?',
   mySettings: 'Жөндөөлөр',
   myReports: 'Менин отчетторум',
   myEmpty: 'Азырынча отчет жок.',

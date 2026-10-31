@@ -294,6 +294,8 @@ export const uz: Record<MessageKey, string> = {
   profileOthers: 'Boshqa profillar (almashtirish uchun bosing)',
   profileDelete: 'Bu profilni oʻchirish',
   profileDeleteConfirm: 'Bu profil oʻchirilsinmi?',
+  reportDelete: 'Bu hisobotni oʻchirish',
+  reportDeleteConfirm: 'Bu hisobot oʻchirilsinmi?',
   mySettings: 'Sozlamalar',
   myReports: 'Hisobotlarim',
   myEmpty: 'Hali hisobot yoʻq.',

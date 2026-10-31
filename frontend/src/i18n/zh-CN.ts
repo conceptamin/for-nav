@@ -294,6 +294,8 @@ export const zhCN: Record<MessageKey, string> = {
   profileOthers: '其他个人资料（点按切换）',
   profileDelete: '删除此个人资料',
   profileDeleteConfirm: '要删除此个人资料吗？',
+  reportDelete: '删除此报告',
+  reportDeleteConfirm: '要删除此报告吗？',
   mySettings: '设置',
   myReports: '我的报告',
   myEmpty: '还没有报告。',

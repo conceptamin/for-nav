@@ -294,6 +294,8 @@ export const tl: Record<MessageKey, string> = {
   profileOthers: 'Ibang profile (i-tap para lumipat)',
   profileDelete: 'Burahin ang profile na ito',
   profileDeleteConfirm: 'Burahin ang profile na ito?',
+  reportDelete: 'Burahin ang report na ito',
+  reportDeleteConfirm: 'Burahin ang report na ito?',
   mySettings: 'Settings',
   myReports: 'Aking mga report',
   myEmpty: 'Wala pang report.',

@@ -472,17 +472,29 @@ export function HomePage() {
       {recent && (
         <>
           <h2 className="home-h2">{t('homeRecent')}</h2>
-          <Link to={`/report/${recent.id}`} className="card home-recent">
-            <strong>{recentSymptoms?.valueNative}</strong>
-            {recentParts && (
-              <p>
-                {recentParts.labelNative}: {recentParts.valueNative}
+          {/* 링크 안에 버튼을 넣을 수 없어 카드 본문 링크와 삭제 버튼을 나눈다(backlog 52) */}
+          <div className="card home-recent">
+            <Link to={`/report/${recent.id}`}>
+              <strong>{recentSymptoms?.valueNative}</strong>
+              {recentParts && (
+                <p>
+                  {recentParts.labelNative}: {recentParts.valueNative}
+                </p>
+              )}
+              <p className="muted">
+                🕓 {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { year: 'numeric', month: '2-digit', day: '2-digit' })}
               </p>
-            )}
-            <p className="muted">
-              🕓 {new Date(recent.createdAt).toLocaleDateString(LOCALES[recent.language], { year: 'numeric', month: '2-digit', day: '2-digit' })}
-            </p>
-          </Link>
+            </Link>
+            <button
+              type="button"
+              className="btn ghost"
+              onClick={() => {
+                if (window.confirm(t('reportDeleteConfirm'))) app.deleteReport(recent.id);
+              }}
+            >
+              🗑️ {t('reportDelete')}
+            </button>
+          </div>
         </>
       )}
     </div>

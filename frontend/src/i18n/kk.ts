@@ -294,6 +294,8 @@ export const kk: Record<MessageKey, string> = {
   profileOthers: 'Басқа профильдер (ауыстыру үшін басыңыз)',
   profileDelete: 'Бұл профильді жою',
   profileDeleteConfirm: 'Бұл профильді жоясыз ба?',
+  reportDelete: 'Бұл есепті жою',
+  reportDeleteConfirm: 'Бұл есепті жоясыз ба?',
   mySettings: 'Баптаулар',
   myReports: 'Менің есептерім',
   myEmpty: 'Әзірге есеп жоқ.',
