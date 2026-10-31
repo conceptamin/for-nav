@@ -2243,6 +2243,8 @@ hr.divider {
   font-size: var(--t3);
   color: var(--danger);
   word-break: keep-all;
+  /* 문구의 \n에서 "진단이 아닙니다" 부분을 늘 다음 줄로 내린다 */
+  white-space: pre-line;
 }
 
 .dept {
