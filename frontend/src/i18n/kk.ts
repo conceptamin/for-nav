@@ -139,7 +139,7 @@ export const kk: Record<MessageKey, string> = {
   toCenter: 'Орталықтан көмек сұрау',
   resultGoGroup: 'Ауруханаға барғанда',
   resultMoreGroup: 'Қосымша көмек керек болса',
-  resultNoDiag: 'Бұл қай емханаға бару туралы кеңес, диагноз емес.',
+  resultNoDiag: 'Бұл қай емханаға бару туралы кеңес,\nдиагноз емес.',
 
   // S-08
   covTitle: 'Шығын туралы алдымен қайдан сұрау керек',

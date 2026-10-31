@@ -132,7 +132,7 @@ export const vi: Record<MessageKey, string> = {
   toCenter: 'Nhờ trung tâm giúp',
   resultGoGroup: 'Khi đi bệnh viện',
   resultMoreGroup: 'Nếu cần thêm trợ giúp',
-  resultNoDiag: 'Đây là hướng dẫn nên khám khoa nào, không phải chẩn đoán.',
+  resultNoDiag: 'Đây là hướng dẫn nên khám khoa nào,\nkhông phải chẩn đoán.',
 
   covTitle: 'Hỏi về chi phí ở đâu trước',
   covWorkQ: 'Có xảy ra khi đang làm việc không?',

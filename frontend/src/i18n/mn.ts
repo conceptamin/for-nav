@@ -139,7 +139,7 @@ export const mn: Record<MessageKey, string> = {
   toCenter: 'Төвөөс тусламж хүсэх',
   resultGoGroup: 'Эмнэлэгт очихдоо',
   resultMoreGroup: 'Нэмэлт тусламж хэрэгтэй бол',
-  resultNoDiag: 'Энэ бол аль эмнэлэгт очих заавар юм. Онош биш.',
+  resultNoDiag: 'Энэ бол аль эмнэлэгт очих заавар юм.\nОнош биш.',
 
   // S-08
   covTitle: 'Зардлын талаар эхлээд хаанаас асуух',
