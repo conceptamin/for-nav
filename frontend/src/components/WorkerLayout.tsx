@@ -75,15 +75,6 @@ export function WorkerLayout() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // 내용이 앱 바 밑으로 들어가면 앱 바에 유리 띠를 깐다(backlog 35). 맨 위에서는 지금처럼 투명하다
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 4);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   // 스크롤 등장(backlog 25). 응급 화면은 안내·전화 버튼이 늦게 보이면 안 되므로 끈다
   const mainRef = useRef<HTMLElement>(null);
   useReveal(mainRef, !splash && pathname !== '/emergency');
@@ -159,7 +150,7 @@ export function WorkerLayout() {
             <span className="brand-pill">{logo}</span>
           </div>
         ) : (
-          <header className={scrolled ? 'w-header scrolled' : 'w-header'}>
+          <header className="w-header">
             {isRoot ? (
               <Link to={app.ready ? '/home' : '/'} className="brand-pill" dir="ltr">
                 {logo}
