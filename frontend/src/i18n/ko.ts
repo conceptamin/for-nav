@@ -71,6 +71,7 @@ export const ko: Record<MessageKey, string> = {
   intakeTitle: '증상을 알려 주세요',
   stepBody: '어디가 불편하세요?',
   stepBodyHint: '해당하는 곳을 모두 고르세요.',
+  stepSymptomHint: '해당하는 것을 모두 고르세요.',
   stepSymptom: '어떻게 불편하세요?',
   stepText: '직접 설명해 주세요',
   stepTextHint: '선택 사항입니다. 예: "오늘 일하다가 손가락이 기계에 끼었어요. 부었어요."',

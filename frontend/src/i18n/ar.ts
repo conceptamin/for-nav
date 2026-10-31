@@ -71,6 +71,7 @@ export const ar: Record<MessageKey, string> = {
   intakeTitle: 'أخبرنا عن أعراضك',
   stepBody: 'أين المشكلة؟',
   stepBodyHint: 'اختر كل ما ينطبق.',
+  stepSymptomHint: 'اختر كل ما ينطبق.',
   stepSymptom: 'ماذا يحدث؟',
   stepText: 'صف ما حدث بكلماتك',
   stepTextHint: 'اختياري. مثال: "علق إصبعي في آلة في العمل اليوم. إنه منتفخ."',

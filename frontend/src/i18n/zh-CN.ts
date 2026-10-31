@@ -76,6 +76,7 @@ export const zhCN: Record<MessageKey, string> = {
   intakeTitle: '请告诉我们您的症状',
   stepBody: '哪里不舒服？',
   stepBodyHint: '符合的都可以选。',
+  stepSymptomHint: '符合的都可以选。',
   stepSymptom: '出现了什么情况？',
   stepText: '用自己的话描述',
   stepTextHint: '选填。例如：“今天上班时手指被机器夹了，现在肿了。”',

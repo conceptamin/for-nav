@@ -76,6 +76,7 @@ export const si: Record<MessageKey, string> = {
   intakeTitle: 'ඔබේ රෝග ලක්ෂණ ගැන කියන්න',
   stepBody: 'ප්‍රශ්නය තියෙන්නේ කොහෙද?',
   stepBodyHint: 'ගැළපෙන සියල්ල තෝරන්න.',
+  stepSymptomHint: 'ගැළපෙන සියල්ල තෝරන්න.',
   stepSymptom: 'මොකද වෙන්නේ?',
   stepText: 'ඔබේම වචනවලින් කියන්න',
   stepTextHint: 'අවශ්‍ය නම් පමණයි. උදාහරණය: "අද වැඩේදී මගේ ඇඟිල්ල මැෂිමකට හිර වුණා. ඉදිමිලා."',

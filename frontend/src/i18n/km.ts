@@ -71,6 +71,7 @@ export const km: Record<MessageKey, string> = {
   intakeTitle: 'ប្រាប់យើងពីរោគសញ្ញារបស់អ្នក',
   stepBody: 'មានបញ្ហានៅត្រង់ណា?',
   stepBodyHint: 'ជ្រើសរើសទាំងអស់ដែលត្រូវ។',
+  stepSymptomHint: 'ជ្រើសរើសទាំងអស់ដែលត្រូវ។',
   stepSymptom: 'មានអ្វីកើតឡើង?',
   stepText: 'រៀបរាប់ដោយពាក្យរបស់អ្នកផ្ទាល់',
   stepTextHint: 'មិនចាំបាច់។ ឧទាហរណ៍៖ "ថ្ងៃនេះម្រាមដៃខ្ញុំជាប់ម៉ាស៊ីននៅកន្លែងធ្វើការ។ វាហើម។"',
