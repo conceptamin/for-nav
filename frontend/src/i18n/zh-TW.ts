@@ -137,6 +137,8 @@ export const zhTW: Record<MessageKey, string> = {
   toReport: '給醫師看的報告',
   toCoverage: '健保與補助',
   toCenter: '請中心幫忙',
+  resultGoGroup: '去醫院時',
+  resultMoreGroup: '如需更多協助',
   resultNoDiag: '這只是告訴您該看哪一科，不是診斷。',
 
   // S-08

@@ -745,6 +745,16 @@ a.brand-pill:active {
   display: none;
 }
 
+/* 안내만 담는 시트(S-07 밤·휴일, backlog 44 after-hours-guide)는 내용만큼만 높다. 넘치면 .sheet-body가 스크롤한다 */
+.sheet.fit {
+  height: auto;
+  max-height: min(680px, calc(100dvh - var(--bar-119) - env(safe-area-inset-bottom) - 72px));
+}
+
+.sheet.fit .sheet-body p {
+  margin: 0;
+}
+
 /* 머리: 시작 쪽 센터 마크·제목·요청 번호, 끝 쪽 통화/채팅 전환과 닫기. 버튼은 독의 채팅 버튼과 같은 평평한 44px 원.
    대화와는 1px --line 한 줄로 나눈다 */
 .sheet-head {
@@ -2015,7 +2025,9 @@ hr.divider {
   overflow: hidden;
 }
 
-.home-list a {
+/* 줄은 링크가 보통이고, 시트를 여는 줄(S-07 밤·휴일)만 버튼이다. 둘은 같은 모양이다 */
+.home-list a,
+.home-list button {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -2025,7 +2037,17 @@ hr.divider {
   text-decoration: none;
 }
 
-.home-list a:active {
+.home-list button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.home-list a:active,
+.home-list button:active {
   background: var(--bg-2);
 }
 
@@ -2116,6 +2138,21 @@ a.card.home-recent:active {
 
 .dept.alt .ko {
   font-size: var(--t7);
+}
+
+/* 첫 진료과 상자 안 지도 안내. 예전 노랑 상자(notice.warn)를 작은 글로 옮겼다(backlog 36) */
+.dept-note {
+  margin: 8px 0 0;
+  font-size: var(--t3);
+  color: var(--ink-2);
+}
+
+/* 다른 진료과의 지도는 글자 링크 크기의 평평한 버튼. 시작 쪽에 붙인다(backlog 36) */
+.btn.ghost.dept-alt-map {
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 8px 0;
+  font-size: var(--t4);
 }
 
 .ko-big {
