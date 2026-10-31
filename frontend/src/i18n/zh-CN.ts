@@ -137,6 +137,8 @@ export const zhCN: Record<MessageKey, string> = {
   toReport: '给医生看的报告',
   toCoverage: '保险与援助',
   toCenter: '请中心帮忙',
+  resultGoGroup: '去医院时',
+  resultMoreGroup: '如需更多帮助',
   resultNoDiag: '这只是告诉您该看哪个科，不是诊断。',
 
   // S-08
