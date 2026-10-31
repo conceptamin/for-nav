@@ -41,7 +41,6 @@ INTAKE = {
 CLINICIAN = {"intake": INTAKE, "included": ["symptoms", "note"], "profile": None, "meds": ""}
 CENTER = {
     "intake": INTAKE,
-    "emergencyFlag": False,
     "requestTypes": ["booking"],
     "coverage": None,
     "insurance": "no",

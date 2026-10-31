@@ -93,7 +93,6 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
     preview && !sent && types.length
       ? {
           intake: { ...intake, language: lang },
-          emergencyFlag: app.emergencySeen,
           requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,
@@ -121,7 +120,6 @@ export function useSendCenterRequest(types: RequestType[], preview: boolean) {
       const r = await sendCase(
         {
           intake: { ...intake, language: lang },
-          emergencyFlag: app.emergencySeen,
           requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,

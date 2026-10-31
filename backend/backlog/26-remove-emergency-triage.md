@@ -1,6 +1,6 @@
 # 26. 서버가 응급 여부를 판정하지 않게 하기
 
-상태: 대기
+상태: 완료
 의존: frontend 43(`TriageResult`·`Intake`·`CenterCase` 변경, `parity.json`·`lang/packs.json` 재생성). 한 PR로 낸다
 
 ## 목표
@@ -38,14 +38,27 @@
 - 수정: 위 목록
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .` 통과
-- [ ] frontend 43이 만든 `parity.json`으로 `uv run pytest` 통과
-- [ ] `MODEL_DIR=../modeling/models`로 띄워 "가슴이 아파요"를 보내면 진료과가 규칙표(내과·가정의학과)로 나오고, 응답에 `emergency`·`model.acuity`가 없다
-- [ ] `emergencyFlag`·`painScore`를 함께 보내는 옛 요청도 200이다
-- [ ] `emergency_flag` 열이 있는 옛 SQLite 파일로 서버를 띄워도 사례 목록이 열린다
+- [x] `uv run ruff check . && uv run ruff format --check .` 통과
+- [x] frontend 43이 만든 `parity.json`으로 `uv run pytest` 통과
+- [x] `MODEL_DIR=../modeling/models`로 띄워 "가슴이 아파요"를 보내면 진료과가 규칙표(내과·가정의학과)로 나오고, 응답에 `emergency`·`model.acuity`가 없다
+- [x] `emergencyFlag`·`painScore`를 함께 보내는 옛 요청도 200이다
+- [x] `emergency_flag` 열이 있는 옛 SQLite 파일로 서버를 띄워도 사례 목록이 열린다
 
 ## 결과
+- 검사
+  - `uv run ruff check . && uv run ruff format --check .` → 통과
+  - `uv run pytest` → 2836 통과(frontend 43이 다시 만든 `parity.json`·`lang/packs.json` 기준)
+  - `MODEL_DIR=../modeling/models`로 실제 아티팩트(v2)를 읽어 `/api/triage` 호출: 가슴 + 통증 → 내과·가정의학과, 온몸 + 숨참 → 내과·가정의학과(고정 조합), 손 + 베임·출혈 → 외과·정형외과(규칙표), 배 + 통증 → 가정의학과·내과(모델). 모든 응답 키가 `department`·`missing`·`model`이고 `model`은 `departmentProba`뿐이다. 요청에 `painScore`를 넣어도 200이다
+- 바뀐 API
+  - `POST /api/triage` 응답: `emergency`·`reasons`·`byRule`·`byModel`·`modelScore` 삭제, `model`은 `{ departmentProba }`
+  - `Intake`: `ageGroup`·`sex`·`painScore`·`mental` 삭제(보내면 무시). `injury`는 그대로
+  - `POST /api/center/cases`·`POST /api/report/center` 요청과 `CenterCase` 응답: `emergencyFlag` 삭제(보내면 무시). 긴급도는 업무 중 +2, 보험증 없음 +1
+- 테스트: `test_model_triage.py`를 응급 판정 대신 "응답에 응급 필드 없음", "modeling의 응급도 출력이 와도 버림", "옛 응급도 입력 무시", "고정 조합 2개"로 바꿨다. `test_api.py`의 응급도 입력 422 테스트를 `injury` 타입 검사와 옛 키 무시로 바꿨다. `test_store.py`에 `emergencyFlag`가 든 옛 SQLite 본문 읽기를 더했다
+- 결정
+  - SQLite는 사례 본문을 JSON으로 저장하므로 열을 고칠 것이 없다. 옛 본문의 `emergencyFlag`는 pydantic 기본 `extra="ignore"`로 버려진다
+  - `vocab.Sex`도 지웠다. 프로필 성별은 `schemas.Profile`의 `Literal`을 쓴다
+  - 고정 조합은 서버 전용이다(프론트에는 모델이 없어 규칙표만 쓴다). 프론트와 결과가 다른 경우는 모델이 있을 때뿐이고, 동기화 테스트는 모델 없는 상태를 비교한다
 
 ## 메모
 - 이 항목이 modeling 15보다 먼저 들어가야 한다. 거꾸로면 `ModelPrediction` 검증이 실패해 `run_model`이 `None`을 돌려주고, 운영 서버(Mac mini, `MODEL_DIR` 있음)가 오류 없이 진료과 모델 없이 동작한다
-- `modeling/tests/test_schema.py`는 백엔드 `Intake`·열거값과 모델링 `schema.py`를 비교하므로, modeling 15가 들어갈 때까지 로컬 modeling 테스트가 실패한다. CI는 modeling을 돌리지 않는다
+- `modeling/tests/test_schema.py`는 백엔드 `Intake`·열거값과 모델링 `schema.py`를 비교하고, `modeling/src/fornav_modeling/pipeline.py`는 백엔드 `triage()`의 `by_rule`을 읽는다. modeling 15가 들어갈 때까지 둘 다 로컬에서 실패한다. CI는 modeling을 돌리지 않는다

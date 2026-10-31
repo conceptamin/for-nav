@@ -1,11 +1,9 @@
 // 증상 분류(POST /triage 대응)를 브라우저 안에서 흉내 낸다.
-// - 응급 감지: 키워드 규칙 OR 보조 점수(자체 모델 자리). 둘 중 하나라도 응급이면 응급.
+// - 응급 여부는 판정하지 않는다(backlog 43). 틀린 판정이 헛된 확신을 주지 않게, 119는 판정 없이 늘 보이는 버튼으로만 안내한다.
 // - 증상 추출: LLM 자리. 데모에서는 다국어 키워드 사전으로 추출하고, 못 찾은 항목은 버튼으로 다시 묻는다.
 // - 진료과 추천: 결정적 규칙표. 같은 입력이면 같은 결과.
 
-import { PACKS } from './lang';
-import type { KeywordReason, LangPack } from './lang/types';
-import type { AgeGroup, BodyPart, Department, District, Industry, Lang, Mental, Onset, Sex, Symptom, WorkType, YesNoUnknown } from './vocab';
+import type { BodyPart, Department, District, Industry, Lang, Onset, Symptom, WorkType, YesNoUnknown } from './vocab';
 
 export interface Intake {
   id: string;
@@ -19,115 +17,14 @@ export interface Intake {
   industry: Industry | null;
   district: District | null;
   createdAt: string;
-  // 응급도 모델 입력(backend backlog 10). 규칙은 쓰지 않는다. 답하지 않으면 키를 넣지 않는다(서버도 응답에서 뺀다).
-  ageGroup?: AgeGroup;
-  sex?: Sex;
+  // 손상(외상) 여부. 진료과 모델 B 입력(backend backlog 10). 규칙은 쓰지 않는다. 답하지 않으면 키를 넣지 않는다(서버도 응답에서 뺀다).
   injury?: boolean;
-  /** 0–10 정수 */
-  painScore?: number;
-  mental?: Mental;
 }
 
-export type EmergencyReason =
-  | 'unconscious'
-  | 'breathing'
-  | 'chest'
-  | 'heavyBleeding'
-  | 'amputation'
-  | 'fall'
-  | 'seizure'
-  | 'stroke'
-  | 'severeBurn'
-  | 'chemicalEye'
-  | 'headInjury'
-  | 'poisoning'
-  | 'riskScore';
-
 export interface TriageResult {
-  emergency: boolean;
-  reasons: EmergencyReason[];
-  /** 규칙과 보조 점수 각각의 판정(센터·평가 화면 표시용) */
-  byRule: boolean;
-  byModel: boolean;
-  modelScore: number;
   department: { primary: Department; alt: Department } | null;
   missing: ('bodyParts' | 'symptoms')[];
 }
-
-// ---------------------------------------------------------------------------
-// 응급 키워드 규칙. 한국어는 여기에, 다른 언어는 lang/<언어>.ts의 emergency에 있고 합쳐 쓴다. 소문자 부분 일치.
-// ---------------------------------------------------------------------------
-const EMERGENCY_KEYWORDS_KO: Record<KeywordReason, string[]> = {
-  unconscious: ['의식', '기절', '쓰러'],
-  breathing: ['숨을 못', '숨이 안', '호흡곤란', '호흡 곤란'],
-  chest: ['가슴 통증', '가슴이 아', '가슴이 조'],
-  heavyBleeding: ['피가 멈추지', '피가 안 멈', '피가 많이', '출혈이 심'],
-  amputation: ['절단됐', '절단되', '잘렸', '잘려'],
-  fall: ['추락', '높은 곳에서 떨어'],
-  seizure: ['경련', '발작'],
-  stroke: ['마비', '말이 어눌', '한쪽이 저'],
-  severeBurn: ['큰 화상', '전신 화상', '감전'],
-  chemicalEye: ['눈에 화학', '눈에 약품', '눈에 약물'],
-  poisoning: ['가스를 마', '가스 마셨', '중독'],
-};
-
-// 머리 부상은 구토·어지러움이 함께 있을 때만 응급으로 본다.
-const HEAD_INJURY_KO = ['머리를 부딪', '머리를 다쳐', '머리를 맞'];
-const VOMIT_KO = ['토했', '구토'];
-
-// 보조 점수에 쓰는 심각도 표현
-const SEVERITY_KO = ['심하', '심해', '너무', '매우'];
-
-const packs = Object.values(PACKS);
-const withPacks = (ko: string[], pick: (p: LangPack) => string[]) => [...ko, ...packs.flatMap(pick)];
-const EMERGENCY_KEYWORDS = Object.fromEntries(
-  (Object.keys(EMERGENCY_KEYWORDS_KO) as KeywordReason[]).map((r) => [r, withPacks(EMERGENCY_KEYWORDS_KO[r], (p) => p.emergency.keywords[r])]),
-) as Record<KeywordReason, string[]>;
-const HEAD_INJURY = withPacks(HEAD_INJURY_KO, (p) => p.emergency.headInjury);
-const VOMIT = withPacks(VOMIT_KO, (p) => p.emergency.vomit);
-const SEVERITY = withPacks(SEVERITY_KO, (p) => p.emergency.severity);
-
-const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
-
-/** 키워드 규칙 + 버튼 조합 규칙 */
-function ruleReasons(intake: Intake): EmergencyReason[] {
-  const text = intake.freeText.toLowerCase();
-  const reasons = new Set<EmergencyReason>();
-  for (const [reason, words] of Object.entries(EMERGENCY_KEYWORDS)) {
-    if (includesAny(text, words)) reasons.add(reason as EmergencyReason);
-  }
-  const s = new Set(intake.symptoms);
-  const b = new Set(intake.bodyParts);
-  if (s.has('breath')) reasons.add('breathing');
-  if (b.has('chest') && s.has('pain')) reasons.add('chest');
-  if (b.has('eye') && s.has('chemical')) reasons.add('chemicalEye');
-  if (includesAny(text, HEAD_INJURY) && (s.has('nausea') || s.has('dizzy') || includesAny(text, VOMIT))) {
-    reasons.add('headInjury');
-  }
-  return [...reasons];
-}
-
-/**
- * 보조 점수: 실제 서비스에서는 FastAPI의 자체 응급 감지 모델이 이 자리에 들어간다.
- * 데모에서는 재현율을 우선해 위험 신호를 가산하는 단순 점수로 대신한다.
- */
-function modelScore(intake: Intake): number {
-  const text = intake.freeText.toLowerCase();
-  const s = new Set(intake.symptoms);
-  const b = new Set(intake.bodyParts);
-  let score = 0;
-  if (includesAny(text, SEVERITY)) score += 1;
-  if (s.has('bleeding')) score += 1;
-  if (s.has('cut') && s.has('bleeding')) score += 1;
-  if (s.has('burn') && (b.has('whole') || b.has('head'))) score += 2;
-  if (b.has('head') && s.has('dizzy') && s.has('nausea')) score += 3;
-  if (s.has('cantmove') && (b.has('back') || b.has('whole'))) score += 1;
-  if (s.has('chemical')) score += 1;
-  if (s.has('fever') && s.has('dizzy') && s.has('nausea')) score += 1;
-  return score;
-}
-
-const MODEL_THRESHOLD = 3;
 
 // ---------------------------------------------------------------------------
 // 진료과 규칙표
@@ -155,20 +52,10 @@ export function recommendDepartment(bodyParts: BodyPart[], symptoms: Symptom[]):
 }
 
 export function triage(intake: Intake): TriageResult {
-  const reasons = ruleReasons(intake);
-  const score = modelScore(intake);
-  const byModel = score >= MODEL_THRESHOLD;
-  if (byModel && reasons.length === 0) reasons.push('riskScore');
   const missing: TriageResult['missing'] = [];
   if (intake.bodyParts.length === 0) missing.push('bodyParts');
   if (intake.symptoms.length === 0) missing.push('symptoms');
-  const emergency = reasons.length > 0;
   return {
-    emergency,
-    reasons,
-    byRule: ruleReasons(intake).length > 0,
-    byModel,
-    modelScore: score,
     department: missing.length === 0 ? recommendDepartment(intake.bodyParts, intake.symptoms) : null,
     missing,
   };
@@ -177,6 +64,8 @@ export function triage(intake: Intake): TriageResult {
 // ---------------------------------------------------------------------------
 // 자유 입력 추출(LLM 자리). 찾지 못한 값은 null로 두고 추측하지 않는다.
 // ---------------------------------------------------------------------------
+const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
+
 const BODY_WORDS: Record<BodyPart, string[]> = {
   head: ['머리', 'head', 'đầu'],
   eye: ['눈', 'eye', 'mắt'],
@@ -315,46 +204,3 @@ export function newIntake(language: Lang): Intake {
     createdAt: new Date().toISOString(),
   };
 }
-
-/**
- * 생년월일('YYYY-MM-DD') → 나이대. `on` 날짜의 만 나이로 센다. 날짜가 아니면 null이다(backlog 35).
- * 문자열을 직접 나눠 읽어 시간대에 따라 하루가 밀리지 않게 한다.
- */
-export function ageGroupFromBirthDate(birthDate: string, on: Date): AgeGroup | null {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
-  if (!m) return null;
-  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
-  let age = on.getFullYear() - y;
-  if (on.getMonth() + 1 < mo || (on.getMonth() + 1 === mo && on.getDate() < d)) age -= 1;
-  if (age < 0) return null;
-  if (age < 30) return 'under30';
-  if (age < 45) return '30to44';
-  if (age < 65) return '45to64';
-  return '65plus';
-}
-
-/**
- * 프로필(생년월일·성별)에서 채울 수 있는 응급도 모델 입력. 채운 질문은 S-05에서 묻지 않는다(backlog 35).
- * 프로필이 없거나 생년월일을 읽지 못하면 그 키가 없다(답하지 않은 것과 같다).
- */
-export function profileAnswers(profile: { birthDate: string; sex: Sex } | null, on: Date): Pick<Intake, 'ageGroup' | 'sex'> {
-  if (!profile) return {};
-  const ageGroup = ageGroupFromBirthDate(profile.birthDate, on);
-  return ageGroup ? { ageGroup, sex: profile.sex } : { sex: profile.sex };
-}
-
-export const REASON_KO: Record<EmergencyReason, string> = {
-  unconscious: '의식 저하·쓰러짐',
-  breathing: '호흡 곤란',
-  chest: '가슴 통증',
-  heavyBleeding: '지혈되지 않는 출혈',
-  amputation: '신체 절단 의심',
-  fall: '높은 곳에서 추락',
-  seizure: '경련',
-  stroke: '마비·말 어눌함',
-  severeBurn: '심한 화상·감전',
-  chemicalEye: '눈에 화학물질',
-  headInjury: '머리 부상 후 구토·어지러움',
-  poisoning: '가스·약물 중독 의심',
-  riskScore: '위험 신호 점수 높음',
-};

@@ -235,7 +235,6 @@ def build_center_summary(i: CenterSummaryInput, note_translation: str | None = N
     if intake.work_related:
         work_type_ko = f"({WORK_TYPES[intake.work_type]['ko']})" if intake.work_type else ""
         ko.append(f"업무 중 발생: {YES_NO_KO[intake.work_related]}{work_type_ko}.")
-    ko.append(f"응급 판정 이력: {'있음' if i.emergency_flag else '없음'}.")
     if i.insurance:
         ko.append(f"건강보험증: {INSURANCE_KO[i.insurance]}.")
     if i.coverage:
