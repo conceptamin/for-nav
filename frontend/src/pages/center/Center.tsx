@@ -9,14 +9,14 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { getMe, loginPath, logout, onSessionEnded } from '../../api/auth';
-import { clearCases, getStats, resetDemo, setCaseStatus, useCenterCases } from '../../api/center';
+import { clearCases, getStats, resetDemo, updateCase, useCenterCases } from '../../api/center';
 import { isCallAvailable } from '../../api/call';
 import { isChatAvailable, useChatDigests } from '../../api/chat';
 import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useReveal } from '../../components/reveal';
-import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
-import { STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
+import type { CaseAction, CaseCategory, CasePatch, CaseStatus, CenterCase, CenterStats, ReferralTarget, StatCell, Urgency } from '../../domain/centerCase';
+import { ACTION_KO, CASE_ACTIONS, CASE_CATEGORIES, CATEGORY_KO, REFERRAL_KO, REFERRAL_TARGETS, STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
 import { PATH_KO } from '../../domain/coverage';
 import { CONTACT_METHOD_KO, requestTypesKo } from '../../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../../domain/vocab';
@@ -30,7 +30,7 @@ const TEXT = {
   retry: '다시 시도',
   loading: '목록을 불러오는 중입니다.',
   notLoaded: '목록을 아직 받지 못했습니다.',
-  statusFailed: '상태를 바꾸지 못했습니다. 서버 연결을 확인해 주세요.',
+  statusFailed: '바꾼 내용을 저장하지 못했습니다. 서버 연결을 확인해 주세요.',
   resetFailed: '접수함을 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
   statsFailed: '통계를 불러오지 못했습니다. 서버 연결을 확인해 주세요.',
   statsLoading: '통계를 불러오는 중입니다.',
@@ -279,6 +279,7 @@ export function InboxPage() {
   const { cases, connected, lastUpdated } = useCenterCases();
   const navigate = useNavigate();
   const [status, setStatus] = useState<InboxFilter>('all');
+  const [category, setCategory] = useState<CaseCategory | 'all'>('all');
   const [sort, setSort] = useState<InboxSort>('time');
   // 근로자 채팅은 실제 전송 사례에만 있다(mock 사례에는 근로자 토큰이 없다). 단독 모드에는 채팅이 없다
   const chatOn = isChatAvailable();
@@ -313,6 +314,7 @@ export function InboxPage() {
 
   const rows = cases
     .filter((c) => status === 'all' || (status === 'chat' ? chatAt(c) !== '' : c.status === status))
+    .filter((c) => category === 'all' || c.category === category)
     .sort((a, b) => {
       // 새 채팅이 온 사례가 맨 위, 그 안에서는 최근 채팅 순(backlog 53, 사용자 요청)
       if (unread(a) !== unread(b)) return unread(a) ? -1 : 1;
@@ -365,6 +367,12 @@ export function InboxPage() {
             )}
           </button>
         )}
+        <span className="filter-label">분야</span>
+        {(['all', ...CASE_CATEGORIES] as const).map((k) => (
+          <button key={k} type="button" aria-pressed={category === k} onClick={() => setCategory(k)}>
+            {k === 'all' ? '전체' : CATEGORY_KO[k]}
+          </button>
+        ))}
         <span style={{ flex: 1 }} />
         <label className="small">
           정렬{' '}
@@ -398,6 +406,7 @@ export function InboxPage() {
                 {chatOn && <th>채팅 시각</th>}
                 <th>언어</th>
                 <th>요청 유형</th>
+                <th>분야</th>
                 <th>긴급도</th>
                 <th>긴급도 근거</th>
                 <th>구·군</th>
@@ -427,6 +436,7 @@ export function InboxPage() {
                   {chatOn && <td>{chatAt(c) ? fmt(chatAt(c)) : '—'}</td>}
                   <td>{LANGUAGE_NAMES_KO[c.language]}</td>
                   <td>{requestTypesKo(c.requestTypes)}</td>
+                  <td>{CATEGORY_KO[c.category]}</td>
                   <td>
                     <UrgencyPill u={c.urgency} />
                   </td>
@@ -479,17 +489,23 @@ export function CaseDetailPage() {
 function CaseDetail({ c }: { c: CenterCase }) {
   const flow: CaseStatus[] = ['new', 'progress', 'done'];
   const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState<CaseStatus | null>(null);
-  const change = async (s: CaseStatus) => {
+  const [failed, setFailed] = useState<CasePatch | null>(null);
+  const change = async (patch: CasePatch) => {
     setBusy(true);
     setFailed(null);
     try {
-      await setCaseStatus(c.id, s);
+      await updateCase(c.id, patch);
     } catch {
-      setFailed(s);
+      setFailed(patch);
     } finally {
       setBusy(false);
     }
+  };
+  const toggle = <T extends string>(list: T[], v: T): T[] => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const toggleAction = (a: CaseAction) => {
+    const actions = toggle(c.actions, a);
+    // 연계를 끄면 기관도 함께 지운다(서버가 연계 없는 기관을 받지 않는다)
+    void change(a === 'referral' && !actions.includes('referral') ? { actions, referredTo: [] } : { actions });
   };
   const yn = (v: YesNoUnknown | null, map: Record<YesNoUnknown, string>) => (v ? map[v] : '—');
   // 통화·채팅이 있으면 오른쪽 열을 그 둘에 주고 읽기만 하는 정보는 왼쪽 아래로 보낸다. 없으면(단독 모드) 오른쪽 열에 둔다(backlog 48)
@@ -554,7 +570,7 @@ function CaseDetail({ c }: { c: CenterCase }) {
               className={`btn ${c.status === s ? '' : 'secondary'}`}
               aria-pressed={c.status === s}
               disabled={busy}
-              onClick={() => void change(s)}
+              onClick={() => void change({ status: s })}
             >
               {STATUS_KO[s]}
             </button>
@@ -562,6 +578,40 @@ function CaseDetail({ c }: { c: CenterCase }) {
         </section>
       </div>
       {failed && <Failure text={TEXT.statusFailed} onRetry={() => void change(failed)} busy={busy} />}
+      <section className="panel record" aria-labelledby="record-title">
+        <h2 id="record-title">상담 기록</h2>
+        <dl className="kv">
+          <dt>분야</dt>
+          <dd className="filters">
+            {CASE_CATEGORIES.map((k) => (
+              <button key={k} type="button" aria-pressed={c.category === k} disabled={busy} onClick={() => void change({ category: k })}>
+                {CATEGORY_KO[k]}
+              </button>
+            ))}
+          </dd>
+          <dt>조치</dt>
+          <dd className="filters">
+            {CASE_ACTIONS.map((a) => (
+              <button key={a} type="button" aria-pressed={c.actions.includes(a)} disabled={busy} onClick={() => toggleAction(a)}>
+                {ACTION_KO[a]}
+              </button>
+            ))}
+          </dd>
+          {c.actions.includes('referral') && (
+            <>
+              <dt>연계 기관</dt>
+              <dd className="filters">
+                {REFERRAL_TARGETS.map((t: ReferralTarget) => (
+                  <button key={t} type="button" aria-pressed={c.referredTo.includes(t)} disabled={busy} onClick={() => void change({ referredTo: toggle(c.referredTo, t) })}>
+                    {REFERRAL_KO[t]}
+                  </button>
+                ))}
+              </dd>
+            </>
+          )}
+        </dl>
+        <p className="footer-note">분야는 접수 때 제도 경로·요청 종류로 정한 기본값이며 바꿀 수 있습니다. 조치는 여러 개를 고를 수 있습니다.</p>
+      </section>
       <div className="detail">
         <div>
           <section className="panel">

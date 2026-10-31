@@ -4,10 +4,11 @@
 // 서버가 센터 로그인을 쓸 때(backend 17) 401은 실패가 아니라 세션 끝이다. 받은 목록을 비우고 알린다(auth.ts의 onSessionEnded).
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import type { CaseStatus, CenterCase, CenterStats, MyCaseRef, MyCaseView, NewCaseRequest, NewCaseResponse } from '../domain/centerCase';
+import type { CasePatch, CenterCase, CenterStats, MyCaseRef, MyCaseView, NewCaseRequest, NewCaseResponse } from '../domain/centerCase';
+import { withCaseDefaults } from '../domain/centerCase';
 import type { CenterHours } from '../domain/coverage';
 import type { District } from '../domain/vocab';
-import { getStatsLocal, loadAllLocal, resetCenterDemoLocal, sendCaseLocal, setCaseStatusLocal, subscribeLocal } from '../state/centerStore';
+import { getStatsLocal, loadAllLocal, resetCenterDemoLocal, sendCaseLocal, subscribeLocal, updateCaseLocal } from '../state/centerStore';
 import { isSessionEnded, notifySessionEnded } from './auth';
 import { ApiError, isApiMode, logFailure, requestJson } from './http';
 
@@ -60,16 +61,17 @@ export async function listCases(): Promise<CenterCase[]> {
   // 폴링 실패는 연결 띠로 보이므로 매번 기록하지 않는다(useCenterCases가 끊길 때 한 번 남긴다)
   const r = await requestJson<unknown>('/center/cases', { timeoutMs: CENTER_TIMEOUT_MS });
   if (!Array.isArray(r) || !r.every((c) => isCase(c as Partial<CenterCase>))) throw bad();
-  return r as CenterCase[];
+  // 분야·조치를 아직 돌려주지 않는 서버(backend 24 전)면 규칙 분야와 빈 조치로 채운다
+  return (r as CenterCase[]).map(withCaseDefaults);
 }
 
-/** C-02 상태 변경(`PATCH /api/center/cases/{id}`). 성공하면 접수함을 바로 다시 읽는다 */
-export async function setCaseStatus(id: string, status: CaseStatus): Promise<void> {
+/** C-02 상태·분야·조치 변경(`PATCH /api/center/cases/{id}`). 있는 필드만 보낸다. 성공하면 접수함을 바로 다시 읽는다 */
+export async function updateCase(id: string, patch: CasePatch): Promise<void> {
   if (isApiMode()) {
-    const r = await call<Partial<CenterCase>>(`/center/cases/${encodeURIComponent(id)}`, { method: 'PATCH', body: { status } });
+    const r = await call<Partial<CenterCase>>(`/center/cases/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch });
     if (!isCase(r)) throw bad();
   } else {
-    setCaseStatusLocal(id, status);
+    updateCaseLocal(id, patch);
   }
   await refreshCases();
 }

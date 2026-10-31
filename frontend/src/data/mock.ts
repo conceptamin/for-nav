@@ -3,7 +3,7 @@
 // - 통계 탭용 익명 집계 원천(개인 식별값 없음)
 
 import type { CaseStatus, CenterCase } from '../domain/centerCase';
-import { rateUrgency } from '../domain/centerCase';
+import { defaultCategory, rateUrgency } from '../domain/centerCase';
 import { isAfterHours, routeCoverage } from '../domain/coverage';
 import type { ContactMethod, RequestType } from '../domain/templates';
 import { buildCenterSummary } from '../domain/templates';
@@ -101,6 +101,10 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
       district: intake.district,
       industry: intake.industry,
       status,
+      // 분야는 규칙으로 계산한다(새 난수를 뽑지 않아 시드 순서가 그대로다)
+      category: defaultCategory({ coveragePath: coverage.path, requestTypes }),
+      actions: [],
+      referredTo: [],
       summaryKo: summary.ko,
       originalNative: summary.native,
       consentedItems: ['증상', '부위', '시작 시점', '경위', '자유 입력 메모'],

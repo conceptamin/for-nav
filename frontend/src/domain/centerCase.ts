@@ -6,6 +6,16 @@ import type { District, Industry, Lang, YesNoUnknown } from './vocab';
 
 export type CaseStatus = 'new' | 'progress' | 'done';
 export type Urgency = 'high' | 'medium' | 'low';
+/** 센터 회신(2026-10-31)의 의료 상담 집계 분야: 의료·보건 / 건강보험·공공의료 / 의료비 지원 */
+export type CaseCategory = 'medical' | 'insurance' | 'cost';
+/** 센터 지원 절차에서 한 조치. 한 사례에 여럿이 겹친다 */
+export type CaseAction = 'info' | 'interpret' | 'referral' | 'followUp';
+/** 관계기관 연계 대상. `referral` 조치가 있을 때만 쓴다 */
+export type ReferralTarget = 'nhis' | 'kcomwel' | 'hospital' | 'ulsan' | 'other';
+
+export const CASE_CATEGORIES: CaseCategory[] = ['medical', 'insurance', 'cost'];
+export const CASE_ACTIONS: CaseAction[] = ['info', 'interpret', 'referral', 'followUp'];
+export const REFERRAL_TARGETS: ReferralTarget[] = ['nhis', 'kcomwel', 'hospital', 'ulsan', 'other'];
 
 export interface CenterCase {
   id: string;
@@ -17,6 +27,12 @@ export interface CenterCase {
   district: District | null;
   industry: Industry | null;
   status: CaseStatus;
+  /** 접수 때 `defaultCategory`로 채우고 직원이 C-02에서 바꾼다 */
+  category: CaseCategory;
+  /** 직원이 기록한 조치(처음 []) */
+  actions: CaseAction[];
+  /** 연계 기관(처음 []). `actions`에 `referral`이 없으면 비어 있다 */
+  referredTo: ReferralTarget[];
   summaryKo: string;
   originalNative: string;
   /** 근로자가 센터 전송에 동의한 항목(한국어 표시) */
@@ -151,5 +167,45 @@ export function rateUrgency(input: {
   return { urgency, reasons };
 }
 
+/**
+ * 접수 때 분야 기본값. 제도 경로와 요청 종류만 본다(증상 내용으로 가르지 않는다).
+ * 울산 지원 경로 → 의료비 지원, 건강보험 경로이거나 제도 상담만 고르면 → 건강보험·공공의료, 나머지 → 의료·보건
+ */
+export function defaultCategory(input: { coveragePath: CoveragePath | null; requestTypes: RequestType[] }): CaseCategory {
+  if (input.coveragePath === 'ulsanSupport') return 'cost';
+  if (input.coveragePath === 'nhis' || (input.requestTypes.length === 1 && input.requestTypes[0] === 'policy')) return 'insurance';
+  return 'medical';
+}
+
+/** 분야·조치가 없는 사례(backlog 41 전에 저장한 것, 아직 옛 서버)를 규칙 분야와 빈 조치로 채운다 */
+export function withCaseDefaults(c: Omit<CenterCase, 'category' | 'actions' | 'referredTo'> & Partial<CenterCase>): CenterCase {
+  return {
+    ...c,
+    category: c.category ?? defaultCategory(c),
+    actions: c.actions ?? [],
+    referredTo: c.referredTo ?? [],
+  };
+}
+
+/** C-02 분야·조치 변경(`PATCH /api/center/cases/{id}`). 있는 필드만 바꾼다 */
+export type CasePatch = Partial<Pick<CenterCase, 'status' | 'category' | 'actions' | 'referredTo'>>;
+
+/** 조치·연계 기관을 고정 순서로 맞추고, 연계 조치가 없으면 기관을 비운다 */
+export function applyCasePatch(c: CenterCase, patch: CasePatch): CenterCase {
+  const next = { ...c, ...patch };
+  const actions = CASE_ACTIONS.filter((a) => next.actions.includes(a));
+  const referredTo = actions.includes('referral') ? REFERRAL_TARGETS.filter((t) => next.referredTo.includes(t)) : [];
+  return { ...next, actions, referredTo };
+}
+
 export const URGENCY_KO: Record<Urgency, string> = { high: '높음', medium: '보통', low: '낮음' };
 export const STATUS_KO: Record<CaseStatus, string> = { new: '신규', progress: '진행', done: '완료' };
+export const CATEGORY_KO: Record<CaseCategory, string> = { medical: '의료·보건', insurance: '건강보험·공공의료', cost: '의료비 지원' };
+export const ACTION_KO: Record<CaseAction, string> = { info: '정보 제공', interpret: '통역 지원', referral: '관계기관 연계', followUp: '후속 상담 필요' };
+export const REFERRAL_KO: Record<ReferralTarget, string> = {
+  nhis: '국민건강보험공단',
+  kcomwel: '근로복지공단',
+  hospital: '의료기관',
+  ulsan: '울산시',
+  other: '그 밖의 기관',
+};
