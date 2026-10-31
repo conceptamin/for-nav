@@ -384,3 +384,78 @@ def test_sqlite_keeps_login_data_after_restart(tmp_path: Path):
     assert s.list_staff() == [STAFF]
     assert s.session_email("t1", AT) == STAFF
     s.close()
+
+
+# ---------------------------------------------------------------------------
+# 근로자 앱 푸시 기기 묶음(backlog 28)
+# ---------------------------------------------------------------------------
+def pushed(store: CenterStore, case_id: str, now: datetime = AT) -> list[tuple[str, str, str]]:
+    return [(d.device_token, d.platform, d.notice) for d in store.push_devices(case_id, now)]
+
+
+def test_push_device_add_update_remove(store: CenterStore):
+    store.add_push_device("C-1001", "dev-a", "android", "새 소식", AT)
+    store.add_push_device("C-1002", "dev-a", "android", "새 소식", AT)
+    store.add_push_device("C-1001", "dev-b", "ios", "New", AT)
+    assert pushed(store, "C-1001") == [("dev-a", "android", "새 소식"), ("dev-b", "ios", "New")]
+
+    # 같은 기기·사례는 platform·notice·갱신 시각만 바뀐다
+    later = AT + timedelta(minutes=1)
+    store.add_push_device("C-1001", "dev-a", "ios", "Tin mới", later)
+    rows = store.push_devices("C-1001", later)
+    assert sorted((d.device_token, d.platform, d.notice, d.updated_at) for d in rows) == [
+        ("dev-a", "ios", "Tin mới", clock.iso_utc(later)),
+        ("dev-b", "ios", "New", clock.iso_utc(AT)),
+    ]
+
+    store.remove_push_device("dev-a")
+    assert pushed(store, "C-1001", later) == [("dev-b", "ios", "New")]
+    assert pushed(store, "C-1002", later) == []
+    store.remove_push_device("never")
+
+
+def test_push_devices_expire_after_30_days(store: CenterStore):
+    store.add_push_device("C-1001", "dev-old", "android", "x", AT)
+    store.add_push_device("C-1001", "dev-new", "android", "x", AT + timedelta(days=10))
+    assert [d for d, _, _ in pushed(store, "C-1001", AT + timedelta(days=30) - timedelta(seconds=1))] == ["dev-old", "dev-new"]
+    assert [d for d, _, _ in pushed(store, "C-1001", AT + timedelta(days=30))] == ["dev-new"]
+    # 등록할 때도 정리한다
+    store.add_push_device("C-1002", "dev-x", "android", "x", AT + timedelta(days=41))
+    assert pushed(store, "C-1001", AT) == []
+
+
+def test_push_limits_drop_least_recent(store: CenterStore):
+    # 기기 하나에 사례 20개까지
+    for n in range(21):
+        store.add_push_device(f"C-{2000 + n}", "dev-a", "android", "x", AT + timedelta(seconds=n))
+    assert pushed(store, "C-2000") == []
+    assert len(pushed(store, "C-2001")) == 1
+    # 다시 등록한 묶음은 가장 최근이 된다
+    store.add_push_device("C-2001", "dev-a", "android", "x", AT + timedelta(seconds=30))
+    store.add_push_device("C-2099", "dev-a", "android", "x", AT + timedelta(seconds=31))
+    assert len(pushed(store, "C-2001")) == 1
+    assert pushed(store, "C-2002") == []
+
+    # 사례 하나에 기기 5개까지
+    for n in range(6):
+        store.add_push_device("C-1001", f"dev-{n}", "android", "x", AT + timedelta(seconds=n))
+    assert [d for d, _, _ in pushed(store, "C-1001")] == [f"dev-{n}" for n in range(1, 6)]
+
+
+def test_reset_clears_push_devices(store: CenterStore):
+    store.add_push_device("C-1001", "dev-a", "android", "x", AT)
+    store.reset()
+    assert pushed(store, "C-1001") == []
+
+
+def test_sqlite_push_devices_survive_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    first.add_push_device("C-1001", "dev-a", "android", "새 소식", AT)
+    first.close()
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert pushed(second, "C-1001") == [("dev-a", "android", "새 소식")]
+    finally:
+        second.close()

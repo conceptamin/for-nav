@@ -31,6 +31,8 @@ DEFAULT_CENTER_SESSION_DAYS = 30
 # 근로자 Google 로그인(backlog 21). off면 근로자 화면은 데모 로그인이고 센터 요청에 세션을 보지 않는다
 WORKER_AUTH_MODES = ("off", "google")
 DEFAULT_WORKER_SESSION_DAYS = 30
+# 근로자 앱 푸시 알림(backlog 28). off면 아무것도 보내지 않는다(기기 등록 경로는 그대로 동작한다)
+PUSH_MODES = ("off", "fcm")
 
 # 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일. 운영일은 일~목으로 고정한다.
 WORKDAYS = [0, 1, 2, 3, 4]
@@ -82,6 +84,13 @@ class Settings:
     # Google OAuth 웹 클라이언트 ID. ID 토큰의 aud와 비교한다(비밀값이 아니다)
     google_client_id: str = ""
     worker_session_days: int = DEFAULT_WORKER_SESSION_DAYS
+
+    # 근로자 앱 푸시 알림(backlog 28). fcm인데 아래 둘이 없거나 키 파일을 못 읽으면 시작 때 경고 한 줄을 남기고 off처럼 동작한다(app/push.py)
+    push: str = "off"
+    # Firebase 프로젝트 id(비밀값이 아니다)
+    fcm_project_id: str = ""
+    # FCM 발송 권한만 가진 서비스 계정 키 JSON 파일 경로. 저장소 밖에 둔다. 키 내용은 읽지 않고 경로만 둔다
+    fcm_credentials_file: str = ""
 
 
 def _center_hours(raw: str) -> CenterHours:
@@ -268,6 +277,9 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
                     worker_session_days=_session_days(
                         "WORKER_SESSION_DAYS", env.get("WORKER_SESSION_DAYS", str(DEFAULT_WORKER_SESSION_DAYS))
                     ),
+                    push=_choice("PUSH", env.get("PUSH", "off"), PUSH_MODES),
+                    fcm_project_id=env.get("FCM_PROJECT_ID", "").strip(),
+                    fcm_credentials_file=env.get("FCM_CREDENTIALS_FILE", "").strip(),
                 )
             )
         )
