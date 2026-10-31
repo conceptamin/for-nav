@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/common';
+import { Chip, PolicyDisclaimer, SingleSelect, toggleIn, Worse119 } from '../../components/common';
 import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useScreenBar } from '../../components/WorkerLayout';
@@ -34,8 +34,9 @@ export function CenterRequestPage() {
   const app = useApp();
   const { t, lang } = useT();
   const [params, setParams] = useSearchParams();
-  const preset = params.get('type') as RequestType | null;
-  const [type, setType] = useState<RequestType | null>(preset && REQUEST_TYPES.includes(preset) ? preset : null);
+  // 여러 개를 고른다(backlog 37). 주소에는 쉼표로 잇는다(?type=booking,interpret)
+  const preset = (params.get('type') ?? '').split(',').filter((k): k is RequestType => REQUEST_TYPES.includes(k as RequestType));
+  const [types, setTypes] = useState<RequestType[]>(preset);
   const [talk, setTalk] = useState<Talk | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [sent, setSent] = useState<NewCaseResponse | null>(null);
@@ -44,14 +45,14 @@ export function CenterRequestPage() {
 
   const intake = app.intake ?? newIntake(lang);
   const insurance = app.coverage?.input.insurance ?? null;
-  // 미리보기는 요청 종류를 고른 뒤에만 만든다.
+  // 미리보기는 요청 종류를 하나 이상 고른 뒤에만 만든다.
   // 통화·채팅은 domain의 ContactMethod에 없으므로 연락 희망은 보내지 않는다(backlog 29 메모).
   const summaryInput: CenterSummaryInput | null =
-    !sent && type
+    !sent && types.length
       ? {
           intake: { ...intake, language: lang },
           emergencyFlag: app.emergencySeen,
-          requestType: type,
+          requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,
           contactMethod: null,
@@ -95,7 +96,7 @@ export function CenterRequestPage() {
   }
 
   const send = async () => {
-    if (!type) return;
+    if (!types.length) return;
     const consented = [
       intake.symptoms.length ? '증상' : null,
       intake.bodyParts.length ? '부위' : null,
@@ -114,7 +115,7 @@ export function CenterRequestPage() {
         {
           intake: { ...intake, language: lang },
           emergencyFlag: app.emergencySeen,
-          requestType: type,
+          requestTypes: types,
           coverage: app.coverage?.result ?? null,
           insurance,
           contactMethod: null,
@@ -148,16 +149,23 @@ export function CenterRequestPage() {
       {!app.intake && <div className="notice info">{t('cenNoIntake')}</div>}
       <div className="field">
         <span className="label">{t('cenType')}</span>
-        <SingleSelect
-          options={REQUEST_TYPES}
-          value={type}
-          onChange={(v) => {
-            setType(v);
-            // 세션이 끝나 로그인하고 돌아올 때 고른 종류가 남도록 주소에도 둔다
-            setParams({ type: v }, { replace: true });
-          }}
-          label={(k) => t(`req.${k}` as MessageKey)}
-        />
+        <p className="small muted">{t('cenTypeHint')}</p>
+        <div className="options" role="group">
+          {REQUEST_TYPES.map((k) => (
+            <Chip
+              key={k}
+              pressed={types.includes(k)}
+              onClick={() => {
+                const next = toggleIn(types, k);
+                setTypes(next);
+                // 세션이 끝나 로그인하고 돌아올 때 고른 종류가 남도록 주소에도 둔다
+                setParams(next.length ? { type: next.join(',') } : {}, { replace: true });
+              }}
+            >
+              {t(`req.${k}` as MessageKey)}
+            </Chip>
+          ))}
+        </div>
       </div>
       <div className="field">
         <span className="label">{t('cenContactMethod')}</span>
@@ -182,7 +190,7 @@ export function CenterRequestPage() {
         {sendFailed && (
           <div className="notice danger with-retry" role="alert">
             <span>{t('sendFailed')}</span>
-            <button type="button" className="btn secondary" disabled={sending || !type || !agreed} onClick={() => void send()}>
+            <button type="button" className="btn secondary" disabled={sending || !types.length || !agreed} onClick={() => void send()}>
               {t('retry')}
             </button>
           </div>
@@ -191,7 +199,7 @@ export function CenterRequestPage() {
       <p className="footer-note">{t('cenHoursNote')}</p>
       <Worse119 />
       <footer className="w-footer">
-        <button type="button" className="btn block" disabled={!type || !agreed || sending} onClick={() => void send()}>
+        <button type="button" className="btn block" disabled={!types.length || !agreed || sending} onClick={() => void send()}>
           📨 {t('cenSend')}
         </button>
       </footer>

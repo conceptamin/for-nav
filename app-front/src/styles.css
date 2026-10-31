@@ -53,8 +53,10 @@ a {
   padding-bottom: calc(var(--bar-119) + 16px + var(--safe-bottom));
 }
 
+/* 바닥 띠는 화면 바닥까지 내려와 119 독 자리를 함께 덮는다(frontend backlog 35). 아래 여백·안쪽 여백만 안전 영역을 더한다 */
 .w-footer {
-  bottom: calc(var(--bar-119) + var(--safe-bottom));
+  margin-bottom: calc(-1 * (var(--bar-119) + 16px + var(--safe-bottom)));
+  padding-bottom: calc(var(--bar-119) + var(--safe-bottom));
 }
 
 .bar-119 {

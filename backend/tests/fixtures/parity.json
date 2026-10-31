@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-31T03:47:36.844Z",
+ "generatedAt": "2026-10-31T04:07:03.300Z",
  "now": "2026-10-26T01:00:00.000Z",
  "triage": [
   {
@@ -106111,14 +106111,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "영어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "Problem: Cut, wound, Bleeding — Hand, finger (Today).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Shipbuilding.\nMy note: \"Cut on a steel plate\"\nRequest: Booking support."
+    "ko": "영어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "Problem: Cut, wound, Bleeding — Hand, finger (Today).\nHappened at work: yes.\nArea: Dong-gu.\nIndustry: Shipbuilding.\nMy note: \"Cut on a steel plate\"\nRequest: Booking support, Interpretation."
    }
   },
   {
@@ -106142,7 +106145,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106191,7 +106196,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106235,7 +106242,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -106266,7 +106275,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106292,8 +106304,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "영어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "Problem: Pain — Head, Eye.\nHappened at work: yes.\nRequest: Other."
+    "ko": "영어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "Problem: Pain — Head, Eye.\nHappened at work: yes.\nRequest: Other, Booking support."
    }
   },
   {
@@ -106317,7 +106329,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106366,7 +106380,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -106397,7 +106413,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106440,7 +106458,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106466,8 +106487,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "영어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "Problem: Swelling — Back, waist (2–3 days ago).\nHappened at work: yes.\nIndustry: Auto parts.\nRequest: Referral to an agency."
+    "ko": "영어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "Problem: Swelling — Back, waist (2–3 days ago).\nHappened at work: yes.\nIndustry: Auto parts.\nRequest: Referral to an agency, Other."
    }
   },
   {
@@ -106490,7 +106511,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -106520,7 +106543,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106563,7 +106588,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106607,14 +106634,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "영어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "Problem: Nausea, vomiting, Dizziness — Stomach (Over a week ago).\nHappened at work: yes.\nArea: Ulju-gun.\nMy note: \"어제부터 토했어요\"\nRequest: Insurance & support advice."
+    "ko": "영어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "Problem: Nausea, vomiting, Dizziness — Stomach (Over a week ago).\nHappened at work: yes.\nArea: Ulju-gun.\nMy note: \"어제부터 토했어요\"\nRequest: Insurance & support advice, Referral to an agency."
    }
   },
   {
@@ -106638,7 +106668,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106687,7 +106719,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106731,7 +106765,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -106757,7 +106793,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106783,8 +106822,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "영어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "Happened at work: yes.\nRequest: Interpretation."
+    "ko": "영어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "Happened at work: yes.\nRequest: Interpretation, Insurance & support advice."
    }
   },
   {
@@ -106803,7 +106842,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106847,7 +106888,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -106873,7 +106916,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -106917,7 +106962,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -106943,8 +106991,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "베트남어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "Vấn đề: Vết cắt, vết thương, Chảy máu — Bàn tay, ngón tay (Hôm nay).\nXảy ra khi làm việc: có.\nKhu vực: Dong-gu.\nNgành: Đóng tàu.\nGhi chú: \"Cut on a steel plate\"\nYêu cầu: Hỗ trợ đặt lịch."
+    "ko": "베트남어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "Vấn đề: Vết cắt, vết thương, Chảy máu — Bàn tay, ngón tay (Hôm nay).\nXảy ra khi làm việc: có.\nKhu vực: Dong-gu.\nNgành: Đóng tàu.\nGhi chú: \"Cut on a steel plate\"\nYêu cầu: Hỗ trợ đặt lịch, Phiên dịch."
    }
   },
   {
@@ -106968,7 +107016,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -106999,7 +107049,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107043,7 +107095,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107087,14 +107141,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "베트남어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "Vấn đề: Đau — Đầu, Mắt.\nXảy ra khi làm việc: có.\nYêu cầu: Khác."
+    "ko": "베트남어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "Vấn đề: Đau — Đầu, Mắt.\nXảy ra khi làm việc: có.\nYêu cầu: Khác, Hỗ trợ đặt lịch."
    }
   },
   {
@@ -107118,7 +107175,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107167,7 +107226,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107211,7 +107272,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -107241,7 +107304,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107267,8 +107333,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "베트남어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "Vấn đề: Sưng — Lưng, eo (2–3 ngày trước).\nXảy ra khi làm việc: có.\nNgành: Phụ tùng ô tô.\nYêu cầu: Kết nối cơ quan."
+    "ko": "베트남어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "Vấn đề: Sưng — Lưng, eo (2–3 ngày trước).\nXảy ra khi làm việc: có.\nNgành: Phụ tùng ô tô.\nYêu cầu: Kết nối cơ quan, Khác."
    }
   },
   {
@@ -107291,7 +107357,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107339,7 +107407,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -107369,7 +107439,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107413,7 +107485,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107439,8 +107514,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "베트남어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "Vấn đề: Buồn nôn, nôn, Chóng mặt — Bụng (Hơn một tuần trước).\nXảy ra khi làm việc: có.\nKhu vực: Ulju-gun.\nGhi chú: \"어제부터 토했어요\"\nYêu cầu: Tư vấn bảo hiểm, chế độ."
+    "ko": "베트남어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "Vấn đề: Buồn nôn, nôn, Chóng mặt — Bụng (Hơn một tuần trước).\nXảy ra khi làm việc: có.\nKhu vực: Ulju-gun.\nGhi chú: \"어제부터 토했어요\"\nYêu cầu: Tư vấn bảo hiểm, chế độ, Kết nối cơ quan."
    }
   },
   {
@@ -107464,7 +107539,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -107495,7 +107572,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107539,7 +107618,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107578,14 +107659,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "베트남어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "Xảy ra khi làm việc: có.\nYêu cầu: Phiên dịch."
+    "ko": "베트남어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "Xảy ra khi làm việc: có.\nYêu cầu: Phiên dịch, Tư vấn bảo hiểm, chế độ."
    }
   },
   {
@@ -107604,7 +107688,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107648,7 +107734,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107687,7 +107775,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -107718,7 +107808,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107744,8 +107837,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "한국어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "불편한 점: 베인 상처, 출혈 — 손·손가락 (오늘).\n업무 중 발생: 예.\n지역: 동구.\n업종: 조선.\n내 메모: \"Cut on a steel plate\"\n요청: 예약 지원."
+    "ko": "한국어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "불편한 점: 베인 상처, 출혈 — 손·손가락 (오늘).\n업무 중 발생: 예.\n지역: 동구.\n업종: 조선.\n내 메모: \"Cut on a steel plate\"\n요청: 예약 지원, 통번역."
    }
   },
   {
@@ -107769,7 +107862,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107818,7 +107913,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -107849,7 +107946,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -107893,7 +107992,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -107919,8 +108021,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "한국어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "불편한 점: 통증 — 머리, 눈.\n업무 중 발생: 예.\n요청: 기타."
+    "ko": "한국어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "불편한 점: 통증 — 머리, 눈.\n업무 중 발생: 예.\n요청: 기타, 예약 지원."
    }
   },
   {
@@ -107944,7 +108046,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -107975,7 +108079,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108019,7 +108125,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108062,14 +108170,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "한국어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "불편한 점: 부기 — 허리·등 (2~3일 전).\n업무 중 발생: 예.\n업종: 자동차 부품.\n요청: 기관 연계."
+    "ko": "한국어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "불편한 점: 부기 — 허리·등 (2~3일 전).\n업무 중 발생: 예.\n업종: 자동차 부품.\n요청: 기관 연계, 기타."
    }
   },
   {
@@ -108092,7 +108203,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108140,7 +108253,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108183,7 +108298,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -108214,7 +108331,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108240,8 +108360,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "한국어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "불편한 점: 구토·메스꺼움, 어지러움 — 배 (일주일 이상 전).\n업무 중 발생: 예.\n지역: 울주군.\n내 메모: \"어제부터 토했어요\"\n요청: 제도 상담."
+    "ko": "한국어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "불편한 점: 구토·메스꺼움, 어지러움 — 배 (일주일 이상 전).\n업무 중 발생: 예.\n지역: 울주군.\n내 메모: \"어제부터 토했어요\"\n요청: 제도 상담, 기관 연계."
    }
   },
   {
@@ -108265,7 +108385,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108314,7 +108436,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -108345,7 +108469,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108384,7 +108510,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108410,8 +108539,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "한국어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "업무 중 발생: 예.\n요청: 통번역."
+    "ko": "한국어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "업무 중 발생: 예.\n요청: 통번역, 제도 상담."
    }
   },
   {
@@ -108430,7 +108559,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -108456,7 +108587,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108495,7 +108628,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108539,14 +108674,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "네팔어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "समस्या: काटिएको, घाउ, रगत बग्नु — हात, औंला (आज).\nकाममा भएको: हो.\nठाउँ: दोङ-गु (Dong-gu).\nक्षेत्र: जहाज निर्माण.\nमेरो टिपोट: \"Cut on a steel plate\"\nअनुरोध: बुकिङ सहायता."
+    "ko": "네팔어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "समस्या: काटिएको, घाउ, रगत बग्नु — हात, औंला (आज).\nकाममा भएको: हो.\nठाउँ: दोङ-गु (Dong-gu).\nक्षेत्र: जहाज निर्माण.\nमेरो टिपोट: \"Cut on a steel plate\"\nअनुरोध: बुकिङ सहायता, दोभाषे."
    }
   },
   {
@@ -108570,7 +108708,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108619,7 +108759,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108663,7 +108805,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -108694,7 +108838,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108720,8 +108867,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "네팔어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "समस्या: दुखाइ — टाउको, आँखा.\nकाममा भएको: हो.\nअनुरोध: अन्य."
+    "ko": "네팔어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "समस्या: दुखाइ — टाउको, आँखा.\nकाममा भएको: हो.\nअनुरोध: अन्य, बुकिङ सहायता."
    }
   },
   {
@@ -108745,7 +108892,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108794,7 +108943,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -108825,7 +108976,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108868,7 +109021,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -108894,8 +109050,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "네팔어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "समस्या: सुन्निनु — ढाड, कम्मर (2–3 दिन अघि).\nकाममा भएको: हो.\nक्षेत्र: गाडीका पार्टपुर्जा.\nअनुरोध: निकायमा पठाउने."
+    "ko": "네팔어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "समस्या: सुन्निनु — ढाड, कम्मर (2–3 दिन अघि).\nकाममा भएको: हो.\nक्षेत्र: गाडीका पार्टपुर्जा.\nअनुरोध: निकायमा पठाउने, अन्य."
    }
   },
   {
@@ -108918,7 +109074,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -108948,7 +109106,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -108991,7 +109151,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109035,14 +109197,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "네팔어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "समस्या: वाकवाकी, बान्ता, रिँगटा — पेट (एक हप्ताभन्दा पहिले).\nकाममा भएको: हो.\nठाउँ: उल्जु-गुन (Ulju-gun).\nमेरो टिपोट: \"어제부터 토했어요\"\nअनुरोध: बीमा र सहायता सल्लाह."
+    "ko": "네팔어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "समस्या: वाकवाकी, बान्ता, रिँगटा — पेट (एक हप्ताभन्दा पहिले).\nकाममा भएको: हो.\nठाउँ: उल्जु-गुन (Ulju-gun).\nमेरो टिपोट: \"어제부터 토했어요\"\nअनुरोध: बीमा र सहायता सल्लाह, निकायमा पठाउने."
    }
   },
   {
@@ -109066,7 +109231,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109115,7 +109282,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109159,7 +109328,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -109185,7 +109356,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109211,8 +109385,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "네팔어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "काममा भएको: हो.\nअनुरोध: दोभाषे."
+    "ko": "네팔어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "काममा भएको: हो.\nअनुरोध: दोभाषे, बीमा र सहायता सल्लाह."
    }
   },
   {
@@ -109231,7 +109405,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109275,7 +109451,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -109301,7 +109479,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109345,7 +109525,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109371,8 +109554,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "러시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "Проблема: Порез, рана, Кровотечение — Кисть, палец (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Cut on a steel plate\"\nЗапрос: Помощь с записью."
+    "ko": "러시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "Проблема: Порез, рана, Кровотечение — Кисть, палец (Сегодня).\nСлучилось на работе: да.\nРайон: Тон-гу.\nОтрасль: Судостроение.\nМои слова: \"Cut on a steel plate\"\nЗапрос: Помощь с записью, Перевод."
    }
   },
   {
@@ -109396,7 +109579,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -109427,7 +109612,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109471,7 +109658,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109515,14 +109704,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "러시아어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "Проблема: Боль — Голова, Глаз.\nСлучилось на работе: да.\nЗапрос: Другое."
+    "ko": "러시아어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "Проблема: Боль — Голова, Глаз.\nСлучилось на работе: да.\nЗапрос: Другое, Помощь с записью."
    }
   },
   {
@@ -109546,7 +109738,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109595,7 +109789,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109639,7 +109835,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -109669,7 +109867,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109695,8 +109896,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "러시아어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "Проблема: Отек — Спина, поясница (2–3 дня назад).\nСлучилось на работе: да.\nОтрасль: Автозапчасти.\nЗапрос: Направление в учреждение."
+    "ko": "러시아어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "Проблема: Отек — Спина, поясница (2–3 дня назад).\nСлучилось на работе: да.\nОтрасль: Автозапчасти.\nЗапрос: Направление в учреждение, Другое."
    }
   },
   {
@@ -109719,7 +109920,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109767,7 +109970,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -109797,7 +110002,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109841,7 +110048,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -109867,8 +110077,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "러시아어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "Проблема: Тошнота, рвота, Головокружение — Живот (Больше недели назад).\nСлучилось на работе: да.\nРайон: Ульджу-гун.\nМои слова: \"어제부터 토했어요\"\nЗапрос: Советы о страховке и помощи."
+    "ko": "러시아어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "Проблема: Тошнота, рвота, Головокружение — Живот (Больше недели назад).\nСлучилось на работе: да.\nРайон: Ульджу-гун.\nМои слова: \"어제부터 토했어요\"\nЗапрос: Советы о страховке и помощи, Направление в учреждение."
    }
   },
   {
@@ -109892,7 +110102,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -109923,7 +110135,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -109967,7 +110181,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110006,14 +110222,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "러시아어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "Случилось на работе: да.\nЗапрос: Перевод."
+    "ko": "러시아어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "Случилось на работе: да.\nЗапрос: Перевод, Советы о страховке и помощи."
    }
   },
   {
@@ -110032,7 +110251,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110076,7 +110297,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110115,7 +110338,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -110146,7 +110371,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110172,8 +110400,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "몽골어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "Асуудал: Зүсэгдсэн, шарх, Цус гарах — Гарын сарвуу, хуруу (Өнөөдөр).\nАжил дээр болсон: тийм.\nБайршил: Дон-гу.\nСалбар: Усан онгоц үйлдвэрлэл.\nМиний тэмдэглэл: \"Cut on a steel plate\"\nХүсэлт: Цаг захиалгын тусламж."
+    "ko": "몽골어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "Асуудал: Зүсэгдсэн, шарх, Цус гарах — Гарын сарвуу, хуруу (Өнөөдөр).\nАжил дээр болсон: тийм.\nБайршил: Дон-гу.\nСалбар: Усан онгоц үйлдвэрлэл.\nМиний тэмдэглэл: \"Cut on a steel plate\"\nХүсэлт: Цаг захиалгын тусламж, Орчуулга."
    }
   },
   {
@@ -110197,7 +110425,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110246,7 +110476,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -110277,7 +110509,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110321,7 +110555,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110347,8 +110584,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "몽골어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "Асуудал: Өвдөлт — Толгой, Нүд.\nАжил дээр болсон: тийм.\nХүсэлт: Бусад."
+    "ko": "몽골어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "Асуудал: Өвдөлт — Толгой, Нүд.\nАжил дээр болсон: тийм.\nХүсэлт: Бусад, Цаг захиалгын тусламж."
    }
   },
   {
@@ -110372,7 +110609,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -110403,7 +110642,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110447,7 +110688,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110490,14 +110733,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "몽골어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "Асуудал: Хаван — Нуруу, бүсэлхий (2–3 хоногийн өмнө).\nАжил дээр болсон: тийм.\nСалбар: Автомашины эд анги.\nХүсэлт: Байгууллагад холбож өгөх."
+    "ko": "몽골어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "Асуудал: Хаван — Нуруу, бүсэлхий (2–3 хоногийн өмнө).\nАжил дээр болсон: тийм.\nСалбар: Автомашины эд анги.\nХүсэлт: Байгууллагад холбож өгөх, Бусад."
    }
   },
   {
@@ -110520,7 +110766,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110568,7 +110816,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110611,7 +110861,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -110642,7 +110894,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110668,8 +110923,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "몽골어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "Асуудал: Дотор муухайрах, бөөлжих, Толгой эргэх — Гэдэс (Долоо хоногоос илүү өмнө).\nАжил дээр болсон: тийм.\nБайршил: Ульжу-гун.\nМиний тэмдэглэл: \"어제부터 토했어요\"\nХүсэлт: Даатгал, дэмжлэгийн зөвлөгөө."
+    "ko": "몽골어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "Асуудал: Дотор муухайрах, бөөлжих, Толгой эргэх — Гэдэс (Долоо хоногоос илүү өмнө).\nАжил дээр болсон: тийм.\nБайршил: Ульжу-гун.\nМиний тэмдэглэл: \"어제부터 토했어요\"\nХүсэлт: Даатгал, дэмжлэгийн зөвлөгөө, Байгууллагад холбож өгөх."
    }
   },
   {
@@ -110693,7 +110948,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110742,7 +110999,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -110773,7 +111032,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110812,7 +111073,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -110838,8 +111102,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "몽골어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "Ажил дээр болсон: тийм.\nХүсэлт: Орчуулга."
+    "ko": "몽골어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "Ажил дээр болсон: тийм.\nХүсэлт: Орчуулга, Даатгал, дэмжлэгийн зөвлөгөө."
    }
   },
   {
@@ -110858,7 +111122,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -110884,7 +111150,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110923,7 +111191,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -110967,14 +111237,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "미얀마어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "ပြဿနာ: ပြတ်ရှခြင်း၊ ဒဏ်ရာ, သွေးထွက်ခြင်း — လက်၊ လက်ချောင်း (ဒီနေ့).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nနေရာ: ဒုံးဂူ (Dong-gu).\nလုပ်ငန်း: သင်္ဘောတည်ဆောက်ရေး.\nကျွန်ုပ်၏ မှတ်စု: \"Cut on a steel plate\"\nတောင်းဆိုချက်: ချိန်းဆိုမှု အကူအညီ."
+    "ko": "미얀마어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "ပြဿနာ: ပြတ်ရှခြင်း၊ ဒဏ်ရာ, သွေးထွက်ခြင်း — လက်၊ လက်ချောင်း (ဒီနေ့).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nနေရာ: ဒုံးဂူ (Dong-gu).\nလုပ်ငန်း: သင်္ဘောတည်ဆောက်ရေး.\nကျွန်ုပ်၏ မှတ်စု: \"Cut on a steel plate\"\nတောင်းဆိုချက်: ချိန်းဆိုမှု အကူအညီ, စကားပြန်."
    }
   },
   {
@@ -110998,7 +111271,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111047,7 +111322,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111091,7 +111368,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -111122,7 +111401,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111148,8 +111430,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "미얀마어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "ပြဿနာ: နာကျင်ခြင်း — ခေါင်း, မျက်စိ.\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nတောင်းဆိုချက်: အခြား."
+    "ko": "미얀마어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "ပြဿနာ: နာကျင်ခြင်း — ခေါင်း, မျက်စိ.\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nတောင်းဆိုချက်: အခြား, ချိန်းဆိုမှု အကူအညီ."
    }
   },
   {
@@ -111173,7 +111455,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111222,7 +111506,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -111253,7 +111539,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111296,7 +111584,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111322,8 +111613,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "미얀마어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "ပြဿနာ: ရောင်ရမ်းခြင်း — ကျော၊ ခါး (2–3 ရက်က).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nလုပ်ငန်း: ကားအပိုပစ္စည်း.\nတောင်းဆိုချက်: အဖွဲ့အစည်းသို့ လွှဲပေးခြင်း."
+    "ko": "미얀마어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "ပြဿနာ: ရောင်ရမ်းခြင်း — ကျော၊ ခါး (2–3 ရက်က).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nလုပ်ငန်း: ကားအပိုပစ္စည်း.\nတောင်းဆိုချက်: အဖွဲ့အစည်းသို့ လွှဲပေးခြင်း, အခြား."
    }
   },
   {
@@ -111346,7 +111637,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -111376,7 +111669,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111419,7 +111714,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111463,14 +111760,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "미얀마어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "ပြဿနာ: ပျို့အန်ခြင်း, မူးဝေခြင်း — ဗိုက် (တစ်ပတ်ကျော်က).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nနေရာ: အူလ်ဂျူဂွန် (Ulju-gun).\nကျွန်ုပ်၏ မှတ်စု: \"어제부터 토했어요\"\nတောင်းဆိုချက်: အာမခံနှင့် အထောက်အပံ့ အကြံဉာဏ်."
+    "ko": "미얀마어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "ပြဿနာ: ပျို့အန်ခြင်း, မူးဝေခြင်း — ဗိုက် (တစ်ပတ်ကျော်က).\nအလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nနေရာ: အူလ်ဂျူဂွန် (Ulju-gun).\nကျွန်ုပ်၏ မှတ်စု: \"어제부터 토했어요\"\nတောင်းဆိုချက်: အာမခံနှင့် အထောက်အပံ့ အကြံဉာဏ်, အဖွဲ့အစည်းသို့ လွှဲပေးခြင်း."
    }
   },
   {
@@ -111494,7 +111794,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111543,7 +111845,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111587,7 +111891,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -111613,7 +111919,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111639,8 +111948,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "미얀마어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "အလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nတောင်းဆိုချက်: စကားပြန်."
+    "ko": "미얀마어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "အလုပ်မှာ ဖြစ်ခဲ့: ဟုတ်ကဲ့.\nတောင်းဆိုချက်: စကားပြန်, အာမခံနှင့် အထောက်အပံ့ အကြံဉာဏ်."
    }
   },
   {
@@ -111659,7 +111968,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111703,7 +112014,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -111729,7 +112042,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111773,7 +112088,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -111799,8 +112117,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "싱할라어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "ප්‍රශ්නය: කැපුම, තුවාලය, ලේ ගැලීම — අත්ල, ඇඟිලි (අද).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: දොං-ගු (Dong-gu).\nක්ෂේත්‍රය: නැව් තැනීම.\nමගේ සටහන: \"Cut on a steel plate\"\nඉල්ලීම: වෙන් කිරීමට සහාය."
+    "ko": "싱할라어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "ප්‍රශ්නය: කැපුම, තුවාලය, ලේ ගැලීම — අත්ල, ඇඟිලි (අද).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: දොං-ගු (Dong-gu).\nක්ෂේත්‍රය: නැව් තැනීම.\nමගේ සටහන: \"Cut on a steel plate\"\nඉල්ලීම: වෙන් කිරීමට සහාය, භාෂා පරිවර්තනය."
    }
   },
   {
@@ -111824,7 +112142,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -111855,7 +112175,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111899,7 +112221,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -111943,14 +112267,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "싱할라어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "ප්‍රශ්නය: වේදනාව — හිස, ඇස.\nවැඩේදී වුණා: ඔව්.\nඉල්ලීම: වෙනත්."
+    "ko": "싱할라어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "ප්‍රශ්නය: වේදනාව — හිස, ඇස.\nවැඩේදී වුණා: ඔව්.\nඉල්ලීම: වෙනත්, වෙන් කිරීමට සහාය."
    }
   },
   {
@@ -111974,7 +112301,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112023,7 +112352,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112067,7 +112398,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -112097,7 +112430,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112123,8 +112459,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "싱할라어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "ප්‍රශ්නය: ඉදිමීම — පිට, ඉණ (දින 2–3කට කලින්).\nවැඩේදී වුණා: ඔව්.\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nඉල්ලීම: ආයතනයකට යොමු කිරීම."
+    "ko": "싱할라어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "ප්‍රශ්නය: ඉදිමීම — පිට, ඉණ (දින 2–3කට කලින්).\nවැඩේදී වුණා: ඔව්.\nක්ෂේත්‍රය: වාහන අමතර කොටස්.\nඉල්ලීම: ආයතනයකට යොමු කිරීම, වෙනත්."
    }
   },
   {
@@ -112147,7 +112483,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112195,7 +112533,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -112225,7 +112565,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112269,7 +112611,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112295,8 +112640,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "싱할라어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "ප්‍රශ්නය: ඔක්කාරය, වමනය, කරකැවිල්ල — බඩ (සතියකට වඩා කලින්).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: උල්ජු-ගුන් (Ulju-gun).\nමගේ සටහන: \"어제부터 토했어요\"\nඉල්ලීම: රක්ෂණ සහ සහාය උපදෙස්."
+    "ko": "싱할라어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "ප්‍රශ්නය: ඔක්කාරය, වමනය, කරකැවිල්ල — බඩ (සතියකට වඩා කලින්).\nවැඩේදී වුණා: ඔව්.\nප්‍රදේශය: උල්ජු-ගුන් (Ulju-gun).\nමගේ සටහන: \"어제부터 토했어요\"\nඉල්ලීම: රක්ෂණ සහ සහාය උපදෙස්, ආයතනයකට යොමු කිරීම."
    }
   },
   {
@@ -112320,7 +112665,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -112351,7 +112698,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112395,7 +112744,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112434,14 +112785,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "싱할라어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "වැඩේදී වුණා: ඔව්.\nඉල්ලීම: භාෂා පරිවර්තනය."
+    "ko": "싱할라어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "වැඩේදී වුණා: ඔව්.\nඉල්ලීම: භාෂා පරිවර්තනය, රක්ෂණ සහ සහාය උපදෙස්."
    }
   },
   {
@@ -112460,7 +112814,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112504,7 +112860,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112543,7 +112901,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -112574,7 +112934,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112600,8 +112963,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "아랍어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "المشكلة: جرح, نزيف — اليد والأصابع (اليوم).\nحدث في العمل: نعم.\nالمنطقة: دونغ-غو.\nالقطاع: بناء السفن.\nملاحظتي: \"Cut on a steel plate\"\nالطلب: المساعدة في الحجز."
+    "ko": "아랍어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "المشكلة: جرح, نزيف — اليد والأصابع (اليوم).\nحدث في العمل: نعم.\nالمنطقة: دونغ-غو.\nالقطاع: بناء السفن.\nملاحظتي: \"Cut on a steel plate\"\nالطلب: المساعدة في الحجز, الترجمة."
    }
   },
   {
@@ -112625,7 +112988,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112674,7 +113039,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -112705,7 +113072,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112749,7 +113118,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112775,8 +113147,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "아랍어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "المشكلة: ألم — الرأس, العين.\nحدث في العمل: نعم.\nالطلب: أخرى."
+    "ko": "아랍어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "المشكلة: ألم — الرأس, العين.\nحدث في العمل: نعم.\nالطلب: أخرى, المساعدة في الحجز."
    }
   },
   {
@@ -112800,7 +113172,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -112831,7 +113205,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112875,7 +113251,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -112918,14 +113296,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "아랍어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "المشكلة: تورم — الظهر والخصر (قبل 2–3 أيام).\nحدث في العمل: نعم.\nالقطاع: قطع غيار السيارات.\nالطلب: التحويل إلى جهة مختصة."
+    "ko": "아랍어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "المشكلة: تورم — الظهر والخصر (قبل 2–3 أيام).\nحدث في العمل: نعم.\nالقطاع: قطع غيار السيارات.\nالطلب: التحويل إلى جهة مختصة, أخرى."
    }
   },
   {
@@ -112948,7 +113329,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -112996,7 +113379,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113039,7 +113424,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -113070,7 +113457,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113096,8 +113486,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "아랍어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "المشكلة: غثيان وقيء, دوخة — البطن (قبل أكثر من أسبوع).\nحدث في العمل: نعم.\nالمنطقة: أولجو-غون.\nملاحظتي: \"어제부터 토했어요\"\nالطلب: استشارة التأمين والدعم."
+    "ko": "아랍어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "المشكلة: غثيان وقيء, دوخة — البطن (قبل أكثر من أسبوع).\nحدث في العمل: نعم.\nالمنطقة: أولجو-غون.\nملاحظتي: \"어제부터 토했어요\"\nالطلب: استشارة التأمين والدعم, التحويل إلى جهة مختصة."
    }
   },
   {
@@ -113121,7 +113511,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113170,7 +113562,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -113201,7 +113595,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113240,7 +113636,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113266,8 +113665,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "아랍어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "حدث في العمل: نعم.\nالطلب: الترجمة."
+    "ko": "아랍어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "حدث في العمل: نعم.\nالطلب: الترجمة, استشارة التأمين والدعم."
    }
   },
   {
@@ -113286,7 +113685,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -113312,7 +113713,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113351,7 +113754,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113395,14 +113800,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "우즈베크어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "Muammo: Kesilgan joy, yara, Qon ketishi — Panja, barmoq (Bugun).\nIshda yuz bergan: ha.\nHudud: Dong-gu.\nSoha: Kemasozlik.\nMening yozuvim: \"Cut on a steel plate\"\nSoʻrov: Navbatga yozilishda yordam."
+    "ko": "우즈베크어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "Muammo: Kesilgan joy, yara, Qon ketishi — Panja, barmoq (Bugun).\nIshda yuz bergan: ha.\nHudud: Dong-gu.\nSoha: Kemasozlik.\nMening yozuvim: \"Cut on a steel plate\"\nSoʻrov: Navbatga yozilishda yordam, Tarjima."
    }
   },
   {
@@ -113426,7 +113834,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113475,7 +113885,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113519,7 +113931,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -113550,7 +113964,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113576,8 +113993,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "우즈베크어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "Muammo: Ogʻriq — Bosh, Koʻz.\nIshda yuz bergan: ha.\nSoʻrov: Boshqa."
+    "ko": "우즈베크어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "Muammo: Ogʻriq — Bosh, Koʻz.\nIshda yuz bergan: ha.\nSoʻrov: Boshqa, Navbatga yozilishda yordam."
    }
   },
   {
@@ -113601,7 +114018,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113650,7 +114069,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -113681,7 +114102,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113724,7 +114147,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113750,8 +114176,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "우즈베크어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "Muammo: Shish — Bel, orqa (2–3 kun oldin).\nIshda yuz bergan: ha.\nSoha: Avtomobil ehtiyot qismlari.\nSoʻrov: Tashkilotga yoʻllash."
+    "ko": "우즈베크어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "Muammo: Shish — Bel, orqa (2–3 kun oldin).\nIshda yuz bergan: ha.\nSoha: Avtomobil ehtiyot qismlari.\nSoʻrov: Tashkilotga yoʻllash, Boshqa."
    }
   },
   {
@@ -113774,7 +114200,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -113804,7 +114232,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113847,7 +114277,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -113891,14 +114323,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "우즈베크어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "Muammo: Koʻngil aynishi, qusish, Bosh aylanishi — Qorin (Bir haftadan koʻproq oldin).\nIshda yuz bergan: ha.\nHudud: Ulju-gun.\nMening yozuvim: \"어제부터 토했어요\"\nSoʻrov: Sugʻurta va yordam boʻyicha maslahat."
+    "ko": "우즈베크어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "Muammo: Koʻngil aynishi, qusish, Bosh aylanishi — Qorin (Bir haftadan koʻproq oldin).\nIshda yuz bergan: ha.\nHudud: Ulju-gun.\nMening yozuvim: \"어제부터 토했어요\"\nSoʻrov: Sugʻurta va yordam boʻyicha maslahat, Tashkilotga yoʻllash."
    }
   },
   {
@@ -113922,7 +114357,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -113971,7 +114408,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114015,7 +114454,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -114041,7 +114482,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114067,8 +114511,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "우즈베크어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "Ishda yuz bergan: ha.\nSoʻrov: Tarjima."
+    "ko": "우즈베크어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "Ishda yuz bergan: ha.\nSoʻrov: Tarjima, Sugʻurta va yordam boʻyicha maslahat."
    }
   },
   {
@@ -114087,7 +114531,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114131,7 +114577,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -114157,7 +114605,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114201,7 +114651,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114227,8 +114680,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "일본어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "困っていること: 切り傷・傷, 出血 — 手・指 (今日).\n仕事中に起きた: はい.\n地域: 東区.\n業種: 造船.\nメモ: \"Cut on a steel plate\"\n依頼: 予約の手伝い."
+    "ko": "일본어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "困っていること: 切り傷・傷, 出血 — 手・指 (今日).\n仕事中に起きた: はい.\n地域: 東区.\n業種: 造船.\nメモ: \"Cut on a steel plate\"\n依頼: 予約の手伝い, 通訳."
    }
   },
   {
@@ -114252,7 +114705,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -114283,7 +114738,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114327,7 +114784,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114371,14 +114830,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "일본어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "困っていること: 痛み — 頭, 目.\n仕事中に起きた: はい.\n依頼: その他."
+    "ko": "일본어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "困っていること: 痛み — 頭, 目.\n仕事中に起きた: はい.\n依頼: その他, 予約の手伝い."
    }
   },
   {
@@ -114402,7 +114864,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114451,7 +114915,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114495,7 +114961,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -114525,7 +114993,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114551,8 +115022,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "일본어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "困っていること: 腫れ — 背中・腰 (2〜3日前).\n仕事中に起きた: はい.\n業種: 自動車部品.\n依頼: 機関の紹介."
+    "ko": "일본어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "困っていること: 腫れ — 背中・腰 (2〜3日前).\n仕事中に起きた: はい.\n業種: 自動車部品.\n依頼: 機関の紹介, その他."
    }
   },
   {
@@ -114575,7 +115046,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114623,7 +115096,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -114653,7 +115128,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114697,7 +115174,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114723,8 +115203,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "일본어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "困っていること: 吐き気・嘔吐, めまい — おなか (1週間以上前).\n仕事中に起きた: はい.\n地域: 蔚州郡.\nメモ: \"어제부터 토했어요\"\n依頼: 保険・支援の相談."
+    "ko": "일본어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "困っていること: 吐き気・嘔吐, めまい — おなか (1週間以上前).\n仕事中に起きた: はい.\n地域: 蔚州郡.\nメモ: \"어제부터 토했어요\"\n依頼: 保険・支援の相談, 機関の紹介."
    }
   },
   {
@@ -114748,7 +115228,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -114779,7 +115261,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114823,7 +115307,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114862,14 +115348,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "일본어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "仕事中に起きた: はい.\n依頼: 通訳."
+    "ko": "일본어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "仕事中に起きた: はい.\n依頼: 通訳, 保険・支援の相談."
    }
   },
   {
@@ -114888,7 +115377,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -114932,7 +115423,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -114971,7 +115464,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -115002,7 +115497,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115028,8 +115526,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "중국어(간체) 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "问题: 割伤、伤口, 出血 — 手、手指 (今天).\n在工作时发生: 是.\n地区: 东区.\n行业: 造船.\n备注: \"Cut on a steel plate\"\n请求: 预约帮助."
+    "ko": "중국어(간체) 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "问题: 割伤、伤口, 出血 — 手、手指 (今天).\n在工作时发生: 是.\n地区: 东区.\n行业: 造船.\n备注: \"Cut on a steel plate\"\n请求: 预约帮助, 翻译."
    }
   },
   {
@@ -115053,7 +115551,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115102,7 +115602,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -115133,7 +115635,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115177,7 +115681,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115203,8 +115710,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "중국어(간체) 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "问题: 疼痛 — 头, 眼睛.\n在工作时发生: 是.\n请求: 其他."
+    "ko": "중국어(간체) 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "问题: 疼痛 — 头, 眼睛.\n在工作时发生: 是.\n请求: 其他, 预约帮助."
    }
   },
   {
@@ -115228,7 +115735,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -115259,7 +115768,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115303,7 +115814,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115346,14 +115859,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "중국어(간체) 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "问题: 肿胀 — 背、腰 (2–3天前).\n在工作时发生: 是.\n行业: 汽车零部件.\n请求: 转介到相关机关."
+    "ko": "중국어(간체) 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "问题: 肿胀 — 背、腰 (2–3天前).\n在工作时发生: 是.\n行业: 汽车零部件.\n请求: 转介到相关机关, 其他."
    }
   },
   {
@@ -115376,7 +115892,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115424,7 +115942,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115467,7 +115987,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -115498,7 +116020,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115524,8 +116049,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "중국어(간체) 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "问题: 恶心、呕吐, 头晕 — 肚子 (一周多以前).\n在工作时发生: 是.\n地区: 蔚州郡.\n备注: \"어제부터 토했어요\"\n请求: 保险与援助咨询."
+    "ko": "중국어(간체) 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "问题: 恶心、呕吐, 头晕 — 肚子 (一周多以前).\n在工作时发生: 是.\n地区: 蔚州郡.\n备注: \"어제부터 토했어요\"\n请求: 保险与援助咨询, 转介到相关机关."
    }
   },
   {
@@ -115549,7 +116074,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115598,7 +116125,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -115629,7 +116158,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115668,7 +116199,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115694,8 +116228,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "중국어(간체) 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "在工作时发生: 是.\n请求: 翻译."
+    "ko": "중국어(간체) 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "在工作时发生: 是.\n请求: 翻译, 保险与援助咨询."
    }
   },
   {
@@ -115714,7 +116248,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -115740,7 +116276,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115779,7 +116317,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115823,14 +116363,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "중국어(번체) 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "問題: 割傷、傷口, 出血 — 手、手指 (今天).\n在工作時發生: 是.\n地區: 東區.\n行業: 造船.\n備註: \"Cut on a steel plate\"\n請求: 協助預約掛號."
+    "ko": "중국어(번체) 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "問題: 割傷、傷口, 出血 — 手、手指 (今天).\n在工作時發生: 是.\n地區: 東區.\n行業: 造船.\n備註: \"Cut on a steel plate\"\n請求: 協助預約掛號, 口譯."
    }
   },
   {
@@ -115854,7 +116397,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -115903,7 +116448,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -115947,7 +116494,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -115978,7 +116527,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116004,8 +116556,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "중국어(번체) 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "問題: 疼痛 — 頭, 眼睛.\n在工作時發生: 是.\n請求: 其他."
+    "ko": "중국어(번체) 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "問題: 疼痛 — 頭, 眼睛.\n在工作時發生: 是.\n請求: 其他, 協助預約掛號."
    }
   },
   {
@@ -116029,7 +116581,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116078,7 +116632,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -116109,7 +116665,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116152,7 +116710,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116178,8 +116739,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "중국어(번체) 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "問題: 腫脹 — 背、腰 (2–3天前).\n在工作時發生: 是.\n行業: 汽車零件.\n請求: 轉介給相關機關."
+    "ko": "중국어(번체) 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "問題: 腫脹 — 背、腰 (2–3天前).\n在工作時發生: 是.\n行業: 汽車零件.\n請求: 轉介給相關機關, 其他."
    }
   },
   {
@@ -116202,7 +116763,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -116232,7 +116795,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116275,7 +116840,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116319,14 +116886,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "중국어(번체) 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "問題: 噁心、嘔吐, 頭暈 — 肚子 (一個多禮拜前).\n在工作時發生: 是.\n地區: 蔚州郡.\n備註: \"어제부터 토했어요\"\n請求: 健保與補助諮詢."
+    "ko": "중국어(번체) 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "問題: 噁心、嘔吐, 頭暈 — 肚子 (一個多禮拜前).\n在工作時發生: 是.\n地區: 蔚州郡.\n備註: \"어제부터 토했어요\"\n請求: 健保與補助諮詢, 轉介給相關機關."
    }
   },
   {
@@ -116350,7 +116920,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116399,7 +116971,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116443,7 +117017,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -116469,7 +117045,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116495,8 +117074,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "중국어(번체) 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "在工作時發生: 是.\n請求: 口譯."
+    "ko": "중국어(번체) 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "在工作時發生: 是.\n請求: 口譯, 健保與補助諮詢."
    }
   },
   {
@@ -116515,7 +117094,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116559,7 +117140,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -116585,7 +117168,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116629,7 +117214,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116655,8 +117243,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "카자흐어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "Мәселе: Кесік, жара, Қан кету — Алақан, саусақ (Бүгін).\nЖұмыста болды: иә.\nАудан: Тон-гу.\nСала: Кеме жасау.\nМенің жазбам: \"Cut on a steel plate\"\nӨтініш: Жазылуға көмек."
+    "ko": "카자흐어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "Мәселе: Кесік, жара, Қан кету — Алақан, саусақ (Бүгін).\nЖұмыста болды: иә.\nАудан: Тон-гу.\nСала: Кеме жасау.\nМенің жазбам: \"Cut on a steel plate\"\nӨтініш: Жазылуға көмек, Аударма."
    }
   },
   {
@@ -116680,7 +117268,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -116711,7 +117301,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116755,7 +117347,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116799,14 +117393,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "카자흐어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "Мәселе: Ауырсыну — Бас, Көз.\nЖұмыста болды: иә.\nӨтініш: Басқа."
+    "ko": "카자흐어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "Мәселе: Ауырсыну — Бас, Көз.\nЖұмыста болды: иә.\nӨтініш: Басқа, Жазылуға көмек."
    }
   },
   {
@@ -116830,7 +117427,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116879,7 +117478,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -116923,7 +117524,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -116953,7 +117556,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -116979,8 +117585,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "카자흐어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "Мәселе: Ісіну — Арқа, бел (2–3 күн бұрын).\nЖұмыста болды: иә.\nСала: Автобөлшектер.\nӨтініш: Мекемеге жолдама."
+    "ko": "카자흐어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "Мәселе: Ісіну — Арқа, бел (2–3 күн бұрын).\nЖұмыста болды: иә.\nСала: Автобөлшектер.\nӨтініш: Мекемеге жолдама, Басқа."
    }
   },
   {
@@ -117003,7 +117609,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117051,7 +117659,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -117081,7 +117691,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117125,7 +117737,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117151,8 +117766,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "카자흐어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "Мәселе: Жүрек айну, құсу, Бас айналу — Іш (Бір аптадан бұрын).\nЖұмыста болды: иә.\nАудан: Ульджу-гун.\nМенің жазбам: \"어제부터 토했어요\"\nӨтініш: Сақтандыру және көмек туралы кеңес."
+    "ko": "카자흐어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "Мәселе: Жүрек айну, құсу, Бас айналу — Іш (Бір аптадан бұрын).\nЖұмыста болды: иә.\nАудан: Ульджу-гун.\nМенің жазбам: \"어제부터 토했어요\"\nӨтініш: Сақтандыру және көмек туралы кеңес, Мекемеге жолдама."
    }
   },
   {
@@ -117176,7 +117791,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -117207,7 +117824,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117251,7 +117870,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117290,14 +117911,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "카자흐어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "Жұмыста болды: иә.\nӨтініш: Аударма."
+    "ko": "카자흐어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "Жұмыста болды: иә.\nӨтініш: Аударма, Сақтандыру және көмек туралы кеңес."
    }
   },
   {
@@ -117316,7 +117940,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117360,7 +117986,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117399,7 +118027,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -117430,7 +118060,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117456,8 +118089,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "크메르어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "បញ្ហា: មុត របួស, ហូរឈាម — បាតដៃ ម្រាមដៃ (ថ្ងៃនេះ).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nតំបន់: ដុងគូ.\nវិស័យ: សាងសង់នាវា.\nកំណត់ចំណាំរបស់ខ្ញុំ: \"Cut on a steel plate\"\nសំណើ: ជំនួយក្នុងការណាត់ជួប."
+    "ko": "크메르어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "បញ្ហា: មុត របួស, ហូរឈាម — បាតដៃ ម្រាមដៃ (ថ្ងៃនេះ).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nតំបន់: ដុងគូ.\nវិស័យ: សាងសង់នាវា.\nកំណត់ចំណាំរបស់ខ្ញុំ: \"Cut on a steel plate\"\nសំណើ: ជំនួយក្នុងការណាត់ជួប, ការបកប្រែផ្ទាល់មាត់."
    }
   },
   {
@@ -117481,7 +118114,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117530,7 +118165,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -117561,7 +118198,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117605,7 +118244,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117631,8 +118273,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "크메르어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "បញ្ហា: ឈឺ — ក្បាល, ភ្នែក.\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nសំណើ: ផ្សេងៗ."
+    "ko": "크메르어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "បញ្ហា: ឈឺ — ក្បាល, ភ្នែក.\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nសំណើ: ផ្សេងៗ, ជំនួយក្នុងការណាត់ជួប."
    }
   },
   {
@@ -117656,7 +118298,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -117687,7 +118331,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117731,7 +118377,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117774,14 +118422,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "크메르어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "បញ្ហា: ហើម — ខ្នង ចង្កេះ (2–3 ថ្ងៃមុន).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nវិស័យ: គ្រឿងបន្លាស់រថយន្ត.\nសំណើ: ការបញ្ជូនទៅស្ថាប័ន."
+    "ko": "크메르어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "បញ្ហា: ហើម — ខ្នង ចង្កេះ (2–3 ថ្ងៃមុន).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nវិស័យ: គ្រឿងបន្លាស់រថយន្ត.\nសំណើ: ការបញ្ជូនទៅស្ថាប័ន, ផ្សេងៗ."
    }
   },
   {
@@ -117804,7 +118455,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117852,7 +118505,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -117895,7 +118550,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -117926,7 +118583,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -117952,8 +118612,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "크메르어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "បញ្ហា: ចង់ក្អួត ក្អួត, វិលមុខ — ពោះ (ជាងមួយសប្ដាហ៍មុន).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nតំបន់: អ៊ុលជូគុន.\nកំណត់ចំណាំរបស់ខ្ញុំ: \"어제부터 토했어요\"\nសំណើ: ការប្រឹក្សាអំពីធានារ៉ាប់រង និងជំនួយ."
+    "ko": "크메르어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "បញ្ហា: ចង់ក្អួត ក្អួត, វិលមុខ — ពោះ (ជាងមួយសប្ដាហ៍មុន).\nកើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nតំបន់: អ៊ុលជូគុន.\nកំណត់ចំណាំរបស់ខ្ញុំ: \"어제부터 토했어요\"\nសំណើ: ការប្រឹក្សាអំពីធានារ៉ាប់រង និងជំនួយ, ការបញ្ជូនទៅស្ថាប័ន."
    }
   },
   {
@@ -117977,7 +118637,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118026,7 +118688,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -118057,7 +118721,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118096,7 +118762,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118122,8 +118791,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "크메르어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "កើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nសំណើ: ការបកប្រែផ្ទាល់មាត់."
+    "ko": "크메르어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "កើតឡើងនៅកន្លែងធ្វើការ: បាទ/ចាស.\nសំណើ: ការបកប្រែផ្ទាល់មាត់, ការប្រឹក្សាអំពីធានារ៉ាប់រង និងជំនួយ."
    }
   },
   {
@@ -118142,7 +118811,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -118168,7 +118839,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118207,7 +118880,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118251,14 +118926,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "키르기스어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "Көйгөй: Кесилген жер, жара, Кан агуу — Алакан, манжа (Бүгүн).\nЖумушта болду: ооба.\nРайон: Тон-гу.\nТармак: Кеме куруу.\nМенин жазуум: \"Cut on a steel plate\"\nӨтүнүч: Жазылууга жардам."
+    "ko": "키르기스어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "Көйгөй: Кесилген жер, жара, Кан агуу — Алакан, манжа (Бүгүн).\nЖумушта болду: ооба.\nРайон: Тон-гу.\nТармак: Кеме куруу.\nМенин жазуум: \"Cut on a steel plate\"\nӨтүнүч: Жазылууга жардам, Котормо."
    }
   },
   {
@@ -118282,7 +118960,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118331,7 +119011,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118375,7 +119057,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -118406,7 +119090,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118432,8 +119119,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "키르기스어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "Көйгөй: Оору — Баш, Көз.\nЖумушта болду: ооба.\nӨтүнүч: Башка."
+    "ko": "키르기스어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "Көйгөй: Оору — Баш, Көз.\nЖумушта болду: ооба.\nӨтүнүч: Башка, Жазылууга жардам."
    }
   },
   {
@@ -118457,7 +119144,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118506,7 +119195,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -118537,7 +119228,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118580,7 +119273,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118606,8 +119302,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "키르기스어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "Көйгөй: Шишик — Арка, бел (2–3 күн мурун).\nЖумушта болду: ооба.\nТармак: Автобөлүктөр.\nӨтүнүч: Мекемеге жолдомо."
+    "ko": "키르기스어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "Көйгөй: Шишик — Арка, бел (2–3 күн мурун).\nЖумушта болду: ооба.\nТармак: Автобөлүктөр.\nӨтүнүч: Мекемеге жолдомо, Башка."
    }
   },
   {
@@ -118630,7 +119326,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -118660,7 +119358,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118703,7 +119403,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118747,14 +119449,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "키르기스어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "Көйгөй: Жүрөк айлануу, кусуу, Баш айлануу — Курсак (Бир жумадан мурун).\nЖумушта болду: ооба.\nРайон: Ульджу-гун.\nМенин жазуум: \"어제부터 토했어요\"\nӨтүнүч: Камсыздандыруу жана жардам боюнча кеңеш."
+    "ko": "키르기스어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "Көйгөй: Жүрөк айлануу, кусуу, Баш айлануу — Курсак (Бир жумадан мурун).\nЖумушта болду: ооба.\nРайон: Ульджу-гун.\nМенин жазуум: \"어제부터 토했어요\"\nӨтүнүч: Камсыздандыруу жана жардам боюнча кеңеш, Мекемеге жолдомо."
    }
   },
   {
@@ -118778,7 +119483,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118827,7 +119534,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -118871,7 +119580,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -118897,7 +119608,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118923,8 +119637,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "키르기스어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "Жумушта болду: ооба.\nӨтүнүч: Котормо."
+    "ko": "키르기스어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "Жумушта болду: ооба.\nӨтүнүч: Котормо, Камсыздандыруу жана жардам боюнча кеңеш."
    }
   },
   {
@@ -118943,7 +119657,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -118987,7 +119703,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -119013,7 +119731,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119057,7 +119777,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119083,8 +119806,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "태국어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "ปัญหา: แผลบาด บาดแผล, เลือดออก — มือ นิ้วมือ (วันนี้).\nเกิดขึ้นที่ทำงาน: ใช่.\nพื้นที่: ดงกู.\nอุตสาหกรรม: ต่อเรือ.\nบันทึกของฉัน: \"Cut on a steel plate\"\nคำขอ: ช่วยนัดหมาย."
+    "ko": "태국어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "ปัญหา: แผลบาด บาดแผล, เลือดออก — มือ นิ้วมือ (วันนี้).\nเกิดขึ้นที่ทำงาน: ใช่.\nพื้นที่: ดงกู.\nอุตสาหกรรม: ต่อเรือ.\nบันทึกของฉัน: \"Cut on a steel plate\"\nคำขอ: ช่วยนัดหมาย, ล่าม."
    }
   },
   {
@@ -119108,7 +119831,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -119139,7 +119864,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119183,7 +119910,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119227,14 +119956,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "태국어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "ปัญหา: ปวด — ศีรษะ, ตา.\nเกิดขึ้นที่ทำงาน: ใช่.\nคำขอ: อื่น ๆ."
+    "ko": "태국어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "ปัญหา: ปวด — ศีรษะ, ตา.\nเกิดขึ้นที่ทำงาน: ใช่.\nคำขอ: อื่น ๆ, ช่วยนัดหมาย."
    }
   },
   {
@@ -119258,7 +119990,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119307,7 +120041,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119351,7 +120087,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -119381,7 +120119,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119407,8 +120148,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "태국어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "ปัญหา: บวม — หลัง เอว (2–3 วันก่อน).\nเกิดขึ้นที่ทำงาน: ใช่.\nอุตสาหกรรม: ชิ้นส่วนรถยนต์.\nคำขอ: ส่งต่อไปยังหน่วยงาน."
+    "ko": "태국어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "ปัญหา: บวม — หลัง เอว (2–3 วันก่อน).\nเกิดขึ้นที่ทำงาน: ใช่.\nอุตสาหกรรม: ชิ้นส่วนรถยนต์.\nคำขอ: ส่งต่อไปยังหน่วยงาน, อื่น ๆ."
    }
   },
   {
@@ -119431,7 +120172,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119479,7 +120222,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -119509,7 +120254,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119553,7 +120300,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119579,8 +120329,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "태국어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "ปัญหา: คลื่นไส้ อาเจียน, เวียนศีรษะ — ท้อง (มากกว่า 1 สัปดาห์ก่อน).\nเกิดขึ้นที่ทำงาน: ใช่.\nพื้นที่: อุลจูกุน.\nบันทึกของฉัน: \"어제부터 토했어요\"\nคำขอ: คำปรึกษาเรื่องประกันและความช่วยเหลือ."
+    "ko": "태국어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "ปัญหา: คลื่นไส้ อาเจียน, เวียนศีรษะ — ท้อง (มากกว่า 1 สัปดาห์ก่อน).\nเกิดขึ้นที่ทำงาน: ใช่.\nพื้นที่: อุลจูกุน.\nบันทึกของฉัน: \"어제부터 토했어요\"\nคำขอ: คำปรึกษาเรื่องประกันและความช่วยเหลือ, ส่งต่อไปยังหน่วยงาน."
    }
   },
   {
@@ -119604,7 +120354,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -119635,7 +120387,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119679,7 +120433,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119718,14 +120474,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "태국어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "เกิดขึ้นที่ทำงาน: ใช่.\nคำขอ: ล่าม."
+    "ko": "태국어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "เกิดขึ้นที่ทำงาน: ใช่.\nคำขอ: ล่าม, คำปรึกษาเรื่องประกันและความช่วยเหลือ."
    }
   },
   {
@@ -119744,7 +120503,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119788,7 +120549,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -119827,7 +120590,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -119858,7 +120623,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119884,8 +120652,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "프랑스어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 센터 방문.",
-    "native": "Problème: Coupure, plaie, Saignement — Main, doigt (Aujourd’hui).\nArrivé au travail: oui.\nQuartier: Dong-gu.\nSecteur: Construction navale.\nMa note: \"Cut on a steel plate\"\nDemande: Aide pour un rendez-vous."
+    "ko": "프랑스어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 센터 방문.",
+    "native": "Problème: Coupure, plaie, Saignement — Main, doigt (Aujourd’hui).\nArrivé au travail: oui.\nQuartier: Dong-gu.\nSecteur: Construction navale.\nMa note: \"Cut on a steel plate\"\nDemande: Aide pour un rendez-vous, Interprétation."
    }
   },
   {
@@ -119909,7 +120677,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -119958,7 +120728,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -119989,7 +120761,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120033,7 +120807,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120059,8 +120836,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "프랑스어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 카카오톡.",
-    "native": "Problème: Douleur — Tête, Œil.\nArrivé au travail: oui.\nDemande: Autre."
+    "ko": "프랑스어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 카카오톡.",
+    "native": "Problème: Douleur — Tête, Œil.\nArrivé au travail: oui.\nDemande: Autre, Aide pour un rendez-vous."
    }
   },
   {
@@ -120084,7 +120861,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -120115,7 +120894,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120159,7 +120940,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120202,14 +120985,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "프랑스어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계. 연락 희망: 전화.",
-    "native": "Problème: Gonflement — Dos, bas du dos (Il y a 2–3 jours).\nArrivé au travail: oui.\nSecteur: Pièces automobiles.\nDemande: Orientation vers un organisme."
+    "ko": "프랑스어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기관 연계, 기타. 연락 희망: 전화.",
+    "native": "Problème: Gonflement — Dos, bas du dos (Il y a 2–3 jours).\nArrivé au travail: oui.\nSecteur: Pièces automobiles.\nDemande: Orientation vers un organisme, Autre."
    }
   },
   {
@@ -120232,7 +121018,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120280,7 +121068,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120323,7 +121113,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -120354,7 +121146,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120380,8 +121175,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "프랑스어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 센터 방문.",
-    "native": "Problème: Nausée, vomissements, Vertiges — Ventre (Il y a plus d’une semaine).\nArrivé au travail: oui.\nQuartier: Ulju-gun.\nMa note: \"어제부터 토했어요\"\nDemande: Conseils assurance et aides."
+    "ko": "프랑스어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 센터 방문.",
+    "native": "Problème: Nausée, vomissements, Vertiges — Ventre (Il y a plus d’une semaine).\nArrivé au travail: oui.\nQuartier: Ulju-gun.\nMa note: \"어제부터 토했어요\"\nDemande: Conseils assurance et aides, Orientation vers un organisme."
    }
   },
   {
@@ -120405,7 +121200,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120454,7 +121251,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -120485,7 +121284,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120524,7 +121325,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120550,8 +121354,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "프랑스어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 카카오톡.",
-    "native": "Arrivé au travail: oui.\nDemande: Interprétation."
+    "ko": "프랑스어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 카카오톡.",
+    "native": "Arrivé au travail: oui.\nDemande: Interprétation, Conseils assurance et aides."
    }
   },
   {
@@ -120570,7 +121374,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -120596,7 +121402,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120635,7 +121443,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120679,14 +121489,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "필리핀어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원. 연락 희망: 전화.",
-    "native": "Problema: Hiwa, sugat, Pagdurugo — Kamay, daliri (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Paggawa ng barko.\nAking tala: \"Cut on a steel plate\"\nRequest: Tulong sa booking."
+    "ko": "필리핀어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 요청 유형: 예약 지원, 통번역. 연락 희망: 전화.",
+    "native": "Problema: Hiwa, sugat, Pagdurugo — Kamay, daliri (Ngayong araw).\nNangyari sa trabaho: oo.\nLugar: Dong-gu.\nIndustriya: Paggawa ng barko.\nAking tala: \"Cut on a steel plate\"\nRequest: Tulong sa booking, Interpretasyon."
    }
   },
   {
@@ -120710,7 +121523,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120759,7 +121574,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -120803,7 +121620,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -120834,7 +121653,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120860,8 +121682,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "필리핀어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타. 연락 희망: 센터 방문.",
-    "native": "Problema: Pananakit — Ulo, Mata.\nNangyari sa trabaho: oo.\nRequest: Iba pa."
+    "ko": "필리핀어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기타, 예약 지원. 연락 희망: 센터 방문.",
+    "native": "Problema: Pananakit — Ulo, Mata.\nNangyari sa trabaho: oo.\nRequest: Iba pa, Tulong sa booking."
    }
   },
   {
@@ -120885,7 +121707,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -120934,7 +121758,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -120965,7 +121791,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121008,7 +121836,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121034,8 +121865,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "필리핀어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 카카오톡.",
-    "native": "Problema: Pamamaga — Likod, baywang (2–3 araw na ang nakaraan).\nNangyari sa trabaho: oo.\nIndustriya: Piyesa ng sasakyan.\nRequest: Referral sa ahensya."
+    "ko": "필리핀어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 카카오톡.",
+    "native": "Problema: Pamamaga — Likod, baywang (2–3 araw na ang nakaraan).\nNangyari sa trabaho: oo.\nIndustriya: Piyesa ng sasakyan.\nRequest: Referral sa ahensya, Iba pa."
    }
   },
   {
@@ -121058,7 +121889,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -121088,7 +121921,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121131,7 +121966,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121175,14 +122012,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "필리핀어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담. 연락 희망: 전화.",
-    "native": "Problema: Pagduduwal, pagsusuka, Pagkahilo — Tiyan (Mahigit isang linggo na ang nakaraan).\nNangyari sa trabaho: oo.\nLugar: Ulju-gun.\nAking tala: \"어제부터 토했어요\"\nRequest: Payo tungkol sa insurance at tulong."
+    "ko": "필리핀어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 전화.",
+    "native": "Problema: Pagduduwal, pagsusuka, Pagkahilo — Tiyan (Mahigit isang linggo na ang nakaraan).\nNangyari sa trabaho: oo.\nLugar: Ulju-gun.\nAking tala: \"어제부터 토했어요\"\nRequest: Payo tungkol sa insurance at tulong, Referral sa ahensya."
    }
   },
   {
@@ -121206,7 +122046,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121255,7 +122097,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121299,7 +122143,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -121325,7 +122171,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121351,8 +122200,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "필리핀어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역. 연락 희망: 센터 방문.",
-    "native": "Nangyari sa trabaho: oo.\nRequest: Interpretasyon."
+    "ko": "필리핀어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 통번역, 제도 상담. 연락 희망: 센터 방문.",
+    "native": "Nangyari sa trabaho: oo.\nRequest: Interpretasyon, Payo tungkol sa insurance at tulong."
    }
   },
   {
@@ -121371,7 +122220,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121415,7 +122266,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -121441,7 +122294,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121485,7 +122340,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking",
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121511,8 +122369,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "인도네시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원. 연락 희망: 카카오톡.",
-    "native": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (Hari ini).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Cut on a steel plate\"\nPermintaan: Bantuan janji temu."
+    "ko": "인도네시아어 사용 근로자(동구, 조선 업종). 손·손가락 베인 상처, 출혈, 오늘 시작. 업무 중 발생: 예(절단·연마). 응급 판정 이력: 있음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 예약 지원, 통번역. 연락 희망: 카카오톡.",
+    "native": "Masalah: Luka sayat, luka, Berdarah — Tangan, jari (Hari ini).\nTerjadi di tempat kerja: ya.\nWilayah: Dong-gu.\nIndustri: Galangan kapal.\nCatatan saya: \"Cut on a steel plate\"\nPermintaan: Bantuan janji temu, Penerjemahan."
    }
   },
   {
@@ -121536,7 +122394,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -121567,7 +122427,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121611,7 +122473,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121655,14 +122519,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other",
+     "booking"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "인도네시아어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타. 연락 희망: 전화.",
-    "native": "Masalah: Nyeri — Kepala, Mata.\nTerjadi di tempat kerja: ya.\nPermintaan: Lainnya."
+    "ko": "인도네시아어 사용 근로자. 머리, 눈 통증. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 기타, 예약 지원. 연락 희망: 전화.",
+    "native": "Masalah: Nyeri — Kepala, Mata.\nTerjadi di tempat kerja: ya.\nPermintaan: Lainnya, Bantuan janji temu."
    }
   },
   {
@@ -121686,7 +122553,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121735,7 +122604,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121779,7 +122650,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -121809,7 +122682,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral",
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121835,8 +122711,8 @@
     "contactMethod": "visit"
    },
    "output": {
-    "ko": "인도네시아어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계. 연락 희망: 센터 방문.",
-    "native": "Masalah: Bengkak — Punggung, pinggang (2–3 hari lalu).\nTerjadi di tempat kerja: ya.\nIndustri: Suku cadang mobil.\nPermintaan: Rujukan ke lembaga."
+    "ko": "인도네시아어 사용 근로자(자동차 부품 업종). 허리·등 부기, 2~3일 전 시작. 업무 중 발생: 예(중량물 운반). 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 기관 연계, 기타. 연락 희망: 센터 방문.",
+    "native": "Masalah: Bengkak — Punggung, pinggang (2–3 hari lalu).\nTerjadi di tempat kerja: ya.\nIndustri: Suku cadang mobil.\nPermintaan: Rujukan ke lembaga, Lainnya."
    }
   },
   {
@@ -121859,7 +122735,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -121907,7 +122785,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": null,
     "insurance": "unknown",
     "contactMethod": "phone"
@@ -121937,7 +122817,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -121981,7 +122863,10 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy",
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -122007,8 +122892,8 @@
     "contactMethod": "kakao"
    },
    "output": {
-    "ko": "인도네시아어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담. 연락 희망: 카카오톡.",
-    "native": "Masalah: Mual, muntah, Pusing — Perut (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Ulju-gun.\nCatatan saya: \"어제부터 토했어요\"\nPermintaan: Saran asuransi & bantuan."
+    "ko": "인도네시아어 사용 근로자(울주군). 배 구토·메스꺼움, 어지러움, 일주일 이상 전 시작. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 제도 경로 결과: 산재 상담 먼저. 요청 유형: 제도 상담, 기관 연계. 연락 희망: 카카오톡.",
+    "native": "Masalah: Mual, muntah, Pusing — Perut (Lebih dari seminggu lalu).\nTerjadi di tempat kerja: ya.\nWilayah: Ulju-gun.\nCatatan saya: \"어제부터 토했어요\"\nPermintaan: Saran asuransi & bantuan, Rujukan ke lembaga."
    }
   },
   {
@@ -122032,7 +122917,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": null,
     "insurance": "no",
     "contactMethod": "zalo"
@@ -122063,7 +122950,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -122107,7 +122996,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": true,
-    "requestType": "booking",
+    "requestTypes": [
+     "booking"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -122146,14 +123037,17 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "interpret",
+    "requestTypes": [
+     "interpret",
+     "policy"
+    ],
     "coverage": null,
     "insurance": "yes",
     "contactMethod": "phone"
    },
    "output": {
-    "ko": "인도네시아어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역. 연락 희망: 전화.",
-    "native": "Terjadi di tempat kerja: ya.\nPermintaan: Penerjemahan."
+    "ko": "인도네시아어 사용 근로자. 업무 중 발생: 예. 응급 판정 이력: 없음. 건강보험증: 있음. 요청 유형: 통번역, 제도 상담. 연락 희망: 전화.",
+    "native": "Terjadi di tempat kerja: ya.\nPermintaan: Penerjemahan, Saran asuransi & bantuan."
    }
   },
   {
@@ -122172,7 +123066,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "policy",
+    "requestTypes": [
+     "policy"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": false,
@@ -122216,7 +123112,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "referral",
+    "requestTypes": [
+     "referral"
+    ],
     "coverage": {
      "infoDate": "2026-10-24",
      "alsoIndustrial": true,
@@ -122255,7 +123153,9 @@
      "createdAt": "2026-10-26T01:00:00.000Z"
     },
     "emergencyFlag": false,
-    "requestType": "other",
+    "requestTypes": [
+     "other"
+    ],
     "coverage": null,
     "insurance": null,
     "contactMethod": "zalo"
@@ -123979,7 +124879,9 @@
    "id": "C-1024",
    "createdAt": "2026-10-25T18:00:00.000Z",
    "language": "vi",
-   "requestType": "interpret",
+   "requestTypes": [
+    "interpret"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",
@@ -124010,7 +124912,9 @@
    "id": "C-1023",
    "createdAt": "2026-10-25T06:00:00.000Z",
    "language": "vi",
-   "requestType": "interpret",
+   "requestTypes": [
+    "interpret"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124040,7 +124944,9 @@
    "id": "C-1022",
    "createdAt": "2026-10-24T12:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",
@@ -124071,7 +124977,9 @@
    "id": "C-1021",
    "createdAt": "2026-10-24T00:00:00.000Z",
    "language": "en",
-   "requestType": "other",
+   "requestTypes": [
+    "other"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "응급 판정 이력",
@@ -124102,7 +125010,9 @@
    "id": "C-1020",
    "createdAt": "2026-10-23T13:00:00.000Z",
    "language": "en",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "건강보험증 없음"
@@ -124132,7 +125042,9 @@
    "id": "C-1019",
    "createdAt": "2026-10-22T22:00:00.000Z",
    "language": "en",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "nam",
@@ -124160,7 +125072,9 @@
    "id": "C-1018",
    "createdAt": "2026-10-22T10:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "buk",
@@ -124188,7 +125102,9 @@
    "id": "C-1017",
    "createdAt": "2026-10-21T22:00:00.000Z",
    "language": "vi",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124218,7 +125134,9 @@
    "id": "C-1016",
    "createdAt": "2026-10-21T12:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "건강보험증 없음"
@@ -124248,7 +125166,9 @@
    "id": "C-1015",
    "createdAt": "2026-10-20T21:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124278,7 +125198,9 @@
    "id": "C-1014",
    "createdAt": "2026-10-20T08:00:00.000Z",
    "language": "en",
-   "requestType": "interpret",
+   "requestTypes": [
+    "interpret"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "dong",
@@ -124306,7 +125228,9 @@
    "id": "C-1013",
    "createdAt": "2026-10-20T00:00:00.000Z",
    "language": "en",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",
@@ -124337,7 +125261,9 @@
    "id": "C-1012",
    "createdAt": "2026-10-19T02:00:00.000Z",
    "language": "en",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124367,7 +125293,9 @@
    "id": "C-1011",
    "createdAt": "2026-10-18T19:00:00.000Z",
    "language": "vi",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "응급 판정 이력",
@@ -124399,7 +125327,9 @@
    "id": "C-1010",
    "createdAt": "2026-10-18T01:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124429,7 +125359,9 @@
    "id": "C-1009",
    "createdAt": "2026-10-17T15:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",
@@ -124460,7 +125392,9 @@
    "id": "C-1008",
    "createdAt": "2026-10-17T05:00:00.000Z",
    "language": "vi",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "응급 판정 이력"
@@ -124490,7 +125424,9 @@
    "id": "C-1007",
    "createdAt": "2026-10-16T18:00:00.000Z",
    "language": "en",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "buk",
@@ -124518,7 +125454,9 @@
    "id": "C-1006",
    "createdAt": "2026-10-16T05:00:00.000Z",
    "language": "en",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "buk",
@@ -124546,7 +125484,9 @@
    "id": "C-1005",
    "createdAt": "2026-10-15T11:00:00.000Z",
    "language": "en",
-   "requestType": "interpret",
+   "requestTypes": [
+    "interpret"
+   ],
    "urgency": "medium",
    "urgencyReasons": [
     "업무 중 발생"
@@ -124576,7 +125516,9 @@
    "id": "C-1004",
    "createdAt": "2026-10-15T03:00:00.000Z",
    "language": "vi",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "ulju",
@@ -124604,7 +125546,9 @@
    "id": "C-1003",
    "createdAt": "2026-10-14T06:00:00.000Z",
    "language": "en",
-   "requestType": "booking",
+   "requestTypes": [
+    "booking"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",
@@ -124635,7 +125579,9 @@
    "id": "C-1002",
    "createdAt": "2026-10-13T16:00:00.000Z",
    "language": "vi",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "low",
    "urgencyReasons": [],
    "district": "nam",
@@ -124663,7 +125609,9 @@
    "id": "C-1001",
    "createdAt": "2026-10-13T04:00:00.000Z",
    "language": "en",
-   "requestType": "policy",
+   "requestTypes": [
+    "policy"
+   ],
    "urgency": "high",
    "urgencyReasons": [
     "업무 중 발생",

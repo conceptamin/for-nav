@@ -47,7 +47,7 @@ def send_case(client: TestClient) -> tuple[str, str]:
     body = {
         "intake": INTAKE,
         "emergencyFlag": False,
-        "requestType": "booking",
+        "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "yes",
         "contactMethod": None,

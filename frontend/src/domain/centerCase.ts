@@ -11,7 +11,7 @@ export interface CenterCase {
   id: string;
   createdAt: string;
   language: Lang;
-  requestType: RequestType;
+  requestTypes: RequestType[];
   urgency: Urgency;
   urgencyReasons: string[];
   district: District | null;

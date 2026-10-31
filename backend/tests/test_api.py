@@ -210,7 +210,7 @@ def test_center_summary():
     body = {
         "intake": INTAKE,
         "emergencyFlag": False,
-        "requestType": "booking",
+        "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "no",
         "contactMethod": "zalo",
@@ -218,6 +218,25 @@ def test_center_summary():
     out = client.post("/api/report/center", json=body).json()
     assert out["ko"].startswith("베트남어 사용 근로자.")
     assert "연락 희망: Zalo." in out["ko"]
+
+
+def test_center_summary_lists_every_request_type():
+    body = {
+        "intake": INTAKE,
+        "emergencyFlag": False,
+        "requestTypes": ["booking", "interpret"],
+        "coverage": None,
+        "insurance": "no",
+        "contactMethod": None,
+    }
+    out = client.post("/api/report/center", json=body).json()
+    assert "요청 유형: 예약 지원, 통번역." in out["ko"]
+    assert out["native"].endswith("Hỗ trợ đặt lịch, Phiên dịch.")
+
+
+def test_center_summary_needs_a_request_type():
+    body = {"intake": INTAKE, "emergencyFlag": False, "requestTypes": [], "coverage": None, "insurance": "no", "contactMethod": None}
+    assert client.post("/api/report/center", json=body).status_code == 422
 
 
 @both_stores
@@ -234,7 +253,7 @@ def _send(**over):
     body = {
         "intake": {**INTAKE, "workRelated": "yes"},
         "emergencyFlag": False,
-        "requestType": "booking",
+        "requestTypes": ["booking"],
         "coverage": None,
         "insurance": "no",
         "contactMethod": "zalo",
