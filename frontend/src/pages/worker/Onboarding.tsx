@@ -7,6 +7,7 @@ import { checkWorkerAuth, loginWithGoogle, logoutWorker, useWorkerAuth } from '.
 import { hasGoogleClientId, renderGoogleButton, useNativeGoogleSignIn, type NativeGoogleSignIn } from '../../api/googleId';
 import { BirthDateInput, SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
+import { HOME_MENU, SICK_MENU } from '../../components/workerMenu';
 import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
 import { DEMO_ACCOUNT, useApp } from '../../state/AppState';
@@ -425,12 +426,6 @@ export function SignupPage() {
 export function HomePage() {
   const app = useApp();
   const { t, term } = useT();
-  const menu = [
-    { to: '/guide', ico: '🏥', title: t('menuGuide'), sub: t('menuGuideSub') },
-    { to: '/coverage', ico: '💳', title: t('menuCoverage'), sub: t('menuCoverageSub') },
-    { to: '/center-request', ico: '🤝', title: t('menuCenter'), sub: t('menuCenterSub') },
-    { to: '/my', ico: '👤', title: t('menuMy'), sub: t('menuMySub') },
-  ];
   const profile = app.profile;
   const recent = app.reports[0];
   const recentSymptoms = recent?.rows.find((row) => row.field === 'symptoms') ?? recent?.rows[0];
@@ -447,20 +442,20 @@ export function HomePage() {
           </span>
         </Link>
       )}
-      <Link to="/intake" className="home-hero">
-        <strong>{t('menuSick')}</strong>
-        <span className="sub">{t('menuSickSub')}</span>
+      <Link to={SICK_MENU.to} className="home-hero">
+        <strong>{t(SICK_MENU.title)}</strong>
+        <span className="sub">{t(SICK_MENU.sub)}</span>
         <span className="go">{t('homeStart')}</span>
       </Link>
       <nav className="home-list">
-        {menu.map((m) => (
+        {HOME_MENU.map((m) => (
           <Link key={m.to} to={m.to}>
             <span className="ico" aria-hidden>
               {m.ico}
             </span>
             <span className="txt">
-              <small>{m.sub}</small>
-              <strong>{m.title}</strong>
+              <small>{t(m.sub)}</small>
+              <strong>{t(m.title)}</strong>
             </span>
             <span className="chev" aria-hidden>
               ›

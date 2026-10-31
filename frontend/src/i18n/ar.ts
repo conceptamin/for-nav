@@ -8,6 +8,7 @@ export const ar: Record<MessageKey, string> = {
   back: 'رجوع',
   next: 'التالي',
   home: 'الرئيسية',
+  menu: 'القائمة',
   yes: 'نعم',
   no: 'لا',
   unknown: 'لست متأكدا',

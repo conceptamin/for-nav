@@ -894,6 +894,223 @@ a.brand-pill:active {
   margin: 0;
 }
 
+/* 메뉴 서랍(backlog 50, design.md "메뉴 서랍"). 홈 밖의 화면에서 끝 쪽(RTL이면 왼쪽) 가장자리 손잡이로 연다.
+   앱 틀(.w-shell, 최대 480px)과 같은 폭의 고정 층 안에서 끝 쪽부터 200ms easing-enter로 밀려 들어오고, 막은 같은 시간 동안 옅게 깔린다.
+   119 독(z-index 20)은 막·서랍 위라 그대로 보이고 눌린다. 서랍은 독 위에서 끝난다. 움직임 줄이기에서는 바로 뜬다 */
+.drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 17;
+  background: var(--scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 200ms cubic-bezier(0, 0, 0.15, 1),
+    visibility 0s linear 200ms;
+}
+
+.drawer-scrim.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms cubic-bezier(0, 0, 0.15, 1);
+}
+
+.drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: hidden; /* 넓은 화면에서 닫힌 서랍이 앱 틀 밖으로 비치지 않게 */
+  pointer-events: none;
+}
+
+/* 손잡이: 끝 쪽 가장자리 가운데. 보이는 탭은 14×56px(본문 좌우 여백 16px 안), 누르는 자리는 28×80px.
+   세로 스크롤은 그대로 두고 가로로 미는 것만 받는다 */
+.drawer-handle {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 28px;
+  height: 80px;
+  margin: -40px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer-layer.open .drawer-handle {
+  visibility: hidden;
+}
+
+.drawer-tab {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 56px;
+  border-start-start-radius: var(--radius-sm);
+  border-end-start-radius: var(--radius-sm);
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-sm);
+}
+
+/* 탭 가운데 진한 틸 손잡이 줄(3×20px) */
+.drawer-tab::before {
+  content: '';
+  width: 3px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--brand-fg);
+}
+
+.drawer-handle:active .drawer-tab {
+  background: var(--brand-2);
+  box-shadow: var(--glass-in);
+}
+
+.drawer {
+  position: absolute;
+  top: 12px;
+  bottom: calc(var(--bar-119) + env(safe-area-inset-bottom));
+  inset-inline-end: 12px;
+  display: flex;
+  flex-direction: column;
+  width: min(288px, calc(100% - 56px));
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass);
+  pointer-events: auto;
+  transform: translateX(calc(100% + 12px));
+  visibility: hidden;
+  transition:
+    transform 200ms cubic-bezier(0, 0, 0.15, 1),
+    visibility 0s linear 200ms;
+}
+
+:root[dir='rtl'] .drawer {
+  transform: translateX(calc(-100% - 12px));
+}
+
+.drawer-layer.open .drawer {
+  transform: none;
+  visibility: visible;
+  transition: transform 200ms cubic-bezier(0, 0, 0.15, 1);
+}
+
+.drawer:focus {
+  outline: none;
+}
+
+/* 머리: 시작 쪽 로고 + 워드마크(RTL에서도 로고가 앞), 끝 쪽 닫기(.sheet-btn). 메뉴와는 1px --line 한 줄로 나눈다 */
+.drawer-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  padding-inline-start: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawer-brand .logo {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+/* 메뉴: 아이콘 칸 40px + 이름. 한 줄 52px 이상, 긴 이름은 줄바꿈한다. 메뉴가 넘치면 이 칸만 스크롤한다 */
+.drawer-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.drawer-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: var(--t5);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.drawer-nav a:active {
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+@media (hover: hover) {
+  .drawer-nav a:hover {
+    background: var(--bg-2);
+  }
+}
+
+/* 지금 화면의 메뉴. 아이콘 칸은 옅은 민트 바탕 위에서 보이게 흰 면으로 바꾼다 */
+.drawer-nav a[aria-current='page'] {
+  background: var(--brand-2);
+  box-shadow: var(--glass-in);
+  color: var(--brand-ink);
+  font-weight: 700;
+}
+
+.drawer-nav .ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-2);
+  box-shadow: var(--glass-in);
+  font-size: var(--t7);
+}
+
+.drawer-nav a[aria-current='page'] .ico {
+  background: var(--card-solid);
+  box-shadow: var(--glass-sm);
+}
+
+.drawer-nav .txt {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-scrim,
+  .drawer-scrim.open,
+  .drawer,
+  .drawer-layer.open .drawer {
+    transition: none;
+  }
+}
+
 /* C-02 상담 카드(backlog 49, design.md "센터 사례 상세"). 통화와 채팅을 한 카드에 담고 안은 시트와 같은 메신저 틀이다:
    머리(채팅/스크립트 전환) / 통화 줄 / 대화(이것만 스크롤) / 아래 칸(채팅 입력줄). 높이는 내용과 관계없이 고정한다.
    머리·대화·아래 칸이 카드 가장자리까지 닿게 패널 여백을 없앤다(.panel보다 앞에 있어 .panel.talk로 쓴다) */

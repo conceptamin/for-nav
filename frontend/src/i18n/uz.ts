@@ -8,6 +8,7 @@ export const uz: Record<MessageKey, string> = {
   back: 'Orqaga',
   next: 'Keyingi',
   home: 'Bosh sahifa',
+  menu: 'Menyu',
   yes: 'Ha',
   no: 'Yoʻq',
   unknown: 'Bilmayman',

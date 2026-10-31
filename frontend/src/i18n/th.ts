@@ -8,6 +8,7 @@ export const th: Record<MessageKey, string> = {
   back: 'กลับ',
   next: 'ถัดไป',
   home: 'หน้าแรก',
+  menu: 'เมนู',
   yes: 'ใช่',
   no: 'ไม่ใช่',
   unknown: 'ไม่แน่ใจ',
