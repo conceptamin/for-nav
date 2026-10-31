@@ -20,11 +20,7 @@
   --ok-bg: #edfaf6; /* green-100 */
   --warn-bg: #fff7de; /* yellow-100 */
   --danger: #ca1d13; /* red-800. 역할 값 red-700은 흰 글자 대비가 모자라 한 단계 진하게 쓴다 */
-  --danger-glass: rgb(202 29 19 / 85%); /* 하단 119 버튼(backlog 25). 가장 밝은 바탕 위 흰 글자 약 4.7:1. 80%면 4.4:1로 4.5:1 아래 */
-  /* 하단 119 버튼의 위→아래 그러데이션(backlog 30). 위 빛 반사(--glass-sheen-color)를 얹어도 글자 자리에서 흰 글자 4.6:1 이상 */
-  --danger-glass-top: rgb(190 26 16 / 88%);
-  --danger-glass-bottom: rgb(146 23 8 / 90%);
-  --card-tint: rgb(217 240 239 / 62%); /* --brand-2를 비친 유리. 하단 센터 채팅 버튼(backlog 30) */
+  --danger-top: #d42a1e; /* 하단 119 버튼 위쪽(backlog 33). 아래 --danger로 아주 옅게 짙어진다. 흰 글자 약 5.0:1 */
   --danger-2: #921708; /* fg-critical-contrast, red-900 */
   --danger-bg: #fdf0f0; /* red-100 */
   --on-brand: #ffffff; /* 브랜드·위험색 같은 진한 바탕 위 글자 */
@@ -44,7 +40,7 @@
   --radius: 20px;
   --radius-sm: 16px;
   --radius-lg: 28px;
-  --bar-119: 64px; /* 하단 119 자리 높이(위아래 10px + 버튼 44px). .w-main 아래 여백과 .w-footer가 붙는 자리 */
+  --bar-119: 72px; /* 하단 119 독 자리 높이(위아래 10px + 독 52px = 버튼 44px + 안쪽 4px×2). .w-main 아래 여백과 .w-footer가 붙는 자리 */
 
   /* 유리 면(design.md "글래스모피즘" › "그림자와 흐림"). 값은 여기에만 둔다 */
   --glass-edge: rgb(255 255 255 / 70%); /* 유리 가장자리 1px */
@@ -62,11 +58,8 @@
   --glass-color: 0 8px 24px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-sm: 0 4px 12px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 0 0 1px rgb(255 255 255 / 18%);
   --glass-color-in: inset 0 2px 6px rgb(0 0 0 / 25%);
-  /* 하단 띠 버튼(119·센터 채팅, backlog 30). 위쪽 빛 반사(sheen) + 아래 안쪽 음영으로 두께를 낸다. 바깥 그림자는 하나, 아래로만 */
-  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 55%), rgb(255 255 255 / 0%) 55%);
-  --glass-sheen-color: linear-gradient(180deg, rgb(255 255 255 / 14%), rgb(255 255 255 / 0%) 40%);
-  --glass-lift: 0 6px 18px var(--glass-drop), inset 0 1px 0 var(--glass-shine), inset 0 0 0 1px var(--glass-edge), inset 0 -2px 4px rgb(18 35 46 / 6%);
-  --glass-color-lift: 0 6px 18px var(--glass-drop), inset 0 1px 0 rgb(255 255 255 / 45%), inset 0 0 0 1px rgb(255 255 255 / 22%), inset 0 -2px 5px rgb(0 0 0 / 18%);
+  /* 유리 안에 놓인 색이 있는 버튼(하단 독의 119, backlog 33). 바깥 그림자 없이 위 빛 선과 아래 1px 음영만 */
+  --glass-color-flat: inset 0 1px 0 rgb(255 255 255 / 24%), inset 0 -1px 0 rgb(0 0 0 / 14%);
 
   /* 글자 크기 사다리 t1~t14(design.md "Typography"). rem이라 기기 글자 크기 설정을 따른다. --t5 = 16px */
   --t1: 0.6875rem; /* 11px */
@@ -595,70 +588,83 @@ a.brand-pill:active {
   z-index: 20;
   display: flex;
   justify-content: flex-end; /* 끝 쪽(RTL이면 왼쪽)에 모아 띄운다(backlog 31). 혼자일 때도 같은 자리라 로그인 뒤 119가 옮겨 가지 않는다 */
-  pointer-events: none; /* 띠 바탕이 없으므로 버튼 둘레의 빈자리는 아래 내용이 눌리게 한다 */
+  pointer-events: none; /* 띠 바탕이 없으므로 독 둘레의 빈자리는 아래 내용이 눌리게 한다 */
 }
 
-/* 글자 길이만큼의 반투명 빨간 버튼(backlog 25). 색이 있는 면이지만 예외로 반투명 빨강 + 뒤 흐림.
-   위쪽 빛 반사와 위→아래로 짙어지는 빨강, 아래 안쪽 음영으로 유리 두께를 낸다(backlog 30) */
+/* 하단 독(backlog 33): 119와 센터 채팅을 담는 떠 있는 유리 알약 하나. 안쪽 4px 여백이 두 버튼을 감싼다 */
+.bar-dock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass);
+  pointer-events: auto;
+}
+
+/* 독 안의 119(backlog 25·32). 불투명한 빨강이 아래로 아주 옅게 짙어진다. 시작 쪽에 전화 아이콘 원, 그 옆 문구.
+   유리 안의 색이 있는 면이라 흐림·바깥 그림자 없이 위 빛 선만 둔다 */
 .bar-119 .call-119 {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  min-width: 0;
   min-height: 44px;
-  max-width: 100%;
-  padding: 0 24px;
-  border-radius: var(--radius-lg);
-  background:
-    var(--glass-sheen-color),
-    linear-gradient(180deg, var(--danger-glass-top), var(--danger-glass-bottom));
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
+  padding: 0 18px 0 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--danger-top), var(--danger));
   color: var(--on-brand);
   font-weight: 700;
-  font-size: var(--t5);
-  white-space: nowrap;
+  font-size: var(--t4);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
   text-decoration: none;
-  text-shadow: 0 1px 1px rgb(0 0 0 / 20%);
-  box-shadow: var(--glass-color-lift);
-  pointer-events: auto;
+  box-shadow: var(--glass-color-flat);
 }
 
 .bar-119 .call-119:active {
-  background: linear-gradient(180deg, var(--danger-glass-top), var(--danger-glass-bottom));
+  background: var(--danger);
   box-shadow: var(--glass-color-in);
 }
 
-/* 로그인하고 프로필까지 있을 때: 119와 센터 채팅 버튼을 한 묶음으로 끝 쪽에 붙인다. 채팅이 가장자리, 119가 그 안쪽(backlog 29·31).
-   RTL에서는 좌우가 뒤집힌다 */
-.bar-119.with-chat {
-  gap: 8px;
+/* 32px 원 안의 전화기 외곽선. 빨강 위 옅은 흰 원(--on-brand-soft) */
+.call-119-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--on-brand-soft);
 }
 
-/* 아이콘 자리만큼 좁아진다. 긴 언어(uz·kk·ky 등)는 자르지 않고 두 줄로 접는다. 두 줄도 44px 안이라 띠 높이는 같다 */
-.bar-119.with-chat .call-119 {
+.call-119-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linejoin: round;
+}
+
+/* RTL에서 전화기를 뒤집지 않는다(수화기 모양은 방향이 없다). 문구가 길면(uz·kk·ky 등) 자르지 않고 두 줄로 접는다(두 줄도 44px 안) */
+.call-119-text {
   min-width: 0;
-  padding: 0 16px;
-  white-space: normal;
-  line-height: 1.25;
-  text-align: center;
+  overflow-wrap: anywhere;
 }
 
-/* 센터 채팅 버튼: 72×44px 알약, 틸을 비친 유리 + 위쪽 빛 반사(backlog 30). 119와 높이가 같다 */
+/* 독 안의 센터 채팅 버튼(backlog 29·32): 56×44px, 평평한 투명 면 + 틸 말풍선. 지금 화면이거나 누르면 --brand-2로 들어간다 */
 .bar-chat {
   flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
+  display: grid;
+  place-items: center;
+  width: 56px;
   height: 44px;
   border-radius: 999px;
-  background: var(--glass-sheen), var(--card-tint);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-lift);
   color: var(--brand);
-  pointer-events: auto;
 }
 
 .bar-chat:active,
@@ -669,16 +675,21 @@ a.brand-pill:active {
 
 @media (hover: hover) {
   .bar-chat:hover:not([aria-current='page']) {
-    background: var(--glass-sheen), var(--card-hover);
+    background: var(--bg-2);
   }
 }
 
 .bar-chat-icon {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.bar-chat-icon circle {
+  fill: currentColor;
+  stroke: none;
 }
 
 /* ---------- 공통 요소 ---------- */
