@@ -114,7 +114,37 @@ export function buildMockCases(now: Date = new Date()): CenterCase[] {
 
 // ---------------------------------------------------------------------------
 // 통계 원천: 익명 레코드(날짜·구군·업종·언어·보험·시간외)만 둔다.
+// 날짜·구군·언어·시간외 비율은 센터 회신(2026-10-31, 동구 센터 의료 상담 329건)의 분포를 따른 합성값이다.
+// 업종·보험·요청 종류·업무 관련은 회신에 없어 이전 가중치 그대로다.
 // ---------------------------------------------------------------------------
+const STAT_COUNT = 329;
+// 최근 6개월 월별 건수(오래된 달부터, 마지막이 이번 달)
+const STAT_MONTH_W = [16, 25, 41, 85, 97, 65];
+// 국적 → 언어: 러시아·카자흐스탄·우즈베키스탄·키르기스스탄·타지키스탄 → 러시아어, 인도네시아, 스리랑카 → 싱할라어, 필리핀 → 영어·필리핀어
+const STAT_LANG_W: [Lang, number][] = [['ru', 44], ['id', 25], ['si', 15], ['en', 8], ['tl', 4], ['vi', 2], ['ko', 2]];
+// 주소가 구까지 적힌 건만(동구 센터 회신이라 동구가 많다, 중구는 0건)
+const STAT_DISTRICT_W: [District, number][] = [['dong', 196], ['buk', 20], ['ulju', 17], ['nam', 8]];
+// 운영 시간 외 25건 + 주말 27건 = 52 / 329
+const STAT_AFTER_HOURS = 52 / 329;
+const KST_MS = 9 * 3600000;
+
+/** 난수 하나로 최근 6개월 중 한 날을 고른다. 달은 STAT_MONTH_W 비율, 날은 그 달 안에서 고르게(이번 달은 오늘까지). */
+function statDate(now: Date, u: number): Date {
+  const k = new Date(now.getTime() + KST_MS);
+  const total = STAT_MONTH_W.reduce((s, w) => s + w, 0);
+  let x = u * total;
+  let i = 0;
+  while (i < STAT_MONTH_W.length - 1 && x >= STAT_MONTH_W[i]!) {
+    x -= STAT_MONTH_W[i]!;
+    i += 1;
+  }
+  const back = STAT_MONTH_W.length - 1 - i;
+  const span = back === 0 ? k.getUTCDate() : new Date(Date.UTC(k.getUTCFullYear(), k.getUTCMonth() - back + 1, 0)).getUTCDate();
+  const day = 1 + Math.floor((x / STAT_MONTH_W[i]!) * span);
+  const t = Date.UTC(k.getUTCFullYear(), k.getUTCMonth() - back, day, k.getUTCHours(), k.getUTCMinutes(), k.getUTCSeconds(), k.getUTCMilliseconds());
+  return new Date(t - KST_MS);
+}
+
 export interface StatRecord {
   date: Date;
   district: District;
@@ -129,14 +159,14 @@ export interface StatRecord {
 export function buildStatRecords(now: Date = new Date()): StatRecord[] {
   const r = rng(77);
   const out: StatRecord[] = [];
-  for (let n = 0; n < 420; n += 1) {
+  for (let n = 0; n < STAT_COUNT; n += 1) {
     out.push({
-      date: new Date(now.getTime() - Math.floor(r() * 180) * 86400000),
-      district: weighted(r, DISTRICT_W),
+      date: statDate(now, r()),
+      district: weighted(r, STAT_DISTRICT_W),
       industry: weighted(r, INDUSTRY_W),
-      language: weighted(r, LANG_W),
+      language: weighted(r, STAT_LANG_W),
       insurance: weighted(r, INS_W),
-      afterHours: r() < 0.41,
+      afterHours: r() < STAT_AFTER_HOURS,
       requestType: weighted(r, REQ_W),
       workRelated: weighted(r, [['yes', 48], ['no', 34], ['unknown', 18]] as [YesNoUnknown, number][]),
     });

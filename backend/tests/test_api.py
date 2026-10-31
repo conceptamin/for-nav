@@ -11,6 +11,7 @@ from app.main import app
 from app.routers import center
 from app.store import CenterStore, MemoryStore, store
 from app.store_sqlite import SqliteStore
+from app.vocab import LANGS
 
 client = TestClient(app)
 
@@ -305,11 +306,12 @@ def test_unknown_case_is_404():
 @both_stores
 def test_stats_shape():
     out = client.get("/api/center/stats", params={"days": 180}).json()
-    assert out["total"] == 420
+    # 통계 원천 329건은 최근 6개월에 걸쳐 있어 180일 밖으로 나가는 날이 몇 건 있을 수 있다
+    assert 300 <= out["total"] <= 329
     assert [c["key"] for c in out["byIndustry"]] == ["shipbuilding", "autoparts", "chemical", "construction", "other"]
-    assert [c["key"] for c in out["byLanguage"]] == ["vi", "en"]
+    assert [c["key"] for c in out["byLanguage"]] == LANGS
     assert [c["key"] for c in out["byInsurance"]] == ["yes", "no", "unknown"]
-    assert sum(c["n"] for c in out["byAfterHours"]) == 420
+    assert sum(c["n"] for c in out["byAfterHours"]) == out["total"]
     assert 0 <= out["afterHoursRate"] <= 1
     assert client.get("/api/center/stats", params={"days": 7}).status_code == 422
 

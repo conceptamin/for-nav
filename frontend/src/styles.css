@@ -304,6 +304,39 @@ a.brand-pill:active {
   stroke-linejoin: round;
 }
 
+/* 앱 바의 메뉴 버튼(backlog 50, src/components/WorkerDrawer.tsx). 홈 밖의 화면에서 언어 버튼의 끝 쪽 옆에 둔다.
+   언어 버튼과 같은 44px 유리 정사각형에 같은 굵기(1.6px)의 선 세 줄 22px. 서랍이 열려 있으면 눌린 모양 */
+.menu-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-sm);
+  color: var(--brand-fg);
+  cursor: pointer;
+}
+
+.menu-btn:active,
+.menu-btn[aria-expanded='true'] {
+  background: var(--bg-2);
+  box-shadow: var(--glass-in);
+}
+
+.menu-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
 /* 지금 언어 코드(KO, VI, ZH-CN). 읽기는 버튼 이름이 맡는다(aria-hidden) */
 .lang-code {
   padding: 3px 6px;
@@ -395,7 +428,8 @@ a.brand-pill:active {
 
 /* 마우스가 있는 기기에서만 살짝 밝힌다. 손가락으로 누르는 근로자 화면에는 호버가 없다(design.md "눌림의 예") */
 @media (hover: hover) {
-  .lang-btn:hover:not([aria-expanded='true']) {
+  .lang-btn:hover:not([aria-expanded='true']),
+  .menu-btn:hover:not([aria-expanded='true']) {
     background: var(--card-hover);
   }
 
@@ -919,7 +953,7 @@ a.brand-pill:active {
   margin: 0;
 }
 
-/* 메뉴 서랍(backlog 50, design.md "메뉴 서랍"). 홈 밖의 화면에서 끝 쪽(RTL이면 왼쪽) 가장자리 손잡이로 연다.
+/* 메뉴 서랍(backlog 50, design.md "메뉴 서랍"). 홈 밖의 화면에서 앱 바의 메뉴 버튼(.menu-btn)으로 연다.
    앱 틀(.w-shell, 최대 480px)과 같은 폭의 고정 층 안에서 끝 쪽부터 200ms easing-enter로 밀려 들어오고, 막은 같은 시간 동안 옅게 깔린다.
    119 독(z-index 20)은 막·서랍 위라 그대로 보이고 눌린다. 서랍은 독 위에서 끝난다. 움직임 줄이기에서는 바로 뜬다 */
 .drawer-scrim {
@@ -948,58 +982,6 @@ a.brand-pill:active {
   margin: 0 auto;
   overflow: hidden; /* 넓은 화면에서 닫힌 서랍이 앱 틀 밖으로 비치지 않게 */
   pointer-events: none;
-}
-
-/* 손잡이: 끝 쪽 가장자리 가운데. 보이는 탭은 14×56px(본문 좌우 여백 16px 안), 누르는 자리는 28×80px.
-   세로 스크롤은 그대로 두고 가로로 미는 것만 받는다 */
-.drawer-handle {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 28px;
-  height: 80px;
-  margin: -40px 0 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  pointer-events: auto;
-  touch-action: pan-y;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.drawer-layer.open .drawer-handle {
-  visibility: hidden;
-}
-
-.drawer-tab {
-  display: grid;
-  place-items: center;
-  width: 14px;
-  height: 56px;
-  border-start-start-radius: var(--radius-sm);
-  border-end-start-radius: var(--radius-sm);
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-sm);
-}
-
-/* 탭 가운데 진한 틸 손잡이 줄(3×20px) */
-.drawer-tab::before {
-  content: '';
-  width: 3px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--brand-fg);
-}
-
-.drawer-handle:active .drawer-tab {
-  background: var(--brand-2);
-  box-shadow: var(--glass-in);
 }
 
 .drawer {
