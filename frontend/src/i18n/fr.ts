@@ -238,6 +238,8 @@ export const fr: Record<MessageKey, string> = {
   chatSend: 'Envoyer',
   chatMe: 'Moi',
   chatCenter: 'Centre',
+  chatRead: 'Lu',
+  chatUnread: 'Non lu',
   chatConnecting: 'Connexion…',
   chatReconnecting: 'Connexion perdue. Reconnexion…',
   chatStopped: 'Cette discussion est terminée. Veuillez contacter le centre autrement.',

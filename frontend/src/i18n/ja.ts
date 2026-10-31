@@ -238,6 +238,8 @@ export const ja: Record<MessageKey, string> = {
   chatSend: '送信',
   chatMe: '自分',
   chatCenter: 'センター',
+  chatRead: '既読',
+  chatUnread: '未読',
   chatConnecting: '接続中…',
   chatReconnecting: '接続が切れました。再接続中…',
   chatStopped: 'このチャットは終了しました。別の方法でセンターに連絡してください。',

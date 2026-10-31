@@ -238,6 +238,8 @@ export const si: Record<MessageKey, string> = {
   chatSend: 'යවන්න',
   chatMe: 'මම',
   chatCenter: 'මධ්‍යස්ථානය',
+  chatRead: 'කියවා ඇත',
+  chatUnread: 'තවම කියවා නැත',
   chatConnecting: 'සම්බන්ධ වෙමින්…',
   chatReconnecting: 'සම්බන්ධතාව බිඳී ගියේය. නැවත සම්බන්ධ වෙමින්…',
   chatStopped: 'මෙම කතාබහ අවසන් විය. කරුණාකර වෙනත් ක්‍රමයකින් මධ්‍යස්ථානය අමතන්න.',

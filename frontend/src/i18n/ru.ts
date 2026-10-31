@@ -238,6 +238,8 @@ export const ru: Record<MessageKey, string> = {
   chatSend: 'Отправить',
   chatMe: 'Я',
   chatCenter: 'Центр',
+  chatRead: 'Прочитано',
+  chatUnread: 'Не прочитано',
   chatConnecting: 'Подключение…',
   chatReconnecting: 'Связь потеряна. Переподключение…',
   chatStopped: 'Чат завершён. Свяжитесь с центром другим способом.',

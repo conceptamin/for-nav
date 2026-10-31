@@ -31,6 +31,7 @@ from app.schemas import (
     CenterCase,
     CenterStats,
     ChatIn,
+    ChatReadIn,
     ChatRole,
     MyCasesRequest,
     MyCaseView,
@@ -40,7 +41,7 @@ from app.schemas import (
     StatusPatch,
 )
 from app.settings import settings
-from app.store import store
+from app.store import message_number, store
 from app.templates.reports import build_center_summary
 from app.templates.translate import translate_line, translate_note
 from app.vocab import INDUSTRIES, District, Lang
@@ -186,6 +187,7 @@ CLOSE_FORBIDDEN = 4403
 # role=center인데 직원 세션이 없거나 끝났다(backlog 17)
 CLOSE_UNAUTHORIZED = 4401
 INVALID_FRAME = {"type": "error", "code": "invalid"}
+_CHAT_IN: TypeAdapter[ChatIn] = TypeAdapter(ChatIn)
 
 
 def _same_site(ws: WebSocket) -> bool:
@@ -216,7 +218,8 @@ def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | No
 
 @router.websocket("/cases/{case_id}/chat")
 async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> None:
-    """근로자·센터 상담 채팅. 연결 직후 이전 메시지(history)를 한 번 보내고, 이후 메시지를 같은 방의 모든 연결에 보낸다."""
+    """근로자·센터 상담 채팅. 연결 직후 이전 메시지와 역할별 읽은 자리(history)를 한 번 보내고,
+    이후 메시지와 읽음(backlog 28)을 같은 방의 모든 연결에 보낸다."""
     await ws.accept()
     denied = _chat_denied(ws, case_id, role, token)
     if denied:
@@ -228,15 +231,23 @@ async def chat(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
     hub.join(case_id, ws)
     history = [m.model_dump(by_alias=True) for m in store.messages(case_id)]
     try:
-        await ws.send_json({"type": "history", "messages": history})
+        await ws.send_json({"type": "history", "messages": history, "read": store.read_marks(case_id)})
         while True:
             message = await ws.receive()
             if message["type"] == "websocket.disconnect":
                 break
             try:
-                frame = ChatIn.model_validate_json(message.get("text") or "")
+                frame = _CHAT_IN.validate_json(message.get("text") or "")
             except ValidationError:
                 await ws.send_json(INVALID_FRAME)
+                continue
+            if isinstance(frame, ChatReadIn):
+                # 아직 없는 메시지까지 읽었다고 할 수 없다. 앞으로 옮겨졌을 때만 알린다
+                n = message_number(frame.up_to)
+                if n is None or n > len(store.messages(case_id)):
+                    await ws.send_json(INVALID_FRAME)
+                elif store.mark_read(case_id, sender, n):
+                    await hub.broadcast(case_id, {"type": "read", "role": sender, "upTo": frame.up_to})
                 continue
             m = store.add_message(case_id, sender, frame.text, clock.now())
             await hub.broadcast(case_id, {"type": "message", "message": m.model_dump(by_alias=True)})

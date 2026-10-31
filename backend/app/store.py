@@ -58,6 +58,15 @@ class CenterStore(Protocol):
         """보낸 순서대로."""
         ...
 
+    # 상담 채팅 읽음(backlog 28). 역할마다 사례 안 메시지 번호 하나(어디까지 읽었나)만 둔다.
+    def mark_read(self, case_id: str, role: ChatRole, n: int) -> bool:
+        """역할의 읽은 자리를 n으로 옮긴다. 이미 n 이상이면 그대로 두고 False."""
+        ...
+
+    def read_marks(self, case_id: str) -> dict[ChatRole, str | None]:
+        """역할별 마지막으로 읽은 메시지 id. 읽은 것이 없으면 None."""
+        ...
+
     def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
         """센터가 보낸 메시지 수와 마지막 시각(backlog 27)."""
         ...
@@ -132,7 +141,7 @@ class CenterStore(Protocol):
     def delete_worker_session(self, token_hash: str) -> None: ...
 
     def reset(self) -> None:
-        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지, 통화 자막을 지운다. mock은 처음 상태로 돌아간다.
+        """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지·읽음, 통화 자막을 지운다. mock은 처음 상태로 돌아간다.
         직원 목록·로그인 코드·세션과 근로자 세션은 그대로 둔다(초기화한 직원과 근로자가 로그아웃되지 않게)."""
         ...
 
@@ -163,6 +172,16 @@ def make_message(case_id: str, count: int, sender: ChatRole, text: str, at: date
     return ChatMessage(id=f"m-{count + 1}", case_id=case_id, from_=sender, text=text, at=clock.iso_utc(at))
 
 
+def message_number(message_id: str) -> int | None:
+    """`m-<n>`의 n. 형식이 다르면 None."""
+    prefix, _, n = message_id.partition("-")
+    return int(n) if prefix == "m" and n.isdecimal() else None
+
+
+def read_ids(marks: dict[ChatRole, int]) -> dict[ChatRole, str | None]:
+    return {role: (f"m-{marks[role]}" if role in marks else None) for role in ("worker", "center")}
+
+
 def caption_number(caption_id: str) -> int | None:
     """`c-<n>`의 n. 형식이 다르면 None."""
     prefix, _, n = caption_id.partition("-")
@@ -179,6 +198,7 @@ class MemoryStore:
         self._status: dict[str, CaseStatus] = {}
         self._tokens: dict[str, str] = {}
         self._messages: dict[str, list[ChatMessage]] = {}
+        self._reads: dict[str, dict[ChatRole, int]] = {}
         # 사례별 자막과 번역이 끝났는지. 번역 전 자막의 translation 값은 자리만 채운 것이다.
         self._captions: dict[str, list[tuple[Caption, bool]]] = {}
         self._staff: set[str] = set()
@@ -230,6 +250,18 @@ class MemoryStore:
     def messages(self, case_id: str) -> list[ChatMessage]:
         with self._lock:
             return list(self._messages.get(case_id, []))
+
+    def mark_read(self, case_id: str, role: ChatRole, n: int) -> bool:
+        with self._lock:
+            marks = self._reads.setdefault(case_id, {})
+            if marks.get(role, 0) >= n:
+                return False
+            marks[role] = n
+        return True
+
+    def read_marks(self, case_id: str) -> dict[ChatRole, str | None]:
+        with self._lock:
+            return read_ids(self._reads.get(case_id, {}))
 
     def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
         mine = [m for m in self.messages(case_id) if m.from_ == "center"]
@@ -358,6 +390,7 @@ class MemoryStore:
             self._status.clear()
             self._tokens.clear()
             self._messages.clear()
+            self._reads.clear()
             self._captions.clear()
 
     def close(self) -> None:
