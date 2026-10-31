@@ -164,6 +164,56 @@ def test_sqlite_opens_old_cases_with_emergency_flag(tmp_path: Path):
         second.close()
 
 
+def _rewrite_body(path: str, case_id: str, body: str) -> None:
+    import sqlite3
+
+    db = sqlite3.connect(path)
+    db.execute("UPDATE live_cases SET body = ? WHERE id = ?", (body, case_id))
+    db.commit()
+    db.close()
+
+
+def test_sqlite_opens_old_cases_with_single_request_type(tmp_path: Path):
+    # backlog 23 전에 저장한 사례 본문은 requestType 하나다. 한 칸 배열로 읽는다(backlog 29).
+    import json
+
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    c = live_case(first)
+    first.close()
+    old = {k: v for k, v in c.model_dump(by_alias=True).items() if k != "requestTypes"}
+    _rewrite_body(path, c.id, json.dumps({**old, "requestType": c.request_types[0]}))
+
+    second = SqliteStore(path, STARTED)
+    try:
+        assert second.get(c.id) == c.model_copy(update={"request_types": c.request_types[:1]})
+        assert len(second.all()) == 25
+    finally:
+        second.close()
+
+
+@pytest.mark.parametrize("body", ["{not json", "[]", '{"id": "C-9999", "summaryKo": "읽지 못할 본문"}'])
+def test_sqlite_skips_unreadable_case(tmp_path: Path, caplog: pytest.LogCaptureFixture, body: str):
+    # 본문 하나를 못 읽어도 접수함 전체가 500이 되지 않는다. 그 사례만 빠지고 본문은 로그에 남지 않는다(backlog 29).
+    path = str(tmp_path / "center.db")
+    first = SqliteStore(path, STARTED)
+    c = live_case(first)
+    kept = live_case(first, AT + timedelta(minutes=1))
+    first.close()
+    _rewrite_body(path, c.id, body)
+
+    second = SqliteStore(path, STARTED)
+    try:
+        cases = second.all()
+        assert len(cases) == 25
+        assert kept in cases
+        assert second.get(c.id) is None
+    finally:
+        second.close()
+    assert "live case skipped" in caplog.text
+    assert "읽지 못할 본문" not in caplog.text
+
+
 def test_sqlite_reset_keeps_file(tmp_path: Path):
     path = tmp_path / "center.db"
     s = SqliteStore(str(path), STARTED)
