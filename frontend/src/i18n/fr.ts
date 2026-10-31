@@ -259,6 +259,7 @@ export const fr: Record<MessageKey, string> = {
   chatRejected: 'Impossible d’envoyer ce message. Vérifiez-le et réessayez.',
   talkNoCase: 'Envoyez d’abord une demande au centre. Ensuite, vous pourrez appeler le centre ou discuter avec lui ici.',
   talkOffline: 'Les appels et le chat avec le centre ne fonctionnent que si l’application est connectée au serveur.',
+  close: 'Fermer',
   liveCallTitle: 'Appeler le centre',
   liveCallIntro: 'Parlez à un conseiller par internet. Ce que vous dites tous les deux s’affiche ci-dessous en sous-titres avec une traduction automatique. Utilisez des écouteurs pour que la voix de l’autre ne soit pas sous-titrée comme la vôtre.',
   liveCallStart: 'Appeler',

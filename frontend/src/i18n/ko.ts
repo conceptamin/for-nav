@@ -247,6 +247,7 @@ export const ko: Record<MessageKey, string> = {
   chatRejected: '메시지를 보내지 못했습니다. 내용을 확인하고 다시 보내 주세요.',
   talkNoCase: '먼저 센터에 요청을 보내 주세요. 그다음 여기에서 센터와 통화하거나 채팅할 수 있습니다.',
   talkOffline: '센터와 통화·채팅은 앱이 서버에 연결되어 있을 때만 할 수 있습니다.',
+  close: '닫기',
   liveCallTitle: '센터와 통화',
   liveCallIntro: '인터넷으로 상담원과 통화합니다. 두 사람의 말이 아래에 자막으로 남고 기계 번역이 붙습니다. 상대 목소리가 내 자막으로 찍히지 않게 이어폰을 쓰세요.',
   liveCallStart: '전화 걸기',
