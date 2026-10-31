@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Chip, PhotoStrip, PolicyDisclaimer, toggleIn, Worse119 } from '../../components/common';
 import { canResume, useCenterLink } from '../../components/centerLink';
-import { CenterHoursNotice, MyCaseRow, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
+import { CenterHoursNotice, MyCaseRow, NationalityConsent, REQUEST_TYPES, useSendCenterRequest } from '../../components/CenterSheet';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { formatIsoDate, useT } from '../../i18n';
@@ -27,7 +27,7 @@ export function CenterRequestPage() {
   const preset = (params.get('type') ?? '').split(',').filter((k): k is RequestType => REQUEST_TYPES.includes(k as RequestType));
   const [types, setTypes] = useState<RequestType[]>(preset);
   const [agreed, setAgreed] = useState(false);
-  const { summary, sent, sending, failed: sendFailed, send } = useSendCenterRequest(types, true);
+  const { summary, sent, sending, failed: sendFailed, send, nationality, shareNationality, setShareNationality } = useSendCenterRequest(types, true);
   useScreenBar({ title: t('cenTitle') });
   // 센터 전송은 로그인한 사람만 한다(FR-03). 로그인·프로필은 진입 가드(WorkerLayout)가 지킨다.
   // 세션이 끝나 로그인하고 돌아오면 증상 입력은 세션에, 요청 종류는 주소(?type=)에 남는다
@@ -99,6 +99,7 @@ export function CenterRequestPage() {
           <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
           <span>{t('cenConsent')}</span>
         </label>
+        <NationalityConsent nationality={nationality} checked={shareNationality} onChange={setShareNationality} />
         {sendFailed && (
           <div className="notice danger with-retry" role="alert">
             <span>{t('sendFailed')}</span>

@@ -24,6 +24,8 @@ export interface Profile {
   weight: number | null;
   drinking: 'none' | 'sometimes' | 'often' | null;
   smoking: 'no' | 'yes' | 'quit' | null;
+  /** 국적(ISO 3166-1 alpha-2, 선택, backlog 42). 센터 전송 때 따로 동의해야 보낸다. 이 칸 전에 저장한 프로필에는 없다 */
+  nationality?: string | null;
 }
 
 const pick = (t: Term, lang: Lang) => t[lang];

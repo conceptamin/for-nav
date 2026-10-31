@@ -5,13 +5,13 @@
 import type { StatRecord } from '../data/mock';
 import { buildMockCases, buildStatRecords } from '../data/mock';
 import type { CasePatch, CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseResponse, StatCell } from '../domain/centerCase';
-import { applyCasePatch, defaultCategory, MIN_CELL, rateUrgency, withCaseDefaults } from '../domain/centerCase';
+import { applyCasePatch, CASE_CATEGORIES, defaultCategory, MIN_CELL, rateUrgency, withCaseDefaults } from '../domain/centerCase';
 import type { CenterHours } from '../domain/coverage';
 import { isAfterHours, nextOpenDay } from '../domain/coverage';
 import type { RequestType } from '../domain/templates';
 import { buildCenterSummary } from '../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../domain/vocab';
-import { INDUSTRIES, LANGS } from '../domain/vocab';
+import { INDUSTRIES, isNationality, LANGS } from '../domain/vocab';
 import { readJson, writeJson } from './storage';
 
 const LIVE_KEY = 'umn.center.liveCases';
@@ -21,11 +21,11 @@ const CHANGE_EVENT = 'umn-center-change';
 
 const mockCases = buildMockCases();
 
-type StoredCase = Omit<CenterCase, 'category' | 'actions' | 'referredTo'> & Partial<CenterCase> & { requestType?: RequestType };
+type StoredCase = Omit<CenterCase, 'category' | 'actions' | 'referredTo' | 'nationality'> & Partial<CenterCase> & { requestType?: RequestType };
 
 /**
  * 이 브라우저에 예전에 저장된 사례를 지금 모양으로 읽는다.
- * 요청 종류가 하나였던 때(backlog 37 전)는 배열로, 분야·조치가 없던 때(backlog 41 전)는 규칙 분야와 빈 조치로 채운다
+ * 요청 종류가 하나였던 때(backlog 37 전)는 배열로, 분야·조치·국적이 없던 때(backlog 41·42 전)는 규칙 분야, 빈 조치, 국적 없음으로 채운다
  */
 const upgrade = (c: StoredCase): CenterCase => withCaseDefaults({ ...c, requestTypes: c.requestTypes ?? (c.requestType ? [c.requestType] : []) });
 
@@ -77,6 +77,7 @@ export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseR
     category: defaultCategory({ coveragePath: req.coverage?.path ?? null, requestTypes: req.requestTypes }),
     actions: [],
     referredTo: [],
+    nationality: isNationality(req.nationality) ? req.nationality : null,
     summaryKo: summary.ko,
     originalNative: summary.native,
     consentedItems: req.consentedItems,
@@ -119,10 +120,31 @@ function countBy<K extends string>(recs: StatRecord[], keys: K[], get: (r: StatR
   return keys.map((k) => ({ key: k, n: mask(recs.filter((r) => get(r) === k).length) }));
 }
 
+const KST_MS = 9 * 3600000;
+/** 센터 시각(Asia/Seoul) 기준 `YYYY-MM` */
+const monthKey = (d: Date) => new Date(d.getTime() + KST_MS).toISOString().slice(0, 7);
+
+/** 지금부터 거슬러 최근 6개월 키(오래된 달부터, 마지막이 이번 달) */
+function lastSixMonths(now: Date): string[] {
+  const k = new Date(now.getTime() + KST_MS);
+  return Array.from({ length: 6 }, (_, i) => new Date(Date.UTC(k.getUTCFullYear(), k.getUTCMonth() - 5 + i, 1)).toISOString().slice(0, 7));
+}
+
+/** 있는 국적만 많은 순(같으면 코드 순). 국적이 없는 레코드는 `unknown`. 가린 칸(5건 미만)은 끝으로 */
+function countNationalities(recs: StatRecord[]): StatCell[] {
+  const counts = new Map<string, number>();
+  for (const r of recs) counts.set(r.nationality ?? 'unknown', (counts.get(r.nationality ?? 'unknown') ?? 0) + 1);
+  return [...counts]
+    .sort(([a, x], [b, y]) => y - x || a.localeCompare(b))
+    .map(([key, n]) => ({ key, n: mask(n) }));
+}
+
 export function getStatsLocal(days: number, district: District | null): CenterStats {
   statRecords ??= buildStatRecords();
-  const since = Date.now() - days * 86400000;
-  const recs = statRecords.filter((r) => r.date.getTime() >= since && (district === null || r.district === district));
+  const now = new Date();
+  const since = now.getTime() - days * 86400000;
+  const inDistrict = statRecords.filter((r) => district === null || r.district === district);
+  const recs = inDistrict.filter((r) => r.date.getTime() >= since);
   const total = recs.length;
   const after = recs.filter((r) => r.afterHours).length;
   const shown = total >= MIN_CELL;
@@ -132,6 +154,10 @@ export function getStatsLocal(days: number, district: District | null): CenterSt
     afterHoursRate: rate(after),
     workRelatedRate: rate(recs.filter((r) => r.workRelated === 'yes').length),
     noInsuranceRate: rate(recs.filter((r) => r.insurance !== 'yes').length),
+    // 월별은 기간 필터와 무관하게 최근 6개월(구·군 필터는 따른다)
+    byMonth: countBy(inDistrict, lastSixMonths(now), (r) => monthKey(r.date)),
+    byCategory: countBy(recs, CASE_CATEGORIES, (r) => r.category),
+    byNationality: countNationalities(recs),
     byIndustry: countBy(recs, Object.keys(INDUSTRIES) as Industry[], (r) => r.industry),
     byLanguage: countBy(recs, [...LANGS] as Lang[], (r) => r.language),
     byInsurance: countBy(recs, ['yes', 'no', 'unknown'] as YesNoUnknown[], (r) => r.insurance),

@@ -33,6 +33,8 @@ export interface CenterCase {
   actions: CaseAction[];
   /** 연계 기관(처음 []). `actions`에 `referral`이 없으면 비어 있다 */
   referredTo: ReferralTarget[];
+  /** 국적(ISO 3166-1 alpha-2). 근로자가 프로필에서 고르고 전송에 동의했을 때만 있다(backlog 42). C-01 목록에는 보이지 않는다 */
+  nationality: string | null;
   summaryKo: string;
   originalNative: string;
   /** 근로자가 센터 전송에 동의한 항목(한국어 표시) */
@@ -52,6 +54,8 @@ export interface NewCaseRequest extends CenterSummaryInput {
   contact: string | null;
   /** 근로자가 전송에 동의한 항목(한국어 표시) */
   consentedItems: string[];
+  /** 국적(두 글자 대문자). 고르지 않았거나 전송에 동의하지 않으면 키째 없다 */
+  nationality?: string;
 }
 
 export interface NewCaseResponse {
@@ -139,6 +143,12 @@ export interface StatCell {
 /** C-03 익명 집계(`GET /api/center/stats`). 비율은 0~1이고 total이 null이면 null이다 */
 export interface CenterStats {
   total: number | null;
+  /** 최근 6개월(오래된 달부터, 마지막이 이번 달, 센터 시각). key: `YYYY-MM`. 기간 필터를 따르지 않고 구·군 필터만 따른다 */
+  byMonth: StatCell[];
+  /** key: CaseCategory(CASE_CATEGORIES 순서) */
+  byCategory: StatCell[];
+  /** key: 국적 코드 또는 `unknown`(국적 없음). 있는 국적만, 많은 순(같으면 코드 순), 가린 칸은 끝 */
+  byNationality: StatCell[];
   afterHoursRate: number | null;
   workRelatedRate: number | null;
   noInsuranceRate: number | null;
@@ -177,13 +187,14 @@ export function defaultCategory(input: { coveragePath: CoveragePath | null; requ
   return 'medical';
 }
 
-/** 분야·조치가 없는 사례(backlog 41 전에 저장한 것, 아직 옛 서버)를 규칙 분야와 빈 조치로 채운다 */
-export function withCaseDefaults(c: Omit<CenterCase, 'category' | 'actions' | 'referredTo'> & Partial<CenterCase>): CenterCase {
+/** 분야·조치·국적이 없는 사례(backlog 41·42 전에 저장한 것, 아직 옛 서버)를 규칙 분야, 빈 조치, 국적 없음으로 채운다 */
+export function withCaseDefaults(c: Omit<CenterCase, 'category' | 'actions' | 'referredTo' | 'nationality'> & Partial<CenterCase>): CenterCase {
   return {
     ...c,
     category: c.category ?? defaultCategory(c),
     actions: c.actions ?? [],
     referredTo: c.referredTo ?? [],
+    nationality: c.nationality ?? null,
   };
 }
 

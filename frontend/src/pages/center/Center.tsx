@@ -20,7 +20,7 @@ import { ACTION_KO, CASE_ACTIONS, CASE_CATEGORIES, CATEGORY_KO, REFERRAL_KO, REF
 import { PATH_KO } from '../../domain/coverage';
 import { CONTACT_METHOD_KO, requestTypesKo } from '../../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../../domain/vocab';
-import { DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO } from '../../domain/vocab';
+import { countryName, DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO } from '../../domain/vocab';
 
 // 센터 화면은 한국어 고정이다.
 const TEXT = {
@@ -525,6 +525,12 @@ function CaseDetail({ c }: { c: CenterCase }) {
           <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
           <dt>구·군</dt>
           <dd>{c.district ? DISTRICTS[c.district].ko : '—'}</dd>
+          {c.nationality && (
+            <>
+              <dt>국적</dt>
+              <dd>{countryName(c.nationality, 'ko-KR')}</dd>
+            </>
+          )}
           <dt>업종</dt>
           <dd>{c.industry ? INDUSTRIES[c.industry].ko : '—'}</dd>
           <dt>업무 중 발생</dt>
@@ -852,13 +858,22 @@ export function StatsPage() {
       {state.kind === 'error' && <Failure text={TEXT.statsFailed} onRetry={() => setAttempt((n) => n + 1)} busy={false} />}
       {state.kind === 'ok' && <StatsView s={state.stats} />}
       <p className="footer-note">
-        익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 울산시 담당자는 같은 화면을 읽기 전용으로 사용합니다(실서비스).
+        익명 집계입니다. 개인 단위 기록은 제공하지 않으며 5건 미만인 칸은 "&lt;5"로 숨깁니다. 센터에 접수된 의료 상담 건수이며 울산 전체 외국인
+        근로자의 의료 이용 현황이 아닙니다. 월별 요청 수는 기간 선택과 관계없이 최근 6개월입니다. 울산시 담당자는 같은 화면을 읽기 전용으로
+        사용합니다(실서비스).
       </p>
     </div>
   );
 }
 
+/** `YYYY-MM` → `2026년 5월` */
+const monthLabel = (key: string) => `${key.slice(0, 4)}년 ${Number(key.slice(5, 7))}월`;
+
 function StatsView({ s }: { s: CenterStats }) {
+  const byMonth = cellsBy<string>(s.byMonth, monthLabel);
+  const byCategory = cellsBy<CaseCategory>(s.byCategory, (k) => CATEGORY_KO[k] ?? k);
+  // 서버가 많은 순으로 준다. 국적이 없는 사례는 "모름"
+  const byNationality = cellsBy<string>(s.byNationality, (k) => (k === 'unknown' ? '모름' : countryName(k, 'ko-KR')));
   const byIndustry = cellsBy<Industry>(s.byIndustry, (k) => INDUSTRIES[k]?.ko ?? k);
   // 20개 언어 중 5건 이상인 언어만 많은 순으로 보인다
   const byLang = cellsBy<Lang>(s.byLanguage, (k) => LANGUAGE_NAMES_KO[k] ?? k)
@@ -888,6 +903,19 @@ function StatsView({ s }: { s: CenterStats }) {
       </div>
 
       <div className="charts">
+        <section className="panel">
+          <h2>월별 요청 수</h2>
+          <Bars data={byMonth} />
+          <p className="footer-note">최근 6개월(마지막이 이번 달)</p>
+        </section>
+        <section className="panel">
+          <h2>분야별 요청 수</h2>
+          <Bars data={byCategory} />
+        </section>
+        <section className="panel">
+          <h2>국적별 요청 수</h2>
+          <Bars data={byNationality} />
+        </section>
         <section className="panel">
           <h2>업종별 요청 수</h2>
           <Bars data={byIndustry} />

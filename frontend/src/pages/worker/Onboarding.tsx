@@ -13,7 +13,7 @@ import type { Consents } from '../../state/AppState';
 import { DEMO_ACCOUNT, useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
 import { orderLangs } from '../../i18n/suggest';
-import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
+import { CENTER_NATIONALITIES, countryName, ISO_COUNTRIES, LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
 
 // ---------------------------------------------------------------------------
 // S-01: 언어 격자(backlog 24). 폰 언어로 묻고, 20개 언어를 같은 크기·같은 모양 칸(국기 + 모국어 이름 + 영어 이름)의
@@ -401,6 +401,12 @@ export function SignupPage() {
           label={(k) => t(({ no: 'smokeNo', yes: 'smokeYes', quit: 'smokeQuit' } as const)[k])}
         />
       </div>
+      <div className="field">
+        <label htmlFor="nat">
+          {t('nationalityQ')} <span className="small muted">({t('optional')})</span>
+        </label>
+        <NationalitySelect id="nat" value={p.nationality ?? null} onChange={(nationality) => setP({ ...p, nationality })} />
+      </div>
       <footer className="w-footer">
         <button
           type="button"
@@ -416,6 +422,37 @@ export function SignupPage() {
         </button>
       </footer>
     </div>
+  );
+}
+
+/** S-03 국적(선택, backlog 42). 센터 회신 12개국을 앞에 두고 "그 밖"에 나머지 나라를 화면 언어 이름순으로 둔다 */
+function NationalitySelect({ id, value, onChange }: { id: string; value: string | null; onChange: (v: string | null) => void }) {
+  const { t, lang } = useT();
+  const locale = LOCALES[lang];
+  const first: readonly string[] = CENTER_NATIONALITIES;
+  const others = useMemo(
+    () =>
+      ISO_COUNTRIES.filter((c) => !first.includes(c))
+        .map((code) => ({ code, name: countryName(code, locale) }))
+        .sort((a, b) => a.name.localeCompare(b.name, locale)),
+    [first, locale],
+  );
+  return (
+    <select id={id} className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value || null)}>
+      <option value="">—</option>
+      {first.map((code) => (
+        <option key={code} value={code}>
+          {countryName(code, locale)}
+        </option>
+      ))}
+      <optgroup label={t('nationalityOther')}>
+        {others.map((o) => (
+          <option key={o.code} value={o.code}>
+            {o.name}
+          </option>
+        ))}
+      </optgroup>
+    </select>
   );
 }
 
