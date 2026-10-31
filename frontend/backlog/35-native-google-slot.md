@@ -1,6 +1,6 @@
 # 35. 앱 네이티브 Google 로그인 자리
 
-상태: 완료
+상태: 진행 중 (코드 완료, 브라우저·실패 경로 확인 남음)
 의존: 28 (근로자 Google 로그인), app-front 03 (Flutter 셸)
 
 ## 목표
@@ -27,11 +27,15 @@ Google은 임베디드 WebView 안의 웹 OAuth를 막는다(`403 disallowed_use
 
 ## 완료 기준
 - [x] `cd frontend && npm run build` 통과, `cd app-front && npm run build` 통과
-- [x] 브라우저(등록 없음): S-03이 backlog 28과 같다(단독 모드 데모 버튼)
-- [x] 등록이 있으면 앱 로그인 버튼이 보이고, 누르면 등록 함수를 부른다. `null`이면 문구 없이 버튼으로, 예외면 `loginFailed` 한 줄
+- [ ] 브라우저(등록 없음): S-03이 backlog 28과 같다(단독 모드 데모 버튼) — 코드상 분기만 확인, 브라우저로 보지 못함
+- [x] 등록이 있으면 앱 로그인 버튼이 보이고, 누르면 등록 함수를 부른다. `null`이면 문구 없이 버튼으로
+- [ ] 예외면 `loginFailed` 한 줄 — 실제 Google 계정이 있는 기기에서 확인(app-front 06)
 
 ## 결과
-- 앱 쪽 연결과 실기기 확인은 app-front 06의 `## 결과`에 적는다.
+- `cd frontend && npm run build` → 통과, `cd app-front && npm run build` → 통과
+- 단독 모드(등록 없음)의 S-03은 바뀐 분기에 걸리지 않는다(`real`이 거짓이면 데모 버튼 그대로). 브라우저 확인은 Claude in Chrome 연결이 없어 하지 못했다
+- Android 에뮬레이터(app-front 06 브랜치, 언어 vi, 서버 `WORKER_AUTH=google`): 등록이 있을 때 S-03에 `.btn.google` 버튼(공식 G 로고, "Đăng nhập bằng Google")이 서고, 웹 빌드에 `VITE_GOOGLE_CLIENT_ID`가 없어도 `loginNotConfigured`가 보이지 않았다. 누르면 등록 함수가 불리고, 취소(`null`)면 문구 없이 버튼으로 돌아왔다
+- 실제 계정 로그인은 app-front 06 `## 결과`에 적는다
 
 ## 메모
 - app-front 06 `## 범위` "웹(`frontend/`, 별도 항목)"이 이 항목이다.
