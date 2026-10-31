@@ -1,5 +1,6 @@
 // 통화 자막용 받아쓰기(backlog 26). 브라우저 Web Speech API(SpeechRecognition)로 내 마이크를 받아쓴다.
 // 통화 중에만 api/call.ts가 켠다. 브라우저가 스스로 멈추면(onend) 끌 때까지 다시 켠다.
+// 앱 WebView 안에서는 app-front가 setHostSpeech로 등록한 호스트 음성 인식을 대신 쓴다(backlog 37).
 // 받아쓴 글은 console에 찍지 않는다. 오류 기록은 오류 이름만 남긴다.
 
 import type { Lang } from '../domain/vocab';
@@ -33,11 +34,6 @@ function recognitionCtor(): RecognitionCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-/** 이 브라우저에 받아쓰기가 있는가. Firefox에는 없다. 언어 지원은 켜 봐야 안다(language-not-supported) */
-export function isSpeechSupported(): boolean {
-  return recognitionCtor() !== null;
-}
-
 export interface SpeechHandlers {
   /** 말하는 중(final: false)과 확정 문장(final: true). 확정 뒤에는 말하는 중이 빈 글로 다시 온다 */
   onText: (text: string, final: boolean) => void;
@@ -45,13 +41,35 @@ export interface SpeechHandlers {
   onUnsupported: () => void;
 }
 
+/**
+ * 앱 호스트의 음성 인식(backlog 37). lang은 SPEECH_LANGS 값(BCP-47)이고, 끄는 함수를 돌려준다.
+ * 다시 켜기·오류 처리는 등록한 쪽이 맡고, 받아쓸 수 없으면 onUnsupported를 부른다. 화면은 다리를 모른다.
+ */
+export type HostSpeech = (lang: string, on: SpeechHandlers) => () => void;
+
+let hostSpeech: HostSpeech | null = null;
+
+/** 앱(app-front)이 호스트가 음성 인식을 알릴 때 등록한다. WebView에는 Web Speech API가 없다. 브라우저에서는 아무도 부르지 않는다 */
+export function setHostSpeech(fn: HostSpeech | null): void {
+  hostSpeech = fn;
+}
+
+/** 이 브라우저(또는 앱 호스트)에 받아쓰기가 있는가. Firefox에는 없다. 언어 지원은 켜 봐야 안다(language-not-supported) */
+export function isSpeechSupported(): boolean {
+  return hostSpeech !== null || recognitionCtor() !== null;
+}
+
 // 다시 켜지 않는 오류. 나머지(no-speech·network·aborted 등)는 onend 뒤 다시 켠다
 const FATAL = new Set<string>(['not-allowed', 'service-not-allowed', 'language-not-supported', 'audio-capture']);
 /** 결과 없이 network 오류가 이만큼 이어지면 끈다. 음성 인식 서버가 없는 Chromium(Electron·Brave 등)은 계속 network 오류를 낸다 */
 export const SPEECH_MAX_NETWORK_ERRORS = 3;
 
-/** 받아쓰기를 켜고 끄는 함수를 돌려준다. 받아쓰기가 없는 브라우저면 바로 onUnsupported를 부르고 아무것도 하지 않는다 */
+/**
+ * 받아쓰기를 켜고 끄는 함수를 돌려준다. 앱 호스트가 등록했으면 그것을 쓴다.
+ * 받아쓰기가 없는 브라우저면 바로 onUnsupported를 부르고 아무것도 하지 않는다
+ */
 export function startSpeech(lang: Lang, on: SpeechHandlers): () => void {
+  if (hostSpeech) return hostSpeech(SPEECH_LANGS[lang], on);
   const Ctor = recognitionCtor();
   if (!Ctor) {
     on.onUnsupported();
