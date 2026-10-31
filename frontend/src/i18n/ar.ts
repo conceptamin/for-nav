@@ -292,7 +292,6 @@ export const ar: Record<MessageKey, string> = {
   caseNewMsg: 'رسالة جديدة',
   pushNotice: 'لديك خبر جديد من المركز',
   caseStatusFailed: 'تعذّر تحميل الحالة. نعرض آخر حالة وصلتنا.',
-  casePrevDone: 'اكتمل طلبك السابق. يمكنك إرسال طلب جديد.',
   myCaseSent: 'أُرسل',
   myDelete: 'احذف كل بياناتي على هذا الهاتف',
   myDeleteConfirm: 'هل تريد حذف كل البيانات المحفوظة على هذا الهاتف؟',

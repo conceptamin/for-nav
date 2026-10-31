@@ -306,7 +306,6 @@ export const uz: Record<MessageKey, string> = {
   caseNewMsg: 'Yangi xabar',
   pushNotice: 'Markazdan yangi xabar bor',
   caseStatusFailed: 'Holatni yuklab boʻlmadi. Oxirgi olingan holat koʻrsatilmoqda.',
-  casePrevDone: 'Oldingi soʻrov yakunlandi. Yangi soʻrov yuborishingiz mumkin.',
   myCaseSent: 'Yuborilgan',
   myDelete: 'Shu telefondagi barcha maʼlumotlarimni oʻchirish',
   myDeleteConfirm: 'Shu telefonda saqlangan barcha maʼlumotlar oʻchirilsinmi?',

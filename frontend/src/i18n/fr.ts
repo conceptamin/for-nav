@@ -306,7 +306,6 @@ export const fr: Record<MessageKey, string> = {
   caseNewMsg: 'Nouveau message',
   pushNotice: 'Nouvelle information du centre',
   caseStatusFailed: 'Impossible de charger le statut. Dernier statut reçu affiché.',
-  casePrevDone: 'Votre demande précédente est terminée. Vous pouvez en envoyer une nouvelle.',
   myCaseSent: 'Envoyée le',
   myDelete: 'Supprimer toutes mes données sur ce téléphone',
   myDeleteConfirm: 'Supprimer toutes les données enregistrées sur ce téléphone ?',

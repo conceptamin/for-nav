@@ -306,7 +306,6 @@ export const zhCN: Record<MessageKey, string> = {
   caseNewMsg: '新消息',
   pushNotice: '中心有新消息',
   caseStatusFailed: '无法加载状态，显示的是最后一次收到的状态。',
-  casePrevDone: '上一个请求已完成。你可以发送新的请求。',
   myCaseSent: '发送于',
   myDelete: '删除这部手机上我的所有数据',
   myDeleteConfirm: '要删除这部手机上保存的所有数据吗？',

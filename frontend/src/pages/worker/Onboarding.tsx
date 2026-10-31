@@ -426,6 +426,12 @@ export function SignupPage() {
 export function HomePage() {
   const app = useApp();
   const { t, term } = useT();
+  const { coverage, setCoverage } = app;
+  useEffect(() => {
+    // 보험과 지원(S-08)에서 고른 답은 홈으로 나오면 지운다. 다시 들어가면 처음부터 고른다(backlog 52)
+    if (coverage) setCoverage(null);
+    // 홈에 들어올 때 한 번만 지운다
+  }, []);
   const profile = app.profile;
   const recent = app.reports[0];
   const recentSymptoms = recent?.rows.find((row) => row.field === 'symptoms') ?? recent?.rows[0];

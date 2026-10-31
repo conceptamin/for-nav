@@ -9,12 +9,12 @@ import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import { useWorkerAuth } from '../api/auth';
 import { useMyCasesFeed } from '../api/center';
 import { usePushDevice, usePushOpen } from '../api/push';
-import { hasUnread } from '../domain/centerCase';
+import { unreadCount } from '../domain/centerCase';
 import { useT } from '../i18n';
 import { useApp } from '../state/AppState';
 import { markSplashSeen, splashSeen } from '../state/splash';
 import { CenterLinkContext, type CenterLink } from './centerLink';
-import { CenterSheet } from './CenterSheet';
+import { CenterSheet, CountBadge } from './CenterSheet';
 import { LangMenu } from './LangMenu';
 import { useReveal } from './reveal';
 import { MenuButton, WorkerDrawer } from './WorkerDrawer';
@@ -45,13 +45,6 @@ export function useScreenBar(bar: ScreenBar) {
     set({ title, hidden, onBack: () => (ref.current.onBack ? ref.current.onBack() : navigate('/home')) });
   }, [set, title, hidden, navigate]);
   useEffect(() => () => set({}), [set]);
-}
-
-const OpenCenterSheetContext = createContext<() => void>(() => {});
-
-/** 하단 채팅 아이콘과 같은 센터 채팅 시트를 연다(backlog 44, S-12에서 대화로 보낸 뒤) */
-export function useOpenCenterSheet() {
-  return useContext(OpenCenterSheetContext);
 }
 
 export function WorkerLayout() {
@@ -97,17 +90,13 @@ export function WorkerLayout() {
   // 로그인이 풀리면(app.ready가 꺼지면) 시트째 사라진다
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetMounted, setSheetMounted] = useState(false);
-  // S-13에서 고른 사례. 독 버튼으로 열면 비워 시트가 이어 볼 요청을 고른다(backlog 46)
-  const [sheetCase, setSheetCase] = useState<string | null>(null);
+  // S-13·S-12·푸시가 고른 사례. 독 버튼으로 열면 비워 시트가 채팅 목록부터 보인다(backlog 46·53).
+  // 여는 차례마다 새 값이라 같은 사례를 다시 골라도 시트가 그 대화로 돌아간다
+  const [sheetCase, setSheetCase] = useState<{ id: string | null }>({ id: null });
   const closeSheet = useCallback(() => setSheetOpen(false), []);
-  const openSheet = useCallback(() => {
-    setSheetMounted(true);
-    setSheetCase(null);
-    setSheetOpen(true);
-  }, []);
   const toggleSheet = () => {
     setSheetMounted(true);
-    setSheetCase(null);
+    setSheetCase({ id: null });
     setSheetOpen((o) => !o);
     setDrawerOpen(false);
   };
@@ -130,13 +119,14 @@ export function WorkerLayout() {
     [app.ready, app.myCaseIds, app.chatTokens],
   );
   const feed = useMyCasesFeed(refs);
-  const unread = app.ready && app.myCaseIds.some((id) => hasUnread(feed.cases[id], app.seenCenterMessages[id]));
+  // 독 채팅 아이콘의 숫자 배지(backlog 53): 사례마다 아직 보지 않은 센터 메시지 수를 더한다
+  const unread = app.ready ? app.myCaseIds.reduce((n, id) => n + unreadCount(feed.cases[id], app.seenCenterMessages[id]), 0) : 0;
   const centerLink = useMemo<CenterLink>(
     () => ({
       feed,
       openCase: (caseId) => {
         setSheetMounted(true);
-        setSheetCase(caseId);
+        setSheetCase({ id: caseId });
         setSheetOpen(true);
       },
     }),
@@ -174,7 +164,7 @@ export function WorkerLayout() {
           <button
             type="button"
             className="bar-chat"
-            aria-label={unread ? `${t('chatTitle')} · ${t('caseNewMsg')}` : t('chatTitle')}
+            aria-label={unread ? `${t('chatTitle')} · ${t('caseNewMsg')} ${unread}` : t('chatTitle')}
             aria-expanded={sheetOpen}
             aria-controls="center-sheet"
             onClick={toggleSheet}
@@ -185,7 +175,7 @@ export function WorkerLayout() {
               <circle cx="12" cy="11" r="1" />
               <circle cx="15.5" cy="11" r="1" />
             </svg>
-            {unread && <span className="bar-chat-dot" aria-hidden="true" />}
+            {unread > 0 && <CountBadge n={unread} className="bar-chat-badge" />}
           </button>
         )}
       </div>
@@ -256,11 +246,9 @@ export function WorkerLayout() {
           </header>
         )}
         <main className="w-main" ref={mainRef}>
-          <OpenCenterSheetContext.Provider value={openSheet}>
-            <Outlet />
-          </OpenCenterSheetContext.Provider>
+          <Outlet />
         </main>
-        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} focusCaseId={sheetCase} />}
+        {app.ready && sheetMounted && <CenterSheet id="center-sheet" open={sheetOpen} onClose={closeSheet} focus={sheetCase} />}
         {hasDrawer && <WorkerDrawer id="worker-drawer" open={drawerOpen} appName={appName} trigger={menuButton} onClose={closeDrawer} />}
         {bar119}
       </div>

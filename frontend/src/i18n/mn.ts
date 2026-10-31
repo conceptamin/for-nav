@@ -306,7 +306,6 @@ export const mn: Record<MessageKey, string> = {
   caseNewMsg: 'Шинэ зурвас',
   pushNotice: 'Төвөөс шинэ мэдээ ирлээ',
   caseStatusFailed: 'Төлөвийг ачаалж чадсангүй. Сүүлд авсан төлөвийг харуулж байна.',
-  casePrevDone: 'Өмнөх хүсэлт дууссан. Шинэ хүсэлт илгээж болно.',
   myCaseSent: 'Илгээсэн',
   myDelete: 'Энэ утсан дээрх миний бүх мэдээллийг устгах',
   myDeleteConfirm: 'Энэ утсан дээр хадгалсан бүх мэдээллийг устгах уу?',

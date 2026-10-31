@@ -306,7 +306,6 @@ export const ja: Record<MessageKey, string> = {
   caseNewMsg: '新しいメッセージ',
   pushNotice: 'センターから新しいお知らせがあります',
   caseStatusFailed: '状態を読み込めませんでした。最後に受け取った状態を表示しています。',
-  casePrevDone: '前回の依頼は完了しました。新しい依頼を送れます。',
   myCaseSent: '送信日',
   myDelete: 'この携帯電話の自分のデータをすべて削除',
   myDeleteConfirm: 'この携帯電話に保存したデータをすべて削除しますか？',
