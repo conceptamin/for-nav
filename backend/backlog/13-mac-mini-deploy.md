@@ -1,6 +1,6 @@
 # 13. 맥미니 자동 배포
 
-상태: 진행 중(맥미니 첫 배포 남음)
+상태: 완료
 의존: 08(같은 출처 서빙), 12(모델링 경로 의존성)
 
 ## 목표
@@ -22,13 +22,17 @@ API 변경 없음. 위 파일과 `backend/.gitignore`(`deploy/static*/`)
 
 ## 완료 기준
 - [x] 이 맥북에서 `deploy.sh`를 돌려 pm2 앱이 뜨고 `/api/health`, `/`, `/center`가 응답한다
-- [ ] secrets 3개를 넣고 Actions에서 "Deploy backend (Mac mini)"를 수동 실행해 성공한다(클론이 없던 맥미니에서 첫 실행)
+- [x] secrets 3개를 넣고 Actions에서 "Deploy backend (Mac mini)"를 수동 실행해 성공한다(클론이 없던 맥미니에서 첫 실행)
 
 ## 결과
 - 이 맥북에서 SSH 비대화형 셸처럼 환경을 비우고 실행: `env -i HOME=$HOME PATH=/usr/bin:/bin NODE_VERSION=24 PORT=8791 bash backend/deploy/deploy.sh` → `배포 완료`. `/api/health`·`/`·`/center` 200, `/assets/nope.js` 404, `POST /api/triage`에 `model`(응급도·진료과 확률)이 붙는다
 - 같은 명령을 한 번 더 → pm2 앱을 지우고 다시 띄워 `배포 완료`, 이전 빌드는 `static.prev`로 남는다
 - `NODE_VERSION=99`로 실패시킴 → `nvm use 99 실패`로 멈추고(종료 코드 1) 떠 있던 서버는 `/api/health` 그대로 응답
 - `uv run ruff check .`, `ruff format --check .` 통과, `uv run pytest` → 2864 passed(서버 코드 변경 없음)
+- 맥미니 첫 배포(2026-10-30, secrets 등록 뒤)
+  - 첫 실행: 워크플로가 `~/srv/for-nav`를 클론했지만 `uv 를 찾지 못했다`로 멈췄다. 맥미니에 uv를 설치해 풀렸다
+  - 다음 실행: 빌드·설치는 끝났지만 서버가 `lightgbm`의 `libomp.dylib`을 찾지 못해 뜨지 않았고, `/api/health` 확인에서 실패해 pm2 로그가 Actions에 찍혔다. Homebrew `libomp`를 설치해 풀렸고 README 준비 목록에 더했다(conceptamin/for-nav#105)
+  - 수동 실행 run 41088233141(`a83aa5a`) → 성공. 이후 `main` 병합 5번(#107, #108, #110, #112, #116)의 자동 배포 모두 성공, 마지막 로그 `배포 완료: http://127.0.0.1:8000/`
 - 결정
   - 사용자의 다른 프로젝트 워크플로(`appleboy/ssh-action@v1.0.0`, 포트 2222, secrets `MAC_MINI_IP`·`MAC_MINI_USERNAME`·`MAC_MINI_SSH_KEY`)를 그대로 썼다. 같은 secrets 값을 이 저장소에 넣으면 된다
   - `git pull`은 워크플로에서, 빌드·재시작은 `deploy.sh`에서 한다. pull이 실행 중인 스크립트 파일을 바꾸지 않게 하기 위해서다
