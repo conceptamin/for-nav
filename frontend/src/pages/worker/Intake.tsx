@@ -5,7 +5,7 @@
 // 추출과 진료과 추천은 src/api/worker.ts를 거친다(단독/API 모드와 대체는 그 안에만 있다).
 // 서버를 기다리는 동안 추출은 버튼만 비활성이고, 진료과 추천은 분석 중 화면을 보인다 (README.md "비동기 UX 규칙").
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import {
   Chip,
@@ -310,75 +310,158 @@ export function ResultPage() {
   const app = useApp();
   const { t, term, lang } = useT();
   const tri = app.triage;
+  const [afterHoursOpen, setAfterHoursOpen] = useState(false);
+  const closeAfterHours = useCallback(() => setAfterHoursOpen(false), []);
   if (!app.intake || !tri) return <Navigate to="/intake" replace />;
   if (!tri.department) return <Navigate to="/intake" replace />;
 
   const primary = DEPARTMENTS[tri.department.primary];
   const alt = DEPARTMENTS[tri.department.alt];
 
+  // 주 동작은 첫 진료과 지도 하나(브랜드색). 나머지는 홈 기능 목록과 같은 줄로 두 묶음에 담는다(backlog 36).
+  // 아이콘은 오래된 기기도 그리는 Unicode 6.0 이모지만 쓴다
+  const goItems: ResultItem[] = [
+    { ico: '📞', label: t('toCall'), to: '/visit/call' },
+    { ico: '📋', label: t('toDesk'), to: '/visit/desk' },
+    { ico: '📝', label: t('toReport'), to: '/report/new' },
+  ];
+  // 보험과 지원·센터 요청은 홈 기능 목록과 하단 채팅에 있어 여기서는 뺀다(2026-10-31 사용자 결정)
+  const moreItems: ResultItem[] = [
+    { ico: '💊', label: t('mapPharmacy'), href: kakaoSearchUrl('약국') },
+    { ico: '🚑', label: t('mapEr'), href: kakaoSearchUrl('응급실') },
+    // 밤·휴일 안내는 페이지를 옮기지 않고 화면 위 시트로 연다(backlog 44 after-hours-guide, 2026-10-31 사용자 결정)
+    { ico: '🌙', label: t('ahTitle'), sheet: 'after-hours', open: afterHoursOpen, onOpen: () => setAfterHoursOpen(true) },
+  ];
+
   return (
-    <div>
+    <div className="stack wide">
       <Worse119 />
       <h1>{t('resultTitle')}</h1>
-      <div className="stack" style={{ marginBottom: 12 }}>
-        <div className="dept">
-          <div className="small muted">{t('resultFirst')}</div>
-          <div className="ko" lang="ko">
-            {primary.ko}
-          </div>
-          {lang !== 'ko' && (
-            <div>
-              <strong>{term(primary)}</strong> <span className="muted small">· {pron(primary, lang)}</span>
-            </div>
-          )}
-          <a className="btn block" style={{ marginTop: 10 }} href={kakaoSearchUrl(primary.ko)} target="_blank" rel="noreferrer">
-            🗺️ {t('mapDept')} — {primary.ko}
-          </a>
+      <div className="dept">
+        <div className="small muted">{t('resultFirst')}</div>
+        <div className="ko" lang="ko">
+          {primary.ko}
         </div>
-        <div className="dept alt">
-          <div className="small muted">{t('resultAlt')}</div>
-          <div className="ko" lang="ko">
-            {alt.ko} {lang !== 'ko' && <span className="small muted">· {term(alt)}</span>}
+        {lang !== 'ko' && (
+          <div>
+            <strong>{term(primary)}</strong> <span className="muted small">· {pron(primary, lang)}</span>
           </div>
-          <a className="btn secondary block" style={{ marginTop: 8 }} href={kakaoSearchUrl(alt.ko)} target="_blank" rel="noreferrer">
-            🗺️ {t('mapDept')} — {alt.ko}
-          </a>
-        </div>
-      </div>
-      <div className="row" style={{ flexWrap: 'nowrap', marginBottom: 8 }}>
-        <a className="btn secondary block" href={kakaoSearchUrl('약국')} target="_blank" rel="noreferrer">
-          💊 {t('mapPharmacy')}
+        )}
+        <a className="btn block" style={{ marginTop: 10 }} href={kakaoSearchUrl(primary.ko)} target="_blank" rel="noreferrer">
+          🗺️ {t('mapDept')} — {primary.ko}
         </a>
-        <a className="btn secondary block" href={kakaoSearchUrl('응급실')} target="_blank" rel="noreferrer">
-          🚑 {t('mapEr')}
+        <p className="dept-note">
+          {t('mapNotice')} {t('mapOpens')}
+        </p>
+      </div>
+      <div className="dept alt">
+        <div className="small muted">{t('resultAlt')}</div>
+        <div className="ko" lang="ko">
+          {alt.ko} {lang !== 'ko' && <span className="small muted">· {term(alt)}</span>}
+        </div>
+        <a className="btn ghost dept-alt-map" href={kakaoSearchUrl(alt.ko)} target="_blank" rel="noreferrer">
+          {t('mapDept')} — {alt.ko} ›
         </a>
       </div>
-      <div className="notice warn">
-        ☎️ {t('mapNotice')}
-        <div className="small">{t('mapOpens')}</div>
-      </div>
-      {/* 밤·휴일 안내는 따로 연다(backlog 44 after-hours-guide) */}
-      <Link className="btn secondary block" to="/after-hours">
-        🌙 {t('ahTitle')}
-      </Link>
-      <div className="stack">
-        <Link className="btn block" to="/visit/call">
-          📞 {t('toCall')}
-        </Link>
-        <Link className="btn block" to="/visit/desk">
-          📋 {t('toDesk')}
-        </Link>
-        <Link className="btn block" to="/report/new">
-          🩺 {t('toReport')}
-        </Link>
-        <Link className="btn secondary block" to="/coverage">
-          💳 {t('toCoverage')}
-        </Link>
-        <Link className="btn secondary block" to="/center-request">
-          🤝 {t('toCenter')}
-        </Link>
-      </div>
+      <ResultGroup title={t('resultGoGroup')} items={goItems} />
+      <ResultGroup title={t('resultMoreGroup')} items={moreItems} />
       <p className="footer-note">ⓘ {t('resultNoDiag')}</p>
+      {afterHoursOpen && <AfterHoursSheet id="after-hours" onClose={closeAfterHours} />}
     </div>
+  );
+}
+
+type ResultItem = { ico: string; label: string } & (
+  | { to: string }
+  | { href: string }
+  | { sheet: string; open: boolean; onOpen: () => void }
+);
+
+/** S-07 묶음 하나: 홈 기능 목록(.home-list)과 같은 줄. 지도는 카카오맵을 새 탭으로, 시트 줄은 화면 위 시트로 연다 */
+function ResultGroup({ title, items }: { title: string; items: ResultItem[] }) {
+  const row = (it: ResultItem) => (
+    <>
+      <span className="ico" aria-hidden>
+        {it.ico}
+      </span>
+      <span className="txt">
+        <strong>{it.label}</strong>
+      </span>
+      <span className="chev" aria-hidden>
+        ›
+      </span>
+    </>
+  );
+  return (
+    <section>
+      <h2>{title}</h2>
+      <nav className="home-list">
+        {items.map((it) =>
+          'to' in it ? (
+            <Link key={it.to} to={it.to}>
+              {row(it)}
+            </Link>
+          ) : 'href' in it ? (
+            <a key={it.href} href={it.href} target="_blank" rel="noreferrer">
+              {row(it)}
+            </a>
+          ) : (
+            <button
+              key={it.sheet}
+              type="button"
+              aria-haspopup="dialog"
+              aria-expanded={it.open}
+              aria-controls={it.sheet}
+              onClick={it.onOpen}
+            >
+              {row(it)}
+            </button>
+          ),
+        )}
+      </nav>
+    </section>
+  );
+}
+
+/**
+ * 밤·휴일 안내 시트. 센터 채팅 시트와 같은 틀(막·머리·✕)이고 높이는 내용만큼이다(.sheet.fit).
+ * 열면 시트로 초점을 옮기고 Esc·막·✕로 닫는다. 뒤 화면은 스크롤되지 않게 묶는다. 갈 곳을 고르는 판단은 119에 맡긴다
+ */
+function AfterHoursSheet({ id, onClose }: { id: string; onClose: () => void }) {
+  const { t } = useT();
+  const sheet = useRef<HTMLElement>(null);
+  useEffect(() => {
+    sheet.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = overflow;
+    };
+  }, [onClose]);
+  return (
+    <>
+      <div className="sheet-scrim" onClick={onClose} aria-hidden="true" />
+      <section id={id} className="sheet fit" role="dialog" aria-labelledby={`${id}-title`} ref={sheet} tabIndex={-1}>
+        <header className="sheet-head">
+          <div className="sheet-title">
+            <h2 id={`${id}-title`}>🌙 {t('ahTitle')}</h2>
+          </div>
+          <button type="button" className="sheet-btn" aria-label={t('close')} onClick={onClose}>
+            <svg className="sheet-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </header>
+        <div className="sheet-body">
+          <p>📞 {t('ah119')}</p>
+          <p>🏪 {t('ahStore')}</p>
+        </div>
+      </section>
+    </>
   );
 }

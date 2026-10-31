@@ -1,4 +1,4 @@
-// S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내·밤·휴일 안내(정적)
+// S-12 센터 상담 요청·전송 확인(FR-70), S-13 내 정보(프로필·설정·내 메모), 병원 이용 안내(정적)
 // 요약 미리보기와 전송은 components/CenterSheet.tsx의 useSendCenterRequest가 한다(하단 채팅 시트와 같이 쓴다).
 // 브라우저 요약을 먼저 그리고 API 모드면 서버 결과로 바꾼다. 전송이 API 모드에서 실패하면 대체하지 않고 실패 문구와 다시 시도를 보인다.
 // 센터 연락 방법은 앱 안 통화(backlog 26)와 채팅(backlog 25) 둘뿐이다(backlog 29). 연락 방법은 묻지 않고, 보내면 하단 독의 채팅 아이콘과
@@ -330,28 +330,6 @@ export function GuidePage() {
       <Link className="btn block" to="/intake">
         🤕 {t('menuSick')}
       </Link>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// 밤·휴일 안내(정적 콘텐츠, backlog 44 after-hours-guide). 갈 곳을 고르는 판단은 119에 맡긴다
-// ---------------------------------------------------------------------------
-export function AfterHoursPage() {
-  const { t } = useT();
-  const navigate = useNavigate();
-  // S-07에서만 연다. ←는 홈이 아니라 진료 안내로 돌아간다
-  useScreenBar({ title: t('ahTitle'), onBack: () => navigate('/result') });
-  return (
-    <div>
-      <h1>{t('ahTitle')}</h1>
-      <section className="card">
-        <p>📞 {t('ah119')}</p>
-      </section>
-      <section className="card">
-        <p>🏪 {t('ahStore')}</p>
-      </section>
-      <Worse119 />
     </div>
   );
 }

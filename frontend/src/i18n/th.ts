@@ -129,6 +129,8 @@ export const th: Record<MessageKey, string> = {
   toReport: 'รายงานสำหรับแพทย์',
   toCoverage: 'ประกันและความช่วยเหลือ',
   toCenter: 'ขอความช่วยเหลือจากศูนย์',
+  resultGoGroup: 'เมื่อไปโรงพยาบาล',
+  resultMoreGroup: 'หากต้องการความช่วยเหลือเพิ่มเติม',
   resultNoDiag: 'นี่เป็นคำแนะนำว่าควรไปคลินิกไหน ไม่ใช่การวินิจฉัยโรค',
 
   covTitle: 'ควรถามเรื่องค่าใช้จ่ายที่ไหนก่อน',
