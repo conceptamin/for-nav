@@ -299,6 +299,8 @@ export const en = {
   'caseStatus.progress': 'In progress',
   'caseStatus.done': 'Completed',
   caseNewMsg: 'New message',
+  // 앱 푸시 알림 본문(backlog 48). 화면에 보이지 않고 서버에 등록돼 잠금 화면에 뜬다. 내용·상태·이름·의료 낱말을 넣지 않는다
+  pushNotice: 'New update from the centre',
   caseStatusFailed: 'Couldn’t load the status. Showing the last one received.',
   casePrevDone: 'Your previous request is completed. You can send a new one.',
   myCaseSent: 'Sent',

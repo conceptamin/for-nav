@@ -299,6 +299,7 @@ export const uz: Record<MessageKey, string> = {
   'caseStatus.progress': 'Maslahat davom etmoqda',
   'caseStatus.done': 'Yakunlandi',
   caseNewMsg: 'Yangi xabar',
+  pushNotice: 'Markazdan yangi xabar bor',
   caseStatusFailed: 'Holatni yuklab boʻlmadi. Oxirgi olingan holat koʻrsatilmoqda.',
   casePrevDone: 'Oldingi soʻrov yakunlandi. Yangi soʻrov yuborishingiz mumkin.',
   myCaseSent: 'Yuborilgan',

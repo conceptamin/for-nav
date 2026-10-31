@@ -299,6 +299,7 @@ export const zhTW: Record<MessageKey, string> = {
   'caseStatus.progress': '諮詢中',
   'caseStatus.done': '已完成',
   caseNewMsg: '新訊息',
+  pushNotice: '中心有新消息',
   caseStatusFailed: '無法載入狀態，顯示的是最後一次收到的狀態。',
   casePrevDone: '上一個請求已完成。你可以傳送新的請求。',
   myCaseSent: '傳送於',

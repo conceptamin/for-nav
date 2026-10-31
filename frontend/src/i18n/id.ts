@@ -299,6 +299,7 @@ export const id: Record<MessageKey, string> = {
   'caseStatus.progress': 'Sedang dikonsultasikan',
   'caseStatus.done': 'Selesai',
   caseNewMsg: 'Pesan baru',
+  pushNotice: 'Ada kabar baru dari pusat',
   caseStatusFailed: 'Status tidak dapat dimuat. Menampilkan status terakhir yang diterima.',
   casePrevDone: 'Permintaan sebelumnya sudah selesai. Anda bisa mengirim permintaan baru.',
   myCaseSent: 'Dikirim',

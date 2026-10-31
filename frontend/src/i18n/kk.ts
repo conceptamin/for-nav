@@ -299,6 +299,7 @@ export const kk: Record<MessageKey, string> = {
   'caseStatus.progress': 'Кеңес жүріп жатыр',
   'caseStatus.done': 'Аяқталды',
   caseNewMsg: 'Жаңа хабар',
+  pushNotice: 'Орталықтан жаңа хабар бар',
   caseStatusFailed: 'Күйді жүктеу мүмкін болмады. Соңғы алынған күй көрсетілуде.',
   casePrevDone: 'Алдыңғы өтініш аяқталды. Жаңа өтініш жібере аласыз.',
   myCaseSent: 'Жіберілді',
