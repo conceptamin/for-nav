@@ -307,9 +307,9 @@ export const vi: Record<MessageKey, string> = {
   guide3b: 'Đưa màn hình "Phiếu cho bác sĩ". Nói bắt đầu từ khi nào và có xảy ra khi làm việc không.',
   guide4t: '4. Thanh toán và lấy thuốc',
   guide4b: 'Thanh toán ở quầy. Mang đơn thuốc đến nhà thuốc (약국) gần đó. Giữ lại hóa đơn.',
-  guide5t: '5. Nếu xảy ra khi làm việc',
+  guide5t: 'Nếu xảy ra khi làm việc',
   guide5b: 'Ghi lại khi nào, ở đâu, xảy ra thế nào. Bạn có thể hỏi về bảo hiểm tai nạn lao động. Hỏi trung tâm nếu cần giúp.',
-  guide6t: '6. Vào ban đêm hoặc ngày nghỉ',
+  guide6t: 'Vào ban đêm hoặc ngày nghỉ',
   guide6b: 'Nếu phòng khám gần nhà đã đóng cửa, hãy gọi 119 để hỏi nên đi đâu. Cả ngày lẫn đêm, 119 cho bạn biết bệnh viện và nhà thuốc nào đang mở cửa và tư vấn y tế qua điện thoại. Nhiều cửa hàng tiện lợi 24 giờ bán thuốc thông thường.',
   guideCheck: 'Chi tiết có thể khác nhau tùy bệnh viện. Vui lòng hỏi bệnh viện hoặc trung tâm.',
 };
