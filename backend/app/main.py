@@ -13,6 +13,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import errors
 from app.chat import CallHub, ChatHub
+from app.google_id import make_verifier
 from app.llm_limit import LLMLimiter
 from app.mail import make_mailer
 from app.model import load_model
@@ -43,6 +44,8 @@ app.state.call = CallHub()
 app.state.llm_limiter = LLMLimiter(settings.llm_rate_per_min, settings.llm_daily_limit, settings.llm_client_ip_header)
 # 센터 직원 로그인 코드 메일(backlog 17). CENTER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
 app.state.mail = make_mailer(settings)
+# 근로자 Google 로그인 ID 토큰 검증(backlog 21). WORKER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
+app.state.google_id = make_verifier(settings)
 
 errors.install(app)
 # 프론트는 Vite 프록시로 같은 출처에서 부른다. 개발 중 직접 호출에 대비해 허용 출처(CORS_ORIGINS, 기본 프론트 개발 서버)만 연다.

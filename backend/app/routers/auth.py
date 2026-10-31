@@ -1,13 +1,15 @@
 # 센터 직원 로그인 경로(backlog 17). 코드 만들기·확인·세션은 app/auth.py가 하고 여기서는 응답과 쿠키만 만든다.
 # CENTER_AUTH=off이면 /me만 응답하고(required: false) 나머지는 404다.
+# 근로자 Google 로그인 경로(backlog 21)는 /auth/worker/* 이다. WORKER_AUTH=off이면 /worker/me만 응답하고 /worker/google은 404다.
 
 import logging
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 
 from app import auth, clock
+from app.google_id import GoogleIdError, TokenVerifier
 from app.mail import Mailer, MailError
-from app.schemas import AuthCodeIn, AuthMe, AuthVerifyIn
+from app.schemas import AuthCodeIn, AuthMe, AuthVerifyIn, WorkerGoogleIn, WorkerMe
 from app.settings import settings
 from app.store import store
 
@@ -60,4 +62,41 @@ def logout(request: Request) -> Response:
     auth.end_session(store, request.cookies.get(auth.COOKIE))
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
     auth.clear_session_cookie(response, settings.center_cookie_secure)
+    return response
+
+
+# ---------------------------------------------------------------------------
+# 근로자 Google 로그인(backlog 21)
+# ---------------------------------------------------------------------------
+@router.get("/worker/me")
+def worker_me(request: Request) -> WorkerMe:
+    """근로자 화면이 들어올 때 부른다. 세션이 없어도 401이 아니라 `account: null`이다."""
+    if settings.worker_auth != "google":
+        return WorkerMe(required=False, account=None)
+    return WorkerMe(required=True, account=auth.worker_account(store, request.cookies.get(auth.WORKER_COOKIE), clock.now()))
+
+
+@router.post("/worker/google")
+def worker_google(body: WorkerGoogleIn, request: Request, response: Response) -> WorkerMe:
+    """ID 토큰을 검증하고 근로자 세션 쿠키를 준다. 공개 키를 받는 네트워크 호출이 있어 동기 경로(스레드 풀)로 둔다."""
+    if settings.worker_auth != "google":
+        raise HTTPException(status_code=404, detail="근로자 로그인을 쓰지 않는다")
+    verifier: TokenVerifier = request.app.state.google_id
+    try:
+        sub = verifier.verify(body.credential)
+    except GoogleIdError as e:
+        # 실패 종류(예외 이름)와 request id만 남긴다. 토큰은 남기지 않는다.
+        logger.warning("Google 로그인 확인 실패 %s request_id=%s", e, request.state.request_id)
+        raise HTTPException(status_code=401, detail="Google 로그인을 확인하지 못했다") from None
+    token, account = auth.start_worker_session(store, sub, clock.now(), settings.worker_session_days)
+    auth.set_session_cookie(response, token, settings.worker_session_days, settings.center_cookie_secure, name=auth.WORKER_COOKIE)
+    return WorkerMe(required=True, account=account)
+
+
+@router.post("/worker/logout", status_code=status.HTTP_204_NO_CONTENT)
+def worker_logout(request: Request) -> Response:
+    """근로자 세션을 지우고 쿠키를 비운다. 세션이 없어도 204다."""
+    auth.end_worker_session(store, request.cookies.get(auth.WORKER_COOKIE))
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    auth.clear_session_cookie(response, settings.center_cookie_secure, name=auth.WORKER_COOKIE)
     return response
