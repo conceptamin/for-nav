@@ -87,20 +87,30 @@ export function WorkerLayout() {
   }, [bar.title, appName]);
 
   // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
-  // 오른쪽 채팅 아이콘은 센터 연락(통화·채팅, backlog 29)으로 간다. 로그인하고 프로필까지 있을 때만 보인다
+  // 채팅 버튼은 센터 연락(통화·채팅, backlog 29)으로 간다. 로그인하고 프로필까지 있을 때만 보인다.
+  // 두 버튼은 끝 쪽에 뜬 유리 독(.bar-dock) 하나에 담는다(backlog 33)
   const bar119 = pathname !== '/emergency' && (
-    <div className={app.ready ? 'bar-119 with-chat' : 'bar-119'}>
-      <a className="call-119" href="tel:119">
-        📞 {app.lang ? t('bar119') : '119 · Korea Emergency · Cấp cứu'}
-      </a>
-      {app.ready && (
-        <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>
-          <svg className="bar-chat-icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z" />
-            <path d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01" />
-          </svg>
-        </Link>
-      )}
+    <div className="bar-119">
+      <div className="bar-dock">
+        <a className="call-119" href="tel:119">
+          <span className="call-119-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" focusable="false">
+              <path d="M6.6 3.5h2.2l1.4 4-2 1.3a11 11 0 0 0 7 7l1.3-2 4 1.4v2.2a2.1 2.1 0 0 1-2.3 2.1A15.6 15.6 0 0 1 4.5 5.8a2.1 2.1 0 0 1 2.1-2.3Z" />
+            </svg>
+          </span>
+          <span className="call-119-text">{app.lang ? t('bar119') : '119 · Korea Emergency · Cấp cứu'}</span>
+        </a>
+        {app.ready && (
+          <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>
+            <svg className="bar-chat-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.15-2.9-.42L4.5 19.5l1.3-3.6C4.3 14.6 3.5 12.9 3.5 11c0-3.9 3.8-7 8.5-7Z" />
+              <circle cx="8.5" cy="11" r="1" />
+              <circle cx="12" cy="11" r="1" />
+              <circle cx="15.5" cy="11" r="1" />
+            </svg>
+          </Link>
+        )}
+      </div>
     </div>
   );
 
