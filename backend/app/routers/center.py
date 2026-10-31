@@ -86,7 +86,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
             id=case_id,
             created_at=clock.iso_utc(now),
             language=req.intake.language,
-            request_type=req.request_type,
+            request_types=req.request_types,
             urgency=urgency,
             urgency_reasons=reasons,
             district=req.intake.district,

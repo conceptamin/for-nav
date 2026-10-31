@@ -230,6 +230,7 @@ export const tl: Record<MessageKey, string> = {
   cenTitle: 'Magtanong sa support centre',
   cenIntro: 'Tumutulong ang centre sa booking sa ospital, interpretasyon, at payo tungkol sa mga programa ng tulong.',
   cenType: 'Ano ang kailangan mo?',
+  cenTypeHint: 'Piliin lahat ng tugma.',
   'req.booking': 'Tulong sa booking',
   'req.interpret': 'Interpretasyon',
   'req.policy': 'Payo tungkol sa insurance at tulong',

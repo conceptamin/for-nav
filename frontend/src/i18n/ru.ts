@@ -230,6 +230,7 @@ export const ru: Record<MessageKey, string> = {
   cenTitle: 'Спросить центр поддержки',
   cenIntro: 'Центр помогает с записью в больницу, переводом и советами о программах помощи.',
   cenType: 'Что вам нужно?',
+  cenTypeHint: 'Выберите все подходящие.',
   'req.booking': 'Помощь с записью',
   'req.interpret': 'Перевод',
   'req.policy': 'Советы о страховке и помощи',
