@@ -2528,6 +2528,11 @@ table.cases tr.fresh {
     padding: 0 16px;
   }
 
+  /* 칸 사이가 12px로 줄어도 로고와 브랜드 글자 사이는 넓을 때와 같은 10px */
+  .c-header .logo {
+    margin-inline-end: -2px;
+  }
+
   /* 좁으면 머리글 칸이 모자라 직원 이메일은 숨기고 로그아웃만 남긴다 */
   .c-header .who {
     display: none;
