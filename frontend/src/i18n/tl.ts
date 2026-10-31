@@ -283,7 +283,7 @@ export const tl: Record<MessageKey, string> = {
   cenSentBody: 'Susuriin ng counsellor ang request mo at kokontakin ka.',
   cenAfterHours: 'Sarado na ang centre ngayon. Kokontakin ka namin sa susunod na araw ng trabaho:',
   cenInHours: 'Bukas ang centre ngayon. Pakihintay ang tawag o mensahe.',
-  cenHoursNote: 'Oras ng centre (kukumpirmahin pa): Lunes–Biyernes 09:00–18:00',
+  cenHoursNote: 'Oras ng centre: Linggo–Huwebes 09:00–18:00',
   cenCaseNo: 'Numero ng request',
 
   // S-13

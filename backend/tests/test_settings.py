@@ -16,7 +16,7 @@ BACKEND = Path(__file__).parent.parent
 
 def test_defaults():
     s = load_settings({})
-    assert s.center_hours.model_dump() == {"open_hour": 9, "close_hour": 18, "workdays": [1, 2, 3, 4, 5]}
+    assert s.center_hours.model_dump() == {"open_hour": 9, "close_hour": 18, "workdays": [0, 1, 2, 3, 4]}
     assert s.info_date == DEFAULT_INFO_DATE
     assert s.cors_origins == ("http://localhost:5180",)
     assert (s.llm_provider, s.llm_model, s.llm_api_key, s.llm_timeout_s, s.llm_attempts) == ("anthropic", "claude-haiku-5-5", "", 10.0, 2)
@@ -103,7 +103,7 @@ print(json.dumps({
     env = {**os.environ, "CENTER_HOURS": "10:00-17:00", "INFO_DATE": "2026-11-01"}
     out = subprocess.run([sys.executable, "-c", script], cwd=BACKEND, env=env, capture_output=True, text=True, check=True)
     got = json.loads(out.stdout.strip().splitlines()[-1])
-    assert got["meta"] == {"infoDate": "2026-11-01", "centerHours": {"openHour": 10, "closeHour": 17, "workdays": [1, 2, 3, 4, 5]}}
+    assert got["meta"] == {"infoDate": "2026-11-01", "centerHours": {"openHour": 10, "closeHour": 17, "workdays": [0, 1, 2, 3, 4]}}
     assert got["afterHours"] == [True, False, False, True]
 
 

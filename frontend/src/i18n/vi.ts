@@ -271,7 +271,7 @@ export const vi: Record<MessageKey, string> = {
   cenSentBody: 'Tư vấn viên sẽ xem yêu cầu và liên lạc với bạn.',
   cenAfterHours: 'Trung tâm đang đóng cửa. Chúng tôi sẽ liên lạc vào ngày làm việc tiếp theo:',
   cenInHours: 'Trung tâm đang mở cửa. Vui lòng chờ liên lạc.',
-  cenHoursNote: 'Giờ làm việc của trung tâm (cần xác nhận): ngày thường 09:00–18:00',
+  cenHoursNote: 'Giờ làm việc của trung tâm: Chủ nhật–Thứ năm 09:00–18:00',
   cenCaseNo: 'Mã yêu cầu',
 
   myTitle: 'Thông tin của tôi',
