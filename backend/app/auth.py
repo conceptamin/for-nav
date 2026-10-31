@@ -1,5 +1,6 @@
 # 센터 직원 로그인(backlog 17). 직원 이메일은 저장소에 두고, 메일로 보낸 6자리 코드가 맞으면 세션 쿠키를 준다.
-# 코드와 세션 토큰은 sha256 해시만 저장한다. 이메일·코드·토큰은 로그에 남기지 않는다.
+# 근로자 Google 로그인(backlog 21). ID 토큰 검증(app/google_id.py)이 돌려준 sub에서 계정 키를 만들고 근로자 세션 쿠키를 준다.
+# 코드와 세션 토큰은 sha256 해시만 저장한다. 이메일·코드·토큰·sub·계정 키는 로그에 남기지 않는다.
 # 경로(routers/auth.py, routers/center.py)는 이 함수들을 부르고 응답만 만든다.
 
 import hashlib
@@ -15,6 +16,10 @@ from app.schemas import EMAIL_MAX_LEN, EMAIL_PATTERN
 from app.store import CenterStore
 
 COOKIE = "fornav_center"
+WORKER_COOKIE = "fornav_worker"
+# 계정 키 = sha256(접두어 + sub)의 앞 32자. 접두어는 다른 서비스가 같은 sub로 만든 해시와 맞춰 보지 못하게 붙인다
+ACCOUNT_PREFIX = "fornav-worker:"
+ACCOUNT_LEN = 32
 CODE_TTL = timedelta(minutes=10)
 CODE_MAX_ATTEMPTS = 5
 # 보내기 제한. 이메일별 제한은 등록되지 않은 이메일에도 똑같이 건다(429로 등록 여부를 떠보지 못하게).
@@ -113,9 +118,34 @@ def end_session(store: CenterStore, token: str | None) -> None:
         store.delete_session(hash_secret(token))
 
 
-def set_session_cookie(response: Response, token: str, days: int, secure: bool) -> None:
-    response.set_cookie(COOKIE, token, max_age=days * 24 * 60 * 60, path="/", secure=secure, httponly=True, samesite="lax")
+def account_key(sub: str) -> str:
+    """Google sub에서 근로자 계정 키를 만든다. 같은 sub면 늘 같고, sub 원문으로 되돌릴 수 없다."""
+    return hash_secret(ACCOUNT_PREFIX + sub)[:ACCOUNT_LEN]
 
 
-def clear_session_cookie(response: Response, secure: bool) -> None:
-    response.delete_cookie(COOKIE, path="/", secure=secure, httponly=True, samesite="lax")
+def start_worker_session(store: CenterStore, sub: str, now: datetime, session_days: int) -> tuple[str, str]:
+    """검증한 sub로 새 근로자 세션을 만든다. (세션 토큰(쿠키 값), 계정 키)를 돌려준다. sub 원문은 저장하지 않는다."""
+    account = account_key(sub)
+    token = secrets.token_urlsafe(32)
+    store.add_worker_session(hash_secret(token), account, now, now + timedelta(days=session_days))
+    return token, account
+
+
+def worker_account(store: CenterStore, token: str | None, now: datetime) -> str | None:
+    """쿠키 값으로 로그인한 근로자 계정 키를 찾는다. 쿠키가 없거나 세션이 끝났으면 None."""
+    if not token:
+        return None
+    return store.worker_account(hash_secret(token), now)
+
+
+def end_worker_session(store: CenterStore, token: str | None) -> None:
+    if token:
+        store.delete_worker_session(hash_secret(token))
+
+
+def set_session_cookie(response: Response, token: str, days: int, secure: bool, name: str = COOKIE) -> None:
+    response.set_cookie(name, token, max_age=days * 24 * 60 * 60, path="/", secure=secure, httponly=True, samesite="lax")
+
+
+def clear_session_cookie(response: Response, secure: bool, name: str = COOKIE) -> None:
+    response.delete_cookie(name, path="/", secure=secure, httponly=True, samesite="lax")

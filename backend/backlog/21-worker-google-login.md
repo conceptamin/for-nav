@@ -1,6 +1,6 @@
 # 21. 근로자 Google 로그인(ID 토큰 검증·세션)
 
-상태: 대기
+상태: 진행 중(실제 Google 계정 로그인 확인 남음: 클라이언트 ID와 frontend 28 필요)
 의존: 17 (세션 쿠키·저장소 표 구조를 그대로 따른다), 07 (SQLite 저장소)
 
 ## 목표
@@ -60,22 +60,43 @@
 - 수정: `app/settings.py`, `app/auth.py`, `app/store.py`·`app/store_sqlite.py`(`worker_sessions`), `app/routers/auth.py`, `app/routers/center.py`(`create_case`에 `require_worker`), `app/main.py`(검증기), `app/schemas.py`(`WorkerGoogleIn`, `WorkerMe`), `tests/fakes.py`, `tests/test_settings.py`, `tests/test_store.py`, `pyproject.toml`·`uv.lock`(`google-auth`, `requests`), `.env.example`, `README.md`, `CLAUDE.md`
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. `WORKER_AUTH`를 주지 않은 기존 테스트는 그대로 통과한다
-- [ ] `test_worker_auth.py`가 메모리·SQLite 두 저장소에서 다음을 확인한다(`FakeVerifier`, `clock` 고정)
+- [x] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과. `WORKER_AUTH`를 주지 않은 기존 테스트는 그대로 통과한다
+- [x] `test_worker_auth.py`가 메모리·SQLite 두 저장소에서 다음을 확인한다(`FakeVerifier`, `clock` 고정)
   - 맞는 토큰 → 200, `account`는 32자 16진수이고 같은 `sub`이면 늘 같은 값, 다른 `sub`이면 다른 값. 쿠키 `fornav_worker`에 `HttpOnly`·`SameSite=Lax`·`Max-Age`가 있고 `CENTER_COOKIE_SECURE`면 `Secure`
   - 검증 실패 토큰 → 401, 쿠키 없음
   - `/api/auth/worker/me` → 쿠키가 있으면 그 `account`, 없거나 30일 지났으면 `null`
   - 로그아웃 → 204, 같은 쿠키로 `/me` → `account: null`
   - `WORKER_AUTH=google`: 쿠키 없이 `POST /api/center/cases` → 401, 쿠키가 있으면 201. `/api/extract`·`/api/triage`·`/api/route`·`/api/visit-helper`·`/api/report/*`는 쿠키 없이 지금과 같은 응답
   - 센터 쿠키(`fornav_center`)로는 근로자 경로가 열리지 않고, 근로자 쿠키로는 센터 경로가 열리지 않는다
-- [ ] `GoogleVerifier`가 `aud`가 다른 토큰, `iss`가 다른 토큰, 만료된 토큰을 거절한다(서명 키를 테스트에서 만들어 넣는 단위 테스트, 네트워크 없음)
-- [ ] `WORKER_AUTH=off`: `/me` → `{ required: false, account: null }`, `google` → 404, 센터 요청은 쿠키 없이 201
-- [ ] 설정: `google`인데 `DB_PATH` 없음, `GOOGLE_CLIENT_ID` 없음이면 서버가 뜨지 않는다
-- [ ] 접근 로그·앱 로그에 ID 토큰·`sub`·계정 키·세션 토큰이 없다(`caplog`)
+- [x] `GoogleVerifier`가 `aud`가 다른 토큰, `iss`가 다른 토큰, 만료된 토큰을 거절한다(서명 키를 테스트에서 만들어 넣는 단위 테스트, 네트워크 없음)
+- [x] `WORKER_AUTH=off`: `/me` → `{ required: false, account: null }`, `google` → 404, 센터 요청은 쿠키 없이 201
+- [x] 설정: `google`인데 `DB_PATH` 없음, `GOOGLE_CLIENT_ID` 없음이면 서버가 뜨지 않는다
+- [x] 접근 로그·앱 로그에 ID 토큰·`sub`·계정 키·세션 토큰이 없다(`caplog`)
 - [ ] 로컬 실제 확인: 사용자가 만든 웹 클라이언트 ID로 `WORKER_AUTH=google CENTER_COOKIE_SECURE=false DB_PATH=<임시 파일>` 서버를 띄우고, frontend 28 화면에서 실제 Google 계정으로 로그인해 쿠키가 생기고 센터 요청이 201인 것을 `## 결과`에 적는다
 
 ## 결과
-(구현 후 작성)
+
+```sh
+cd backend
+uv run ruff check . && uv run ruff format --check .   # All checks passed, 81 files already formatted
+uv run pytest                                          # 3099 passed (이전 3045, 새 테스트 54)
+```
+
+- 새 테스트: `test_worker_auth.py` 47개(경로 테스트는 메모리·SQLite 두 저장소, `GoogleVerifier`는 테스트에서 만든 RSA 키·자체 서명 인증서와 가짜 공개 키 응답으로 네트워크 없이), `test_settings.py` 6개, `test_api.py` 1개. `WORKER_AUTH`를 주지 않은 기존 테스트(동기화 테스트 포함)는 그대로 통과한다
+- 로컬 실제 서버 확인(`WORKER_AUTH=google GOOGLE_CLIENT_ID=test-client.apps.googleusercontent.com CENTER_COOKIE_SECURE=false DB_PATH=<임시 파일> uv run fastapi run app/main.py --port 8766`):
+  - `GET /api/auth/worker/me` → `{"required":true,"account":null}`
+  - 엉터리 토큰으로 `POST /api/auth/worker/google` → 401 `UNAUTHORIZED`. 실제 Google 공개 키를 받아 온 뒤 형식에서 거절했다(189ms). 서버 로그는 `Google 로그인 확인 실패 MalformedError request_id=…`와 접근 로그뿐이고 토큰 값은 없다
+  - 쿠키 없이 `POST /api/center/cases` → 401, `POST /api/triage` → 200
+  - `WORKER_AUTH=google`인데 `DB_PATH`가 없으면 서버가 뜨지 않는다
+- 바뀐 API: `GET /api/auth/worker/me`, `POST /api/auth/worker/google`(200·401·404·422), `POST /api/auth/worker/logout`(204). `WORKER_AUTH=google`일 때 `POST /api/center/cases`가 근로자 세션 없이 401. 기본값 `off`에서는 API가 지금과 같다(`/worker/me`만 더해지고 `/worker/google`은 404)
+- 결정
+  - 쿠키 이름을 받는 `set_session_cookie`·`clear_session_cookie`(`name` 인자, 기본은 센터 쿠키)로 센터와 근로자가 같은 쿠키 속성을 쓴다
+  - `google-auth`의 공개 키 요청 기본 시간 제한(120초) 대신 10초(`CERTS_TIMEOUT_S`)를 건다. 로그인 화면이 기다리기에 너무 길다
+  - 공개 키를 받지 못한 경우(Google 장애·네트워크)도 401이다. 이유를 나누지 않는다는 결정을 따랐고, 로그의 실패 종류(`TransportError` 등)로 구분한다
+  - `credential`은 앞뒤 공백을 지우고 1~4096자만 받는다(그 밖은 422, 검증기를 부르지 않는다). Google ID 토큰은 보통 1~2KB다
+  - `require_worker`는 `require_staff`와 같이 `routers/center.py`에 두고 근로자 전송 하나에만 건다
+  - 새 의존성: `google-auth`(ID 토큰 검증, `cryptography`·`pyasn1-modules`가 함께 들어온다)와 `requests`(google-auth가 공개 키를 받는 전송 계층)
+- 남은 것: 사용자가 만든 웹 클라이언트 ID로 실제 Google 계정 로그인(위 완료 기준 마지막 줄). frontend 28 화면이 있어야 ID 토큰을 받을 수 있다
 
 ## 메모
 - 사용자 준비(구현 전): Google Cloud 콘솔에서 OAuth 동의 화면(외부, 테스트 중이면 테스트 사용자 등록)과 **웹 애플리케이션** OAuth 클라이언트 ID를 만든다. 승인된 JavaScript 원본에 `http://localhost`, `http://localhost:5180`, 배포 출처(`https://app.for-nav.com`, `https://www.for-nav.com`, Funnel 주소를 쓰면 그 주소)를 넣는다. 리디렉션 URI는 쓰지 않는다(팝업·콜백 방식). 클라이언트 ID는 비밀이 아니고 클라이언트 비밀번호는 쓰지 않는다
