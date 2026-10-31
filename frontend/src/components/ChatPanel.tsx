@@ -20,7 +20,10 @@ export interface ChatLabels {
   rejected: string;
 }
 
-/** `relogin`: 센터 세션이 끝나 멈췄을 때(4401) 멈춤 줄 안에 붙는 다시 로그인 링크 */
+/**
+ * `relogin`: 센터 세션이 끝나 멈췄을 때(4401) 멈춤 줄 안에 붙는 다시 로그인 링크.
+ * `onSeen`: 근로자가 지금 이 대화를 보고 있을 때만 넘긴다. 받은 센터 메시지 수를 알린다(읽은 수, backlog 46)
+ */
 export function ChatPanel({
   caseId,
   auth,
@@ -28,6 +31,7 @@ export function ChatPanel({
   labels,
   locale,
   relogin,
+  onSeen,
 }: {
   caseId: string;
   auth: ChatAuth;
@@ -35,10 +39,16 @@ export function ChatPanel({
   labels: ChatLabels;
   locale: string;
   relogin?: ReactNode;
+  onSeen?: (centerMessages: number) => void;
 }) {
   const chat = useChat(caseId, auth);
   const [draft, setDraft] = useState('');
   const log = useRef<HTMLDivElement>(null);
+
+  const centerCount = chat.messages.filter((m) => m.from === 'center').length;
+  useEffect(() => {
+    if (onSeen && chat.state === 'open') onSeen(centerCount);
+  }, [onSeen, centerCount, chat.state]);
 
   // 새 메시지가 오면 목록 맨 아래로 바로 옮긴다(스크롤 효과 없음)
   useEffect(() => {
