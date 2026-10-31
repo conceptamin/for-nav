@@ -356,7 +356,11 @@ export function InboxPage() {
           <button type="button" className="filter-chat" aria-pressed={status === 'chat'} onClick={() => setStatus('chat')}>
             <ChatIcon size={18} />
             채팅
-            {unreadCases > 0 && <span className="pill unread">새 {unreadCases}</span>}
+            {unreadCases > 0 && (
+              <span className="pill unread" title="새 채팅이 온 사례 수">
+                {unreadCases}
+              </span>
+            )}
           </button>
         )}
         <span style={{ flex: 1 }} />
