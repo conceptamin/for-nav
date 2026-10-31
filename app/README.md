@@ -34,6 +34,18 @@ fvm flutter run -d <에뮬레이터> --dart-define=APP_URL=http://10.0.2.2:5181
 - **http는 개발 빌드에서만 열린다.** Android는 `src/debug/AndroidManifest.xml`에서만 `usesCleartextTraffic`을 켠다. iOS는 `NSAllowsLocalNetworking`(localhost·사설 IP)만 연다. 배포 빌드는 HTTPS 주소를 넘긴다(마이크·WebRTC도 안전한 출처에서만 열린다).
 - Xcode 27.1에서 `fvm flutter build ios --simulator`는 `lipo -verify_arch`에 아키텍처 두 개를 넘기는 단계에서 실패한다(Flutter 3.44.7 도구 쪽 문제). 활성 아키텍처 하나만 빌드하는 `fvm flutter run`은 된다.
 
+### 운영 주소
+
+운영 웹 주소는 `env/prod.json`에 둔다(`APP_URL=https://app.for-nav.com`). 맥미니가 이 호스트에 앱용 웹(`app-front`) 빌드를 준다(backend backlog 22).
+
+```sh
+fvm flutter run -d <기기> --dart-define-from-file=env/prod.json
+fvm flutter build apk --dart-define-from-file=env/prod.json
+```
+
+- `--dart-define`을 함께 주면 그 값이 파일보다 앞선다. 확인 화면은 `--dart-define=APP_URL=https://app.for-nav.com/__host`, Google 클라이언트 ID는 아래 "Google 로그인"처럼 덧붙인다. 클라이언트 ID는 이 파일에 넣지 않는다(Google Cloud 프로젝트마다 다르다).
+- 앱이 불러온 웹이 다리를 쓰는지는 `/__host`의 "호스트: 있음"·"init 받음: 예"로 본다. 다리 없는 `frontend/` 빌드가 오면 상태 표시줄과 겹치고 뒤로 가기가 앱을 닫는다.
+
 ## Google 로그인
 
 서버가 `WORKER_AUTH=google`이면 근로자는 로그인해야 센터 요청을 보낸다. 앱 안에서는 웹 GIS 버튼이 막히므로, 앱이 네이티브 계정 선택으로 ID 토큰을 받아 웹에 넘긴다(`app-front/README.md` "호스트 계약" `googleSignIn`). 클라이언트 ID를 넘기지 않은 빌드는 `init.features`에 `googleSignIn`을 넣지 않고 지금처럼 동작한다(앱 안 GIS는 실패한다).
