@@ -205,7 +205,7 @@ def test_uvicorn_websocket_line_is_dropped(caplog):
 
 
 # ---------------------------------------------------------------------------
-# 근로자가 자기 요청의 상태와 센터 메시지 수를 읽기(backlog 26)
+# 근로자가 자기 요청의 상태와 센터 메시지 수를 읽기(backlog 27)
 # ---------------------------------------------------------------------------
 def my_cases(client: TestClient, *refs: tuple[str, str]) -> list[dict]:
     r = client.post("/api/center/my-cases", json={"cases": [{"id": i, "token": t} for i, t in refs]})

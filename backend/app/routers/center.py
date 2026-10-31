@@ -115,7 +115,7 @@ async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depe
 
 @router.post("/my-cases", dependencies=[Depends(require_worker)])
 def my_cases(req: MyCasesRequest) -> list[MyCaseView]:
-    """S-13·센터 채팅 시트: 근로자가 채팅 토큰으로 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 26).
+    """S-13·센터 채팅 시트: 근로자가 채팅 토큰으로 자기 요청의 상태와 센터 메시지 수를 읽는다(backlog 27).
 
     토큰이 틀리거나 사례가 없으면 그 항목만 뺀다. 사례가 있는지 드러내지 않으려고 403·404를 내지 않는다.
     """

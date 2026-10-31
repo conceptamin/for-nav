@@ -175,7 +175,7 @@ def test_center_request_needs_worker_session(client):
 
 
 def test_my_cases_needs_worker_session(client, store, monkeypatch):
-    # 근로자가 자기 요청 상태를 읽는 경로(backlog 26)도 센터 전송과 같이 근로자 세션이 있어야 한다
+    # 근로자가 자기 요청 상태를 읽는 경로(backlog 27)도 센터 전송과 같이 근로자 세션이 있어야 한다
     login(client)
     out = client.post("/api/center/cases", json=NEW_CASE).json()
     ref = {"cases": [{"id": out["case"]["id"], "token": out["chatToken"]}]}

@@ -59,7 +59,7 @@ class CenterStore(Protocol):
         ...
 
     def center_message_summary(self, case_id: str) -> tuple[int, str | None]:
-        """센터가 보낸 메시지 수와 마지막 시각(backlog 26)."""
+        """센터가 보낸 메시지 수와 마지막 시각(backlog 27)."""
         ...
 
     # 통화 자막(backlog 18). 받자마자 번역 전 상태로 넣고, 번역이 끝나면 채운다.
