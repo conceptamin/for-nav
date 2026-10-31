@@ -59,11 +59,11 @@
 
 ## 스택과 폴더
 
-- Vite + React 19 + react-router + TypeScript(strict). **버전은 `frontend/package.json`과 같은 값으로 고정한다**(범위 기호 없이). `frontend/` 코드를 공유 import하게 되면(backlog 02) React가 둘이 되면 안 되기 때문이다. 올릴 때는 두 폴더를 같은 PR에서 올리거나, `frontend/`를 먼저 올린다. `package-lock.json`을 커밋한다. 의존성을 더할 때는 backlog 문서에 이유를 적는다. WebView 전용 라이브러리는 쓰지 않는다. 다리는 `window` API만으로 충분하다.
+- Vite + React 19 + react-router + TypeScript(strict). **버전은 `frontend/package.json`과 같은 값으로 고정한다**(범위 기호 없이). `frontend/src`를 공유 import하므로(backlog 02) 같은 코드가 다른 React 버전으로 돌면 안 되기 때문이다. `tsconfig.json`의 `paths`와 `vite.config.ts`의 `resolve.dedupe`가 react·react-dom·react-router를 이 폴더의 것으로 고정하므로 `frontend/node_modules`는 필요 없다. 올릴 때는 두 폴더를 같은 PR에서 올리거나, `frontend/`를 먼저 올린다. `package-lock.json`을 커밋한다. 의존성을 더할 때는 backlog 문서에 이유를 적는다. WebView 전용 라이브러리는 쓰지 않는다. 다리는 `window` API만으로 충분하다.
 - 검사는 `npm run build`(타입 검사 + 빌드) 하나다. 린터·포매터·테스트 러너는 아직 없다. 들이는 것은 backlog 문서 하나로 따로 한다.
 - 폴더 구조는 `README.md`의 "폴더 구조"를 따른다. 새 폴더가 필요하면 backlog 문서에 이유를 적고 `README.md`의 구조를 함께 고친다.
 - **호스트와 닿는 코드는 `src/bridge/`에만 있다.** `window.ForNav`, `window.flutter_inappwebview`, `window.fornav`를 화면·상태 코드에서 직접 만지지 않는다. 화면은 `useHost()`가 주는 값(`present`, `platform`, `locale`, `insets`)과 함수만 쓴다. 다리의 감지·전송 방식이 바뀌어도 화면은 바뀌지 않아야 한다.
-- 화면 코드는 `frontend/CLAUDE.md`의 규칙을 그대로 따른다. 로직은 `domain/`, 저장소는 `state/storage.ts` 래퍼, 네트워크는 `api/`, 문구는 `i18n/` 키. 이 폴더에 규칙·템플릿·문구를 새로 쓰지 않는다.
+- 근로자 화면은 `@fe`(= `../frontend/src`)에서 import한다. 이 폴더의 `src/pages/`에는 이 앱만의 화면(`/__host`)만 둔다. 화면·규칙·템플릿·문구·스타일을 바꿔야 하면 `frontend/` 브랜치로 한다. `@fe` 안의 파일을 이 폴더에서 수정하거나 복사하지 않는다.
 - 개발 서버 포트는 5181이다(`frontend/`가 5180). 백엔드 CORS 기본값은 5180뿐이지만 둘 다 Vite 프록시로 `/api`를 부르므로 CORS 설정이 필요 없다.
 
 ## 설계에서 바꾸지 않는 것
@@ -80,7 +80,7 @@
 
 ## frontend·backend·Flutter와의 경계
 
-- `frontend/` 코드는 이 폴더의 작업에서 고치지 않는다. 화면·규칙을 바꿔야 하면 `frontend/` 브랜치로 따로 한다. 예외는 backlog 02가 공유 import를 택했을 때 `frontend/CLAUDE.md` "경계" 절에 "app-front가 이 경로들을 import한다"는 한 줄을 더하는 것이다(그 뒤로 `frontend/` 작업이 파일을 옮길 때 이 앱 빌드를 함께 돌리게 하기 위해서).
+- `frontend/` 코드는 이 폴더의 작업에서 고치지 않는다. 화면·규칙을 바꿔야 하면 `frontend/` 브랜치로 따로 한다. `frontend/CLAUDE.md` "경계"에 이 앱이 import하는 경로와 `.w-header button.back` 선택자가 적혀 있어, `frontend/` 작업이 그것을 옮길 때 이 앱 빌드를 함께 돌린다.
 - `backend/` 코드는 고치지 않는다. 같은 출처 서빙 경로(`/app/`)나 `CORS_ORIGINS` 기본값처럼 서버 쪽이 필요하면 backlog 문서 `## 메모`에 적고 사용자에게 알린다.
 - Flutter 프로젝트는 이 폴더 밖이다(위치는 backlog 03). 이 폴더는 호스트가 지켜야 할 계약(`README.md`)과 예시 코드만 둔다. 계약 변경은 웹·호스트를 같은 PR에서 고친다(같은 저장소일 때).
 - `.github/workflows/ci.yml`에 이 폴더의 잡을 더하는 것은 `chore/` 영역의 별도 작업이다. 그 전까지는 PR 본문에 `npm run build` 결과를 적는다.
