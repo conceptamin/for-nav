@@ -37,7 +37,7 @@ vocab = load_backend_vocab()
 
 @pytest.mark.parametrize(
     "name",
-    ["Lang", "BodyPart", "Symptom", "Department", "Onset", "Industry", "WorkType", "District", "YesNoUnknown", "AgeGroup", "Sex", "Mental"],
+    ["Lang", "BodyPart", "Symptom", "Department", "Onset", "Industry", "WorkType", "District", "YesNoUnknown"],
 )
 def test_enum_values_and_order_match_backend(name):
     # Literal끼리 ==는 순서를 무시하므로 값 튜플로 비교한다. 순서가 라벨 순서다.

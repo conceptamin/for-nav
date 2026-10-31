@@ -9,34 +9,16 @@ uv run python scripts/download_data.py --verify  # 내려받지 않고 해시만
 
 해시는 `src/fornav_modeling/data/download.py`에 고정돼 있고, 이 문서의 sha256과 같아야 한다(`tests/test_download.py`가 확인한다). 출처가 파일을 바꿔 검증이 실패하면 새 파일을 확인한 뒤 두 곳을 함께 고친다.
 
-확인 날짜는 모두 **2026-10-27**이다.
+확인 날짜는 모두 **2026-10-27**이다. 응급도 모델용 PLOS ONE KTAS 데이터(`kaggle_triage/`)는 응급도 모델과 함께 지웠다(backlog 15, 기록은 git 이력).
 
 ## 요약
 
 | 폴더 | 용도 | 출처 | 라이선스 | 학습·평가 사용 |
 |---|---|---|---|---|
-| `kaggle_triage/` | 응급도 모델 | PLOS ONE 논문 S1 Appendix (Kaggle "Emergency Service – Triage Application"의 원 출처) | CC BY 4.0 | 가능. 출처 표시 필요, 상업 이용 가능 |
 | `kaggle_symptom/` | 진료과 모델 A | Kaggle "Disease Symptom Prediction" | CC BY-SA 4.0 | 가능. 출처 표시 필요, 상업 이용 가능. 가공한 데이터를 배포하면 같은 라이선스(동일조건변경허락) |
 | `hira/` | 질환 → 진료과 매핑, 모델 B 라벨 | 공공데이터포털, 건강보험심사평가원 | 공공누리 제1유형(출처표시) | 가능. 출처 표시 필요, 상업 이용·변경 가능 |
 
-식별 정보(이름·연락처·기관명) 열은 세 출처 모두 **없음**. 가공 단계에서 지울 열도 없다. 아래 출처별 "식별 정보" 항목에 점검 내용을 적었다.
-
-## kaggle_triage — 응급도
-
-- 데이터: Moon S-H, Shim JL, Park K-S, Park C-S (2019) Triage accuracy and causes of mistriage using the Korean Triage and Acuity Scale. *PLoS ONE* 14(9): e0216972. https://doi.org/10.1371/journal.pone.0216972 — S1 Appendix "EMR review coding data"
-- 내려받는 URL: https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0216972.s001
-- 라이선스: CC BY 4.0. 논문 페이지에 "open access article distributed under the terms of the Creative Commons Attribution License"로 표시돼 있고, Data Availability가 "All relevant data are within the paper and its Supporting Information files"라 S1 Appendix도 같은 조건이다
-- **Kaggle 판을 쓰지 않는 이유**: Kaggle 판(https://www.kaggle.com/datasets/ilkeryildiz/emergency-service-triage-application, v2)은 라이선스가 "Other (specified in description)"인데 설명에 라이선스 문구가 없다. 내용은 이 S1 Appendix를 옮긴 것이다(1,267행 × 24열, 열 이름 같음. Kaggle 판은 `Age` 등을 반올림하고 latin-1/cp1252 CSV로 저장됨). 라이선스가 표시된 원본을 쓰기로 했다(2026-10-27 사용자 결정)
-
-| 파일 | sha256 | 행 | 형식 |
-|---|---|---|---|
-| `pone.0216972.s001.xlsx` | `f631c951178799179d0fbd74fe979464b955ea1b426222bf015b163b8a24beb0` | 1,267 (+머리글) | xlsx, 시트 1개 `N=1267 data` |
-
-- 열(24): `Group`, `Sex`, `Age`, `Patients number per hour`, `Arrival mode`, `Injury`, `Chief_complain`, `Mental`, `Pain`, `NRS_pain`, `SBP`, `DBP`, `HR`, `RR`, `BT`, `Saturation`, `KTAS_RN`, `Diagnosis in ED`, `Disposition`, `KTAS_expert`, `Error_group`, `Length of stay_min`, `KTAS duration_min`, `mistriage`
-- 코드값(Kaggle 판 설명 기준): `Sex` 1=여 2=남, `Injury` 1=아니오 2=예, `Pain` 1=있음 0=없음, `Mental` 1=Alert 2=Verbal 3=Pain 4=Unresponsive, `Group` 1=지역응급의료기관 2=권역응급의료센터
-- `KTAS_expert`(전문가가 정한 KTAS) 분포: 1=26, 2=220, 3=487, 4=459, 5=75 (합 1,267)
-- 참고: 활력징후 열(`SBP`~`Saturation`)에 문자열 `측불`(측정 불가)이 섞여 있다(`SBP` 25건 등). `NRS_pain` 빈칸 556건, `Diagnosis in ED` 빈칸 2건. `Chief_complain`은 영어·한국어 자유 텍스트(고유값 427개)
-- 식별 정보: 없음. 이름·연락처·병원명 열이 없고, `Group`은 응급실 종별 코드다. 자유 텍스트 열(`Chief_complain`, `Diagnosis in ED`)에서 이메일(`@`)·전화번호 형태(숫자 3자리 이상)를 찾았고, 나온 것은 상병코드 `S376` 1건뿐이다
+식별 정보(이름·연락처·기관명) 열은 두 출처 모두 **없음**. 가공 단계에서 지울 열도 없다. 아래 출처별 "식별 정보" 항목에 점검 내용을 적었다.
 
 ## kaggle_symptom — 진료과 모델 A
 

@@ -1,4 +1,4 @@
-# KTAS → 응급도 3단계 변환, 진료과 표(backlog 05).
+# 진료과 표(backlog 05).
 
 import re
 from pathlib import Path
@@ -7,24 +7,7 @@ import pytest
 
 from fornav_modeling.data import hira
 from fornav_modeling.labels import department as dept
-from fornav_modeling.labels.ktas import ACUITIES, ktas_to_acuity
 from fornav_modeling.schema import DEPARTMENTS
-
-
-def test_label_order_is_fixed():
-    assert ACUITIES == ("emergency", "today", "outpatient")
-
-
-@pytest.mark.parametrize(("ktas", "acuity"), [(1, "emergency"), (2, "emergency"), (3, "today"), (4, "outpatient"), (5, "outpatient")])
-def test_ktas_to_acuity(ktas, acuity):
-    assert ktas_to_acuity(ktas) == acuity
-
-
-@pytest.mark.parametrize("ktas", [0, 6, -1, None, True, "1"])
-def test_invalid_ktas_raises(ktas):
-    with pytest.raises(ValueError):
-        ktas_to_acuity(ktas)
-
 
 # ---------------------------------------------------------------------------
 # 진료과 표(backlog 05). 커밋된 표만 읽고 원본(data/raw)은 쓰지 않는다. HIRA 적재는 작은 가짜 파일로 확인한다.

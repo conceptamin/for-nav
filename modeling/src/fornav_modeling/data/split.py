@@ -1,11 +1,10 @@
-# 응급도 데이터를 train/valid/test로 나누고 id 목록으로 고정한다.
-# - data/splits/triage_{train,valid,test}.txt: id 목록(git 포함). 한번 커밋한 목록은 바꾸지 않는다(바꾸려면 사용자에게 묻는다)
-# - data/splits/triage_test.sha256: 재생성한 data/test/triage_test.parquet의 sha256(git 포함)
-# - data/processed/triage.parquet: train·valid 행만(split 열). 학습·임계값 조정은 이 파일만 읽는다
-# - data/test/triage_test.parquet: test 행만. 평가 명령만 load_test로 읽는다
+# 질환·증상 데이터(진료과 모델 A, backlog 06)를 train/valid/test로 나누고 id 목록으로 고정한다. 질환으로 층화한다.
+# - data/splits/symptom_{train,valid,test}.txt: id 목록(git 포함). 한번 커밋한 목록은 바꾸지 않는다(바꾸려면 사용자에게 묻는다)
+# - data/splits/symptom_test.sha256: 재생성한 data/test/symptom_test.parquet의 sha256(git 포함)
+# - data/processed/symptom.parquet: train·valid 행만(split 열). 학습·조정은 이 파일만 읽는다
+# - data/test/symptom_test.parquet: test 행만. 평가 명령만 load_symptom_test로 읽는다
 # test 행은 processed에 넣지 않아, 학습 쪽 코드가 test 행을 메모리에 올릴 길 자체를 없앤다.
-# 질환·증상 데이터(backlog 06)도 같은 방식이다: data/splits/symptom_*.txt, symptom_test.sha256, data/processed/symptom.parquet,
-# data/test/symptom_test.parquet. 질환으로 층화한다.
+# 응급도 데이터(triage_*) 분할은 응급도 모델과 함께 지웠다(backlog 15).
 
 import json
 from pathlib import Path
@@ -13,10 +12,8 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from fornav_modeling.data import kaggle_symptom, kaggle_triage
+from fornav_modeling.data import kaggle_symptom
 from fornav_modeling.data.download import sha256_file
-from fornav_modeling.features.buttons import FEATURE_NAMES, featurize_many
-from fornav_modeling.labels.ktas import ACUITIES
 
 SEED = 20261027
 TEST_SIZE = 0.20  # 전체 대비
@@ -24,9 +21,6 @@ VALID_SIZE = 0.15  # 전체 대비
 SPLITS = ("train", "valid", "test")
 DEV_SPLITS = ("train", "valid")
 
-PROCESSED_FILE = "triage.parquet"
-TEST_FILE = "triage_test.parquet"
-TEST_HASH_FILE = "triage_test.sha256"
 SYMPTOM_PROCESSED_FILE = "symptom.parquet"
 SYMPTOM_TEST_FILE = "symptom_test.parquet"
 SYMPTOM_TEST_HASH_FILE = "symptom_test.sha256"
@@ -36,7 +30,7 @@ class SplitError(RuntimeError):
     pass
 
 
-def split_ids(table: pd.DataFrame, label: str = "acuity", seed: int = SEED) -> dict[str, list[str]]:
+def split_ids(table: pd.DataFrame, label: str = "disease", seed: int = SEED) -> dict[str, list[str]]:
     """라벨로 층화해 나눈다. 같은 테이블·seed면 같은 결과. 각 목록은 id 순으로 정렬한다."""
     ids, labels = table["id"].tolist(), table[label].tolist()
     rest_ids, test_ids, rest_labels, _ = train_test_split(ids, labels, test_size=TEST_SIZE, stratify=labels, random_state=seed)
@@ -44,30 +38,12 @@ def split_ids(table: pd.DataFrame, label: str = "acuity", seed: int = SEED) -> d
     return {"train": sorted(train_ids), "valid": sorted(valid_ids), "test": sorted(test_ids)}
 
 
-def split_path(splits_dir: Path, name: str, prefix: str = "triage") -> Path:
+def split_path(splits_dir: Path, name: str, prefix: str = "symptom") -> Path:
     return splits_dir / f"{prefix}_{name}.txt"
 
 
-def read_split_ids(splits_dir: Path, name: str, prefix: str = "triage") -> list[str]:
+def read_split_ids(splits_dir: Path, name: str, prefix: str = "symptom") -> list[str]:
     return split_path(splits_dir, name, prefix).read_text().split()
-
-
-def make_splits(
-    raw_dir: Path, tables_dir: Path, processed_dir: Path, splits_dir: Path, test_dir: Path, reports_dir: Path, force: bool = False
-) -> dict:
-    """원본 → 표준 테이블 → 분할 → 파일 쓰기 → 리포트. 리포트 dict를 돌려준다.
-    이미 커밋된 id 목록·test 해시와 다르게 나오면 SplitError(force=True면 덮어쓴다)."""
-    table = kaggle_triage.standardize(kaggle_triage.read_raw(raw_dir), kaggle_triage.read_chief_complaint_map(tables_dir))
-    _write_dataset(
-        table, split_ids(table), "triage", (PROCESSED_FILE, TEST_FILE, TEST_HASH_FILE), processed_dir, splits_dir, test_dir, force
-    )
-
-    report = build_report(table)
-    reports_dir.mkdir(parents=True, exist_ok=True)
-    (reports_dir / "triage_splits.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
-    unmapped = pd.DataFrame(report["chief_complaint"]["unmapped_top20"])
-    unmapped.to_csv(reports_dir / "triage_unmapped_chief_complaints.csv", index=False)
-    return report
 
 
 def make_symptom_splits(
@@ -77,7 +53,7 @@ def make_symptom_splits(
     from fornav_modeling.labels.department import read_symptom_map
 
     table, summary = kaggle_symptom.standardize(kaggle_symptom.read_dataset(raw_dir), read_symptom_map(tables_dir))
-    ids = split_ids(table, label="disease")
+    ids = split_ids(table)
     _write_dataset(
         table,
         ids,
@@ -99,16 +75,6 @@ def make_symptom_splits(
     reports_dir.mkdir(parents=True, exist_ok=True)
     (reports_dir / "symptom_splits.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     return report
-
-
-def load_dev(processed_dir: Path, splits_dir: Path, name: str) -> pd.DataFrame:
-    """응급도 학습·검증용 행. name은 "train" 또는 "valid"만 받는다. data/test는 열지 않는다."""
-    return _load_dev(processed_dir / PROCESSED_FILE, splits_dir, name, "triage")
-
-
-def load_test(test_dir: Path, splits_dir: Path) -> pd.DataFrame:
-    """평가 명령 전용. 재생성한 test 파일의 해시가 커밋된 해시와 다르면 SplitError로 멈춘다."""
-    return _load_test(test_dir / TEST_FILE, splits_dir / TEST_HASH_FILE)
 
 
 def load_symptom_dev(processed_dir: Path, splits_dir: Path, name: str) -> pd.DataFrame:
@@ -161,33 +127,6 @@ def _load_test(path: Path, hash_path: Path) -> pd.DataFrame:
     if not path.exists() or sha256_file(path) != expected:
         raise SplitError(f"{path}가 없거나 해시가 {hash_path.name}와 다르다. scripts/make_splits.py로 다시 만든다")
     return pd.read_parquet(path)
-
-
-def build_report(table: pd.DataFrame) -> dict:
-    """라벨 건수(분자·분모), 주증상 매핑 커버리지, 피처 결측을 분할별로 센다. table에는 split 열이 있어야 한다."""
-    groups = {"all": table, **{name: table[table["split"] == name] for name in SPLITS}}
-    features = pd.DataFrame(featurize_many(table.to_dict("records")), columns=FEATURE_NAMES)
-    unmapped = table.loc[~table["chief_complaint_mapped"], "chief_complaint"].value_counts()
-    return {
-        "seed": SEED,
-        "sizes": {"test": TEST_SIZE, "valid": VALID_SIZE},
-        "labels": {
-            name: {
-                "total": len(rows),
-                "acuity": {a: int((rows["acuity"] == a).sum()) for a in ACUITIES},
-                "acuity_rn": {a: int((rows["acuity_rn"] == a).sum()) for a in ACUITIES},
-            }
-            for name, rows in groups.items()
-        },
-        "chief_complaint": {
-            "mapped_rows": {name: [int(rows["chief_complaint_mapped"].sum()), len(rows)] for name, rows in groups.items()},
-            "unique": int(table["chief_complaint"].nunique()),
-            "unmapped_unique": len(unmapped),
-            "unmapped_top20": [{"chief_complaint": k, "rows": int(v)} for k, v in unmapped.head(20).items()],
-        },
-        "feature_missing": {name: int(features[name].isna().sum()) for name in FEATURE_NAMES if features[name].isna().any()},
-        "feature_rows": len(features),
-    }
 
 
 def _id_text(ids: list[str]) -> str:
