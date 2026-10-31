@@ -139,7 +139,7 @@ export const ru: Record<MessageKey, string> = {
   toCenter: 'Попросить помощи у центра',
   resultGoGroup: 'Когда идёте в больницу',
   resultMoreGroup: 'Если нужна ещё помощь',
-  resultNoDiag: 'Это подсказка, в какую клинику идти,\nа не диагноз.',
+  resultNoDiag: 'Это подсказка, в какую клинику идти, а не диагноз.',
 
   // S-08
   covTitle: 'Куда сначала спросить о расходах',

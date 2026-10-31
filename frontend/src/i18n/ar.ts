@@ -131,7 +131,7 @@ export const ar: Record<MessageKey, string> = {
   toCenter: 'اطلب المساعدة من المركز',
   resultGoGroup: 'عند الذهاب إلى المستشفى',
   resultMoreGroup: 'إذا احتجت إلى مساعدة أكثر',
-  resultNoDiag: 'هذا إرشاد إلى العيادة المناسبة،\nوليس تشخيصا.',
+  resultNoDiag: 'هذا إرشاد إلى العيادة المناسبة، وليس تشخيصا.',
 
   covTitle: 'أين تسأل عن التكاليف أولا',
   covWorkQ: 'هل حدث أثناء العمل؟',

@@ -139,7 +139,7 @@ export const zhTW: Record<MessageKey, string> = {
   toCenter: '請中心幫忙',
   resultGoGroup: '去醫院時',
   resultMoreGroup: '如需更多協助',
-  resultNoDiag: '這只是告訴您該看哪一科，\n不是診斷。',
+  resultNoDiag: '這只是告訴您該看哪一科，不是診斷。',
 
   // S-08
   covTitle: '費用問題先問哪裡',

@@ -139,7 +139,7 @@ export const uz: Record<MessageKey, string> = {
   toCenter: 'Markazdan yordam soʻrash',
   resultGoGroup: 'Kasalxonaga borganda',
   resultMoreGroup: 'Qoʻshimcha yordam kerak boʻlsa',
-  resultNoDiag: 'Bu qaysi klinikaga borish boʻyicha maslahat,\ntashxis emas.',
+  resultNoDiag: 'Bu qaysi klinikaga borish boʻyicha maslahat, tashxis emas.',
 
   // S-08
   covTitle: 'Xarajatlar haqida avval qayerdan soʻrash',

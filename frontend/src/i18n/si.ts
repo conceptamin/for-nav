@@ -139,7 +139,7 @@ export const si: Record<MessageKey, string> = {
   toCenter: 'මධ්‍යස්ථානයෙන් උදව් ඉල්ලන්න',
   resultGoGroup: 'රෝහලට යන විට',
   resultMoreGroup: 'තවත් උදව් අවශ්‍ය නම්',
-  resultNoDiag: 'මෙය යා යුතු සායනය ගැන මඟ පෙන්වීමක්,\nරෝග විනිශ්චයක් නොවේ.',
+  resultNoDiag: 'මෙය යා යුතු සායනය ගැන මඟ පෙන්වීමක්, රෝග විනිශ්චයක් නොවේ.',
 
   // S-08
   covTitle: 'වියදම් ගැන මුලින්ම අහන්න ඕනේ තැන',
