@@ -75,9 +75,20 @@ export function WorkerLayout() {
   }, [bar.title, appName]);
 
   // 119 버튼은 로딩과 관계없이 보인다. 예외는 응급 화면(자기 전화 버튼이 있다)과 1.2초 스플래시(사용자 결정, backlog 24)
+  // 오른쪽 채팅 아이콘은 센터 연락(통화·채팅, backlog 29)으로 간다. 회원·비회원을 고른 뒤에만 보인다
   const bar119 = pathname !== '/emergency' && (
-    <div className="bar-119">
-      <a href="tel:119">📞 {app.lang ? t('bar119') : '119 · Emergency · Khẩn cấp'}</a>
+    <div className={app.mode ? 'bar-119 with-chat' : 'bar-119'}>
+      <a className="call-119" href="tel:119">
+        📞 {app.lang ? t('bar119') : '119 · Emergency · Khẩn cấp'}
+      </a>
+      {app.mode && (
+        <Link className="bar-chat" to="/center-chat" aria-label={t('chatTitle')} aria-current={pathname === '/center-chat' ? 'page' : undefined}>
+          <svg className="bar-chat-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z" />
+            <path d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01" />
+          </svg>
+        </Link>
+      )}
     </div>
   );
 
