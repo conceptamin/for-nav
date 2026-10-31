@@ -154,11 +154,31 @@ p {
 
 /* 앱 바는 맨 위에서는 띠(면) 없이 투명하다(backlog 32). 왼쪽 알약(.brand-pill)과 오른쪽 언어 버튼(.lang-btn) 두 유리 버튼만 떠 있다.
    내용이 스크롤되어 앱 바 밑으로 들어가면 .w-footer와 같은 유리 띠(--card + 흐림 + 아래 1px 선)가 생겨 글자가 겹쳐 보이지 않는다(backlog 35) */
-.w-header.scrolled {
+
+/* 위·아래 고정 띠의 면. 480px 기둥보다 화면이 넓어도(태블릿·PC·가로 화면) 띠가 화면 양 끝까지 닿도록 가상 요소로 화면 폭만큼 그린다.
+   띠 자신(앱 바·.w-footer)은 투명하고 z-index가 있어, 면(-1)은 그 안의 버튼 아래·내용 위에 깔린다 */
+.w-header.scrolled::before,
+.w-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  z-index: -1;
   background: var(--card);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
+  pointer-events: none;
+}
+
+.w-header.scrolled::before {
   box-shadow: 0 1px 0 var(--glass-edge);
+}
+
+/* 띠를 화면 폭(100vw)으로 그리면 PC의 세로 스크롤바 폭만큼 가로로 넘친다. 근로자 화면에서만 가로 넘침을 자른다 */
+html:has(.w-shell) {
+  overflow-x: clip;
 }
 
 /* 앱 바 왼쪽 알약(backlog 32). 언어 버튼과 같은 유리 버튼 모양(44px, --radius-sm, --card + 흐림 + --glass-sm).
@@ -431,13 +451,13 @@ a.brand-pill:active {
   z-index: 5;
   margin: 16px -16px calc(-1 * (var(--bar-119) + 16px + env(safe-area-inset-bottom))); /* .w-main의 좌우·아래 여백까지 띠를 넓힌다 */
   padding: 12px 16px calc(var(--bar-119) + env(safe-area-inset-bottom));
-  background: var(--card);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: 0 -1px 0 var(--glass-edge);
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.w-footer::before {
+  box-shadow: 0 -1px 0 var(--glass-edge);
 }
 
 .w-screen .w-footer {
