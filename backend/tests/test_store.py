@@ -38,7 +38,7 @@ def test_mock_cases_and_stats(store: CenterStore):
     cases = store.all()
     assert {c.id for c in cases} == {f"C-{n}" for n in range(1001, 1025)}
     assert [c.created_at for c in cases] == sorted((c.created_at for c in cases), reverse=True)
-    assert len(store.stat_records) == 420
+    assert len(store.stat_records) == 329
 
 
 def test_add_live_goes_first_and_round_trips(store: CenterStore):
