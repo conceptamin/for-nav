@@ -67,8 +67,8 @@ let state: HostState = {
 };
 const listeners = new Set<() => void>();
 let installed = false;
-/** 뒤로 가기를 화면 쪽이 가로챌 때 등록한다(단계가 있는 화면). true를 돌려주면 처리한 것이다 */
-let backHandler: (() => boolean) | null = null;
+/** 뒤로 가기의 앱 규칙(bridge/back.ts). true·false면 그 값이 답이고, undefined면 아래 기본 동작으로 간다 */
+let backHandler: (() => boolean | undefined) | null = null;
 
 function hostWindow(): HostWindow {
   return window as unknown as HostWindow;
@@ -192,11 +192,12 @@ export function receive(raw: unknown): void {
 
 /**
  * Android 뒤로 가기. 호스트가 동기로 부른다.
- * 화면이 등록한 처리기가 있으면 그것을 먼저 묻고, 아니면 라우터 이력(react-router가 history.state.idx에 둔다)이 있을 때만 한 화면 뒤로 간다.
+ * 등록된 앱 규칙이 답을 주면 그대로, 아니면 라우터 이력(react-router가 history.state.idx에 둔다)이 있을 때만 한 화면 뒤로 간다.
  * 갈 곳이 없으면 false — 호스트가 앱을 뒤로 보낸다.
  */
 export function onBack(): boolean {
-  if (backHandler?.()) return true;
+  const decided = backHandler?.();
+  if (decided !== undefined) return decided;
   const idx = (window.history.state as { idx?: unknown } | null)?.idx;
   if (typeof idx === 'number' && idx > 0) {
     window.history.back();
@@ -205,7 +206,7 @@ export function onBack(): boolean {
   return false;
 }
 
-export function setBackHandler(handler: (() => boolean) | null): void {
+export function setBackHandler(handler: (() => boolean | undefined) | null): void {
   backHandler = handler;
 }
 
