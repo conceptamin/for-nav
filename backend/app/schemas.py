@@ -340,6 +340,19 @@ class PushDeviceResponse(CamelModel):
     cases: list[str]
 
 
+class IceServer(CamelModel):
+    # RTCIceServer와 같은 모양. STUN 항목에는 username·credential이 없다
+    urls: list[str]
+    username: str | None = absent_if_none()
+    credential: str | None = absent_if_none()
+
+
+class IceServersResponse(CamelModel):
+    """통화 ICE 서버(backlog 31). 비어 있으면 TURN이 없으니 프론트가 자기 STUN 기본값을 쓴다."""
+
+    ice_servers: list[IceServer]
+
+
 class PushDeviceRemove(CamelModel):
     device_token: str = Field(min_length=1, max_length=DEVICE_TOKEN_MAX)
 

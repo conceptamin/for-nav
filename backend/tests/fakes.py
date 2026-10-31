@@ -1,4 +1,4 @@
-"""테스트용 가짜 LLM·메일·Google ID 토큰 검증·푸시 발송. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일, 확인한 토큰, 보낸 알림을 기록한다."""
+"""테스트용 가짜 LLM·메일·Google ID 토큰 검증·푸시 발송·TURN 발급. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일, 확인한 토큰, 보낸 알림을 기록한다."""
 
 import asyncio
 import re
@@ -9,6 +9,7 @@ from app.google_id import GoogleIdError
 from app.llm import LLMError, LLMPrompt
 from app.mail import MailError
 from app.push import UNREGISTERED, PushError
+from app.turn import TurnError
 
 # 차례마다 돌려줄 값. 문자열은 응답 본문, 예외는 그대로 올리고, None이면 시간 초과까지 기다린다.
 Reply = str | Exception | None
@@ -96,3 +97,18 @@ class FakePushSender:
         if self.fail is not None:
             raise self.fail
         self.sent.append({"token": device_token, "platform": platform, "title": title, "body": body, "data": data, "collapse": collapse})
+
+
+class FakeTurnIssuer:
+    """테스트용 가짜 TURN 발급(backlog 31). 부른 횟수를 `calls`에 센다. `fail`이 있으면 TurnError(fail)로 실패한다."""
+
+    def __init__(self, servers: list[dict[str, Any]], fail: str | None = None) -> None:
+        self.servers = servers
+        self.fail = fail
+        self.calls = 0
+
+    async def issue(self) -> list[dict[str, Any]]:
+        self.calls += 1
+        if self.fail is not None:
+            raise TurnError(self.fail)
+        return self.servers

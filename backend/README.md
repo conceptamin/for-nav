@@ -20,7 +20,7 @@
 | 패키지 관리 | uv | `uv run`으로 가상환경 없이 실행 |
 | 저장소 | 프로세스 메모리(dict), `DB_PATH`가 있으면 SQLite 파일(표준 라이브러리 `sqlite3`) | 메모리는 재시작하면 mock 시드 상태로 돌아간다. SQLite는 live 사례와 상태 변경, 채팅 토큰·메시지가 재시작 뒤에도 남는다 |
 | 상담 채팅 | FastAPI 기본 WebSocket(`uvicorn[standard]`에 든 `websockets`) | 새 의존성이 없다. 사례별 방과 재접속 뒤 이전 메시지면 충분해 socket.io는 쓰지 않는다(backlog 14). 열린 연결은 프로세스 메모리에 있으므로 `--workers 1`(기본)로만 띄운다 |
-| 통화 | 브라우저끼리 WebRTC 음성, 서버는 같은 WebSocket으로 시그널링 중계와 자막 번역만 | 서버가 음성을 받지 않아 새 의존성·음성 인식 공급자가 없다. 받아쓰기는 브라우저 Web Speech API가 한다(backlog 16). TURN 서버는 없다 |
+| 통화 | 브라우저끼리 WebRTC 음성, 서버는 같은 WebSocket으로 시그널링 중계와 자막 번역만 | 서버가 음성을 받지 않아 새 의존성·음성 인식 공급자가 없다. 받아쓰기는 브라우저 Web Speech API가 한다(backlog 16). 음성이 직접 붙지 않는 망에서는 Cloudflare TURN이 중계하고, 서버는 짧게 유효한 자격 증명만 내준다(backlog 31) |
 | 모델 | `../modeling` 경로 의존성(editable)의 `predict()`. `lightgbm`·`numpy`가 따라 설치된다 | 진료과 모델(backlog 06, 12). 버전은 `modeling/pyproject.toml` 한 곳에서 고정한다. `MODEL_DIR`이 없으면 import하지 않는다 |
 | LLM | `anthropic` SDK, 기본 `claude-haiku-5-5` | 추출·슬롯 채우기·짧은 번역에 빠르고 싸다. JSON 스키마 출력 고정 지원. 키가 없으면 쓰지 않는다 |
 | 검사 | pytest, ruff | CI `backend` 작업에서 실행 |
@@ -43,6 +43,7 @@ backend/
     auth.py            센터 직원 로그인 — 6자리 코드 만들기·확인, 보내기 제한, 세션 쿠키(코드·토큰은 sha256 해시만 저장). 근로자 Google 로그인 계정 키·세션
     google_id.py       근로자 Google ID 토큰 검증 — TokenVerifier 프로토콜, google-auth(서명·발급자·대상·만료), sub만 돌려준다
     mail.py            로그인 코드 메일 — Mailer 프로토콜, Resend(httpx), 로컬 개발용 console
+    turn.py            통화 TURN 자격 증명 — TurnIssuer 프로토콜, CloudflareTurn(httpx, 53번 포트·모르는 필드 거르기), 실패 시 빈 목록
     push.py            근로자 앱 푸시 — PushSender 프로토콜, FcmSender(FCM HTTP v1, 서비스 계정 JWT·httpx, 접근 토큰 캐시), PushNotifier(사례별 60초 제한, 채팅 접속 중 건너뛰기, 백그라운드 발송, 없는 토큰 지우기)
     clock.py           서버 시각(Asia/Seoul), JS toISOString 형식 — 테스트에서 시각 고정용
     schemas.py         Pydantic 모델 — frontend/src/domain/*.ts 타입과 1:1
@@ -65,7 +66,7 @@ backend/
     store_sqlite.py    센터 사례 SQLite 구현(live_cases, case_status, chat_tokens, chat_messages, chat_reads, call_captions, center_staff, auth_code_requests, auth_codes, center_sessions, worker_sessions, push_devices 표)
     routers/
       worker.py        /api/extract, /api/triage, /api/route, /api/visit-helper, /api/report/*
-      center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call
+      center.py        /api/center/*, WS /api/center/cases/{id}/chat, WS /api/center/cases/{id}/call, GET …/call/ice-servers
       auth.py          /api/auth/* (센터 직원 로그인), /api/auth/worker/* (근로자 Google 로그인)
   deploy/
     deploy.sh          맥미니 배포 — 프론트·앱용 웹 API 모드 빌드, uv sync, 정적 파일 교체, pm2 재시작, /api/health 확인
@@ -84,6 +85,7 @@ backend/
     test_call.py       통화 WebSocket(있음 알림, 시그널링 중계, 자막 번역·대체, 자막 history·끊긴 쪽 자막·말한 순서, 4409, 데모 초기화, 로그에 SDP·자막 없음)
     test_auth.py       센터 직원 로그인(코드 메일, 확인, 쿠키, 보내기 제한, 센터 경로·채팅·통화 보호, 로그에 이메일·코드·토큰 없음, staff.py)
     test_worker_auth.py 근로자 Google 로그인(가짜 검증기로 쿠키·세션·센터 요청 보호·센터 세션과 분리·로그, 테스트 서명 키로 GoogleVerifier)
+    test_turn.py       통화 TURN(ice-servers 권한 검사·no-store, TURN off·실패 시 빈 목록, Cloudflare 요청 모양·응답 거르기, 설정, 로그에 키 없음)
     test_push.py       근로자 앱 푸시(기기 등록·해제·422 경계, 센터 글·상태 변경 발송, 60초 제한, 채팅 접속 중 건너뛰기, 메시지 모양, 없는 토큰 지우기, 실패·시간 초과에도 응답 그대로, 30일 정리, PUSH=off, 로그, 테스트 서비스 계정 키와 가짜 전송으로 FcmSender)
     test_api.py        경로별 응답 형태·상태 코드
     test_static.py     STATIC_DIR 프론트 서빙(SPA 경로 → index.html, /api 우선, 폴더 밖 차단), 호스트별 앱용 웹 빌드
@@ -150,6 +152,7 @@ backend/
 | `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다, 푸시 기기 묶음도 지운다) |
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
+| `GET /api/center/cases/{id}/call/ice-servers` | `useCall` (frontend 56) | 통화 걸기·받기 직전 | `?role=worker&token=` 또는 `?role=center` | `{ iceServers: RTCIceServer[] }` (TURN이 없거나 실패하면 `[]`) / `404`·`403`·`401` |
 | `GET /api/center/stats` | `StatsPage`의 집계 | C-03 | `?days=30\|90\|180&district=` | 아래 참고 |
 | `GET /api/auth/me` | — (프론트 미연결) | C-01~C-03 진입 | — | `{ required, email }` |
 | `POST /api/auth/code` | — (프론트 미연결) | 센터 로그인 | `{ email }` | `202` (등록 여부와 관계없이 같다) / `429` |
@@ -367,6 +370,21 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
 - 음성은 저장하지 않는다. `signal.data`(말하는 중 글 등)도 열어 보거나 저장하지 않는다.
 - 로그에는 `WS <경로> <닫힘 코드> <ms> request_id=`와 `call caption translation=<상태>`만 남는다. 토큰, SDP·ICE(IP 주소가 들어 있다), 자막 원문·번역은 남지 않는다.
 
+**`GET /api/center/cases/{id}/call/ice-servers`** — 통화 TURN 자격 증명(backlog 31)
+
+STUN만으로는 이동통신망(대칭 NAT)이나 회사 방화벽 뒤에서 음성이 붙지 않는다. 브라우저는 통화를 걸거나 받을 때마다 이 경로를 불러 받은 목록을 `RTCPeerConnection({ iceServers })`에 넣는다. 권한은 통화 WebSocket과 같고 거절은 닫힘 코드 대신 HTTP 상태다(없는 사례 `404`, 토큰이 틀림·역할 없음 `403`, `CENTER_AUTH=email`인데 직원 세션 없음 `401`).
+
+```jsonc
+{ "iceServers": [
+    { "urls": ["stun:stun.cloudflare.com:3478"] },
+    { "urls": ["turn:turn.cloudflare.com:3478?transport=udp", "turns:turn.cloudflare.com:443?transport=tcp", …],
+      "username": "…", "credential": "…" } ] }
+```
+
+- `TURN=cloudflare`이면 부를 때마다 Cloudflare에서 `TURN_TTL_S`(기본 4시간) 동안 유효한 자격 증명을 새로 받는다(시간 제한 3초, 재시도 없음). 브라우저가 막는 53번 포트 주소와 `urls`·`username`·`credential` 밖의 필드는 뺀다.
+- `TURN=off`이거나 발급에 실패하면 `{ "iceServers": [] }`다. 프론트는 빈 목록이면 자기 STUN 기본값으로 건다. TURN 때문에 통화가 막히지 않는다.
+- 응답에 자격 증명이 있어 `Cache-Control: no-store`다. 로그에는 `turn issue failed: <종류>`(HTTP 상태·예외 이름)만 남고, 토큰·TURN 키·자격 증명은 남지 않는다.
+
 **`GET /api/center/stats`** — 익명 집계
 
 단독 모드 프론트는 원천 레코드 329건(센터 회신 분포를 따른 합성값)을 브라우저에서 센다. 서버는 **집계 결과만** 돌려주고, 5건 미만 칸은 서버에서 가린다(개인 단위 기록을 내보내지 않기 위해).
@@ -530,6 +548,10 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `PUSH` | `off` | `off` \| `fcm` | 근로자 앱 푸시 발송(backlog 28). `fcm`인데 아래 둘이 없거나 키 파일을 못 읽으면 시작 때 경고 한 줄(`push off: …`)을 남기고 `off`처럼 동작한다(서버는 뜬다). 기기 등록 경로는 값과 관계없이 동작한다 |
 | `FCM_PROJECT_ID` | (없음) | Firebase 프로젝트 id, 예: `for-nav-demo` | FCM HTTP v1 발송 주소(비밀값이 아니다) |
 | `FCM_CREDENTIALS_FILE` | (없음) | 파일 경로, 예: `/Users/<사용자>/keys/fcm-sender.json` | FCM 발송 서비스 계정 키 JSON. 저장소·`deploy/` 밖에 두고 커밋하지 않는다 |
+| `TURN` | `off` | `off` \| `cloudflare` | 통화 TURN(backlog 31). `cloudflare`인데 아래 둘이 없으면 시작 때 경고 한 줄(`turn off: …`)을 남기고 `off`처럼 동작한다(서버는 뜬다) |
+| `TURN_KEY_ID` | (없음) | Cloudflare TURN 키 ID | 자격 증명 발급 주소(비밀값이 아니다) |
+| `TURN_API_TOKEN` | (없음) | Cloudflare TURN 키 API 토큰 | 자격 증명을 얼마든지 만들 수 있는 비밀값. `.env`에만 넣고 커밋하지 않는다 |
+| `TURN_TTL_S` | `14400` | 1 이상 정수(초) | 발급한 자격 증명의 유효 시간. 통화 한 번보다 길어야 한다 |
 
 값이 형식에 맞지 않으면 서버가 시작하지 않는다. 동기화 테스트(`parity.json`)는 기본값으로 만들었으므로 `uv run pytest`는 이 변수들이 없는 상태에서 돌린다.
 
@@ -651,6 +673,17 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
    FCM_CREDENTIALS_FILE=/Users/<사용자>/keys/fcm-sender.json
    ```
 5. `pm2 logs for-nav`에 `push off: …`가 없으면 발송기가 켜진 것이다. 값이 빠졌거나 키를 못 읽으면 이 경고 한 줄을 남기고 보내지 않은 채 뜬다.
+통화 TURN 켜기(backlog 31):
+
+1. Cloudflare 대시보드 → Realtime(Calls) → TURN Server에서 TURN 키를 만든다. 키 ID와 API 토큰이 한 번 보인다. 토큰은 코드·로그·PR·채팅에 붙이지 않는다.
+2. `~/srv/for-nav/backend/.env`에 넣고 `bash ~/srv/for-nav/backend/deploy/deploy.sh`로 다시 띄운다.
+   ```sh
+   TURN=cloudflare
+   TURN_KEY_ID=<TURN 키 ID>
+   TURN_API_TOKEN=<TURN 키 API 토큰>
+   ```
+3. `pm2 logs for-nav`에 `turn off: …`가 없으면 켜진 것이다. 통화를 걸 때 `turn issue failed: …`가 보이면 발급에 실패해 STUN만으로 건 것이다(`http_401`이면 토큰을 다시 본다).
+4. 비용: SFU 없이 TURN만 쓰면 Cloudflare에서 클라이언트로 나가는 트래픽 1GB당 $0.05다. 음성 통화는 한 시간에 수십 MB 안팎이고, 직접 붙는 통화는 TURN을 거치지 않는다.
 - 휴대폰 등 외부에서 접속하려면 맥미니 공유기에서 8000 포트를 열거나 앞에 프록시를 둔다. 이 설정은 배포 워크플로 밖이다.
 
 ## CI
@@ -698,7 +731,7 @@ backend:
 | 센터 저장소 | 프로세스 메모리, `DB_PATH`가 있으면 SQLite 파일 — 붙임(backlog 07) | 서버 DB(보존 기간·암호화는 미결) |
 | 상담 채팅 센터 인증 | `CENTER_AUTH=email`이면 직원 이메일 코드 로그인 세션이 있어야 `role=center`로 붙는다 — 붙임(backlog 17). `off`(기본)이면 역할만으로 붙는다 | 상담자별 권한, 담당자 지정, 처리 직원 기록 |
 | 상담 채팅 번역 | 키가 있으면 메시지마다 상대 언어로 한 번 번역(통화 자막과 같은 방식, 한국어 쪽은 guard 검사)해 `ChatMessage`의 선택 필드(`lang`, `translated`, `translatedLang`, `translation`)로 함께 보낸다. 없거나 실패·검사 탈락이면 원문만 — 붙임(backlog 30) | 오역이 문제가 되면 역번역 검사(backlog 05)를 더한다 |
-| 통화 연결(TURN) | STUN만 쓴다(주소는 프론트가 정한다). 같은 와이파이·대부분의 망에서 붙지만 이동통신망끼리는 실패할 수 있다(backlog 16) | TURN 서버와 짧게 유효한 자격 증명을 내주는 경로 |
+| 통화 연결(TURN) | `TURN=cloudflare`이면 `GET …/call/ice-servers`가 Cloudflare TURN의 짧게 유효한 자격 증명을 내준다 — 붙임(backlog 31). 꺼져 있으면 STUN만 | 통화 중 자격 증명 갱신(`setConfiguration`), 통화가 끝나면 자격 증명 철회 |
 | 통화 기록 | 자막을 사례별로 저장, 음성은 저장하지 않음 — 붙임(backlog 18). 연결 직후 `history`로 다시 준다 | 자막 기록 동의, 보존 기간·자동 삭제·암호화(채팅 메시지와 함께 정한다) |
 | 상담 채팅 중계 | 프로세스 하나의 메모리(`ChatHub`) — 붙임(backlog 14) | 다중 프로세스·서버면 Redis pub/sub 등 중계(그때 socket.io 재검토) |
 | LLM 호출 제한 | IP별 60초·서버 전체 하루 호출 수, 프로세스 메모리, 넘으면 대체 동작 — 붙임(backlog 20) | 공유 저장소(Redis 등)의 제한, 사용자·기관별 할당, 토큰·금액 기준 예산 |

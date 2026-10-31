@@ -33,6 +33,10 @@ WORKER_AUTH_MODES = ("off", "google")
 DEFAULT_WORKER_SESSION_DAYS = 30
 # 근로자 앱 푸시 알림(backlog 28). off면 아무것도 보내지 않는다(기기 등록 경로는 그대로 동작한다)
 PUSH_MODES = ("off", "fcm")
+# 통화 TURN(backlog 31). off면 STUN만 쓴다(프론트 기본값)
+TURN_MODES = ("off", "cloudflare")
+# 발급한 TURN 자격 증명의 유효 시간(초). 통화 한 번보다 길어야 한다(통화 중 만료되면 중계가 끊긴다)
+DEFAULT_TURN_TTL_S = 14400
 
 # 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일. 운영일은 일~목으로 고정한다.
 WORKDAYS = [0, 1, 2, 3, 4]
@@ -91,6 +95,14 @@ class Settings:
     fcm_project_id: str = ""
     # FCM 발송 권한만 가진 서비스 계정 키 JSON 파일 경로. 저장소 밖에 둔다. 키 내용은 읽지 않고 경로만 둔다
     fcm_credentials_file: str = ""
+
+    # 통화 TURN(backlog 31). cloudflare인데 아래 둘이 없으면 시작 때 경고 한 줄을 남기고 off처럼 동작한다(app/turn.py)
+    turn: str = "off"
+    # Cloudflare TURN 키 ID(비밀값이 아니다)
+    turn_key_id: str = ""
+    # TURN 키 API 토큰. 자격 증명을 얼마든지 만들 수 있는 비밀값이라 repr·로그에 찍히지 않게 뺀다
+    turn_api_token: str = field(default="", repr=False)
+    turn_ttl_s: int = DEFAULT_TURN_TTL_S
 
 
 def _center_hours(raw: str) -> CenterHours:
@@ -280,6 +292,10 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
                     push=_choice("PUSH", env.get("PUSH", "off"), PUSH_MODES),
                     fcm_project_id=env.get("FCM_PROJECT_ID", "").strip(),
                     fcm_credentials_file=env.get("FCM_CREDENTIALS_FILE", "").strip(),
+                    turn=_choice("TURN", env.get("TURN", "off"), TURN_MODES),
+                    turn_key_id=env.get("TURN_KEY_ID", "").strip(),
+                    turn_api_token=env.get("TURN_API_TOKEN", "").strip(),
+                    turn_ttl_s=_session_days("TURN_TTL_S", env.get("TURN_TTL_S", str(DEFAULT_TURN_TTL_S))),
                 )
             )
         )

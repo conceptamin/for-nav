@@ -3,6 +3,7 @@
 # CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17).
 # 근로자 전송(POST /cases)은 직원 세션을 보지 않고, WORKER_AUTH=google일 때만 근로자 세션이 있어야 한다(backlog 21).
 # 근로자 앱 푸시(backlog 28): 채팅 토큰으로 기기를 사례에 묶고, 센터 채팅 글·상태 변경 뒤 응답을 막지 않고 백그라운드로 보낸다.
+# 통화 TURN(backlog 31): 통화와 같은 검사를 통과한 근로자·센터에게만 짧게 유효한 TURN 자격 증명을 준다.
 
 import asyncio
 import logging
@@ -15,6 +16,7 @@ from urllib.parse import urlsplit
 import anyio
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, WebSocket, status
 from pydantic import TypeAdapter, ValidationError
+from starlette.requests import HTTPConnection
 from starlette.websockets import WebSocketDisconnect
 
 from app import auth, clock
@@ -35,6 +37,7 @@ from app.schemas import (
     ChatIn,
     ChatReadIn,
     ChatRole,
+    IceServersResponse,
     MyCasesRequest,
     MyCaseView,
     NewCaseRequest,
@@ -49,6 +52,7 @@ from app.settings import settings
 from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
 from app.templates.translate import translate_line, translate_message, translate_note
+from app.turn import ice_servers
 from app.vocab import INDUSTRIES, LANGS, District, Lang
 
 logger = logging.getLogger(__name__)
@@ -236,7 +240,7 @@ INVALID_FRAME = {"type": "error", "code": "invalid"}
 _CHAT_IN: TypeAdapter[ChatIn] = TypeAdapter(ChatIn)
 
 
-def _same_site(ws: WebSocket) -> bool:
+def _same_site(ws: HTTPConnection) -> bool:
     """다른 사이트의 페이지가 직원 쿠키를 실어 붙는 것을 막는다. Origin이 없으면 브라우저가 아니므로 쿠키 확인에 맡긴다."""
     origin = ws.headers.get("origin")
     if origin is None or origin in settings.cors_origins:
@@ -244,7 +248,7 @@ def _same_site(ws: WebSocket) -> bool:
     return urlsplit(origin).netloc == ws.headers.get("host", "")
 
 
-def _chat_denied(ws: WebSocket, case_id: str, role: str, token: str) -> int | None:
+def _chat_denied(ws: HTTPConnection, case_id: str, role: str, token: str) -> int | None:
     if store.get(case_id) is None:
         return CLOSE_NOT_FOUND
     if role == "center":
@@ -399,6 +403,21 @@ async def call(ws: WebSocket, case_id: str, role: str = "", token: str = "") -> 
                 await hub.send(case_id, frame)
             if left:
                 await hub.send(case_id, {"type": "peer", "role": me, "present": False})
+
+
+_DENIED_STATUS = {CLOSE_NOT_FOUND: 404, CLOSE_FORBIDDEN: 403, CLOSE_UNAUTHORIZED: 401}
+
+
+@router.get("/cases/{case_id}/call/ice-servers")
+async def call_ice_servers(request: Request, response: Response, case_id: str, role: str = "", token: str = "") -> IceServersResponse:
+    """통화를 걸거나 받기 직전에 부른다. 검사는 통화 WebSocket과 같고, 거절은 닫힘 코드 대신 HTTP 상태로 돌려준다.
+    TURN이 꺼져 있거나 발급에 실패하면 빈 목록이다(프론트가 STUN 기본값으로 건다)."""
+    denied = _chat_denied(request, case_id, role, token)
+    if denied:
+        raise HTTPException(status_code=_DENIED_STATUS[denied], detail="통화 권한이 없다")
+    # 자격 증명이 들어 있어 브라우저·중간 캐시에 남기지 않는다
+    response.headers["Cache-Control"] = "no-store"
+    return IceServersResponse(ice_servers=await ice_servers(request.app.state.turn))
 
 
 # ---------------------------------------------------------------------------

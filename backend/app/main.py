@@ -21,6 +21,7 @@ from app.push import PushNotifier, make_push_sender
 from app.routers import auth, center, worker
 from app.schemas import Meta
 from app.settings import get_llm_client, settings
+from app.turn import make_turn_issuer
 
 
 @asynccontextmanager
@@ -49,6 +50,8 @@ app.state.mail = make_mailer(settings)
 app.state.google_id = make_verifier(settings)
 # 근로자 앱 푸시(backlog 28). PUSH=off이거나 설정이 모자라면 발송기가 None이라 아무것도 보내지 않는다. 테스트는 가짜 발송기로 바꿔 끼운다.
 app.state.push = PushNotifier(make_push_sender(settings))
+# 통화 TURN 자격 증명 발급기(backlog 31). 설정이 없으면 None이고 ice-servers 경로가 빈 목록을 준다
+app.state.turn = make_turn_issuer(settings)
 
 errors.install(app)
 # 프론트는 Vite 프록시로 같은 출처에서 부른다. 개발 중 직접 호출에 대비해 허용 출처(CORS_ORIGINS, 기본 프론트 개발 서버)만 연다.
