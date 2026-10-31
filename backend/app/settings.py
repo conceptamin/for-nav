@@ -59,6 +59,10 @@ class Settings:
 
     # 프론트 빌드 폴더(frontend/dist). 빈 문자열이면 정적 파일을 서빙하지 않는다(API만)
     static_dir: str = ""
+    # 앱용 웹 빌드 폴더(app-front/dist, backlog 22). 요청 호스트가 app_hosts에 있으면 static_dir 대신 이 폴더를 준다
+    app_static_dir: str = ""
+    # 앱용 빌드를 줄 호스트 이름(소문자, 포트 없이), 예: app.for-nav.com
+    app_hosts: tuple[str, ...] = ()
     # 모델 아티팩트 폴더(modeling/models). 빈 문자열이면 모델 없이 규칙·보조 점수로 동작한다
     model_dir: str = ""
 
@@ -152,11 +156,15 @@ def _db_path(raw: str) -> str:
     return path
 
 
-def _static_dir(raw: str) -> str:
+def _static_dir(raw: str, name: str = "STATIC_DIR") -> str:
     path = raw.strip()
     if path and not (Path(path) / "index.html").is_file():
-        raise ValueError(f"STATIC_DIR에 index.html이 없다(프론트를 먼저 빌드한다): {raw!r}")
+        raise ValueError(f"{name}에 index.html이 없다(프론트를 먼저 빌드한다): {raw!r}")
     return path
+
+
+def _hosts(raw: str) -> tuple[str, ...]:
+    return tuple(h.strip().lower() for h in raw.split(",") if h.strip())
 
 
 def _model_dir(raw: str) -> str:
@@ -204,6 +212,17 @@ def _check_center_auth(s: Settings) -> Settings:
     return s
 
 
+def _check_app_static(s: Settings) -> Settings:
+    """앱용 빌드(backlog 22)는 폴더·호스트·기본 빌드가 함께 있어야 한다. 하나라도 빠지면 서버가 뜨지 않는다."""
+    if not (s.app_static_dir or s.app_hosts):
+        return s
+    if not (s.app_static_dir and s.app_hosts):
+        raise ValueError("APP_STATIC_DIR과 APP_HOSTS는 함께 있어야 한다")
+    if not s.static_dir:
+        raise ValueError("APP_STATIC_DIR을 쓰려면 STATIC_DIR도 있어야 한다(나머지 호스트에 줄 빌드)")
+    return s
+
+
 def _check_worker_auth(s: Settings) -> Settings:
     """근로자 로그인을 켰을 때 함께 있어야 하는 값. 하나라도 빠지면 서버가 뜨지 않는다."""
     if s.worker_auth != "google":
@@ -216,32 +235,40 @@ def _check_worker_auth(s: Settings) -> Settings:
 
 
 def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
-    return _check_worker_auth(
-        _check_center_auth(
-            Settings(
-                center_hours=_center_hours(env.get("CENTER_HOURS", DEFAULT_CENTER_HOURS)),
-                info_date=_info_date(env.get("INFO_DATE", DEFAULT_INFO_DATE)),
-                cors_origins=_cors_origins(env.get("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)),
-                llm_provider=_llm_provider(env.get("LLM_PROVIDER", DEFAULT_LLM_PROVIDER)),
-                llm_model=_llm_model(env.get("LLM_MODEL", DEFAULT_LLM_MODEL)),
-                llm_api_key=env.get("LLM_API_KEY", "").strip(),
-                llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
-                llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
-                llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
-                llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
-                llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
-                db_path=_db_path(env.get("DB_PATH", "")),
-                static_dir=_static_dir(env.get("STATIC_DIR", "")),
-                model_dir=_model_dir(env.get("MODEL_DIR", "")),
-                center_auth=_choice("CENTER_AUTH", env.get("CENTER_AUTH", "off"), CENTER_AUTH_MODES),
-                mail_provider=_choice("MAIL_PROVIDER", env.get("MAIL_PROVIDER", "resend"), MAIL_PROVIDERS),
-                mail_api_key=env.get("MAIL_API_KEY", "").strip(),
-                mail_from=env.get("MAIL_FROM", "").strip(),
-                center_session_days=_session_days("CENTER_SESSION_DAYS", env.get("CENTER_SESSION_DAYS", str(DEFAULT_CENTER_SESSION_DAYS))),
-                center_cookie_secure=_bool("CENTER_COOKIE_SECURE", env.get("CENTER_COOKIE_SECURE", "true")),
-                worker_auth=_choice("WORKER_AUTH", env.get("WORKER_AUTH", "off"), WORKER_AUTH_MODES),
-                google_client_id=env.get("GOOGLE_CLIENT_ID", "").strip(),
-                worker_session_days=_session_days("WORKER_SESSION_DAYS", env.get("WORKER_SESSION_DAYS", str(DEFAULT_WORKER_SESSION_DAYS))),
+    return _check_app_static(
+        _check_worker_auth(
+            _check_center_auth(
+                Settings(
+                    center_hours=_center_hours(env.get("CENTER_HOURS", DEFAULT_CENTER_HOURS)),
+                    info_date=_info_date(env.get("INFO_DATE", DEFAULT_INFO_DATE)),
+                    cors_origins=_cors_origins(env.get("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)),
+                    llm_provider=_llm_provider(env.get("LLM_PROVIDER", DEFAULT_LLM_PROVIDER)),
+                    llm_model=_llm_model(env.get("LLM_MODEL", DEFAULT_LLM_MODEL)),
+                    llm_api_key=env.get("LLM_API_KEY", "").strip(),
+                    llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
+                    llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
+                    llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
+                    llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
+                    llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
+                    db_path=_db_path(env.get("DB_PATH", "")),
+                    static_dir=_static_dir(env.get("STATIC_DIR", "")),
+                    app_static_dir=_static_dir(env.get("APP_STATIC_DIR", ""), "APP_STATIC_DIR"),
+                    app_hosts=_hosts(env.get("APP_HOSTS", "")),
+                    model_dir=_model_dir(env.get("MODEL_DIR", "")),
+                    center_auth=_choice("CENTER_AUTH", env.get("CENTER_AUTH", "off"), CENTER_AUTH_MODES),
+                    mail_provider=_choice("MAIL_PROVIDER", env.get("MAIL_PROVIDER", "resend"), MAIL_PROVIDERS),
+                    mail_api_key=env.get("MAIL_API_KEY", "").strip(),
+                    mail_from=env.get("MAIL_FROM", "").strip(),
+                    center_session_days=_session_days(
+                        "CENTER_SESSION_DAYS", env.get("CENTER_SESSION_DAYS", str(DEFAULT_CENTER_SESSION_DAYS))
+                    ),
+                    center_cookie_secure=_bool("CENTER_COOKIE_SECURE", env.get("CENTER_COOKIE_SECURE", "true")),
+                    worker_auth=_choice("WORKER_AUTH", env.get("WORKER_AUTH", "off"), WORKER_AUTH_MODES),
+                    google_client_id=env.get("GOOGLE_CLIENT_ID", "").strip(),
+                    worker_session_days=_session_days(
+                        "WORKER_SESSION_DAYS", env.get("WORKER_SESSION_DAYS", str(DEFAULT_WORKER_SESSION_DAYS))
+                    ),
+                )
             )
         )
     )
