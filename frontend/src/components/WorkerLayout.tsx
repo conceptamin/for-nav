@@ -109,7 +109,9 @@ export function WorkerLayout() {
       <div className="w-shell">
         <main className="w-main w-splash" onClick={endSplash}>
           <img className="mark" src="/logo.png" width="96" height="96" alt="" />
-          <h1>{appName}</h1>
+          <h1>
+            <img className="wordmark" src="/wordmark.png" width="137" height="36" alt={appName} />
+          </h1>
         </main>
       </div>
     );
@@ -140,7 +142,7 @@ export function WorkerLayout() {
               <>
                 {logo}
                 <Link to={app.ready ? '/home' : '/'} className="title">
-                  {appName}
+                  <img className="wordmark" src="/wordmark.png" width="76" height="20" alt={appName} />
                 </Link>
               </>
             ) : (

@@ -68,6 +68,7 @@ frontend/
   package.json  package-lock.json  vite.config.ts  tsconfig.json  index.html
   scripts/dump-fixtures.ts   백엔드 동기화 테스트 기대값(parity.json) 생성
   public/logo.png            팀 로고 마크. 빌드 없이 그대로 서빙된다(파비콘·로고 화면·앱 바)
+  public/wordmark.png        앱 이름 `for nav` 글자 그림(스플래시·로고 화면·홈 앱 바)
   public/flags/              S-01 언어 칸의 국기 SVG 19개(flag-icons 7.6.0에서 복사, MIT, LICENSE.txt 함께). 패키지는 의존성으로 두지 않는다
   src/
     main.tsx       라우트 표. 경로 옆에 PRD 화면 ID(S-xx, C-xx) 주석
