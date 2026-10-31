@@ -3,6 +3,7 @@
 // 센터 경로처럼 대체하지 않는다. 끊기면 CHAT_RECONNECT_MS 뒤 다시 붙고, 4403·4404·4000·4401이면 멈춘 이유를 보인다.
 // 역할별 "어디까지 읽었나"는 history.read와 read 프레임으로 받고, 내가 읽은 자리는 markRead로 보낸다(backend 28).
 // 서버는 번역한 뒤에 메시지를 되돌려 준다(backend 30). 그동안 보낸 글은 pending으로 들고 있다.
+// C-01 접수함은 useChatDigests로 사례마다 센터로 붙어 새 채팅 수와 근로자 마지막 글 시각만 본다(읽음을 보내지 않는다, backlog 53).
 // 메시지 본문·토큰은 console에 찍지 않는다. 끊김 기록은 닫힘 코드만 남긴다.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -191,4 +192,120 @@ export function useChat(caseId: string, auth: ChatAuth): Chat {
   }, []);
 
   return { messages, pending, state, stopReason, rejected, read, markRead, send };
+}
+
+/** C-01 접수함이 사례마다 보는 채팅 요약(backlog 53) */
+export interface ChatDigest {
+  /** 센터가 아직 읽지 않은 근로자 글 수(번호가 서버의 center 읽은 자리보다 큰 것) */
+  unread: number;
+  /** 근로자 마지막 글 시각(ISO). 근로자 글이 없으면 null */
+  lastWorkerAt: string | null;
+}
+
+/**
+ * 사례 하나의 채팅방에 센터로 붙어 요약만 지켜본다. read를 보내지 않으므로 읽음은 바뀌지 않는다.
+ * 끊기면 CHAT_RECONNECT_MS 뒤 다시 붙고, 멈춤 코드면 마지막 요약을 그대로 두고 멈춘다. 닫는 함수를 돌려준다
+ */
+function watchChat(caseId: string, onDigest: (d: ChatDigest) => void): () => void {
+  const url = wsUrl(`/center/cases/${encodeURIComponent(caseId)}/chat?${new URLSearchParams({ role: 'center' })}`);
+  let disposed = false;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let current: WebSocket | null = null;
+  let wasOpen = false;
+  // 근로자 글의 번호와 시각, 센터가 읽은 자리
+  let worker: { n: number; at: string }[] = [];
+  let centerRead = 0;
+
+  const publish = () =>
+    onDigest({ unread: worker.filter((m) => m.n > centerRead).length, lastWorkerAt: worker.length ? worker[worker.length - 1].at : null });
+
+  const connect = () => {
+    const ws = new WebSocket(url);
+    current = ws;
+    ws.onopen = () => {
+      wasOpen = true;
+    };
+    ws.onmessage = (e) => {
+      if (disposed || typeof e.data !== 'string') return;
+      let frame: { type?: string; messages?: unknown; message?: unknown; read?: Partial<Record<ChatRole, unknown>>; role?: unknown; upTo?: unknown };
+      try {
+        frame = JSON.parse(e.data);
+      } catch {
+        return;
+      }
+      if (frame.type === 'history' && Array.isArray(frame.messages)) {
+        worker = frame.messages
+          .filter(isMessage)
+          .filter((m) => m.from === 'worker')
+          .map((m) => ({ n: chatMessageNumber(m.id), at: m.at }));
+        centerRead = readNumber(frame.read?.center);
+        publish();
+      } else if (frame.type === 'read' && frame.role === 'center') {
+        centerRead = Math.max(centerRead, readNumber(frame.upTo));
+        publish();
+      } else if (frame.type === 'message' && isMessage(frame.message) && frame.message.from === 'worker') {
+        const n = chatMessageNumber(frame.message.id);
+        if (worker.some((m) => m.n === n)) return;
+        worker = [...worker, { n, at: frame.message.at }];
+        publish();
+      }
+    };
+    ws.onclose = (e) => {
+      if (disposed) return;
+      current = null;
+      if (STOP_CODES[e.code]) return;
+      if (wasOpen) console.warn(`[chat-watch] 닫힘 ${e.code} → ${CHAT_RECONNECT_MS}ms 뒤 다시 연결`);
+      wasOpen = false;
+      timer = setTimeout(connect, CHAT_RECONNECT_MS);
+    };
+  };
+
+  connect();
+  return () => {
+    disposed = true;
+    if (timer) clearTimeout(timer);
+    const ws = current;
+    current = null;
+    if (ws?.readyState === WebSocket.CONNECTING) ws.onopen = () => ws.close(1000);
+    else ws?.close(1000);
+  };
+}
+
+/**
+ * 여러 사례의 채팅 요약을 지켜본다(C-01, backlog 53). 사례마다 연결 하나이고, 목록에서 빠진 사례는 닫고 새 사례만 연다.
+ * 화면을 떠나면 모두 닫는다. 단독 모드에는 채팅이 없어 늘 빈 값이다. 아직 history를 받지 못한 사례는 값이 없다
+ */
+export function useChatDigests(caseIds: readonly string[]): Record<string, ChatDigest> {
+  const [digests, setDigests] = useState<Record<string, ChatDigest>>({});
+  const watchers = useRef(new Map<string, () => void>());
+  // 폴링마다 새 배열이 와도 같은 사례 묶음이면 다시 붙지 않는다
+  const key = [...new Set(caseIds)].sort().join('\n');
+
+  useEffect(() => {
+    if (!isApiMode()) return;
+    const ids = new Set(key ? key.split('\n') : []);
+    for (const [id, close] of watchers.current) {
+      if (ids.has(id)) continue;
+      close();
+      watchers.current.delete(id);
+      setDigests((d) => {
+        const next = { ...d };
+        delete next[id];
+        return next;
+      });
+    }
+    for (const id of ids) {
+      if (!watchers.current.has(id)) watchers.current.set(id, watchChat(id, (dg) => setDigests((d) => ({ ...d, [id]: dg }))));
+    }
+  }, [key]);
+
+  useEffect(() => {
+    const map = watchers.current;
+    return () => {
+      map.forEach((close) => close());
+      map.clear();
+    };
+  }, []);
+
+  return digests;
 }
