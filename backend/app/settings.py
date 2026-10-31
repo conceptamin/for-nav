@@ -28,6 +28,9 @@ CENTER_AUTH_MODES = ("off", "email")
 # 로그인 코드 메일. console은 로컬 개발 전용(코드를 표준 출력에 찍는다)
 MAIL_PROVIDERS = ("resend", "console")
 DEFAULT_CENTER_SESSION_DAYS = 30
+# 근로자 Google 로그인(backlog 21). off면 근로자 화면은 데모 로그인이고 센터 요청에 세션을 보지 않는다
+WORKER_AUTH_MODES = ("off", "google")
+DEFAULT_WORKER_SESSION_DAYS = 30
 
 # 요일 번호는 프론트(JS Date.getDay)와 같이 0=일요일 … 6=토요일. 운영일은 평일로 고정한다.
 WEEKDAYS = [1, 2, 3, 4, 5]
@@ -67,8 +70,14 @@ class Settings:
     # 보내는 사람, 예: `for-nav 센터 <no-reply@for-nav.com>`
     mail_from: str = ""
     center_session_days: int = DEFAULT_CENTER_SESSION_DAYS
-    # 세션 쿠키의 Secure. 로컬 http 개발에서만 false로 둔다
+    # 세션 쿠키의 Secure. 로컬 http 개발에서만 false로 둔다. 근로자 세션 쿠키(backlog 21)도 이 값을 쓴다
     center_cookie_secure: bool = True
+
+    # 근로자 Google 로그인(backlog 21). google이면 ID 토큰을 검증해 근로자 세션을 주고, 센터 요청에 세션을 요구한다
+    worker_auth: str = "off"
+    # Google OAuth 웹 클라이언트 ID. ID 토큰의 aud와 비교한다(비밀값이 아니다)
+    google_client_id: str = ""
+    worker_session_days: int = DEFAULT_WORKER_SESSION_DAYS
 
 
 def _center_hours(raw: str) -> CenterHours:
@@ -164,13 +173,13 @@ def _choice(name: str, raw: str, choices: tuple[str, ...]) -> str:
     return value
 
 
-def _session_days(raw: str) -> int:
+def _session_days(name: str, raw: str) -> int:
     try:
         value = int(raw)
     except ValueError:
-        raise ValueError(f"CENTER_SESSION_DAYS는 정수여야 한다: {raw!r}") from None
+        raise ValueError(f"{name}는 정수여야 한다: {raw!r}") from None
     if value < 1:
-        raise ValueError(f"CENTER_SESSION_DAYS는 1 이상이어야 한다: {raw!r}")
+        raise ValueError(f"{name}는 1 이상이어야 한다: {raw!r}")
     return value
 
 
@@ -195,29 +204,45 @@ def _check_center_auth(s: Settings) -> Settings:
     return s
 
 
+def _check_worker_auth(s: Settings) -> Settings:
+    """근로자 로그인을 켰을 때 함께 있어야 하는 값. 하나라도 빠지면 서버가 뜨지 않는다."""
+    if s.worker_auth != "google":
+        return s
+    if not s.db_path:
+        raise ValueError("WORKER_AUTH=google이면 DB_PATH가 있어야 한다(근로자 세션을 SQLite에 둔다)")
+    if not s.google_client_id:
+        raise ValueError("WORKER_AUTH=google이면 GOOGLE_CLIENT_ID가 있어야 한다")
+    return s
+
+
 def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
-    return _check_center_auth(
-        Settings(
-            center_hours=_center_hours(env.get("CENTER_HOURS", DEFAULT_CENTER_HOURS)),
-            info_date=_info_date(env.get("INFO_DATE", DEFAULT_INFO_DATE)),
-            cors_origins=_cors_origins(env.get("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)),
-            llm_provider=_llm_provider(env.get("LLM_PROVIDER", DEFAULT_LLM_PROVIDER)),
-            llm_model=_llm_model(env.get("LLM_MODEL", DEFAULT_LLM_MODEL)),
-            llm_api_key=env.get("LLM_API_KEY", "").strip(),
-            llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
-            llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
-            llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
-            llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
-            llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
-            db_path=_db_path(env.get("DB_PATH", "")),
-            static_dir=_static_dir(env.get("STATIC_DIR", "")),
-            model_dir=_model_dir(env.get("MODEL_DIR", "")),
-            center_auth=_choice("CENTER_AUTH", env.get("CENTER_AUTH", "off"), CENTER_AUTH_MODES),
-            mail_provider=_choice("MAIL_PROVIDER", env.get("MAIL_PROVIDER", "resend"), MAIL_PROVIDERS),
-            mail_api_key=env.get("MAIL_API_KEY", "").strip(),
-            mail_from=env.get("MAIL_FROM", "").strip(),
-            center_session_days=_session_days(env.get("CENTER_SESSION_DAYS", str(DEFAULT_CENTER_SESSION_DAYS))),
-            center_cookie_secure=_bool("CENTER_COOKIE_SECURE", env.get("CENTER_COOKIE_SECURE", "true")),
+    return _check_worker_auth(
+        _check_center_auth(
+            Settings(
+                center_hours=_center_hours(env.get("CENTER_HOURS", DEFAULT_CENTER_HOURS)),
+                info_date=_info_date(env.get("INFO_DATE", DEFAULT_INFO_DATE)),
+                cors_origins=_cors_origins(env.get("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)),
+                llm_provider=_llm_provider(env.get("LLM_PROVIDER", DEFAULT_LLM_PROVIDER)),
+                llm_model=_llm_model(env.get("LLM_MODEL", DEFAULT_LLM_MODEL)),
+                llm_api_key=env.get("LLM_API_KEY", "").strip(),
+                llm_timeout_s=_llm_timeout_s(env.get("LLM_TIMEOUT_S", str(DEFAULT_TIMEOUT_S))),
+                llm_attempts=_llm_attempts(env.get("LLM_ATTEMPTS", str(DEFAULT_ATTEMPTS))),
+                llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
+                llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
+                llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
+                db_path=_db_path(env.get("DB_PATH", "")),
+                static_dir=_static_dir(env.get("STATIC_DIR", "")),
+                model_dir=_model_dir(env.get("MODEL_DIR", "")),
+                center_auth=_choice("CENTER_AUTH", env.get("CENTER_AUTH", "off"), CENTER_AUTH_MODES),
+                mail_provider=_choice("MAIL_PROVIDER", env.get("MAIL_PROVIDER", "resend"), MAIL_PROVIDERS),
+                mail_api_key=env.get("MAIL_API_KEY", "").strip(),
+                mail_from=env.get("MAIL_FROM", "").strip(),
+                center_session_days=_session_days("CENTER_SESSION_DAYS", env.get("CENTER_SESSION_DAYS", str(DEFAULT_CENTER_SESSION_DAYS))),
+                center_cookie_secure=_bool("CENTER_COOKIE_SECURE", env.get("CENTER_COOKIE_SECURE", "true")),
+                worker_auth=_choice("WORKER_AUTH", env.get("WORKER_AUTH", "off"), WORKER_AUTH_MODES),
+                google_client_id=env.get("GOOGLE_CLIENT_ID", "").strip(),
+                worker_session_days=_session_days("WORKER_SESSION_DAYS", env.get("WORKER_SESSION_DAYS", str(DEFAULT_WORKER_SESSION_DAYS))),
+            )
         )
     )
 

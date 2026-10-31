@@ -162,3 +162,35 @@ def test_center_auth_rejects(env, message):
 def test_console_mail_only_for_local_http():
     s = load_settings({"CENTER_AUTH": "email", "DB_PATH": "center.db", "MAIL_PROVIDER": "console", "CENTER_COOKIE_SECURE": "false"})
     assert (s.mail_provider, s.center_cookie_secure) == ("console", False)
+
+
+def test_worker_auth_defaults():
+    # 근로자 Google 로그인(backlog 21)은 기본으로 꺼져 있다.
+    s = load_settings({})
+    assert (s.worker_auth, s.google_client_id, s.worker_session_days) == ("off", "", 30)
+
+
+def test_worker_auth_reads_env(tmp_path):
+    s = load_settings(
+        {
+            "WORKER_AUTH": "google",
+            "DB_PATH": str(tmp_path / "center.db"),
+            "GOOGLE_CLIENT_ID": " 123-abc.apps.googleusercontent.com ",
+            "WORKER_SESSION_DAYS": "14",
+        }
+    )
+    assert (s.worker_auth, s.google_client_id, s.worker_session_days) == ("google", "123-abc.apps.googleusercontent.com", 14)
+
+
+@pytest.mark.parametrize(
+    ("env", "message"),
+    [
+        ({"WORKER_AUTH": "kakao"}, "WORKER_AUTH"),
+        ({"WORKER_SESSION_DAYS": "0"}, "WORKER_SESSION_DAYS"),
+        ({"WORKER_AUTH": "google", "GOOGLE_CLIENT_ID": "x"}, "DB_PATH"),
+        ({"WORKER_AUTH": "google", "DB_PATH": "center.db"}, "GOOGLE_CLIENT_ID"),
+    ],
+)
+def test_worker_auth_rejects(env, message):
+    with pytest.raises(ValueError, match=message):
+        load_settings(env)
