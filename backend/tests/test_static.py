@@ -77,3 +77,75 @@ def test_static_dir_needs_index(tmp_path: Path):
         load_settings({"STATIC_DIR": str(tmp_path)})
     (tmp_path / "index.html").write_text(INDEX)
     assert load_settings({"STATIC_DIR": str(tmp_path)}).static_dir == str(tmp_path)
+
+
+# 앱용 웹 빌드 호스트별 서빙(backlog 22). STATIC_DIR은 frontend, APP_STATIC_DIR은 app-front 빌드다.
+APP_INDEX = "<!doctype html><title>for nav app</title>"
+
+
+@pytest.fixture
+def two_builds(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    web, app_web = tmp_path / "web", tmp_path / "app"
+    for root, index, asset in ((web, INDEX, "web.js"), (app_web, APP_INDEX, "app.js")):
+        (root / "assets").mkdir(parents=True)
+        (root / "index.html").write_text(index)
+        (root / "assets" / asset).write_text(asset)
+    (tmp_path / "secret.txt").write_text("secret")
+    patched = dataclasses.replace(app_settings.settings, static_dir=str(web), app_static_dir=str(app_web), app_hosts=("app.for-nav.com",))
+    monkeypatch.setattr(app_settings, "settings", patched)
+    main = importlib.reload(importlib.import_module("app.main"))
+    yield TestClient(main.app)
+    monkeypatch.undo()
+    importlib.reload(main)
+
+
+@pytest.mark.parametrize("host", ["app.for-nav.com", "APP.For-Nav.com", "app.for-nav.com:443"])
+@pytest.mark.parametrize("path", ["/", "/intake", "/__host"])
+def test_app_host_gets_app_build(two_builds: TestClient, host: str, path: str):
+    r = two_builds.get(path, headers={"host": host})
+    assert r.status_code == 200
+    assert r.text == APP_INDEX
+
+
+@pytest.mark.parametrize("host", ["www.for-nav.com", "for-nav.com", "localhost:8000", "app.for-nav.com.evil.test"])
+def test_other_hosts_get_default_build(two_builds: TestClient, host: str):
+    r = two_builds.get("/center", headers={"host": host})
+    assert r.status_code == 200
+    assert r.text == INDEX
+
+
+def test_assets_come_from_the_chosen_build(two_builds: TestClient):
+    app_host, www = {"host": "app.for-nav.com"}, {"host": "www.for-nav.com"}
+    assert two_builds.get("/assets/app.js", headers=app_host).text == "app.js"
+    assert two_builds.get("/assets/web.js", headers=app_host).status_code == 404
+    assert two_builds.get("/assets/web.js", headers=www).text == "web.js"
+    assert two_builds.get("/assets/app.js", headers=www).status_code == 404
+
+
+@pytest.mark.parametrize("host", ["app.for-nav.com", "www.for-nav.com"])
+def test_both_builds_keep_api_first_and_stay_inside(two_builds: TestClient, host: str):
+    assert two_builds.get("/api/health", headers={"host": host}).json() == {"ok": True}
+    assert two_builds.get("/api/nope", headers={"host": host}).status_code == 404
+    r = two_builds.get("/%2e%2e/secret.txt", headers={"host": host})
+    assert r.status_code == 404
+    assert "secret" not in r.text
+
+
+def test_app_static_settings(tmp_path: Path):
+    web, app_web = tmp_path / "web", tmp_path / "app"
+    web.mkdir()
+    app_web.mkdir()
+    (web / "index.html").write_text(INDEX)
+    with pytest.raises(ValueError, match="APP_STATIC_DIR"):
+        load_settings({"STATIC_DIR": str(web), "APP_STATIC_DIR": str(app_web), "APP_HOSTS": "app.for-nav.com"})
+    (app_web / "index.html").write_text(APP_INDEX)
+    s = load_settings({"STATIC_DIR": str(web), "APP_STATIC_DIR": str(app_web), "APP_HOSTS": " App.For-Nav.com , "})
+    assert (s.app_static_dir, s.app_hosts) == (str(app_web), ("app.for-nav.com",))
+    with pytest.raises(ValueError, match="함께"):
+        load_settings({"STATIC_DIR": str(web), "APP_STATIC_DIR": str(app_web)})
+    with pytest.raises(ValueError, match="함께"):
+        load_settings({"STATIC_DIR": str(web), "APP_HOSTS": "app.for-nav.com"})
+    with pytest.raises(ValueError, match="STATIC_DIR도"):
+        load_settings({"APP_STATIC_DIR": str(app_web), "APP_HOSTS": "app.for-nav.com"})
+    # 둘 다 없으면 지금과 같다
+    assert load_settings({"STATIC_DIR": str(web)}).app_hosts == ()

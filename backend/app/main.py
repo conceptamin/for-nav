@@ -6,7 +6,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -74,21 +74,25 @@ app.include_router(center.router, prefix="/api", tags=["center"])
 app.include_router(auth.router, prefix="/api", tags=["auth"])
 
 
-def mount_frontend(app: FastAPI, static_dir: str) -> None:
+def mount_frontend(app: FastAPI, static_dir: str, app_static_dir: str = "", app_hosts: tuple[str, ...] = ()) -> None:
     """프론트 빌드(frontend/dist)를 같은 출처에서 서빙한다(backlog 08). 위 /api 경로보다 뒤에 붙여야 한다.
 
     있는 파일은 그대로, 나머지 경로는 index.html(SPA 라우팅)이다. /api 아래 없는 경로는 지금처럼 JSON 404다.
+    요청 호스트가 app_hosts에 있으면 앱용 웹 빌드(app-front/dist)를 같은 규칙으로 준다(backlog 22).
     """
     root = Path(static_dir).resolve()
-    index = root / "index.html"
+    app_root = Path(app_static_dir).resolve() if app_static_dir else None
 
     @app.get("/{path:path}", include_in_schema=False)
-    def frontend(path: str) -> FileResponse:
+    def frontend(path: str, request: Request) -> FileResponse:
         if path == "api" or path.startswith("api/"):
             raise StarletteHTTPException(status_code=404)
-        file = (root / path).resolve()
-        # ../ 로 폴더 밖 파일을 읽지 못하게 root 안의 파일만 돌려준다.
-        if path and file.is_relative_to(root) and file.is_file():
+        # Host 헤더의 호스트 이름(소문자, 포트 없이). Cloudflare 터널은 공개 주소를 그대로 넘긴다
+        base = app_root if app_root and request.url.hostname in app_hosts else root
+        index = base / "index.html"
+        file = (base / path).resolve()
+        # ../ 로 폴더 밖 파일을 읽지 못하게 고른 폴더(base) 안의 파일만 돌려준다.
+        if path and file.is_relative_to(base) and file.is_file():
             return FileResponse(file)
         # 없는 /assets/x.js에 HTML을 주면 브라우저 오류가 헷갈리므로, 확장자가 있는 경로는 404다.
         if Path(path).suffix:
@@ -97,4 +101,4 @@ def mount_frontend(app: FastAPI, static_dir: str) -> None:
 
 
 if settings.static_dir:
-    mount_frontend(app, settings.static_dir)
+    mount_frontend(app, settings.static_dir, settings.app_static_dir, settings.app_hosts)

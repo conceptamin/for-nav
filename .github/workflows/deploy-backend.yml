@@ -1,7 +1,7 @@
 name: Deploy backend (Mac mini)
 
 # main에 병합될 때마다 맥미니의 클론(~/srv/for-nav, 없으면 새로 클론)을 main으로 올리고 backend/deploy/deploy.sh를 돌린다.
-# 서버가 프론트 빌드를 같은 출처에서 서빙하므로 frontend·modeling 변경도 배포한다. 문서만 바뀐 병합은 배포하지 않는다.
+# 서버가 프론트·앱용 웹 빌드를 같은 출처에서 서빙하므로 frontend·app-front·modeling 변경도 배포한다. 문서만 바뀐 병합은 배포하지 않는다.
 # 필요한 secrets(MAC_MINI_IP, MAC_MINI_USERNAME, MAC_MINI_SSH_KEY)와 맥미니 준비는 backend/README.md "맥미니 배포"에 있다.
 on:
   push:
@@ -9,6 +9,7 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
+      - 'app-front/**'
       - 'modeling/src/**'
       - 'modeling/models/**'
       - 'modeling/pyproject.toml'
