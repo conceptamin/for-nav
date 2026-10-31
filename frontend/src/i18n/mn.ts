@@ -114,7 +114,7 @@ export const mn: Record<MessageKey, string> = {
   photosTitle: 'Зураг',
   photoAdd: 'Зураг нэмэх',
   photoRemove: 'Зураг устгах',
-  photosNote: 'Зураг зөвхөн энэ дэлгэц дээр байна. Илгээгдэхгүй, хадгалагдахгүй.',
+  photosNote: 'Зураг зөвхөн эмчид үзүүлэх тэмдэглэлд нэмэгдэнэ. Хаашаа ч илгээгдэхгүй.',
   analyzingTitle: 'Хариултыг шалгаж байна',
   analyzingSub: 'Түр хүлээнэ үү.',
 

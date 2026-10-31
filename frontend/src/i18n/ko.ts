@@ -109,7 +109,7 @@ export const ko: Record<MessageKey, string> = {
   photosTitle: '사진',
   photoAdd: '사진 추가',
   photoRemove: '사진 지우기',
-  photosNote: '사진은 이 화면에만 있고 보내거나 저장하지 않습니다.',
+  photosNote: '사진은 의사에게 보여 줄 메모에만 붙고, 어디로도 보내지 않습니다.',
   analyzingTitle: '분석하고 있어요',
   analyzingSub: '잠시만 기다려 주세요.',
 

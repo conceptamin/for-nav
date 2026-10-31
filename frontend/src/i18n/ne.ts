@@ -114,7 +114,7 @@ export const ne: Record<MessageKey, string> = {
   photosTitle: 'फोटो',
   photoAdd: 'फोटो थप्नुहोस्',
   photoRemove: 'फोटो हटाउनुहोस्',
-  photosNote: 'फोटो यो स्क्रिनमा मात्र रहन्छ। पठाइँदैन र सेभ हुँदैन।',
+  photosNote: 'फोटो डाक्टरलाई देखाउने नोटमा मात्र थपिन्छ। कतै पठाइँदैन।',
   analyzingTitle: 'तपाईंका उत्तर जाँच गर्दै',
   analyzingSub: 'कृपया एकछिन पर्खनुहोस्।',
 

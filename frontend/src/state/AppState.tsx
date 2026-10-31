@@ -1,5 +1,5 @@
 // 근로자 영역 상태.
-// - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과
+// - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·사진·판정, 제도 경로 결과
 // - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필(여러 개, backlog 34)·리포트·보낸 센터 사례 id와
 //   그 사례의 상담 채팅 토큰·보낸 시각·읽은 센터 메시지 수(backlog 46)(`umn.device.<계정 키>`)
 //   → 같은 휴대폰에서 다른 계정으로 들어오면 앞 계정의 프로필·리포트가 보이지 않는다(backlog 28).
@@ -12,6 +12,7 @@ import type { CoverageInput, CoverageResult, Meta } from '../domain/coverage';
 import { DEFAULT_META } from '../domain/coverage';
 import type { ClinicianReport, Profile } from '../domain/templates';
 import type { Intake, TriageResult } from '../domain/triage';
+import type { PhotoItem } from '../components/common';
 import type { Lang } from '../domain/vocab';
 import { RTL_LANGS } from '../domain/vocab';
 import { readJson, removeKey, writeJson } from './storage';
@@ -34,6 +35,8 @@ interface SessionState {
   lang: Lang | null;
   consents: Consents;
   intake: Intake | null;
+  /** 증상 입력에서 붙인 사진. 의사에게 보여 줄 메모에만 쓴다 */
+  photos: PhotoItem[];
   triage: TriageResult | null;
   coverage: { input: CoverageInput; result: CoverageResult } | null;
 }
@@ -68,6 +71,8 @@ const DEVICE_PREFIX = 'umn.device.';
 /** 계정을 나누기 전(backlog 28 이전)의 기기 저장소. 처음 읽을 때 데모 계정으로 옮긴다 */
 const LEGACY_DEVICE_KEY = 'umn.device';
 export const DEMO_ACCOUNT = 'demo';
+/** 사진을 남기는 최근 리포트 수. 더 오래된 리포트는 사진을 떼어 기기 저장소(약 5MB)를 넘치지 않게 한다 */
+const REPORTS_WITH_PHOTOS = 5;
 
 const deviceKey = (account: string) => `${DEVICE_PREFIX}${account}`;
 const isAccount = (a: Partial<Account> | null): a is Account =>
@@ -77,6 +82,7 @@ const initialSession: SessionState = {
   lang: null,
   consents: { terms: false, sensitive: false, ai: false },
   intake: null,
+  photos: [],
   triage: null,
   coverage: null,
 };
@@ -162,6 +168,7 @@ interface AppContextValue extends SessionState, Omit<DeviceState, 'activeProfile
   /** 프로필 하나를 지운다. 마지막 하나는 지우지 않는다(프로필 없이 홈에 머무는 길을 만들지 않는다) */
   deleteProfile: (id: string) => void;
   setIntake: (intake: Intake | null) => void;
+  setPhotos: (photos: PhotoItem[]) => void;
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
   saveReport: (r: ClinicianReport) => void;
@@ -261,9 +268,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           return { ...d, profiles, activeProfileId: d.activeProfileId === id ? profiles[0].id : d.activeProfileId };
         }),
       setIntake: (intake) => patch({ intake }),
+      setPhotos: (photos) => patch({ photos }),
       setTriage: (triage) => patch({ triage }),
       setCoverage: (coverage) => patch({ coverage }),
-      saveReport: (r) => setDevice((d) => ({ ...d, memberReports: [r, ...d.memberReports] })),
+      saveReport: (r) =>
+        setDevice((d) => ({
+          ...d,
+          memberReports: [r, ...d.memberReports].map((m, i) => (i < REPORTS_WITH_PHOTOS || !m.photos ? m : { ...m, photos: undefined })),
+        })),
       deleteReport: (id) => setDevice((d) => ({ ...d, memberReports: d.memberReports.filter((r) => r.id !== id) })),
       addMyCase: (id, sentAt, chatToken) =>
         setDevice((d) => ({
