@@ -523,20 +523,23 @@ gradients:
 
 브랜드 일관성은 색에서 멈추지 않는다. 아이콘도 **당근 로고의 형태적 특징을 바탕으로** 친근하고 부드러운 인상을 전달하도록 만들어졌고, 명확한 메타포와 간결한 형태, 굵은 선을 써서 글로벌 사용자가 공감할 수 있는 디자인을 목표로 한다 [src:15]. 이 문서가 옮기는 것은 그 **형태 원리**(둥근 실루엣, 굵은 선, 간결한 메타포)이지 로고 자산 자체가 아니다 — 아래 `## Do's and Don'ts`의 브랜드 자산 항을 볼 것.
 
-> **이 프로젝트의 브랜드(2026-10-30, backlog 18).** 이 앱의 이름은 `for nav`이고 브랜드 색은 주황이 아니라 **틸 `#12979A`**다. 로고는 틸 둥근 십자 안에 흰 화살표(길 안내)가 들어간 마크(`public/mark.png`)다. 2026-10-31(backlog 28)부터 십자 면은 밝은 틸 그러데이션의 유리 질감이고, 화살표 자리는 투명이라 놓인 바탕색이 비친다. 앱 이름 `for nav`도 같은 유리 질감의 둥근 글자 그림(`public/wordmark.png`, `.wordmark`)으로 보인다. 스플래시 36px, S-03 로고 화면 28px, 홈 앱 바 20px 높이이고, `alt`가 앱 이름이다. 마크 파일은 옛 `logo.png`에서 이름을 바꿨다(backlog 32). 같은 이름이면 브라우저·WebView가 캐시한 옛 마크를 계속 보여 준다. 마크 색은 브랜드 토큰을 바꾸지 않는다. 이 문서의 `carrot` 램프와 주황 서술은 참고 시스템인 SEED(당근)의 브랜드이고, 이 앱의 브랜드 역할은 아래 `## Colors`의 "이 프로젝트의 브랜드 색" 대응을 따른다.
+> **이 프로젝트의 브랜드(2026-10-30, backlog 18).** 이 앱의 이름은 `for nav`이고 브랜드 색은 주황이 아니라 **틸 `#12979A`**다. 로고는 틸 둥근 십자 안에 흰 화살표(길 안내)가 들어간 마크(`public/mark.png`)다. 2026-10-31(backlog 28)부터 십자 면은 밝은 틸 그러데이션의 유리 질감이고, 화살표 자리는 투명이라 놓인 바탕색이 비친다. 앱 이름 `for nav`도 같은 유리 질감의 둥근 글자 그림(`public/wordmark.png`, `.wordmark`)으로 보인다. 스플래시 36px, S-03 로고 화면 28px, 홈 앱 바 20px 높이이고, `alt`가 앱 이름이다. 마크 파일은 옛 `logo.png`에서 이름을 바꿨다(backlog 32). 같은 이름이면 브라우저·WebView가 캐시한 옛 마크를 계속 보여 준다. 2026-10-31(backlog 34)부터 **메인색은 로고 마크의 민트 `#73e1dc`와 같다**(`--brand`). 로고를 바꾸면 `--brand`도 다시 뽑는다. 이 문서의 `carrot` 램프와 주황 서술은 참고 시스템인 SEED(당근)의 브랜드이고, 이 앱의 브랜드 역할은 아래 `## Colors`의 "이 프로젝트의 브랜드 색" 대응을 따른다.
 
 ## Colors
 
-> **이 프로젝트의 브랜드 색(2026-10-30, backlog 18).** SEED의 브랜드 역할은 `carrot`을 가리키지만, 이 앱에서는 같은 역할을 `styles.css` `:root`의 틸 토큰으로 읽는다. `carrot-*` 값은 SEED의 사실이라 그대로 두고 화면에는 쓰지 않는다.
+> **이 프로젝트의 브랜드 색(2026-10-31, backlog 34. 처음 정한 것은 backlog 18).** SEED의 브랜드 역할은 `carrot`을 가리키지만, 이 앱에서는 같은 역할을 `styles.css` `:root`의 민트·틸 토큰으로 읽는다. `carrot-*` 값은 SEED의 사실이라 그대로 두고 화면에는 쓰지 않는다.
 >
 > | SEED 역할 | 이 앱의 토큰 | 값 | 쓰는 곳 |
 > |---|---|---|---|
-> | `bg-brand-solid`, `fg-brand`, `stroke-brand-solid` | `--brand` | `#085e60` | 브랜드 버튼 바탕, 링크·강조 글자, 차트 1번 계열(`--chart-1`) |
-> | `bg-brand-weak` | `--brand-2` | `#d9f0ef` | 선택된 칩, 버튼 안 아이콘 칸, 옅은 브랜드 바탕 |
+> | `bg-brand-solid` | `--brand` | `#73e1dc` | **메인색 = 로고 마크의 민트**(`mark.png` 불투명 칸 평균). 카드 띠(`.card.band`), 막대·차트 1번 계열(`--chart-1`), `theme-color` |
+> | (큰 채움) | `--brand-paint` | `#8ae6df` → `--brand` 위에서 아래 | 브랜드 버튼(`.btn`), 홈 시작 카드, 진행 단계, 선택된 토글·필터. 로고처럼 위가 밝다 |
+> | (채움 위 글자) | `--on-brand` | `#0a1c1c` | `--brand`·`--brand-paint` 위 글자. 흰 글자를 쓰지 않는다 |
+> | `fg-brand`, `stroke-brand-solid` | `--brand-fg` | `#085e60` | 바탕·유리 위 링크·강조 글자, `✓`, 아이콘 외곽선, 체크박스·슬라이더(`accent-color`, 슬라이더 손잡이) |
+> | `bg-brand-weak` | `--brand-2` | `#d8f4f3` | 선택된 칩, 버튼 안 아이콘 칸, 내 말풍선, 옅은 브랜드 바탕 |
 > | `fg-brand-contrast` | `--brand-ink` | `#074547` | `--brand-2` 위 진한 글자 |
-> | (로고) | 토큰 없음 | `#12979A` | 로고 파일, `index.html` `theme-color`만 |
+> | (위험색 위 글자) | `--on-danger`, `--on-danger-soft` | `#ffffff`, 흰 20% | 119, 응급 히어로, 끊기(`.btn.danger`) 위 글자와 옅은 원 |
 >
-> **키 컬러와 화면용 틸을 나눈다.** 키 컬러 `#12979A`는 흰 글자를 올리면 WCAG 3.55:1 · APCA Lc 68로 본문 기준에 못 미친다. 그래서 글자·버튼·링크에는 같은 색상(hue 181°)에서 명도를 낮춘 `--brand` `#085e60`을 쓴다. 흰 글자 7.55:1 · Lc 90.7, `--card` 위 7.22:1 · Lc 82.7, `--bg` 위 6.39:1 · Lc 74.5, `--brand-2` 위 6.35:1 · Lc 74.1이다(바닥 위·옅은 바탕 위는 Lc 75에 조금 못 미치며, 바꾸기 전 `#0f5b78`도 같은 수준이었다). 로고는 키 컬러 한 색과 투명만 쓰고, 화살표는 바탕이 비치는 빈 자리다. 빨간 십자(적십자 표장)·초록 십자(약국)로 바꾸지 않는다.
+> **채움은 로고 민트, 글자는 진한 색.** 로고 민트 `#73e1dc`에 흰 글자를 올리면 1.55:1이라 읽히지 않는다. 그래서 민트를 칠한 면 위에는 거의 검은 틸 `--on-brand`를 올린다: `--brand` 위 11.32:1 · Lc 76.9, `--brand-paint` 밝은 쪽 위 12.10:1 · Lc 80.6, 시작 카드의 옅은 흰 칸(`--on-brand-soft`, 흰 40%) 위 13.35:1 · Lc 86.4. 워드마크의 조금 짙은 민트 `#64d1cd`는 검정 글자로도 Lc 70이라 채움으로 쓰지 않는다. 민트는 바탕 위 글자·작은 조작부로는 너무 옅으므로 그 자리에는 같은 색상의 진한 틸 `--brand-fg`를 쓴다: `--bg` 위 6.82:1 · Lc 78.8, 가장 진한 빛 번짐 위 6.15:1 · Lc 72.1, 그 위 유리 위 6.97:1 · Lc 80.2, `--brand-2` 위 6.53:1 · Lc 75.9. 로고 화살표는 바탕이 비치는 빈 자리다. 빨간 십자(적십자 표장)·초록 십자(약국)로 바꾸지 않는다.
 
 > **이 프로젝트의 역할 색(2026-10-30, backlog 19).** 글자·선·상태색은 아래 SEED 역할 값을 `styles.css` `:root` 토큰으로 읽는다. 바탕·유리 표면(`--bg`·`--card`·`--bg-2`·`--bg-3`)은 `## 글래스모피즘` › `### 바탕`이 정하고, `--accent`(포커스 윤곽·실제 전송 띠)·`--live-bg`·`--chart-2`·`--chart-3`은 역할 대응 밖이다.
 >
@@ -748,15 +751,15 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 - 색이 있는 면 위에 놓이는 흰 면(응급 히어로 안의 응급 전화 버튼)은 `--card` 대신 불투명한 `--card-solid`를 쓴다. 반투명 흰색은 빨간 바탕 위에서 분홍으로 비친다.
 - 근로자 앱 바(`.w-header`)는 띠(면) 없이 투명하다(backlog 32, 2026-10-31 사용자 결정). 왼쪽 알약(`.brand-pill`: ← + 로고, 홈은 로고 + 워드마크, 앱 바를 숨기는 화면은 로고 하나)과 오른쪽 언어 버튼(`.lang-btn`)이 같은 유리 버튼 모양(44px, `--radius-sm`, `--card` + 흐림 + `--glass-sm`)으로 떠 있고, 스크롤되는 내용은 두 버튼 사이로 지나간다. 앱 바 자신에는 흐림이 없으므로 아래로 내려오는 언어 목록도 본문을 흐릴 수 있다(backdrop root). 홈 알약은 RTL에서도 로고 → 글자 순서다(`dir="ltr"`).
 - 고정된 띠는 그림자 없이 `--card` 채움 + 흐림 + 아래(하단 띠는 위) 쪽 1px `--glass-edge` 선 하나다(`box-shadow: 0 1px 0 var(--glass-edge)`). 띠 아래로 지나가는 내용이 흐리게 비친다. `.w-footer`는 `.w-main`의 좌우 여백까지 넓혀(`margin: 16px -16px -16px; padding: 16px`) 띠가 화면 폭을 채운다. 하단 119(`.bar-119`)는 띠 바탕 없이 바닥 끝 쪽(오른쪽, RTL이면 왼쪽)에 떠 있는 유리 독(`.bar-dock`) 하나다(2026-10-30 사용자 결정, 자리는 backlog 31, 독은 backlog 33). 독 둘레의 빈자리는 `pointer-events: none`이라 아래 내용이 눌린다. 독은 999px 알약, `--card` + 흐림 + `--glass`, 안쪽 여백 4px·간격 4px이고 높이 52px이다(띠 자리 `--bar-119` 72px = 위아래 10px + 52px). 안에는
-  - 119(`.call-119`): 불투명한 빨강(`--danger-top` → `--danger`), 999px, 높이 44px, 안쪽 여백 0·18·0·6px, `--glass-color-flat`(위 빛 선 + 아래 1px 음영, 바깥 그림자 없음. 유리 안의 색이 있는 면이라 흐림도 없다). 시작 쪽에 32px 원(`--on-brand-soft`) 안의 전화기 외곽선(18px, 직접 그린 인라인 SVG, 이모지를 쓰지 않는다), 그 옆 문구 `--t4` 굵게. 긴 문구(uz·kk·ky)는 자르지 않고 두 줄로 접는다(줄 높이 1.25라 44px 안). 누르면 `--danger` + `--glass-color-in`
-  - 센터 채팅(`.bar-chat`, 로그인하고 프로필까지 있을 때만): 56×44px, 평평한 투명 면에 틸(`--brand`) 둥근 말풍선 24px(외곽선 1.7px + 점 셋). 지금 화면이거나 누르면 `--brand-2` + `--glass-in`, 마우스가 있는 기기에서만 호버 `--bg-2`. 독의 끝 쪽 가장자리에 있고 119가 그 안쪽이다(RTL은 좌우가 뒤집힌다)
+  - 119(`.call-119`): 불투명한 빨강(`--danger-top` → `--danger`), 999px, 높이 44px, 안쪽 여백 0·18·0·6px, `--glass-color-flat`(위 빛 선 + 아래 1px 음영, 바깥 그림자 없음. 유리 안의 색이 있는 면이라 흐림도 없다). 시작 쪽에 32px 원(`--on-danger-soft`) 안의 전화기 외곽선(18px, 직접 그린 인라인 SVG, 이모지를 쓰지 않는다), 그 옆 문구 `--t4` 굵게. 긴 문구(uz·kk·ky)는 자르지 않고 두 줄로 접는다(줄 높이 1.25라 44px 안). 누르면 `--danger` + `--glass-color-in`
+  - 센터 채팅(`.bar-chat`, 로그인하고 프로필까지 있을 때만): 56×44px, 평평한 투명 면에 진한 틸(`--brand-fg`) 둥근 말풍선 24px(외곽선 1.7px + 점 셋). 지금 화면이거나 누르면 `--brand-2` + `--glass-in`, 마우스가 있는 기기에서만 호버 `--bg-2`. 독의 끝 쪽 가장자리에 있고 119가 그 안쪽이다(RTL은 좌우가 뒤집힌다)
   - 혼자일 때(로그인 전)도 독은 같은 끝 쪽이라 로그인 뒤 119 자리가 옮겨 가지 않는다
 
 ### 대비를 지키는 규칙
 
 반투명 면 위 글자 대비는 바닥에 따라 달라진다. 아래 두 가지로 묶는다.
 
-- **유리 면의 합성색은 클레이 때의 `--bg`(`#e6edf2`)보다 어두워지지 않는다.** backlog 18·19가 잰 대비(`--brand` 바닥 위 6.39:1, `--ink-2` 등)는 이 바닥에서 잰 최솟값이다. 바닥 빛 번짐의 가장 진한 곳 위에 `--card`를 얹은 색이 이보다 밝으면 그 숫자들이 그대로 성립한다. 빛 번짐 알파나 `--card` 알파를 바꾸면 이 합성색을 다시 잰다.
+- **유리 면의 합성색은 클레이 때의 `--bg`(`#e6edf2`)보다 어두워지지 않는다.** backlog 18·19·34가 잰 대비(`--brand-fg` 바닥 위 6.82:1, `--ink-2` 등)는 이 바닥에서 잰 최솟값이다. 바닥 빛 번짐의 가장 진한 곳 위에 `--card`를 얹은 색이 이보다 밝으면 그 숫자들이 그대로 성립한다. 빛 번짐 알파나 `--card` 알파를 바꾸면 이 합성색을 다시 잰다.
 - **바닥 위에 바로 놓이는 글자**(카드 밖 h1, 각주)는 빛 번짐의 가장 진한 곳 위에서 `--ink-2`가 4.5:1 이상이어야 한다. 넘지 못하면 빛 번짐을 옅게 한다. 글자 뒤에 유리를 덧대서 해결하지 않는다.
 
 ### 흐림을 쓸 수 없을 때
@@ -772,12 +775,12 @@ Elevation은 물리 세계의 높낮이 개념을 빌려 UI 요소 간 상대적
 
 | 토큰 | 값 | 의미 |
 |---|---|---|
-| `--bg` | `#e3eff0` | 바닥의 기본색. 빛 번짐 아래 깔리는 단색이고, 흐림을 쓸 수 없을 때도 이 색 위에 그린다 |
-| `--bg-glow-1` | `rgb(8 94 96 / 12%)` | 바닥 왼쪽 위 빛 번짐(`--brand`의 색상) |
-| `--bg-glow-2` | `rgb(11 69 150 / 10%)` | 바닥 오른쪽 아래 빛 번짐(`--info`의 색상) |
+| `--bg` | `#e9f6f5` | 바닥의 기본색. 로고 민트를 아주 옅게 띤다. 빛 번짐 아래 깔리는 단색이고, 흐림을 쓸 수 없을 때도 이 색 위에 그린다 |
+| `--bg-glow-1` | `rgb(115 225 220 / 30%)` | 바닥 왼쪽 위 빛 번짐(`--brand`, 로고 민트). 가장 진한 곳 `#c6f0ee` 위 `--ink-2` 5.39:1, 그 위 `--card` 합성색 `#e9f9f8`은 `#e6edf2`보다 밝다 |
+| `--bg-glow-2` | `rgb(88 200 216 / 16%)` | 바닥 오른쪽 아래 빛 번짐(로고 그러데이션의 푸른 쪽) |
 | `--bg-paint` | 아래 CSS | `body`의 `background`. 빛 번짐 둘 + `--bg`. `background-attachment: fixed`로 스크롤해도 바닥이 움직이지 않는다 |
 | `--card` | `rgb(255 255 255 / 62%)` | 유리 채움(카드·버튼·칩·띠의 바탕). 이 이름 그대로 둔다 |
-| `--card-solid` | `#f3f8f9` | 흐림을 쓸 수 없을 때의 `--card`, 색이 있는 면 위의 흰 면 |
+| `--card-solid` | `#f3fafa` | 흐림을 쓸 수 없을 때의 `--card`, 색이 있는 면 위의 흰 면 |
 | `--card-hover` | `rgb(255 255 255 / 82%)` | 마우스를 올린 앱 바 언어 버튼(backlog 28)·하단 센터 채팅 버튼(backlog 30). 터치 기기에는 없다 |
 | `--bg-2` | `rgb(18 35 46 / 5%)` | 들어간 홈의 바탕(모국어 원문 상자, 막대 트랙), 낮음 칩(`pill.low`, 홈의 회원 링크 포함). 어느 유리 위에서도 한 단계 어둡게 보이도록 틴트로 둔다 |
 | `--bg-3` | `rgb(18 35 46 / 4%)` | 표 머리, 행 강조 |
@@ -866,15 +869,15 @@ body { background: var(--bg-paint); background-attachment: fixed; }
 ```css
 .card { background: var(--card); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-radius: var(--radius); box-shadow: var(--glass); padding: 16px; }
 
-.btn { background: var(--brand); color: var(--on-brand); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-color-sm); }
+.btn { background: var(--brand-paint); color: var(--on-brand); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-color-sm); }
 .btn:active { box-shadow: var(--glass-color-in); }
-.btn.secondary { background: var(--card); color: var(--brand); box-shadow: var(--glass-sm); }   /* 카드 안이라 흐림 없음 */
+.btn.secondary { background: var(--card); color: var(--brand-fg); box-shadow: var(--glass-sm); }   /* 카드 안이라 흐림 없음 */
 .btn.secondary:active { box-shadow: var(--glass-in); }
 .btn.ghost { background: transparent; box-shadow: none; }           /* 평평. 되돌아가기 */
 
 .chip { background: var(--card); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-sm); }
 .chip[aria-pressed='true'] { background: var(--brand-2); box-shadow: var(--glass-in); font-weight: 700; }
-.chip[aria-pressed='true']::before { content: '✓'; color: var(--brand); }
+.chip[aria-pressed='true']::before { content: '✓'; color: var(--brand-fg); }
 
 input[type='text'], textarea, select.input { background: var(--bg-2); border: 0; border-radius: var(--radius-sm); box-shadow: var(--glass-in); }
 
@@ -900,9 +903,9 @@ input[type='text'], textarea, select.input { background: var(--bg-2); border: 0;
 
 | 조각 | 면 | 모양 |
 |---|---|---|
-| 버튼 `.lang-btn` | 떠 있음(작게) `--glass-sm` + 흐림. 누르거나 목록이 열려 있으면(`aria-expanded="true"`) `--glass-in`, 바탕 `--bg-2`. 마우스를 올리면 `--card-hover` | 높이 44px, 너비 44px 이상, `--radius-sm`, 안쪽 여백 0·8·0·10px. 위아래 바깥 여백 -4px로 앱 바 높이는 예전과 같은 56px. 안에 번역 아이콘(22px, `--brand` 외곽선 1.6px, 둥근 끝) + 언어 코드 배지 `.lang-code`(`KO`, `VI`, `ZH-CN`. `--brand-2` 바탕, `--brand-ink` `--t1` 굵게, 999px) |
+| 버튼 `.lang-btn` | 떠 있음(작게) `--glass-sm` + 흐림. 누르거나 목록이 열려 있으면(`aria-expanded="true"`) `--glass-in`, 바탕 `--bg-2`. 마우스를 올리면 `--card-hover` | 높이 44px, 너비 44px 이상, `--radius-sm`, 안쪽 여백 0·8·0·10px. 위아래 바깥 여백 -4px로 앱 바 높이는 예전과 같은 56px. 안에 번역 아이콘(22px, `--brand-fg` 외곽선 1.6px, 둥근 끝) + 언어 코드 배지 `.lang-code`(`KO`, `VI`, `ZH-CN`. `--brand-2` 바탕, `--brand-ink` `--t1` 굵게, 999px) |
 | 목록 `.lang-menu` | 떠 있음 `--glass` + 흐림 | 버튼 아래 10px, 끝 쪽에 붙는다(`inset-inline-end`, RTL이면 왼쪽). 너비 240px, 높이 `min(60dvh, 440px)`까지, 넘치면 목록 안에서만 스크롤. `--radius`, 안쪽 여백 6px. 20개 언어를 `LANGUAGE_OPTIONS` 순서로 |
-| 목록 줄 | 평평. 지금 언어는 `--brand-2` 바탕 + 끝에 `✓`(`--brand`). 누르면 `--glass-in`, 마우스를 올리면 `--bg-2` | 높이 48px 이상, 12px 둥글기. 모국어 이름(`--t4` 굵게) 위 + 영어 이름(`--t2` `--ink-2`) 아래. 이름은 글자 방향과 관계없이 화면 글 방향의 시작 쪽에 붙는다 |
+| 목록 줄 | 평평. 지금 언어는 `--brand-2` 바탕 + 끝에 `✓`(`--brand-fg`). 누르면 `--glass-in`, 마우스를 올리면 `--bg-2` | 높이 48px 이상, 12px 둥글기. 모국어 이름(`--t4` 굵게) 위 + 영어 이름(`--t2` `--ink-2`) 아래. 이름은 글자 방향과 관계없이 화면 글 방향의 시작 쪽에 붙는다 |
 
 - 번역 아이콘은 두 장의 카드가 겹친 모양이다. 앞 카드(오른쪽 변이 기울어짐)에 `A`, 뒤 카드에 `文`, 아래에 접힌 모서리. 인라인 SVG이고 의존성·그림 파일이 없다
 - 버튼과 목록은 앱 바 위에 겹쳐 놓이는 유리라 흐림을 단다(위 "흐림은 맨 위 유리에만" 표). 앱 바 자신의 흐림은 `::before`로 옮겨, 목록이 띠 밖 본문을 흐릴 수 있다
@@ -930,7 +933,7 @@ S-04 `/home`(backlog 23). 심토미 홈의 배치를 빌려 네 덩어리로 나
 | 순서 | 조각 | 면 | 모양 |
 |---|---|---|---|
 | 1 | 나 줄 `.row.link.home-me` → `/my` | 평평(바닥 위 글자) | `--t8` 굵게 `--ink` + 끝에 `›`(`--ink-2`). 높이 44px 이상. `성별 · 출생 연도`(홈에는 로그인하고 프로필이 있어야 들어온다, backlog 28) |
-| 2 | 시작 카드 `.home-hero` → `/intake` | 색이 있는 면 `--glass-color`, 누르면 `--glass-color-in`. 흐림 없음 | `--brand` 바탕, `--on-brand` 글자, `--radius`, 안쪽 여백 20px, 높이 168px 이상. 제목 `--t9` 굵게, 부제 `--t4`, 아래 알약 `.go`(`--on-brand-soft` 바탕, `--radius-sm`, 그림자 없음). 카드 전체가 링크 하나이고 알약은 모양만이다. 끝-아래 모서리에 장식 판 두 장(`::before`·`::after`, `--on-brand-soft`, `--radius`, 기울임)을 겹쳐 둔다. 장식은 `pointer-events: none`이고 논리 속성(`inset-inline-end`)으로 붙여 RTL에서 반대편으로 간다 |
+| 2 | 시작 카드 `.home-hero` → `/intake` | 색이 있는 면 `--glass-color`, 누르면 `--glass-color-in`. 흐림 없음 | `--brand-paint` 바탕(로고 민트), `--on-brand` 글자(진한 틸), `--radius`, 안쪽 여백 20px, 높이 168px 이상. 제목 `--t9` 굵게, 부제 `--t4`, 아래 알약 `.go`(`--on-brand-soft` 바탕, `--radius-sm`, 그림자 없음). 카드 전체가 링크 하나이고 알약은 모양만이다. 끝-아래 모서리에 장식 판 두 장(`::before`·`::after`, `--on-brand-soft`, `--radius`, 기울임)을 겹쳐 둔다. 장식은 `pointer-events: none`이고 논리 속성(`inset-inline-end`)으로 붙여 RTL에서 반대편으로 간다 |
 | 3 | 기능 목록 `.home-list` (`병원 이용 방법`, `보험과 지원`, `지원센터에 문의`, `내 정보`) | 판 하나가 떠 있음 `--glass` + 흐림. 안의 줄은 평평, 누르면 줄 바탕이 `--bg-2` | `--radius`, 줄 높이 64px 이상, 안쪽 여백 가로 16px. 줄 = 아이콘 칸 44px(`--brand-2`, `--radius-sm`, `--glass-in`) · 작은 부제(`--t3` `--ink-2`) 위 + 제목(`--t6` 굵게) 아래 · `›`(`--ink-2`, RTL에서 뒤집힘). 줄 사이에 구분선을 두지 않는다(SEED menu: Menu Item 사이 Divider 금지) |
 | 4 | `최근 메모` h2 + 카드 `a.card.home-recent` → `/report/:id` | 떠 있음 `--glass` + 흐림, 누르면 `--glass-in` | 첫 줄 증상(`--t6` 굵게), 둘째 줄 `부위: …`(`--t4`), 셋째 줄 🕓 날짜(`--t4` `--ink-2`). 메모가 없으면 h2째 없다. 판정·진료과는 보이지 않는다 |
 
