@@ -1,6 +1,7 @@
 # 센터 접수함 API. 사례는 서버 메모리(store)에 두어 다른 기기에서도 "근로자 전송 → 센터 접수함 도착"을 시연한다.
 # 사례마다 근로자·센터 상담 채팅(WebSocket, backlog 14)과 통화 시그널링·자막 번역(backlog 16)을 연다.
-# CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17). 근로자 전송은 열려 있다.
+# CENTER_AUTH=email이면 센터 읽기·쓰기와 채팅·통화의 role=center는 직원 세션이 있어야 한다(backlog 17).
+# 근로자 전송(POST /cases)은 직원 세션을 보지 않고, WORKER_AUTH=google일 때만 근로자 세션이 있어야 한다(backlog 21).
 
 import asyncio
 import logging
@@ -58,7 +59,15 @@ def require_staff(request: Request) -> None:
 staff_only = [Depends(require_staff)]
 
 
-@router.post("/cases", status_code=status.HTTP_201_CREATED)
+def require_worker(request: Request) -> None:
+    """근로자 전송(POST /cases)에 거는 의존성. 센터 요청은 회원만 보낸다(PRD). 판정·안내 경로에는 걸지 않는다."""
+    if settings.worker_auth != "google":
+        return
+    if auth.worker_account(store, request.cookies.get(auth.WORKER_COOKIE), clock.now()) is None:
+        raise HTTPException(status_code=401, detail="근로자 로그인이 필요하다")
+
+
+@router.post("/cases", status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_worker)])
 async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> NewCaseResponse:
     """S-12 전송. 요약·긴급도·운영 시간 외 여부·id·접수 시각은 서버가 같은 입력으로 다시 계산한다.
 

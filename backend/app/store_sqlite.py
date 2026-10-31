@@ -3,6 +3,7 @@
 # chat_tokens·chat_messages: 상담 채팅(backlog 14)의 근로자 토큰과 메시지. call_captions: 통화 자막(backlog 18, translation이 NULL이면 번역 전).
 # 센터 직원 로그인(backlog 17) 표도 넷이다. center_staff: 직원 이메일, auth_code_requests: 보내기 제한용 요청 기록,
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
+# 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지·자막이 평문으로 남는다(데모 범위, README "센터 저장소").
 
@@ -69,6 +70,12 @@ CREATE TABLE IF NOT EXISTS auth_codes (
 CREATE TABLE IF NOT EXISTS center_sessions (
     token_hash TEXT PRIMARY KEY,
     email TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS worker_sessions (
+    token_hash TEXT PRIMARY KEY,
+    account TEXT NOT NULL,
     created_at TEXT NOT NULL,
     expires_at TEXT NOT NULL
 );
@@ -284,6 +291,24 @@ class SqliteStore:
     def delete_session(self, token_hash: str) -> None:
         with self._lock, self._db:
             self._db.execute("DELETE FROM center_sessions WHERE token_hash = ?", (token_hash,))
+
+    def add_worker_session(self, token_hash: str, account: str, created_at: datetime, expires_at: datetime) -> None:
+        with self._lock, self._db:
+            self._db.execute(
+                "INSERT INTO worker_sessions (token_hash, account, created_at, expires_at) VALUES (?, ?, ?, ?)",
+                (token_hash, account, clock.iso_utc(created_at), clock.iso_utc(expires_at)),
+            )
+
+    def worker_account(self, token_hash: str, now: datetime) -> str | None:
+        with self._lock:
+            row = self._db.execute(
+                "SELECT account FROM worker_sessions WHERE token_hash = ? AND expires_at > ?", (token_hash, clock.iso_utc(now))
+            ).fetchone()
+        return row[0] if row else None
+
+    def delete_worker_session(self, token_hash: str) -> None:
+        with self._lock, self._db:
+            self._db.execute("DELETE FROM worker_sessions WHERE token_hash = ?", (token_hash,))
 
     def reset(self) -> None:
         """사례 표 다섯을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""
