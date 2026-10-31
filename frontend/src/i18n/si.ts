@@ -39,6 +39,9 @@ export const si: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'උපන් දිනය',
+  dateYear: 'වර්ෂය',
+  dateMonth: 'මාසය',
+  dateDay: 'දිනය',
   sex: 'ස්ත්‍රී/පුරුෂ භාවය',
   male: 'පුරුෂ',
   female: 'ස්ත්‍රී',
@@ -290,6 +293,10 @@ export const si: Record<MessageKey, string> = {
   myTitle: 'මගේ තොරතුරු',
   myProfile: 'පැතිකඩ',
   myProfileEdit: 'පැතිකඩ සංස්කරණය',
+  profileAdd: 'පැතිකඩක් එක් කරන්න',
+  profileOthers: 'වෙනත් පැතිකඩ (මාරු කිරීමට තට්ටු කරන්න)',
+  profileDelete: 'මෙම පැතිකඩ මකන්න',
+  profileDeleteConfirm: 'මෙම පැතිකඩ මකන්නද?',
   mySettings: 'සැකසුම්',
   myReports: 'මගේ වාර්තා',
   myEmpty: 'තවම වාර්තා නැහැ.',

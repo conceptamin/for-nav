@@ -39,6 +39,9 @@ export const uz: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'Tugʻilgan sana',
+  dateYear: 'Yil',
+  dateMonth: 'Oy',
+  dateDay: 'Kun',
   sex: 'Jinsi',
   male: 'Erkak',
   female: 'Ayol',
@@ -290,6 +293,10 @@ export const uz: Record<MessageKey, string> = {
   myTitle: 'Mening maʼlumotlarim',
   myProfile: 'Profil',
   myProfileEdit: 'Profilni tahrirlash',
+  profileAdd: 'Profil qoʻshish',
+  profileOthers: 'Boshqa profillar (almashtirish uchun bosing)',
+  profileDelete: 'Bu profilni oʻchirish',
+  profileDeleteConfirm: 'Bu profil oʻchirilsinmi?',
   mySettings: 'Sozlamalar',
   myReports: 'Hisobotlarim',
   myEmpty: 'Hali hisobot yoʻq.',

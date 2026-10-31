@@ -1,7 +1,7 @@
 // 근로자 화면 공통 컴포넌트
 
-import { useEffect, useRef, type ReactNode } from 'react';
-import { useT } from '../i18n';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { DATE_ORDER, dateFormat, hasDateLocale, useT, type DatePart } from '../i18n';
 import type { YesNoUnknown } from '../domain/vocab';
 
 /** 카카오맵 검색 링크(PRD Q4: 형식·사용 조건 확인 필요). 앱 미설치 시 웹으로 열린다. */
@@ -68,6 +68,93 @@ export function YesNoSeg({
         <Chip key={o} pressed={value === o} onClick={() => onChange(o)}>
           {t(o)}
         </Chip>
+      ))}
+    </div>
+  );
+}
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+const parseIso = (v: string) => {
+  const [y, m, d] = v.split('-').map(Number);
+  return { year: y || 0, month: m || 0, day: d || 0 };
+};
+const daysInMonth = (y: number, m: number) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+
+/**
+ * 생년월일 고르기(backlog 34). 브라우저 기본 `input[type=date]`는 앱 언어가 아니라 휴대폰·브라우저 언어로
+ * `연도-월-일` 자리표시를 그려서, 연·월·일 select 셋을 그 언어의 순서(`DATE_ORDER`)와 이름으로 둔다.
+ * 셋을 다 골라야 'YYYY-MM-DD'를 내보내고, 하나라도 비면 ''를 내보낸다.
+ */
+export function BirthDateInput({
+  id,
+  value,
+  onChange,
+  minYear,
+  maxYear,
+}: {
+  id?: string;
+  value: string;
+  onChange: (iso: string) => void;
+  minYear: number;
+  maxYear: number;
+}) {
+  const { lang, t } = useT();
+  const [parts, setParts] = useState(() => parseIso(value));
+  // 밖에서 값이 바뀌면(계정·프로필 전환) 따라간다. 고르는 중(일부만 고름)의 ''는 덮어쓰지 않는다
+  useEffect(() => {
+    if (value) setParts(parseIso(value));
+    else setParts((p) => (p.year && p.month && p.day ? { year: 0, month: 0, day: 0 } : p));
+  }, [value]);
+
+  // 달 이름(그리고 1990년·28日 같은 꼬리)은 브라우저가 그 언어를 알 때만 Intl로, 모르면 숫자로 그린다
+  const label = useMemo<Record<DatePart, (n: number) => string>>(() => {
+    if (!hasDateLocale(lang)) return { year: String, month: String, day: String };
+    const yearFmt = dateFormat(lang, { year: 'numeric' });
+    const monthFmt = dateFormat(lang, { month: 'long' });
+    const dayFmt = dateFormat(lang, { day: 'numeric' });
+    return {
+      year: (y) => yearFmt.format(Date.UTC(y, 0, 1)),
+      month: (m) => monthFmt.format(Date.UTC(2000, m - 1, 1)),
+      day: (d) => dayFmt.format(Date.UTC(2000, 0, d)),
+    };
+  }, [lang]);
+  const names: Record<DatePart, string> = { year: t('dateYear'), month: t('dateMonth'), day: t('dateDay') };
+
+  const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  const options: Record<DatePart, number[]> = {
+    year: range(minYear, maxYear).reverse(),
+    month: range(1, 12),
+    day: range(1, parts.year && parts.month ? daysInMonth(parts.year, parts.month) : 31),
+  };
+
+  const set = (part: DatePart, n: number) => {
+    const next = { ...parts, [part]: n };
+    // 2월 30일처럼 그 달에 없는 날은 그 달의 마지막 날로
+    if (next.year && next.month && next.day) next.day = Math.min(next.day, daysInMonth(next.year, next.month));
+    setParts(next);
+    onChange(next.year && next.month && next.day ? `${next.year}-${pad2(next.month)}-${pad2(next.day)}` : '');
+  };
+
+  return (
+    <div className="date-parts" role="group">
+      {DATE_ORDER[lang].map((part, i) => (
+        <select
+          key={part}
+          id={i === 0 ? id : undefined}
+          className={`input ${part}`}
+          aria-label={names[part]}
+          value={parts[part] || ''}
+          onChange={(e) => set(part, Number(e.target.value))}
+        >
+          <option value="" disabled>
+            {names[part]}
+          </option>
+          {options[part].map((n) => (
+            <option key={n} value={n}>
+              {label[part](n)}
+            </option>
+          ))}
+        </select>
       ))}
     </div>
   );

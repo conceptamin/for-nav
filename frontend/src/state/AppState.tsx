@@ -1,6 +1,6 @@
 // 근로자 영역 상태.
 // - 세션(sessionStorage): 언어, 동의, 현재 증상 입력·판정, 제도 경로 결과, 상담 채팅 토큰
-// - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필·리포트·보낸 센터 사례 id(`umn.device.<계정 키>`)
+// - 기기(localStorage): 로그인한 계정(`umn.account`), 계정별 프로필(여러 개, backlog 34)·리포트·보낸 센터 사례 id(`umn.device.<계정 키>`)
 //   → 같은 휴대폰에서 다른 계정으로 들어오면 앞 계정의 프로필·리포트가 보이지 않는다(backlog 28).
 //   데모 로그인(단독 모드·서버 WORKER_AUTH=off)의 계정 키는 `demo`다. 서버 세션은 api/auth.ts가 보고, 여기에는 계정 키만 둔다.
 // - 메모리: 서버 설정값(정보 기준일·센터 운영 시간). 저장하지 않고 시작할 때마다 GET /api/meta로 받는다
@@ -41,8 +41,16 @@ interface SessionState {
   chatTokens: Record<string, string>;
 }
 
+/** 한 계정에 여러 개 둘 수 있는 프로필 하나(backlog 34). 이름은 받지 않으므로 성별·생년월일로 구별해 보인다 */
+export interface ProfileEntry {
+  id: string;
+  profile: Profile;
+}
+
 interface DeviceState {
-  profile: Profile | null;
+  profiles: ProfileEntry[];
+  /** 지금 쓰는 프로필. 리포트·센터 요청에 들어가는 것은 이 프로필이다 */
+  activeProfileId: string | null;
   memberReports: ClinicianReport[];
   myCaseIds: string[];
 }
@@ -68,7 +76,10 @@ const initialSession: SessionState = {
   coverage: null,
   chatTokens: {},
 };
-const initialDevice: DeviceState = { profile: null, memberReports: [], myCaseIds: [] };
+const initialDevice: DeviceState = { profiles: [], activeProfileId: null, memberReports: [], myCaseIds: [] };
+
+/** 프로필 id. http로 여는 같은 Wi-Fi 휴대폰에서는 crypto.randomUUID가 없어 시각과 난수로 만든다 */
+const newProfileId = () => `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 function readDevice(account: string | null): DeviceState {
   if (!account) return initialDevice;
@@ -80,12 +91,28 @@ function readDevice(account: string | null): DeviceState {
     }
     if (legacy) removeKey(localStorage, LEGACY_DEVICE_KEY);
   }
-  return { ...initialDevice, ...readJson(localStorage, deviceKey(account), {}) };
+  // 프로필을 여러 개 두기 전(backlog 34 이전)의 `profile` 하나는 첫 프로필로 옮긴다
+  const { profile, ...stored } = readJson<Partial<DeviceState> & { profile?: Profile | null }>(localStorage, deviceKey(account), {});
+  const device: DeviceState = { ...initialDevice, ...stored };
+  if (!stored.profiles && profile) {
+    const id = newProfileId();
+    device.profiles = [{ id, profile }];
+    device.activeProfileId = id;
+  }
+  return device;
 }
 
-interface AppContextValue extends SessionState, DeviceState {
+/** 지금 쓰는 프로필. id가 가리키는 것이 없으면 첫 프로필이다 */
+function activeEntry(d: DeviceState): ProfileEntry | null {
+  return d.profiles.find((e) => e.id === d.activeProfileId) ?? d.profiles[0] ?? null;
+}
+
+interface AppContextValue extends SessionState, Omit<DeviceState, 'activeProfileId'> {
   /** 정보 기준일·센터 운영 시간. 단독 모드와 서버 실패 시에는 브라우저 상수다 */
   meta: Meta;
+  /** 지금 쓰는 프로필(`profiles` 중 하나). 리포트·센터 요청·홈 나 줄은 이것을 쓴다 */
+  profile: Profile | null;
+  activeProfileId: string | null;
   /** 로그인한 계정 키. 없으면 로그인 화면으로 간다 */
   account: string | null;
   loginKind: LoginKind | null;
@@ -99,7 +126,13 @@ interface AppContextValue extends SessionState, DeviceState {
   signOut: () => void;
   /** 서버 세션이 끝났다(401·서버 확인). 계정만 비우고 현재 입력은 남긴다(다시 로그인하면 이어서 쓴다) */
   endSession: () => void;
+  /** 지금 쓰는 프로필을 고친다. 프로필이 하나도 없으면 첫 프로필로 만든다 */
   saveProfile: (p: Profile) => void;
+  /** 같은 계정에 프로필을 하나 더 만들고 그 프로필로 바꾼다 */
+  addProfile: (p: Profile) => void;
+  selectProfile: (id: string) => void;
+  /** 프로필 하나를 지운다. 마지막 하나는 지우지 않는다(프로필 없이 홈에 머무는 길을 만들지 않는다) */
+  deleteProfile: (id: string) => void;
   setIntake: (intake: Intake | null) => void;
   setTriage: (t: TriageResult | null) => void;
   setCoverage: (c: SessionState['coverage']) => void;
@@ -155,13 +188,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AppContextValue>(() => {
     const clearInputs = () =>
       setSession((s) => ({ ...initialSession, lang: s.lang, consents: s.consents }));
+    const active = activeEntry(device);
     return {
       ...session,
       ...device,
+      profile: active?.profile ?? null,
+      activeProfileId: active?.id ?? null,
       meta,
       account: account?.key ?? null,
       loginKind: account?.kind ?? null,
-      ready: Boolean(account && device.profile),
+      ready: Boolean(account && active),
       setLang: (lang) => patch({ lang }),
       setConsents: (consents) => patch({ consents }),
       signIn: (key, kind) => {
@@ -173,7 +209,27 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         clearInputs();
       },
       endSession: () => switchAccount(null),
-      saveProfile: (profile) => setDevice((d) => ({ ...d, profile })),
+      saveProfile: (profile) =>
+        setDevice((d) => {
+          const cur = activeEntry(d);
+          if (!cur) {
+            const id = newProfileId();
+            return { ...d, profiles: [{ id, profile }], activeProfileId: id };
+          }
+          return { ...d, profiles: d.profiles.map((e) => (e.id === cur.id ? { ...e, profile } : e)) };
+        }),
+      addProfile: (profile) =>
+        setDevice((d) => {
+          const id = newProfileId();
+          return { ...d, profiles: [...d.profiles, { id, profile }], activeProfileId: id };
+        }),
+      selectProfile: (id) => setDevice((d) => (d.profiles.some((e) => e.id === id) ? { ...d, activeProfileId: id } : d)),
+      deleteProfile: (id) =>
+        setDevice((d) => {
+          if (d.profiles.length < 2) return d;
+          const profiles = d.profiles.filter((e) => e.id !== id);
+          return { ...d, profiles, activeProfileId: d.activeProfileId === id ? profiles[0].id : d.activeProfileId };
+        }),
       setIntake: (intake) => patch({ intake }),
       setTriage: (triage) =>
         setSession((s) => ({ ...s, triage, emergencySeen: s.emergencySeen || Boolean(triage?.emergency) })),

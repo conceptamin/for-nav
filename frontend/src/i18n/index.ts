@@ -3,6 +3,7 @@
 
 import { useApp } from '../state/AppState';
 import type { Lang, Term } from '../domain/vocab';
+import { LOCALES } from '../domain/vocab';
 import { ar } from './ar';
 import { en, type MessageKey } from './en';
 import { fr } from './fr';
@@ -77,6 +78,57 @@ export type { MessageKey };
 
 export function translate(lang: Lang, key: MessageKey): string {
   return MESSAGES[lang][key];
+}
+
+// ---------------------------------------------------------------------------
+// 날짜 표시(backlog 34). 브라우저 기본 날짜 칸은 앱 언어를 따르지 않아 직접 그린다.
+// 연·월·일 순서는 언어별 표로 정하고(CLDR 긴 날짜 형식 기준), 달 이름은 브라우저(Intl)가 그 언어를 알 때만 쓴다.
+// 언어 자료가 줄어든 브라우저(일부 WebView·Electron)는 모르는 언어를 기본 언어로 그리거나 'M09'로 그려서다.
+// ---------------------------------------------------------------------------
+export type DatePart = 'year' | 'month' | 'day';
+
+export const DATE_ORDER: Record<Lang, DatePart[]> = (() => {
+  const dmy: DatePart[] = ['day', 'month', 'year'];
+  const ymd: DatePart[] = ['year', 'month', 'day'];
+  const mdy: DatePart[] = ['month', 'day', 'year'];
+  return {
+    en: dmy, vi: dmy, ko: ymd, ne: ymd, ru: dmy, mn: ymd, my: ymd, si: ymd, ar: dmy, uz: dmy,
+    ja: ymd, 'zh-CN': ymd, 'zh-TW': ymd, kk: dmy, km: dmy, ky: dmy, th: dmy, fr: dmy, tl: mdy, id: dmy,
+  };
+})();
+
+/**
+ * 날짜를 그 언어의 모양으로 그리는 Intl 설정. 그레고리력으로 고정한다
+ * (태국어 기본인 불기 연도가 저장값·홈 나 줄의 서기 연도와 어긋나지 않게). 'YYYY-MM-DD'는 UTC 자정으로 읽는다
+ */
+export function dateFormat(lang: Lang, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(LOCALES[lang], { ...opts, calendar: 'gregory', timeZone: 'UTC' });
+}
+
+const dateLocaleCache = new Map<Lang, boolean>();
+/** 이 브라우저가 그 언어의 달 이름을 아는지. 모르면 숫자로 그린다 */
+export function hasDateLocale(lang: Lang): boolean {
+  let ok = dateLocaleCache.get(lang);
+  if (ok === undefined) {
+    try {
+      ok =
+        Intl.DateTimeFormat.supportedLocalesOf([LOCALES[lang]]).length > 0 &&
+        !/^M\d+$/.test(dateFormat(lang, { month: 'long' }).format(Date.UTC(2000, 8, 1)));
+    } catch {
+      ok = false;
+    }
+    dateLocaleCache.set(lang, ok);
+  }
+  return ok;
+}
+
+/** 'YYYY-MM-DD'를 그 언어의 날짜(예: 3 May 1990, 1990년 5월 3일)로. 달 이름을 모르는 브라우저는 숫자(3/5/1990). 형식이 아니면 그대로 */
+export function formatIsoDate(iso: string, lang: Lang): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  if (hasDateLocale(lang)) return dateFormat(lang, { year: 'numeric', month: 'long', day: 'numeric' }).format(Date.UTC(y, m - 1, d));
+  const parts: Record<DatePart, number> = { year: y, month: m, day: d };
+  return DATE_ORDER[lang].map((p) => parts[p]).join('/');
 }
 
 /** 현재 언어의 문구 함수와 어휘 표시 함수 */

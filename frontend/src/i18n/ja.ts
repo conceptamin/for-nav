@@ -39,6 +39,9 @@ export const ja: Record<MessageKey, string> = {
 
   // S-03
   birthDate: '生年月日',
+  dateYear: '年',
+  dateMonth: '月',
+  dateDay: '日',
   sex: '性別',
   male: '男性',
   female: '女性',
@@ -290,6 +293,10 @@ export const ja: Record<MessageKey, string> = {
   myTitle: 'マイ情報',
   myProfile: 'プロフィール',
   myProfileEdit: 'プロフィールを編集',
+  profileAdd: 'プロフィールを追加',
+  profileOthers: 'ほかのプロフィール（タップで切り替え）',
+  profileDelete: 'このプロフィールを削除',
+  profileDeleteConfirm: 'このプロフィールを削除しますか？',
   mySettings: '設定',
   myReports: 'マイレポート',
   myEmpty: 'まだレポートがありません。',

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { checkWorkerAuth, loginWithGoogle, logoutWorker, useWorkerAuth } from '../../api/auth';
 import { hasGoogleClientId, renderGoogleButton } from '../../api/googleId';
-import { SingleSelect } from '../../components/common';
+import { BirthDateInput, SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
 import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
@@ -202,15 +202,18 @@ export function SignupPage() {
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
   const workerAuth = useWorkerAuth();
-  // 로그인하고 프로필까지 있는 채로 들어오면(/my의 '프로필 수정') 프로필 단계를 보인다. 들어올 때 정하고,
+  // 로그인하고 프로필까지 있는 채로 들어오면(/my의 '프로필 수정'·'프로필 추가') 프로필 단계를 보인다. 들어올 때 정하고,
   // 로그아웃으로 계정이 비면 푼다(그 뒤 로그인한 사람은 프로필이 있으면 바로 next로 간다)
   const [editing, setEditing] = useState(() => app.ready);
+  // `?new=1`(/my의 '프로필 추가')이면 빈 칸으로 열고, 저장하면 같은 계정에 프로필을 하나 더 만든다(backlog 34)
+  const adding = editing && params.get('new') === '1';
   useEffect(() => {
     if (!app.account) setEditing(false);
   }, [app.account]);
   const form = Boolean(app.account) && (!app.profile || editing);
-  const [p, setP] = useState<Profile>(app.profile ?? EMPTY_PROFILE);
-  const [sexChosen, setSexChosen] = useState(Boolean(app.profile));
+  const start = adding ? null : app.profile;
+  const [p, setP] = useState<Profile>(start ?? EMPTY_PROFILE);
+  const [sexChosen, setSexChosen] = useState(Boolean(start));
   const [signingIn, setSigningIn] = useState(false);
   const [loginFailed, setLoginFailed] = useState(false);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(p.birthDate) && sexChosen;
@@ -221,10 +224,12 @@ export function SignupPage() {
     if (app.ready && !editing) navigate(next, { replace: true });
   }, [app.ready, editing, next, navigate]);
   // 계정이 바뀌면(로그아웃·로그인) 그 계정의 프로필로 입력칸을 다시 채운다. 앞 계정의 값이 남지 않게 비우기도 한다
+  // 추가 중에는 지금 프로필로 채우지 않는다
   useEffect(() => {
+    if (adding) return;
     setP(app.profile ?? EMPTY_PROFILE);
     setSexChosen(Boolean(app.profile));
-  }, [app.account, app.profile]);
+  }, [app.account, app.profile, adding]);
 
   // 처음 로그인한 사람의 ← 는 로그인 화면으로 돌아간다(로그아웃). 프로필 없이 홈으로 가는 길을 만들지 않는다
   const backToLogin = () => {
@@ -233,7 +238,7 @@ export function SignupPage() {
   };
   // 로그인은 로고 화면이라 앱 바가 없다. 프로필 단계에서만 ← 가 있다
   useScreenBar({
-    title: form ? t('profileTitle') : t('loginTitle'),
+    title: form ? t(adding ? 'profileAdd' : 'profileTitle') : t('loginTitle'),
     hidden: !form,
     onBack: () => (form ? (editing ? navigate(next) : backToLogin()) : navigate('/consent')),
   });
@@ -312,13 +317,13 @@ export function SignupPage() {
 
   return (
     <div className="w-screen">
-      <h1>{t('profileTitle')}</h1>
+      <h1>{t(adding ? 'profileAdd' : 'profileTitle')}</h1>
       <p className="small muted">🔒 {t('signupNoVisa')}</p>
       <div className="field">
         <label htmlFor="bd">
           {t('birthDate')} <span className="small muted">({t('required')})</span>
         </label>
-        <input id="bd" type="date" value={p.birthDate} max="2010-12-31" onChange={(e) => setP({ ...p, birthDate: e.target.value })} />
+        <BirthDateInput id="bd" value={p.birthDate} minYear={1940} maxYear={2010} onChange={(birthDate) => setP({ ...p, birthDate })} />
       </div>
       <div className="field">
         <span className="label">
@@ -379,7 +384,8 @@ export function SignupPage() {
           className="btn block"
           disabled={!valid}
           onClick={() => {
-            app.saveProfile(p);
+            if (adding) app.addProfile(p);
+            else app.saveProfile(p);
             navigate(next);
           }}
         >

@@ -39,6 +39,9 @@ export const my: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'မွေးနေ့',
+  dateYear: 'နှစ်',
+  dateMonth: 'လ',
+  dateDay: 'ရက်',
   sex: 'ကျား/မ',
   male: 'ကျား',
   female: 'မ',
@@ -290,6 +293,10 @@ export const my: Record<MessageKey, string> = {
   myTitle: 'ကျွန်ုပ်၏ အချက်အလက်',
   myProfile: 'ပရိုဖိုင်',
   myProfileEdit: 'ပရိုဖိုင် ပြင်ရန်',
+  profileAdd: 'ပရိုဖိုင် ထည့်ရန်',
+  profileOthers: 'အခြား ပရိုဖိုင်များ (ပြောင်းရန် နှိပ်ပါ)',
+  profileDelete: 'ဤပရိုဖိုင်ကို ဖျက်ရန်',
+  profileDeleteConfirm: 'ဤပရိုဖိုင်ကို ဖျက်မလား?',
   mySettings: 'ဆက်တင်',
   myReports: 'ကျွန်ုပ်၏ အစီရင်ခံစာများ',
   myEmpty: 'အစီရင်ခံစာ မရှိသေးပါ။',

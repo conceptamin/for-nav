@@ -39,6 +39,9 @@ export const zhCN: Record<MessageKey, string> = {
 
   // S-03
   birthDate: '出生日期',
+  dateYear: '年',
+  dateMonth: '月',
+  dateDay: '日',
   sex: '性别',
   male: '男',
   female: '女',
@@ -290,6 +293,10 @@ export const zhCN: Record<MessageKey, string> = {
   myTitle: '我的信息',
   myProfile: '个人资料',
   myProfileEdit: '修改个人资料',
+  profileAdd: '添加个人资料',
+  profileOthers: '其他个人资料（点按切换）',
+  profileDelete: '删除此个人资料',
+  profileDeleteConfirm: '要删除此个人资料吗？',
   mySettings: '设置',
   myReports: '我的报告',
   myEmpty: '还没有报告。',

@@ -39,6 +39,9 @@ export const ne: Record<MessageKey, string> = {
 
   // S-03
   birthDate: 'जन्म मिति',
+  dateYear: 'वर्ष',
+  dateMonth: 'महिना',
+  dateDay: 'गते',
   sex: 'लिङ्ग',
   male: 'पुरुष',
   female: 'महिला',
@@ -290,6 +293,10 @@ export const ne: Record<MessageKey, string> = {
   myTitle: 'मेरो जानकारी',
   myProfile: 'प्रोफाइल',
   myProfileEdit: 'प्रोफाइल सम्पादन',
+  profileAdd: 'प्रोफाइल थप्नुहोस्',
+  profileOthers: 'अन्य प्रोफाइल (बदल्न थिच्नुहोस्)',
+  profileDelete: 'यो प्रोफाइल मेटाउनुहोस्',
+  profileDeleteConfirm: 'यो प्रोफाइल मेटाउने?',
   mySettings: 'सेटिङ',
   myReports: 'मेरा रिपोर्ट',
   myEmpty: 'अहिलेसम्म रिपोर्ट छैन।',
