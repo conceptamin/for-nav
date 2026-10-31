@@ -33,10 +33,13 @@ const TEXT = {
   resetFailed: '접수함을 초기화하지 못했습니다. 서버 연결을 확인해 주세요.',
   statsFailed: '통계를 불러오지 못했습니다. 서버 연결을 확인해 주세요.',
   statsLoading: '통계를 불러오는 중입니다.',
-  chatTitle: '상담 채팅',
+  talkTitle: '상담',
+  talkMode: '보기',
+  modeChat: '채팅',
+  modeChatNew: '새 메시지',
+  modeScript: '스크립트',
   chatMock: '예시 사례라 근로자 채팅 토큰이 없습니다. 근로자는 이 채팅에 들어올 수 없습니다.',
   chatNote: '근로자가 쓴 글은 번역 없이 원문 그대로 보입니다.',
-  callTitle: '통화',
   callNote: '근로자와 인터넷으로 통화합니다. 두 사람의 말이 자막으로 남고 기계 번역이 붙습니다. 자막은 이 화면을 떠나면 사라집니다(서버에 저장하지 않음).',
   callMock: '예시 사례라 근로자가 이 통화에 들어올 수 없습니다.',
   checking: '로그인을 확인하는 중입니다.',
@@ -536,8 +539,7 @@ function CaseDetail({ c }: { c: CenterCase }) {
           {side && info}
         </div>
         <div>
-          {isCallAvailable() && <CenterCall c={c} />}
-          {isChatAvailable() && <CenterChat c={c} />}
+          {side && <CenterTalk c={c} />}
           {!side && info}
         </div>
       </div>
@@ -545,71 +547,91 @@ function CaseDetail({ c }: { c: CenterCase }) {
   );
 }
 
-// C-02 통화·채팅 카드(backlog 49). 근로자 센터 채팅 시트와 같은 메신저 틀이다: 머리 / 대화 줄기 / 아래 고정 칸.
-// 자리는 그대로 오른쪽 열의 통화(위)·채팅(아래)이고, 시트와 달리 둘을 오가지 않고 함께 보인다(전화가 오는 것을 놓치지 않게).
+// C-02 상담 카드(backlog 49). 통화와 채팅을 한 카드에 담는다. 근로자 센터 채팅 시트와 같은 메신저 틀이다:
+// 머리(근로자 표시 · 채팅/스크립트 전환) / 통화 줄(상태·버튼, 늘 보인다) / 대화 / 아래 칸(채팅 입력줄).
+// 대화는 채팅 메시지나 통화 스크립트(자막) 중 하나를 보인다. 둘 다 늘 붙어 있고 숨기기만 해서 연결·입력 중인 글·자막이 남는다.
+// 통화 줄은 대화 바깥이라 스크립트를 보든 채팅을 보든 전화가 오는 것을 놓치지 않는다.
 
-/** 카드 머리. 시트 머리(.sheet-head)와 같은 틀이고 시작 쪽은 상대(근로자) 표시다 */
-function TalkHead({ id, title, c }: { id: string; title: string; c: CenterCase }) {
-  return (
-    <header className="sheet-head">
-      <span className="sheet-avatar talk-avatar" aria-hidden="true">
-        <svg className="sheet-icon" width="22" height="22" viewBox="0 0 24 24" focusable="false">
-          <circle cx="12" cy="8.5" r="3.5" />
-          <path d="M5 19.5c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5" />
-        </svg>
-      </span>
-      <div className="sheet-title">
-        <h2 id={id}>{title}</h2>
-        <p>근로자 · {LANGUAGE_NAMES_KO[c.language]}</p>
-      </div>
-    </header>
-  );
-}
+type TalkMode = 'chat' | 'script';
 
-function CenterCall({ c }: { c: CenterCase }) {
+function CenterTalk({ c }: { c: CenterCase }) {
+  const chat = isChatAvailable();
+  const call = isCallAvailable();
+  const [mode, setMode] = useState<TalkMode>(chat ? 'chat' : 'script');
   const body = useRef<HTMLDivElement>(null);
-  // 상태 줄·버튼 줄을 그릴 아래 고정 칸. CallPanel이 포털로 그린다
+  // 통화 상태·버튼을 그릴 통화 줄과 채팅 입력줄을 그릴 아래 칸. 각 패널이 포털로 그린다
+  const [bar, setBar] = useState<HTMLDivElement | null>(null);
   const [foot, setFoot] = useState<HTMLDivElement | null>(null);
-  return (
-    <section className="panel talk talk-call" aria-labelledby="talk-call-title">
-      <TalkHead id="talk-call-title" title={TEXT.callTitle} c={c} />
-      <div className="sheet-body" ref={body}>
-        <p className="chat-sys">{c.live ? TEXT.callNote : TEXT.callMock}</p>
-        <CallPanel
-          caseId={c.id}
-          auth={{ role: 'center' }}
-          lang="ko"
-          labels={CALL_LABELS}
-          locale="ko-KR"
-          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-          scroller={body}
-          footer={foot}
-        />
-      </div>
-      <div className="sheet-foot" ref={setFoot} />
-    </section>
-  );
-}
+  // 스크립트를 보는 사이 근로자가 채팅을 보내면 채팅 버튼에 점을 단다
+  const [peerCount, setPeerCount] = useState(0);
+  const [seenPeer, setSeenPeer] = useState(0);
+  useEffect(() => {
+    if (mode === 'chat') setSeenPeer(peerCount);
+  }, [mode, peerCount]);
+  const unread = mode === 'script' && peerCount > seenPeer;
 
-function CenterChat({ c }: { c: CenterCase }) {
-  const body = useRef<HTMLDivElement>(null);
-  // 채팅 상태 줄과 입력줄을 그릴 아래 고정 칸. ChatPanel이 포털로 그린다
-  const [foot, setFoot] = useState<HTMLDivElement | null>(null);
+  // 모드를 바꾸면 그 대화의 맨 아래(최근)를 보인다
+  useEffect(() => {
+    if (body.current) body.current.scrollTop = body.current.scrollHeight;
+  }, [mode]);
+
+  const relogin = <Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>;
   return (
-    <section className="panel talk talk-chat" aria-labelledby="talk-chat-title">
-      <TalkHead id="talk-chat-title" title={TEXT.chatTitle} c={c} />
+    <section className="panel talk" aria-labelledby="talk-title">
+      <header className="sheet-head">
+        <span className="sheet-avatar talk-avatar" aria-hidden="true">
+          <svg className="sheet-icon" width="22" height="22" viewBox="0 0 24 24" focusable="false">
+            <circle cx="12" cy="8.5" r="3.5" />
+            <path d="M5 19.5c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5" />
+          </svg>
+        </span>
+        <div className="sheet-title">
+          <h2 id="talk-title">{TEXT.talkTitle}</h2>
+          <p>근로자 · {LANGUAGE_NAMES_KO[c.language]}</p>
+        </div>
+        {chat && call && (
+          <div className="toggle talk-mode" role="group" aria-label={TEXT.talkMode}>
+            <button type="button" aria-pressed={mode === 'chat'} onClick={() => setMode('chat')}>
+              {TEXT.modeChat}
+              {unread && (
+                <>
+                  <span className="talk-dot" aria-hidden="true" />
+                  <span className="sr-only"> · {TEXT.modeChatNew}</span>
+                </>
+              )}
+            </button>
+            <button type="button" aria-pressed={mode === 'script'} onClick={() => setMode('script')}>
+              {TEXT.modeScript}
+            </button>
+          </div>
+        )}
+      </header>
+      {call && <div className="talk-bar" ref={setBar} />}
       <div className="sheet-body" ref={body}>
-        <p className="chat-sys">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
-        <ChatPanel
-          caseId={c.id}
-          auth={{ role: 'center' }}
-          me="center"
-          labels={CHAT_LABELS}
-          locale="ko-KR"
-          relogin={<Link to={loginPath(`/center/cases/${c.id}`)}>{TEXT.relogin}</Link>}
-          scroller={body}
-          footer={foot}
-        />
+        {chat && (
+          <div className="talk-pane" hidden={mode !== 'chat'}>
+            <p className="chat-sys">{c.live ? TEXT.chatNote : TEXT.chatMock}</p>
+            <ChatPanel
+              caseId={c.id}
+              auth={{ role: 'center' }}
+              me="center"
+              labels={CHAT_LABELS}
+              locale="ko-KR"
+              relogin={relogin}
+              active={mode === 'chat'}
+              scroller={body}
+              // 스크립트를 볼 때는 입력줄을 숨긴 칸 안에 그린다(입력 중인 글은 남는다)
+              footer={mode === 'chat' ? foot : null}
+              onPeerCount={setPeerCount}
+            />
+          </div>
+        )}
+        {call && (
+          <div className="talk-pane" hidden={mode !== 'script'}>
+            <p className="chat-sys">{c.live ? TEXT.callNote : TEXT.callMock}</p>
+            <CallPanel caseId={c.id} auth={{ role: 'center' }} lang="ko" labels={CALL_LABELS} locale="ko-KR" relogin={relogin} scroller={body} footer={bar} />
+          </div>
+        )}
       </div>
       <div className="sheet-foot" ref={setFoot} />
     </section>

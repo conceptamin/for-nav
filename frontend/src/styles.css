@@ -894,12 +894,13 @@ a.brand-pill:active {
   margin: 0;
 }
 
-/* C-02 통화·채팅 카드(backlog 49, design.md "센터 사례 상세"). 자리는 그대로 오른쪽 열 패널이고 안은 시트와 같은 메신저 틀이다.
-   머리·대화·아래 칸이 카드 가장자리까지 닿게 패널 여백을 없앤다(.panel보다 앞에 있어 .panel.talk로 쓴다).
-   채팅 카드는 높이를 고정해 대화만 스크롤하고, 통화 카드는 내용만큼 자라다 자막이 길면 대화가 360px에서 스크롤한다 */
+/* C-02 상담 카드(backlog 49, design.md "센터 사례 상세"). 통화와 채팅을 한 카드에 담고 안은 시트와 같은 메신저 틀이다:
+   머리(채팅/스크립트 전환) / 통화 줄 / 대화(이것만 스크롤) / 아래 칸(채팅 입력줄). 높이는 내용과 관계없이 고정한다.
+   머리·대화·아래 칸이 카드 가장자리까지 닿게 패널 여백을 없앤다(.panel보다 앞에 있어 .panel.talk로 쓴다) */
 .panel.talk {
   display: flex;
   flex-direction: column;
+  height: clamp(480px, 75dvh, 760px);
   padding: 0;
 }
 
@@ -916,12 +917,82 @@ a.brand-pill:active {
   color: var(--brand-fg);
 }
 
-.talk-chat {
-  height: clamp(420px, 70dvh, 720px);
+/* 머리 끝 쪽 채팅/스크립트 전환. 공통 .toggle(들어간 홈 안에서 고른 쪽만 떠오름)을 머리 높이에 맞게 낮춘다 */
+.toggle.talk-mode {
+  flex: none;
 }
 
-.talk-call .sheet-body {
-  max-height: 360px;
+.toggle.talk-mode button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: var(--t4);
+  white-space: nowrap;
+}
+
+/* 스크립트를 보는 사이 온 채팅: 채팅 버튼 글 옆 점(독 채팅 점과 같은 모양) */
+.talk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand-fg);
+  box-shadow: 0 0 0 2px var(--card-solid);
+}
+
+/* 통화 줄: 머리 바로 아래, 대화 바깥이라 모드와 관계없이 보인다. 상태 글은 시작 쪽, 버튼은 끝 쪽 한 줄이고
+   안내(멈춤·마이크 거부·자막 불가)는 줄 전체 폭으로 그 사이에 선다. 그릴 것이 없으면 줄째 없다 */
+.talk-bar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.talk-bar:empty {
+  display: none;
+}
+
+.talk-bar > .call-head {
+  flex: 1 1 160px;
+}
+
+.talk-bar .call-state,
+.talk-bar .call-time {
+  font-size: var(--t4);
+}
+
+.talk-bar > .call-actions {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+.talk-bar .call-actions .btn {
+  flex: none;
+  min-width: 0;
+  min-height: 40px;
+}
+
+.talk-bar > .notice,
+.talk-bar > .small {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* 대화 안 두 칸(채팅·스크립트) 중 하나만 보인다. 글이 적으면 아래(입력줄 쪽)에 붙는다 */
+.talk-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.talk-pane[hidden] {
+  display: none;
 }
 
 /* ---------- 공통 요소 ---------- */
