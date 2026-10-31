@@ -91,13 +91,23 @@ app-front/
 |---|---|---|---|
 | `ready` | `path` | 다리가 준비됐을 때 한 번(첫 렌더 직후) | 이 뒤에 `init`을 보낸다. 스플래시(네이티브)가 있다면 여기서 걷는다 |
 | `openExternal` | `url` | `tel:`·`mailto:`·`sms:` 링크, 그리고 앱 출처 밖의 `http(s)` 링크(카카오맵 등)를 눌렀을 때 | 기본 전화 앱·브라우저로 연다. WebView 안에서 열지 않는다 |
+| `googleSignIn` | 없음 | S-03에서 앱 로그인 버튼을 눌렀을 때. `init.features`에 `googleSignIn`이 있을 때만 보낸다(backlog 06) | `signOut()` 뒤 `authenticate()`로 네이티브 계정 선택을 띄우고, 끝나면 `googleSignInResult`를 한 번 보낸다. 앞 요청이 끝나기 전에 또 오면 앞 요청을 `failed`로 끝낸다 |
 
 **호스트 → 웹** (`window.fornav.receive(message)`를 부른다. `message`는 객체 또는 JSON 문자열)
 
 | `type` | 필드 | 언제 | 웹이 할 일 |
 |---|---|---|---|
-| `init` | `platform`(`android`·`ios`), `appVersion`, `locale`(BCP-47), `insets`(아래) | `ready`를 받은 뒤 한 번 | `useHost()`의 값이 채워진다. `locale`은 확인 화면에 보이기만 한다. S-01의 "폰 언어" 제안은 `frontend/`와 같이 `navigator.languages`를 쓰는데, WebView의 `navigator.languages`가 기기 언어를 그대로 주므로 따로 넘길 필요가 없다 |
+| `init` | `platform`(`android`·`ios`), `appVersion`, `locale`(BCP-47), `insets`(아래), `features`(문자열 배열, 예: `["googleSignIn"]`. 없으면 빈 배열로 본다) | `ready`를 받은 뒤 한 번 | `useHost()`의 값이 채워진다. `locale`은 확인 화면에 보이기만 한다. S-01의 "폰 언어" 제안은 `frontend/`와 같이 `navigator.languages`를 쓰는데, WebView의 `navigator.languages`가 기기 언어를 그대로 주므로 따로 넘길 필요가 없다 |
 | `insets` | `insets: { top, right, bottom, left }`(CSS px) | 안전 영역이 바뀔 때(회전, 키보드는 제외) | `:root`의 `--inset-*` 변수를 바꾼다 |
+| `googleSignInResult` | 성공: `idToken`(Google ID 토큰 JWT). 실패: `error`(`canceled` \| `failed`) | `googleSignIn`의 응답으로 한 번 | 기다리던 `requestGoogleIdToken()`을 끝낸다. 기다리는 요청이 없으면 무시한다. 토큰을 저장하거나 로그에 찍지 않는다 |
+
+`init.features`의 모르는 값은 무시한다. 호스트는 빌드에 Google 클라이언트 ID가 없으면 `googleSignIn`을 넣지 않는다(그러면 웹은 GIS 버튼을 그리고, 앱 안에서는 `disallowed_useragent`로 실패해 설정 실수가 바로 보인다).
+
+```json
+{ "protocol": 1, "type": "googleSignIn" }
+{ "protocol": 1, "type": "googleSignInResult", "idToken": "eyJhbGciOiJSUzI1NiIs…" }
+{ "protocol": 1, "type": "googleSignInResult", "error": "canceled" }
+```
 
 **호스트 → 웹, 동기 호출**
 
@@ -130,11 +140,12 @@ app-front/
 
 - 보통 브라우저(PC 개발, 웹 배포)에서는 감지가 실패하고 `useHost().present`가 `false`다. 링크·전화·뒤로 가기는 브라우저 기본 동작, 안전 영역은 `env()`만, 언어는 `navigator.language`다.
 - 호스트가 있어야만 보이는 화면·문구를 만들지 않는다. 호스트 전용 기능(`openExternal` 등)은 "없으면 브라우저가 한다"로 설계한다.
+- 예외 하나: S-03 로그인 버튼을 그리는 방식. 브라우저는 GIS 공식 버튼, 앱(`features`에 `googleSignIn`)은 네이티브 로그인 버튼이다(backlog 06, frontend 35). Google이 WebView 안 웹 OAuth를 막아 다른 길이 없다. 문구(`loginGoogle`)와 흐름(로그인 → 프로필 → `next`)은 같다.
 
 ### 다리로 보내지 않는 것
 
 - 증상 입력·자유 입력·연락처·리포트 본문. 다리는 열고 닫는 신호만 나른다. 호스트 로그(Flutter `print`)와 웹 `console`에 메시지 본문을 찍지 않는다(`url`은 `tel:`·지도 검색어가 들어 있으므로 호스트도 찍지 않는다).
-- 인증 토큰. 근로자 Google 로그인(frontend 28)은 서버 HttpOnly 쿠키(`fornav_worker`)라 다리로 넘길 토큰이 없다. 다만 Google은 WebView 안 웹 로그인을 막으므로(`disallowed_useragent`) 앱에서 실제 로그인을 하려면 네이티브 Google 로그인으로 받은 ID 토큰을 다리로 웹에 넘기는 항목이 따로 필요하다(frontend 28 `## 메모`). 그 전까지 앱은 서버 `WORKER_AUTH=off`(데모 로그인)로만 확인한다. 센터 직원 로그인은 이 앱 범위 밖이다.
+- 인증 토큰. 근로자 Google 로그인(frontend 28)은 서버 HttpOnly 쿠키(`fornav_worker`)라 세션 토큰은 다리를 타지 않는다. **예외는 `googleSignInResult.idToken` 하나다**(backlog 06): Google이 WebView 안 웹 로그인을 막아(`disallowed_useragent`) 네이티브 로그인으로 받은 ID 토큰을 웹에 한 번 넘긴다. 호스트·웹 모두 저장하거나 로그에 찍지 않고, 웹은 받은 토큰을 서버(`POST /api/auth/worker/google`)에 한 번 보내고 버린다. 센터 직원 로그인은 이 앱 범위 밖이다.
 
 ## API 연결
 
@@ -169,6 +180,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 - `insets`는 `MediaQuery.padding`(논리 픽셀 = CSS px, 키보드 제외)이고, 바뀔 때(회전·창 크기) `insets` 메시지로 다시 보낸다.
 - `openExternal`과, `NavigationDelegate`에 걸린 앱 출처 밖 이동(`tel:`·`mailto:`·`sms:` 포함)은 막고 외부 앱으로 연다. 앱 출처는 `--dart-define=APP_URL`의 출처 하나다.
 - Android 뒤로 가기는 `window.fornav?.onBack?.() ?? false`를 동기로 묻고, `false`면 앱을 뒤로 보낸다. iOS는 WebView의 가장자리 스와이프를 켠다.
+- `googleSignIn`은 `google_sign_in`(7.x)으로 받는다. `initialize(clientId: <iOS 클라이언트 ID>, serverClientId: <웹 클라이언트 ID>)`로 ID 토큰의 `aud`가 웹 클라이언트 ID(서버 `GOOGLE_CLIENT_ID`)가 되게 한다. 두 값은 `--dart-define`(`GOOGLE_WEB_CLIENT_ID`, `GOOGLE_IOS_CLIENT_ID`)이고, 있을 때만 `init.features`에 `googleSignIn`을 넣는다. iOS는 역방향 클라이언트 ID URL 스킴도 등록한다(`app/README.md` "Google 로그인").
 - 로그에는 메시지 `type`만 남긴다.
 
 호스트가 더 챙겨야 하는 것(웹은 관여하지 않는다):
@@ -207,6 +219,7 @@ Flutter 프로젝트는 저장소의 `../app/`이다(`webview_flutter`, backlog 
 |---|---|---|
 | 호스트 | `../app/`(개발 주소를 `--dart-define`으로 불러온다. 번들·서명·스토어 설정 없음) | Android·iOS 앱 |
 | 화면 | 근로자 화면 전부(`frontend/` 공유 import) + `/__host` | 같음. 푸시·네이티브 화면은 없다 |
+| 근로자 로그인 | 앱 안에서는 네이티브 Google 로그인(backlog 06). Android 디버그 키 SHA-1만 등록했다. 스토어 배포 키 SHA-1·Apple 로그인(심사 지침 4.8)은 없다 | 배포 키 등록, Apple 로그인 여부는 스토어 배포 항목에서 정한다 |
 | 받아쓰기 | 브라우저 공급자 | 호스트 음성 인식 또는 서버 음성 인식(미정) |
 | 테스트 | `npm run build`(타입 검사)뿐. 다리는 `/__host` 화면에서 눈으로 확인. 근로자 화면의 규칙은 `frontend/`의 백엔드 동기화 테스트가 지킨다 | — |
 | CI | `.github/workflows/ci.yml`에 이 폴더 잡이 아직 없다(`chore/` 영역 별도 작업) | PR마다 `npm run build` |

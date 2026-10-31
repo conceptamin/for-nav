@@ -9,11 +9,12 @@ import { CoveragePage } from '@fe/pages/worker/Coverage';
 import { EmergencyPage, IntakePage, ResultPage } from '@fe/pages/worker/Intake';
 import { ConsentPage, HomePage, LanguagePage, SignupPage } from '@fe/pages/worker/Onboarding';
 import { ReportBuilderPage, ReportViewPage } from '@fe/pages/worker/Report';
+import { setNativeGoogleSignIn, type NativeGoogleSignIn } from '@fe/api/googleId';
 import { CallPage, DeskPage } from '@fe/pages/worker/Visit';
 import { AppStateProvider } from '@fe/state/AppState';
 import '@fe/styles.css';
 import { installBackPolicy } from './bridge/back';
-import { installHost } from './bridge/host';
+import { FEATURE_GOOGLE_SIGN_IN, getHostState, GoogleSignInError, installHost, requestGoogleIdToken, subscribeHost } from './bridge/host';
 import { HostProvider } from './bridge/HostProvider';
 import { installLinkInterceptor } from './bridge/links';
 import { HostCheckPage } from './pages/HostCheck';
@@ -23,6 +24,20 @@ import './styles.css';
 installHost();
 installLinkInterceptor();
 installBackPolicy();
+
+// 앱 안 Google 로그인(backlog 06, frontend 35). WebView 안에서는 GIS가 막히므로, 호스트가 init.features로 알리면
+// S-03이 네이티브 로그인을 쓰게 등록한다. 취소는 null(문구 없이 버튼으로), 그 밖은 예외(loginFailed)다. 브라우저에서는 등록하지 않는다
+const nativeGoogleSignIn: NativeGoogleSignIn = () =>
+  requestGoogleIdToken().catch((e: unknown) => {
+    if (e instanceof GoogleSignInError && e.kind === 'canceled') return null;
+    throw e;
+  });
+const syncNativeGoogleSignIn = () => {
+  const host = getHostState();
+  setNativeGoogleSignIn(host.present && host.features.includes(FEATURE_GOOGLE_SIGN_IN) ? nativeGoogleSignIn : null);
+};
+subscribeHost(syncNativeGoogleSignIn);
+syncNativeGoogleSignIn();
 
 // 근로자 화면은 frontend/src/main.tsx의 근로자 경로와 같은 순서·같은 화면 ID다(공유 import, backlog 02).
 // 센터 화면(/center*)은 이 앱에 없다. 알 수 없는 경로는 /로 보낸다.

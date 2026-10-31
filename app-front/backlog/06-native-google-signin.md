@@ -1,12 +1,14 @@
 # 06. 앱 안 근로자 Google 로그인(네이티브 로그인 → 다리로 ID 토큰)
 
-상태: 대기
+상태: 진행 중 (코드 완료, 실제 Google 계정 확인 남음)
 의존: 03 (Flutter 셸), frontend 28 (근로자 Google 로그인 화면), backend 21 (`POST /api/auth/worker/google`)
 
 ## 목표
 frontend 28의 S-03은 Google Identity Services(GIS) 공식 버튼으로 ID 토큰을 받는다. 그런데 Google은 임베디드 WebView 안의 웹 OAuth를 막는다(`403 disallowed_useragent`). 그래서 Flutter 앱 안에서는 이 버튼으로 로그인할 수 없고, 지금 앱은 서버 `WORKER_AUTH=off`(데모 로그인)로만 확인한다. 이 항목은 호스트가 네이티브 Google 로그인(`google_sign_in`)으로 ID 토큰을 받아 다리로 웹에 넘기는 일이다. 웹은 그 토큰을 지금처럼 `loginWithGoogle`로 서버에 보낸다. 이 항목이 끝나면 `WORKER_AUTH=google` 서버를 불러온 Android·iOS 앱에서 실제 Google 계정으로 로그인하고, `fornav_worker` 쿠키로 센터 요청이 201이 된다.
 
 ## 결정이 필요한 것
+
+결정(2026-10-31): 1~4 모두 권장안. 사용자가 운영에서 `WORKER_AUTH=google`을 켜기 전에 이 항목을 끝내기로 했다("06까지 하고 켜기"). 3의 "백그라운드에서 돌아왔는데 응답이 없으면 `failed`"는 넣지 않았다(`## 결과`).
 
 1. **ID 토큰의 `aud`를 어떻게 맞추나.** backend 21은 `aud`를 `GOOGLE_CLIENT_ID`(웹 클라이언트 ID) 하나와만 비교한다.
    - 확인한 것(2026-10-31)
@@ -101,6 +103,27 @@ frontend 28의 S-03은 Google Identity Services(GIS) 공식 버튼으로 ID 토�
 - [ ] 앱 로그(`flutter run` 출력)·웹 `console`에 ID 토큰·이메일·이름이 없다. `localStorage`·`sessionStorage`에 `eyJ`로 시작하는 값이 없다
 
 ## 결과
+
+구현(2026-10-31). frontend 몫은 frontend 35(`setNativeGoogleSignIn`, S-03 앱 로그인 버튼)로 따로 했고, 이 브랜치는 그 위에 쌓았다.
+
+- 바뀐 계약(`README.md` "호스트 계약"): 웹 → 호스트 `googleSignIn`, 호스트 → 웹 `googleSignInResult`(`idToken` | `error: canceled|failed`), `init.features`. "다리로 보내지 않는 것"에 `idToken` 예외, "호스트가 없을 때"에 S-03 버튼 예외, "Flutter 쪽에서 할 일"에 Google 로그인 줄
+- 웹: `src/bridge/host.ts` `features`·`requestGoogleIdToken`·`GoogleSignInError`, `src/main.tsx`가 호스트 상태를 구독해 `features`에 `googleSignIn`이 있을 때만 `setNativeGoogleSignIn` 등록(취소는 `null`), `/__host`에 features 줄과 "Google 로그인 시험"(결과 종류만)
+- 호스트: `google_sign_in` 7.2.0(iOS는 SPM, GoogleSignIn-iOS 9.2.0. `Package.resolved` 커밋). `lib/bridge.dart` 메시지·`isSignInCanceled`·`nativeSignInConfigured`, `lib/host_page.dart` `_googleSignIn`(첫 요청 때 `initialize`, `signOut` → `authenticate`, 새 요청·페이지 `ready`가 오면 앞 결과 버림). iOS URL 스킴은 `Info.plist`의 `$(GOOGLE_REVERSED_CLIENT_ID)` ← `ios/Flutter/GoogleSignIn.xcconfig`(커밋하지 않음, `Debug`·`Release.xcconfig`가 `#include?`)
+- 3의 "백그라운드 복귀 시 `failed`"는 넣지 않았다. Android Credential Manager·iOS 인증 시트가 떠 있는 동안에도 앱이 비활성·백그라운드로 바뀌어, 결과가 오기 전에 잘못 `failed`를 보낼 수 있다. 플러그인의 `authenticate()`는 시트를 닫으면 `canceled`로 끝나므로 응답이 영영 오지 않는 경우는 확인하지 못했다
+
+확인:
+- `cd app-front && npm run build` → 통과. `cd frontend && npm run build` → 통과
+- `cd app && fvm flutter analyze` → No issues. `fvm flutter test` → 10개 통과(`googleSignInResult` 성공·실패, `features` 유무, 취소 구분, 플랫폼별 켜기 조건)
+- 로컬 같은 출처 서버(`STATIC_DIR=app-front/dist WORKER_AUTH=google GOOGLE_CLIENT_ID=<시험값>`, :8010) + Android 에뮬레이터(`fornav_api36`, google_apis, 언어 vi), `GOOGLE_WEB_CLIENT_ID=<시험값>`:
+  - `/__host`: features `googleSignIn`. "Google 로그인 시험" → 네이티브 Google 계정 화면이 뜸 → 뒤로 → 결과 `canceled`. 로그는 `← googleSignIn`, `googleSignIn 실패(canceled)`, `→ googleSignInResult`뿐
+  - S-03(vi): GIS 대신 흰 바탕 공식 G 로고 "Đăng nhập bằng Google" 버튼. 웹 빌드에 `VITE_GOOGLE_CLIENT_ID`가 없어도 설정 경고가 없다. 누르면 네이티브 계정 화면 → 뒤로 → 문구 없이 버튼으로 돌아옴
+- iOS 시뮬레이터(iPhone 17 Pro), 두 ID + `GoogleSignIn.xcconfig`(시험값): 빌드·실행 통과, `ready`/`init` 정상, 빌드된 `Info.plist`의 `CFBundleURLSchemes`에 역방향 ID가 들어감
+
+남은 것(실제 Google Cloud 클라이언트가 있어야 한다, `## 메모` "사용자 준비"):
+- 실제 계정으로 로그인 → 프로필 → `/home`, `fornav_worker` 쿠키, S-12 201(Android·iOS)
+- iOS `aud`가 웹 클라이언트 ID로 오는지(결정 1). 401이면 backend 항목
+- 다른 계정으로 다시 로그인, 비행기 모드 `loginFailed`
+- 에뮬레이터에 Google 계정이 없어 계정 추가 화면까지만 봤다. 이 단계는 비밀번호를 넣어야 해서 사용자가 직접 한다
 
 ## 메모
 - **사용자 준비(구현 전)**: backend 21 `## 메모`의 웹 클라이언트가 있는 같은 Google Cloud 프로젝트에 클라이언트 두 개를 더 만든다.
