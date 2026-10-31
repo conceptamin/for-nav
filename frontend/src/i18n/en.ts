@@ -38,6 +38,9 @@ export const en = {
 
   // S-03
   birthDate: 'Date of birth',
+  dateYear: 'Year',
+  dateMonth: 'Month',
+  dateDay: 'Day',
   sex: 'Sex',
   male: 'Male',
   female: 'Female',
@@ -289,6 +292,10 @@ export const en = {
   myTitle: 'My info',
   myProfile: 'Profile',
   myProfileEdit: 'Edit profile',
+  profileAdd: 'Add profile',
+  profileOthers: 'Other profiles (tap to switch)',
+  profileDelete: 'Delete this profile',
+  profileDeleteConfirm: 'Delete this profile?',
   mySettings: 'Settings',
   myReports: 'My reports',
   myEmpty: 'No reports yet.',

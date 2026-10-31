@@ -11,7 +11,7 @@ import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
 import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
-import { LANGUAGE_OPTIONS, useT } from '../../i18n';
+import { LANGUAGE_OPTIONS, formatIsoDate, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
 import { isSessionEnded, logoutWorker } from '../../api/auth';
 import { sendCase } from '../../api/center';
@@ -321,13 +321,15 @@ export function MyPage() {
     clear();
     void logoutWorker();
   };
-  const { t, term } = useT();
+  const { t, term, lang } = useT();
   useScreenBar({ title: t('myTitle') });
   const profile = app.profile;
+  // 같은 계정의 다른 프로필(backlog 34). 이름을 받지 않으므로 성별·생년월일로 구별한다
+  const others = app.profiles.filter((e) => e.id !== app.activeProfileId);
   // 값이 있는 줄만 만든다. null은 줄을 만들지 않는다
   const profileRows: [string, string][] = profile
     ? [
-        [t('birthDate'), profile.birthDate],
+        [t('birthDate'), formatIsoDate(profile.birthDate, lang)],
         [t('sex'), term(SEXES[profile.sex])],
         ...(profile.height != null ? [[t('heightCm'), String(profile.height)] as [string, string]] : []),
         ...(profile.weight != null ? [[t('weightKg'), String(profile.weight)] as [string, string]] : []),
@@ -346,9 +348,35 @@ export function MyPage() {
             <div className="val">{value}</div>
           </div>
         ))}
-        <Link to="/signup?next=/my" className="btn secondary block">
-          {t('myProfileEdit')}
-        </Link>
+        <div className="stack">
+          <Link to="/signup?next=/my" className="btn secondary block">
+            {t('myProfileEdit')}
+          </Link>
+          {others.length > 0 && (
+            <>
+              <p className="small muted">{t('profileOthers')}</p>
+              {others.map((e) => (
+                <button key={e.id} type="button" className="btn secondary block" onClick={() => app.selectProfile(e.id)}>
+                  👤 {term(SEXES[e.profile.sex])} · {formatIsoDate(e.profile.birthDate, lang)}
+                </button>
+              ))}
+            </>
+          )}
+          <Link to="/signup?next=/my&new=1" className="btn secondary block">
+            ＋ {t('profileAdd')}
+          </Link>
+          {app.profiles.length > 1 && app.activeProfileId && (
+            <button
+              type="button"
+              className="btn ghost block"
+              onClick={() => {
+                if (app.activeProfileId && window.confirm(t('profileDeleteConfirm'))) app.deleteProfile(app.activeProfileId);
+              }}
+            >
+              {t('profileDelete')}
+            </button>
+          )}
+        </div>
       </section>
       <section className="card">
         <h2>{t('mySettings')}</h2>
