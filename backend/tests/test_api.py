@@ -69,6 +69,15 @@ def test_auth_me_default_off():
     assert client.post("/api/auth/logout").status_code == 204
 
 
+def test_worker_auth_me_default_off():
+    # 근로자 Google 로그인(backlog 21)은 기본으로 꺼져 있다. 자세한 경로 테스트는 test_worker_auth.py
+    r = client.get("/api/auth/worker/me")
+    assert r.status_code == 200
+    assert r.json() == {"required": False, "account": None}
+    assert client.post("/api/auth/worker/google", json={"credential": "x"}).status_code == 404
+    assert client.post("/api/auth/worker/logout").status_code == 204
+
+
 def test_triage_readme_examples():
     r = client.post("/api/triage", json=INTAKE)
     assert r.status_code == 200

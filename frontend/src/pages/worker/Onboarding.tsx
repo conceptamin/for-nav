@@ -1,13 +1,15 @@
-// S-01 언어 선택, S-02 약관 동의, S-03 로그인(데모) → 프로필, S-04 홈
+// S-01 언어 선택, S-02 약관 동의, S-03 로그인(Google 또는 데모) → 프로필, S-04 홈
 // 온보딩 세 화면. 배치는 Figma 화면 골격(backlog/08-figma-layout.md)을 따른다.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
+import { checkWorkerAuth, loginWithGoogle, logoutWorker, useWorkerAuth } from '../../api/auth';
+import { hasGoogleClientId, renderGoogleButton } from '../../api/googleId';
 import { SingleSelect } from '../../components/common';
 import { useScreenBar } from '../../components/WorkerLayout';
 import { LANGUAGE_OPTIONS, translate, useT } from '../../i18n';
 import type { Consents } from '../../state/AppState';
-import { useApp } from '../../state/AppState';
+import { DEMO_ACCOUNT, useApp } from '../../state/AppState';
 import type { Profile } from '../../domain/templates';
 import { orderLangs } from '../../i18n/suggest';
 import { LOCALES, RTL_LANGS, SEXES, type Lang } from '../../domain/vocab';
@@ -31,7 +33,7 @@ export function LanguagePage() {
   const ask: Lang = first ?? 'en';
   const choose = (lang: Lang) => {
     app.setLang(lang);
-    navigate(consented ? (app.mode ? '/home' : '/signup') : '/consent');
+    navigate(consented ? (app.ready ? '/home' : '/signup') : '/consent');
   };
 
   const tile = (l: Lang) => {
@@ -135,7 +137,7 @@ export function ConsentPage() {
           disabled={!all}
           onClick={() => {
             app.setConsents(c);
-            navigate(app.mode ? '/home' : '/signup');
+            navigate(app.ready ? '/home' : '/signup');
           }}
         >
           {t('next')}
@@ -146,32 +148,110 @@ export function ConsentPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-03: 로그인(데모) → 프로필. 서버에 인증이 없으므로 Google 버튼은 회원 모드로 들어가 프로필로 간다.
-// 프로필의 필수는 생년월일·성별뿐. 이름·연락처·체류 자격은 받지 않는다.
+// S-03: 로그인 → 프로필(backlog 28). 비회원은 없다.
+// 서버가 Google 로그인을 쓰면(API 모드, WORKER_AUTH=google) Google 공식 버튼으로 로그인하고 서버 세션을 받는다.
+// 단독 모드나 서버가 쓰지 않으면 지금처럼 데모 버튼(G 글자)이 이 기기의 데모 계정으로 들어간다.
+// 로그인한 뒤 프로필이 없으면 프로필 단계다. 필수는 생년월일·성별뿐이고 이름·연락처·체류 자격은 받지 않는다.
 // ---------------------------------------------------------------------------
+
+const EMPTY_PROFILE: Profile = { birthDate: '', sex: 'male', height: null, weight: null, drinking: null, smoking: null };
+
+/** 로그인 뒤 돌아갈 곳. 앱 안 경로만 받는다 */
+function safeNext(next: string | null): string {
+  return next && next.startsWith('/') && !next.startsWith('//') ? next : '/home';
+}
+
+function GoogleLogin({ onCredential }: { onCredential: (credential: string) => void }) {
+  const { t, lang } = useT();
+  const ref = useRef<HTMLDivElement>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const cb = useRef(onCredential);
+  cb.current = onCredential;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let alive = true;
+    setFailed(false);
+    renderGoogleButton(el, LOCALES[lang], (c) => cb.current(c)).catch(() => alive && setFailed(true));
+    return () => {
+      alive = false;
+    };
+  }, [lang, attempt]);
+
+  return (
+    <>
+      <div className="gsi-button" ref={ref} hidden={failed} />
+      {failed && (
+        <div className="notice warn with-retry" role="alert">
+          <span>{t('loginFailed')}</span>
+          <button type="button" className="btn secondary" onClick={() => setAttempt((n) => n + 1)}>
+            {t('retry')}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function SignupPage() {
   const app = useApp();
   const { t } = useT();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const next = params.get('next') ?? '/home';
-  // 회원이 /my의 '프로필 수정'으로 들어오면(next가 있고 프로필이 있다) 로그인 화면을 건너뛰고 프로필 단계로 간다
-  const editing = app.mode === 'member' && Boolean(app.profile) && params.has('next');
-  const [form, setForm] = useState(editing);
-  const [p, setP] = useState<Profile>(
-    app.profile ?? { birthDate: '', sex: 'male', height: null, weight: null, drinking: null, smoking: null },
-  );
+  const next = safeNext(params.get('next'));
+  const workerAuth = useWorkerAuth();
+  // 로그인하고 프로필까지 있는 채로 들어오면(/my의 '프로필 수정') 프로필 단계를 보인다. 들어올 때 정하고,
+  // 로그아웃으로 계정이 비면 푼다(그 뒤 로그인한 사람은 프로필이 있으면 바로 next로 간다)
+  const [editing, setEditing] = useState(() => app.ready);
+  useEffect(() => {
+    if (!app.account) setEditing(false);
+  }, [app.account]);
+  const form = Boolean(app.account) && (!app.profile || editing);
+  const [p, setP] = useState<Profile>(app.profile ?? EMPTY_PROFILE);
   const [sexChosen, setSexChosen] = useState(Boolean(app.profile));
+  const [signingIn, setSigningIn] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(p.birthDate) && sexChosen;
   const num = (v: string) => (v ? Math.max(0, Number(v)) || null : null);
+
+  // 로그인했고 프로필도 있으면(다른 계정에서 이미 만들었으면) 이 화면에 머물 일이 없다
+  useEffect(() => {
+    if (app.ready && !editing) navigate(next, { replace: true });
+  }, [app.ready, editing, next, navigate]);
+  // 계정이 바뀌면(로그아웃·로그인) 그 계정의 프로필로 입력칸을 다시 채운다. 앞 계정의 값이 남지 않게 비우기도 한다
+  useEffect(() => {
+    setP(app.profile ?? EMPTY_PROFILE);
+    setSexChosen(Boolean(app.profile));
+  }, [app.account, app.profile]);
+
+  // 처음 로그인한 사람의 ← 는 로그인 화면으로 돌아간다(로그아웃). 프로필 없이 홈으로 가는 길을 만들지 않는다
+  const backToLogin = () => {
+    app.signOut();
+    void logoutWorker();
+  };
   // 로그인은 로고 화면이라 앱 바가 없다. 프로필 단계에서만 ← 가 있다
   useScreenBar({
     title: form ? t('profileTitle') : t('loginTitle'),
     hidden: !form,
-    onBack: () => (form ? (editing ? navigate(next) : setForm(false)) : navigate('/consent')),
+    onBack: () => (form ? (editing ? navigate(next) : backToLogin()) : navigate('/consent')),
   });
 
+  const onCredential = async (credential: string) => {
+    setSigningIn(true);
+    setLoginFailed(false);
+    try {
+      app.signIn(await loginWithGoogle(credential), 'google');
+    } catch {
+      setLoginFailed(true);
+    } finally {
+      setSigningIn(false);
+    }
+  };
+
   if (!form) {
+    const real = workerAuth.status === 'ready' && workerAuth.required;
     return (
       <div className="w-screen">
         <div className="w-logo">
@@ -180,23 +260,48 @@ export function SignupPage() {
           <p className="muted">{t('appTag')}</p>
         </div>
         <div className="stack">
-          <button type="button" className="btn secondary block big" onClick={() => setForm(true)}>
-            <span className="mark" aria-hidden>
-              G
-            </span>
-            {t('loginGoogle')}
-          </button>
-          <button
-            type="button"
-            className="btn ghost block"
-            onClick={() => {
-              app.startGuest();
-              navigate(next);
-            }}
-          >
-            {t('loginGuest')}
-          </button>
-          <p className="footer-note">{t('loginDemoNote')}</p>
+          {workerAuth.status === 'failed' ? (
+            <div className="notice warn with-retry" role="alert">
+              <span>{t('loginFailed')}</span>
+              <button type="button" className="btn secondary" onClick={() => void checkWorkerAuth()}>
+                {t('retry')}
+              </button>
+            </div>
+          ) : real && !hasGoogleClientId() ? (
+            <div className="notice warn" role="alert">
+              {t('loginNotConfigured')}
+            </div>
+          ) : real ? (
+            <>
+              {!signingIn && <GoogleLogin onCredential={(c) => void onCredential(c)} />}
+              {signingIn && (
+                <button type="button" className="btn secondary block big" disabled>
+                  {t('loginGoogle')}
+                </button>
+              )}
+              {loginFailed && (
+                <div className="notice warn" role="alert">
+                  {t('loginFailed')}
+                </div>
+              )}
+              <p className="footer-note">🔒 {t('loginGoogleNote')}</p>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn secondary block big"
+                disabled={workerAuth.status === 'checking'}
+                onClick={() => app.signIn(DEMO_ACCOUNT, 'demo')}
+              >
+                <span className="mark" aria-hidden>
+                  G
+                </span>
+                {t('loginGoogle')}
+              </button>
+              {workerAuth.status === 'ready' && <p className="footer-note">{t('loginDemoNote')}</p>}
+            </>
+          )}
           <p className="footer-note">🔒 {t('signupNoVisa')}</p>
         </div>
       </div>
@@ -272,7 +377,7 @@ export function SignupPage() {
           className="btn block"
           disabled={!valid}
           onClick={() => {
-            app.signUp(p);
+            app.saveProfile(p);
             navigate(next);
           }}
         >
@@ -296,25 +401,16 @@ export function HomePage() {
     { to: '/center-request', ico: '🤝', title: t('menuCenter'), sub: t('menuCenterSub') },
     { to: '/my', ico: '👤', title: t('menuMy'), sub: t('menuMySub') },
   ];
-  const profile = app.mode === 'member' ? app.profile : null;
+  const profile = app.profile;
   const recent = app.reports[0];
   const recentSymptoms = recent?.rows.find((row) => row.field === 'symptoms') ?? recent?.rows[0];
   const recentParts = recent?.rows.find((row) => row.field === 'bodyParts');
   return (
     <div className="stack wide">
-      {profile ? (
+      {profile && (
         <Link to="/my" className="row link home-me">
           <span>
             {term(SEXES[profile.sex])} · {profile.birthDate.slice(0, 4)}
-          </span>
-          <span className="chev" aria-hidden>
-            ›
-          </span>
-        </Link>
-      ) : (
-        <Link to="/signup" className="row link home-me">
-          <span>
-            {t('modeGuest')} · {t('myProfileCreate')}
           </span>
           <span className="chev" aria-hidden>
             ›

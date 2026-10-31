@@ -1,10 +1,11 @@
-"""테스트용 가짜 LLM·메일. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일을 기록한다."""
+"""테스트용 가짜 LLM·메일·Google ID 토큰 검증. 외부 네트워크에 접속하지 않고 받은 프롬프트와 출력 스키마, 보낸 메일, 확인한 토큰을 기록한다."""
 
 import asyncio
 import re
 from collections.abc import Iterable
 from typing import Any
 
+from app.google_id import GoogleIdError
 from app.llm import LLMError, LLMPrompt
 from app.mail import MailError
 
@@ -55,3 +56,17 @@ class FakeMailer:
         m = re.search(r"\d{6}", self.sent[-1][2])
         assert m, "메일에 6자리 코드가 없다"
         return m.group()
+
+
+class FakeVerifier:
+    """테스트용 가짜 Google ID 토큰 검증(backlog 21). 정해 둔 토큰이면 그 sub를, 아니면 GoogleIdError를 올린다."""
+
+    def __init__(self, tokens: dict[str, str]) -> None:
+        self.tokens = tokens
+        self.seen: list[str] = []
+
+    def verify(self, credential: str) -> str:
+        self.seen.append(credential)
+        if credential not in self.tokens:
+            raise GoogleIdError("ValueError")
+        return self.tokens[credential]

@@ -4,7 +4,7 @@
 // 전송 완료 화면에는 상담 채팅(backlog 25)과 그 위에 센터와 통화(backlog 26)를 붙인다. 토큰은 API 모드 전송 응답에만 있어 단독 모드에서는 보이지 않는다.
 
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { PolicyDisclaimer, SingleSelect, Worse119 } from '../../components/common';
 import { CallPanel, type CallLabels } from '../../components/CallPanel';
 import { ChatPanel, type ChatLabels } from '../../components/ChatPanel';
@@ -12,6 +12,7 @@ import { useScreenBar } from '../../components/WorkerLayout';
 import type { MessageKey } from '../../i18n';
 import { LANGUAGE_OPTIONS, useT } from '../../i18n';
 import { useApp } from '../../state/AppState';
+import { isSessionEnded, logoutWorker } from '../../api/auth';
 import { sendCase } from '../../api/center';
 import { isCallAvailable } from '../../api/call';
 import { isChatAvailable } from '../../api/chat';
@@ -28,7 +29,7 @@ const CONTACT_METHODS: ContactMethod[] = ['phone', 'sms', 'kakao', 'zalo', 'visi
 export function CenterRequestPage() {
   const app = useApp();
   const { t, lang } = useT();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const preset = params.get('type') as RequestType | null;
   const [type, setType] = useState<RequestType | null>(preset && REQUEST_TYPES.includes(preset) ? preset : null);
   const [method, setMethod] = useState<ContactMethod | null>(null);
@@ -40,10 +41,9 @@ export function CenterRequestPage() {
 
   const intake = app.intake ?? newIntake(lang);
   const insurance = app.coverage?.input.insurance ?? null;
-  // 미리보기는 회원이 요청 종류를 고른 뒤에만 만든다. 비회원은 이 화면에서 아무것도 서버로 보내지 않는다.
-  // 연락처는 요약 입력에 없으므로 미리보기 요청에 들어가지 않는다.
+  // 미리보기는 요청 종류를 고른 뒤에만 만든다. 연락처는 요약 입력에 없으므로 미리보기 요청에 들어가지 않는다.
   const summaryInput: CenterSummaryInput | null =
-    app.mode === 'member' && !sent && type
+    !sent && type
       ? {
           intake: { ...intake, language: lang },
           emergencyFlag: app.emergencySeen,
@@ -55,23 +55,7 @@ export function CenterRequestPage() {
       : null;
   const summary = useCenterSummary(summaryInput);
   useScreenBar({ title: t('cenTitle') });
-
-  // 센터 전송은 회원만 가능(FR-03)
-  if (app.mode !== 'member') {
-    return (
-      <div>
-        <h1>{t('cenTitle')}</h1>
-        <p className="muted">{t('cenIntro')}</p>
-        <div className="card">
-          <p>{t('cenNeedMember')}</p>
-          <Link className="btn block big" to="/signup?next=/center-request">
-            {t('cenMakeProfile')}
-          </Link>
-        </div>
-        <Worse119 />
-      </div>
-    );
-  }
+  // 센터 전송은 로그인한 사람만 한다(FR-03). 로그인·프로필은 진입 가드(WorkerLayout)가 지킨다
 
   if (sent) {
     // 다음 운영일은 센터 날짜(YYYY-MM-DD)다. 그날 정오(한국 시각)로 읽어 요일이 시간대에 따라 밀리지 않게 한다.
@@ -194,7 +178,13 @@ export function CenterRequestPage() {
       );
       app.addMyCase(r.case.id, r.chatToken);
       setSent(r);
-    } catch {
+    } catch (e) {
+      if (isSessionEnded(e)) {
+        // 서버 근로자 세션이 끝났다(backend 21). 계정을 비우면 진입 가드가 이 주소를 next에 담아 로그인으로 보낸다.
+        // 증상 입력은 세션에 남고 요청 종류는 주소(?type=)에 있다. 연락처는 브라우저에 남기지 않으므로(README "상태의 경계") 다시 적는다
+        app.endSession();
+        return;
+      }
       // 입력값은 그대로 둔다. 다시 시도는 같은 입력으로 보낸다.
       setSendFailed(true);
     } finally {
@@ -211,7 +201,16 @@ export function CenterRequestPage() {
       {!app.intake && <div className="notice info">{t('cenNoIntake')}</div>}
       <div className="field">
         <span className="label">{t('cenType')}</span>
-        <SingleSelect options={REQUEST_TYPES} value={type} onChange={setType} label={(k) => t(`req.${k}` as MessageKey)} />
+        <SingleSelect
+          options={REQUEST_TYPES}
+          value={type}
+          onChange={(v) => {
+            setType(v);
+            // 세션이 끝나 로그인하고 돌아올 때 고른 종류가 남도록 주소에도 둔다
+            setParams({ type: v }, { replace: true });
+          }}
+          label={(k) => t(`req.${k}` as MessageKey)}
+        />
       </div>
       <div className="field">
         <span className="label">{t('cenContactMethod')}</span>
@@ -263,18 +262,24 @@ export function CenterRequestPage() {
 }
 
 // ---------------------------------------------------------------------------
-// S-13 내 정보: 프로필 → 설정(언어) → 내 메모 → 센터로 보낸 요청 → 전체 지우기.
-// 배치는 backlog/12-home-my.md. 전부 브라우저 안 상태(AppState)이고 서버 계정은 없다.
+// S-13 내 정보: 프로필 → 설정(언어) → 내 메모 → 센터로 보낸 요청 → 로그아웃 → 전체 지우기.
+// 배치는 backlog/12-home-my.md. 프로필·메모는 이 기기의 계정별 저장소(AppState)에 있고 서버에는 없다(backlog 28).
 // ---------------------------------------------------------------------------
 const DRINK_KEY = { none: 'drinkNone', sometimes: 'drinkSometimes', often: 'drinkOften' } as const;
 const SMOKE_KEY = { no: 'smokeNo', yes: 'smokeYes', quit: 'smokeQuit' } as const;
 
 export function MyPage() {
   const app = useApp();
+  const navigate = useNavigate();
+  // 로그인 화면으로 먼저 옮긴 뒤(동기) 계정을 비운다. 순서가 바뀌면 진입 가드가 이 화면을 next로 달고 보낸다
+  const leave = (clear: () => void) => {
+    navigate('/signup', { replace: true, flushSync: true });
+    clear();
+    void logoutWorker();
+  };
   const { t, term } = useT();
-  const [deleted, setDeleted] = useState(false);
   useScreenBar({ title: t('myTitle') });
-  const profile = app.mode === 'member' ? app.profile : null;
+  const profile = app.profile;
   // 값이 있는 줄만 만든다. null은 줄을 만들지 않는다
   const profileRows: [string, string][] = profile
     ? [
@@ -289,29 +294,17 @@ export function MyPage() {
   return (
     <div>
       <h1>{t('myTitle')}</h1>
-      {app.mode !== 'member' && <div className="notice warn">{t('repSavedGuest')}</div>}
       <section className="card">
         <h2>{t('myProfile')}</h2>
-        {profile ? (
-          <>
-            {profileRows.map(([label, value]) => (
-              <div className="report-row" key={label}>
-                <div className="lbl">{label}</div>
-                <div className="val">{value}</div>
-              </div>
-            ))}
-            <Link to="/signup?next=/my" className="btn secondary block">
-              {t('myProfileEdit')}
-            </Link>
-          </>
-        ) : (
-          <>
-            <p className="muted">{t('myProfileGuestHint')}</p>
-            <Link to="/signup?next=/my" className="btn block">
-              {t('myProfileCreate')}
-            </Link>
-          </>
-        )}
+        {profileRows.map(([label, value]) => (
+          <div className="report-row" key={label}>
+            <div className="lbl">{label}</div>
+            <div className="val">{value}</div>
+          </div>
+        ))}
+        <Link to="/signup?next=/my" className="btn secondary block">
+          {t('myProfileEdit')}
+        </Link>
       </section>
       <section className="card">
         <h2>{t('mySettings')}</h2>
@@ -354,15 +347,15 @@ export function MyPage() {
           </ul>
         </section>
       )}
-      {deleted && <div className="notice ok">{t('myDeleted')}</div>}
+      {/* 로그아웃·지우기는 로그인 화면으로 간다. 서버 세션은 기다리지 않고 지운다 */}
+      <button type="button" className="btn secondary block" onClick={() => leave(app.signOut)}>
+        {t('logout')}
+      </button>
       <button
         type="button"
-        className="btn secondary block"
+        className="btn ghost block"
         onClick={() => {
-          if (window.confirm(t('myDeleteConfirm'))) {
-            app.clearMyData();
-            setDeleted(true);
-          }
+          if (window.confirm(t('myDeleteConfirm'))) leave(app.clearMyData);
         }}
       >
         🗑️ {t('myDelete')}
