@@ -358,7 +358,8 @@ const summaryText = (lang: Lang): SummaryText => (lang === 'ko' ? SUMMARY_KO : t
 export interface CenterSummaryInput {
   intake: Intake;
   emergencyFlag: boolean;
-  requestType: RequestType;
+  /** 근로자가 고른 순서. 하나 이상 */
+  requestTypes: RequestType[];
   coverage: CoverageResult | null;
   insurance: 'yes' | 'no' | 'unknown' | null;
   contactMethod: ContactMethod | null;
@@ -386,7 +387,7 @@ export function buildCenterSummary(i: CenterSummaryInput): CenterSummary {
   ko.push(`응급 판정 이력: ${i.emergencyFlag ? '있음' : '없음'}.`);
   if (i.insurance) ko.push(`건강보험증: ${{ yes: '있음', no: '없음', unknown: '모름' }[i.insurance]}.`);
   if (i.coverage) ko.push(`제도 경로 결과: ${PATH_KO[i.coverage.path]}.`);
-  ko.push(`요청 유형: ${REQUEST_TYPE_KO[i.requestType]}.`);
+  ko.push(`요청 유형: ${requestTypesKo(i.requestTypes)}.`);
   if (i.contactMethod) ko.push(`연락 희망: ${CONTACT_METHOD_KO[i.contactMethod]}.`);
 
   const t = summaryText(lang);
@@ -395,8 +396,13 @@ export function buildCenterSummary(i: CenterSummaryInput): CenterSummary {
   if (intake.district) nv.push(`${t.area}: ${pick(DISTRICTS[intake.district], lang)}.`);
   if (intake.industry) nv.push(`${t.industry}: ${pick(INDUSTRIES[intake.industry], lang)}.`);
   if (intake.freeText) nv.push(`${t.myNote}: "${intake.freeText}"`);
-  nv.push(`${t.request}: ${requestTypeNative(i.requestType, lang)}.`);
+  nv.push(`${t.request}: ${i.requestTypes.map((r) => requestTypeNative(r, lang)).join(', ')}.`);
   return { ko: ko.join(' '), native: nv.join('\n') };
+}
+
+/** 센터 화면·요약의 요청 유형 한 줄(한국어) */
+export function requestTypesKo(types: RequestType[]): string {
+  return types.map((r) => REQUEST_TYPE_KO[r]).join(', ');
 }
 
 export function requestTypeNative(t: RequestType, lang: Lang): string {

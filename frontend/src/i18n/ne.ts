@@ -226,6 +226,7 @@ export const ne: Record<MessageKey, string> = {
   cenTitle: 'सहायता केन्द्रलाई सोध्नुहोस्',
   cenIntro: 'केन्द्रले अस्पताल बुकिङ, दोभाषे र सहायता कार्यक्रमबारे सल्लाहमा मद्दत गर्छ।',
   cenType: 'तपाईंलाई के चाहिन्छ?',
+  cenTypeHint: 'मिल्ने सबै छान्नुहोस्।',
   'req.booking': 'बुकिङ सहायता',
   'req.interpret': 'दोभाषे',
   'req.policy': 'बीमा र सहायता सल्लाह',

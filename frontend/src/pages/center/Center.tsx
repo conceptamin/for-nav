@@ -17,7 +17,7 @@ import { useReveal } from '../../components/reveal';
 import type { CaseStatus, CenterCase, CenterStats, StatCell, Urgency } from '../../domain/centerCase';
 import { STATUS_KO, URGENCY_KO } from '../../domain/centerCase';
 import { PATH_KO } from '../../domain/coverage';
-import { CONTACT_METHOD_KO, REQUEST_TYPE_KO } from '../../domain/templates';
+import { CONTACT_METHOD_KO, requestTypesKo } from '../../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../../domain/vocab';
 import { DISTRICTS, INDUSTRIES, LANGUAGE_NAMES_KO } from '../../domain/vocab';
 
@@ -373,7 +373,7 @@ export function InboxPage() {
                     {fmt(c.createdAt)} {c.afterHours && <span title="운영 시간 외 접수">🌙</span>}
                   </td>
                   <td>{LANGUAGE_NAMES_KO[c.language]}</td>
-                  <td>{REQUEST_TYPE_KO[c.requestType]}</td>
+                  <td>{requestTypesKo(c.requestTypes)}</td>
                   <td>
                     <UrgencyPill u={c.urgency} />
                   </td>
@@ -527,7 +527,7 @@ function CaseDetail({ c }: { c: CenterCase }) {
                 {new Date(c.createdAt).toLocaleString('ko-KR')} {c.afterHours && '(운영 시간 외)'}
               </dd>
               <dt>요청 유형</dt>
-              <dd>{REQUEST_TYPE_KO[c.requestType]}</dd>
+              <dd>{requestTypesKo(c.requestTypes)}</dd>
               <dt>긴급도 근거</dt>
               <dd>{c.urgencyReasons.join(', ') || '해당 없음'}</dd>
               <dt>구·군</dt>

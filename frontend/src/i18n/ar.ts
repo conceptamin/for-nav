@@ -213,6 +213,7 @@ export const ar: Record<MessageKey, string> = {
   cenTitle: 'اسأل مركز الدعم',
   cenIntro: 'يساعد المركز في حجز مواعيد المستشفى والترجمة والنصيحة عن برامج الدعم.',
   cenType: 'ماذا تحتاج؟',
+  cenTypeHint: 'اختر كل ما ينطبق.',
   'req.booking': 'المساعدة في الحجز',
   'req.interpret': 'الترجمة',
   'req.policy': 'استشارة التأمين والدعم',

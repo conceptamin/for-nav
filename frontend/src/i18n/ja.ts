@@ -226,6 +226,7 @@ export const ja: Record<MessageKey, string> = {
   cenTitle: '支援センターに相談',
   cenIntro: 'センターは病院の予約、通訳、支援制度の相談を手伝います。',
   cenType: '何が必要ですか？',
+  cenTypeHint: '当てはまるものをすべて選んでください。',
   'req.booking': '予約の手伝い',
   'req.interpret': '通訳',
   'req.policy': '保険・支援の相談',

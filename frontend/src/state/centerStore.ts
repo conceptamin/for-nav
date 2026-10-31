@@ -8,6 +8,7 @@ import type { CaseStatus, CenterCase, CenterStats, NewCaseRequest, NewCaseRespon
 import { MIN_CELL, rateUrgency } from '../domain/centerCase';
 import type { CenterHours } from '../domain/coverage';
 import { isAfterHours, nextOpenDay } from '../domain/coverage';
+import type { RequestType } from '../domain/templates';
 import { buildCenterSummary } from '../domain/templates';
 import type { District, Industry, Lang, YesNoUnknown } from '../domain/vocab';
 import { INDUSTRIES } from '../domain/vocab';
@@ -19,8 +20,12 @@ const CHANGE_EVENT = 'umn-center-change';
 
 const mockCases = buildMockCases();
 
+/** 요청 종류가 하나였던 때(backlog 35 전) 이 브라우저에 저장된 사례를 배열로 읽는다 */
+const withRequestTypes = (c: CenterCase & { requestType?: RequestType }): CenterCase =>
+  c.requestTypes ? c : { ...c, requestTypes: c.requestType ? [c.requestType] : [] };
+
 export function loadAllLocal(): CenterCase[] {
-  const live = readJson<CenterCase[]>(localStorage, LIVE_KEY, []);
+  const live = readJson<CenterCase[]>(localStorage, LIVE_KEY, []).map(withRequestTypes);
   const overrides = readJson<Record<string, CaseStatus>>(localStorage, STATUS_KEY, {});
   return [...live, ...mockCases]
     .map((c) => (overrides[c.id] ? { ...c, status: overrides[c.id]! } : c))
@@ -53,7 +58,7 @@ export function sendCaseLocal(req: NewCaseRequest, hours: CenterHours): NewCaseR
     id: `C-${now.getTime().toString().slice(-5)}`,
     createdAt: now.toISOString(),
     language: req.intake.language,
-    requestType: req.requestType,
+    requestTypes: req.requestTypes,
     urgency,
     urgencyReasons: reasons,
     district: req.intake.district,

@@ -226,6 +226,7 @@ export const zhTW: Record<MessageKey, string> = {
   cenTitle: '詢問支援中心',
   cenIntro: '中心可以幫忙預約醫院、口譯，並提供補助方案的諮詢。',
   cenType: '您需要什麼幫助？',
+  cenTypeHint: '符合的都可以選。',
   'req.booking': '協助預約掛號',
   'req.interpret': '口譯',
   'req.policy': '健保與補助諮詢',

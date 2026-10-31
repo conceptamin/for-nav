@@ -226,6 +226,7 @@ export const uz: Record<MessageKey, string> = {
   cenTitle: 'Yordam markazidan soʻrash',
   cenIntro: 'Markaz shifoxonaga navbatga yozilish, tarjima va yordam dasturlari boʻyicha maslahat bilan yordam beradi.',
   cenType: 'Sizga nima kerak?',
+  cenTypeHint: 'Mos keladiganlarning hammasini tanlang.',
   'req.booking': 'Navbatga yozilishda yordam',
   'req.interpret': 'Tarjima',
   'req.policy': 'Sugʻurta va yordam boʻyicha maslahat',

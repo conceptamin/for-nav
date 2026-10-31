@@ -226,6 +226,7 @@ export const id: Record<MessageKey, string> = {
   cenTitle: 'Tanya pusat bantuan',
   cenIntro: 'Pusat bantuan membantu membuat janji di rumah sakit, menerjemahkan, dan memberi saran tentang program bantuan.',
   cenType: 'Apa yang Anda perlukan?',
+  cenTypeHint: 'Pilih semua yang sesuai.',
   'req.booking': 'Bantuan janji temu',
   'req.interpret': 'Penerjemahan',
   'req.policy': 'Saran asuransi & bantuan',

@@ -226,6 +226,7 @@ export const fr: Record<MessageKey, string> = {
   cenTitle: 'Demander au centre d’aide',
   cenIntro: 'Le centre aide pour les rendez-vous à l’hôpital, l’interprétation et les conseils sur les aides.',
   cenType: 'De quoi avez-vous besoin ?',
+  cenTypeHint: 'Choisissez tout ce qui correspond.',
   'req.booking': 'Aide pour un rendez-vous',
   'req.interpret': 'Interprétation',
   'req.policy': 'Conseils assurance et aides',

@@ -214,6 +214,7 @@ export const ko: Record<MessageKey, string> = {
   cenTitle: '지원센터에 문의',
   cenIntro: '센터는 병원 예약, 통역, 지원 제도 상담을 도와줍니다.',
   cenType: '무엇이 필요하세요?',
+  cenTypeHint: '해당하는 것을 모두 고르세요.',
   'req.booking': '예약 지원',
   'req.interpret': '통번역',
   'req.policy': '보험·제도 상담',
