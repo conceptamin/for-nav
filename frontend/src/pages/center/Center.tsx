@@ -382,9 +382,10 @@ export function InboxPage() {
             {chatOn && <option value="chat">채팅 시각</option>}
           </select>
         </label>
+        {/* 공개 체험 동안 센터 로그인을 끄므로(CENTER_AUTH=off) 누구나 지우지 못하게 막아 둔다. 다시 쓰려면 disabled={resetting}으로 되돌린다 */}
         <button
           type="button"
-          disabled={resetting}
+          disabled
           onClick={() => {
             if (window.confirm('전송된 사례와 상태 변경을 모두 지울까요?')) void reset();
           }}
