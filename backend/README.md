@@ -607,7 +607,7 @@ ipconfig getifaddr en0                                   # 맥 IP(Wi-Fi)
 
 `main`에 병합되면 GitHub Actions(`.github/workflows/deploy-backend.yml`)가 맥미니에 SSH(포트 2222)로 접속해 `~/srv/for-nav`(없으면 클론)에서 `git pull --ff-only origin main` 뒤 `backend/deploy/deploy.sh`를 돌린다. `backend/`·`frontend/`·`app-front/`·모델링 코드와 모델이 바뀐 병합만 배포하고, 문서(`*.md`)만 바뀐 병합은 배포하지 않는다. Actions 탭에서 "Deploy backend (Mac mini)"를 직접 실행할 수도 있다.
 
-`deploy.sh` 흐름: `backend/.env`의 `GOOGLE_CLIENT_ID`를 읽어 두 빌드에 `VITE_GOOGLE_CLIENT_ID`로 넘긴다(없으면 빈 값) → 프론트를 API 모드로 `backend/deploy/static.next`에, 앱용 웹(`app-front`)을 `backend/deploy/static-app.next`에 빌드 → `uv sync --frozen --no-dev` → 둘을 `static`·`static-app`으로 함께 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 `static`·`static-app`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
+`deploy.sh` 흐름: `backend/.env`의 `GOOGLE_CLIENT_ID`를 읽어 두 빌드에 `VITE_GOOGLE_CLIENT_ID`로 넘긴다(없으면 빈 값) → 프론트를 API 모드로, 센터 "근로자 화면 열기"가 `https://app.for-nav.com/`을 열게(`VITE_WORKER_URL`, frontend 58) `backend/deploy/static.next`에, 앱용 웹(`app-front`)을 `backend/deploy/static-app.next`에 빌드 → `uv sync --frozen --no-dev` → 둘을 `static`·`static-app`으로 함께 바꿔 끼우기 → pm2 앱 `for-nav` 다시 띄우기 → `/api/health` 확인(30초). 빌드나 의존성 설치가 하나라도 실패하면 떠 있는 서버와 `static`·`static-app`은 그대로 두고 멈춘다. 서버는 `http://<맥미니>:8000/`(근로자 화면), `/center`(센터 화면), `/api/*`를 한 주소에서 서빙하고, 모델(`modeling/models`)을 붙여 띄운다.
 
 호스트별 빌드(backlog 22): `Host`가 `app.for-nav.com`인 요청에는 앱용 웹 빌드(`static-app`, Flutter 앱이 불러오는 화면. 브라우저에서도 같은 근로자 화면이다)를, 나머지(`www.for-nav.com` 등)에는 `frontend` 빌드(`static`)를 준다. `/api/*`는 호스트와 관계없이 같다. Cloudflare 터널은 공개 주소의 `Host`를 그대로 넘긴다(터널 설정에 `httpHostHeader`를 두지 않는다).
 
