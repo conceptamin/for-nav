@@ -42,7 +42,8 @@ echo "▶ 프론트 빌드(API 모드)"
 cd "$ROOT/frontend"
 npm ci --no-audit --no-fund
 rm -rf "$DEPLOY_DIR/static.next"
-VITE_API_BASE=/api VITE_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" npm run build -- --outDir "$DEPLOY_DIR/static.next" --emptyOutDir
+# 센터 머리글 "근로자 화면 열기"(frontend 58): www.의 /는 Cloudflare가 /center로 보내므로 앱용 웹 호스트(APP_HOSTS)를 연다
+VITE_API_BASE=/api VITE_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" VITE_WORKER_URL=https://app.for-nav.com/ npm run build -- --outDir "$DEPLOY_DIR/static.next" --emptyOutDir
 
 echo "▶ 앱용 웹 빌드(API 모드, app.for-nav.com에 서빙)"
 # frontend/src를 공유 import하지만 react 등은 app-front의 node_modules만 쓴다(app-front backlog 02)
