@@ -30,6 +30,7 @@ VITE_API_BASE=/api npm run dev                          # Vite 프록시가 /api
 
 - 근로자 화면(모바일): `http://localhost:5180/`
 - 센터 화면(PC): `http://localhost:5180/center` — 다른 탭이나 다른 기기에 열어 두면 근로자가 보낸 사례가 2초 안에 맨 위에 나타난다. 다른 기기 시연은 API 모드에서만 된다.
+- 센터 머리글의 **근로자 화면 열기 ↗**는 `VITE_WORKER_URL`을 새 탭으로 연다. 비우면 같은 출처의 `/`다. 맥미니 배포는 `www.for-nav.com/`가 Cloudflare 리디렉션으로 `/center`에 오므로 `https://app.for-nav.com/`을 넣어 빌드해야 한다(backlog 58).
 - 센터 접수함의 **접수함 초기화** 버튼은 공개 체험 동안 눌리지 않게 막아 두었다(backlog 57). 서버 경로 `POST /api/center/reset`은 그대로 열려 있다.
 - 근로자·센터 통화(backlog 26)는 마이크와 음성 인식이 안전한 출처(HTTPS 또는 `localhost`)에서만 열리므로, 지금은 `localhost`에서 PC 브라우저 창 두 개(근로자 360px, 센터 1280px)로 확인한다. STUN 서버는 `VITE_ICE_SERVERS`(JSON 배열)로 바꿀 수 있다. 비우면 Google 공개 STUN(`stun:stun.l.google.com:19302`), `[]`이면 같은 망에서만 붙는다.
 - 발표용으로 서버 하나만 띄우는 방법(프론트 빌드를 FastAPI가 서빙)은 backend 08 이후 `backend/README.md`에 적는다.
