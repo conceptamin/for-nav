@@ -109,6 +109,9 @@ const CALL_LABELS: CallLabels = {
   },
 };
 
+// 머리글 "근로자 화면 열기"가 여는 곳(backlog 58). 맥미니 배포는 www.의 `/`가 Cloudflare 리디렉션으로 /center에 오므로 app.for-nav.com을 넣는다
+const WORKER_URL = import.meta.env.VITE_WORKER_URL || '/';
+
 const hhmm = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
 
 /** 실패 문구 + 바로 옆 다시 시도. 입력값은 그대로 둔다 (README.md "비동기 UX 규칙") */
@@ -217,7 +220,7 @@ function CenterOpen({ email }: { email: string | null }) {
           </NavLink>
           <NavLink to="/center/stats">통계</NavLink>
         </nav>
-        <a href="/" target="_blank" rel="noreferrer" className="small">
+        <a href={WORKER_URL} target="_blank" rel="noreferrer" className="small">
           근로자 화면 열기 ↗
         </a>
         {email && (

@@ -87,6 +87,6 @@ npm ci && npm run build      # tsc --noEmit + vite build 통과(기존 500kB 청
 - 머리글이 760px에서 메뉴 글자가 한 글자씩 꺾여 메뉴·로그아웃을 줄바꿈하지 않게 하고, 900px 아래에서는 이메일을 숨긴다(`design.md` "센터 로그인")
 
 ## 메모
-- 센터 헤더의 "근로자 화면 열기 ↗"는 `/`로 간다. 맥미니 배포에서는 `www.for-nav.com/`가 Cloudflare 리디렉션으로 `/center`에 오므로 이 링크가 근로자 화면을 열지 못한다. `https://app.for-nav.com/`을 가리키게 하는 일은 이 항목과 따로 정한다(환경 변수로 둘지, 링크를 뺄지)
+- 센터 헤더의 "근로자 화면 열기 ↗"는 `/`로 간다. 맥미니 배포에서는 `www.for-nav.com/`가 Cloudflare 리디렉션으로 `/center`에 오므로 이 링크가 근로자 화면을 열지 못한다. → backlog 58에서 `VITE_WORKER_URL`로 바꿀 수 있게 했다
 - 서버는 직원을 지우거나 로그아웃해도 이미 열린 채팅·통화 소켓을 끊지 않는다(4401은 연결할 때만 확인한다). 화면은 다음 폴링(2초 안)의 401로 로그인으로 가며 소켓도 닫히지만, 서버 쪽에서 끊으려면 backend 17 후속으로 따로 한다
 - 로그인 화면은 `www.for-nav.com/center/login`에서 열린다. Cloudflare 리디렉션 규칙(`app.`·루트의 `/center*` → `www.`)과 WAF 규칙은 바꾸지 않아도 된다
