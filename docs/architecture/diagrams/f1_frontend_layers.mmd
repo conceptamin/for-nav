@@ -1,0 +1,35 @@
+flowchart TD
+    ENTRY["🚀 main.tsx<br/>AppStateProvider · createBrowserRouter"]
+    LAY["🧱 레이아웃<br/>WorkerLayout · CenterLayout<br/>진입 가드"]
+    PAGES["📄 pages/<br/>worker: Onboarding · Intake · Coverage<br/>Visit · Report · CenterRequest<br/>center: Center · Login"]
+    COMP["🧩 components/<br/>CenterSheet · ChatPanel · CallPanel<br/>LangMenu · WorkerDrawer"]
+    STATE["💾 state/<br/>AppState 컨텍스트 · centerStore<br/>storage 래퍼"]
+    API["📡 api/<br/>http · worker · center · chat · call<br/>speech · auth · googleId · push<br/>모드 전환과 대체 경로는 여기만"]
+    DOM["⚖️ domain/<br/>triage · coverage · centerCase<br/>templates · vocab · lang/<br/>순수 함수 · 백엔드 이식 원본"]
+    I18N["🌍 i18n/<br/>20개 언어 UI 문구 · useT"]
+    MOCK["🎲 data/mock.ts<br/>시드 고정 사례 24 · 통계 329"]
+    BE["⚙️ backend /api<br/>REST · WebSocket"]
+
+    ENTRY --> LAY --> PAGES
+    PAGES --> COMP
+    PAGES --> STATE
+    PAGES --> API
+    PAGES --> I18N
+    PAGES -.->|"타입 · 상수만"| DOM
+    COMP --> API
+    API -->|"서버 실패 · 단독 모드"| DOM
+    API --> STATE
+    STATE -->|"단독 모드 센터 DB"| MOCK
+    I18N --> DOM
+    API -->|"VITE_API_BASE 있을 때"| BE
+
+    classDef entry fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef ui fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef logic fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef data fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    classDef ext fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class ENTRY entry
+    class LAY,PAGES,COMP ui
+    class API,DOM,I18N logic
+    class STATE,MOCK data
+    class BE ext

@@ -1,0 +1,32 @@
+flowchart TD
+    IN(["📋 POST /api/triage<br/>Intake"])
+    MS{"부위나 증상이<br/>비어 있나?"}
+    MISS(["❌ department = None<br/>missing 반환"])
+    RUN["📦 run_model()<br/>실패 · 모델 없음 → None"]
+    RULE["🧩 rule_department()<br/>화학물질 → 직업환경 · 눈 → 안과<br/>치아 → 치과 · 화상/출혈 → 외과 ..."]
+    GEN{"막연한 분기인가?<br/>내과 묶음 · 기본값"}
+    FIX{"rule_fixed?<br/>숨참 · 가슴+통증"}
+    HAS{"모델 예측 있음?"}
+    RT(["✅ 규칙표 진료과 2개"])
+    MT(["✅ 모델 앙상블 Top-2"])
+
+    IN --> MS
+    MS -->|"예"| MISS
+    MS -->|"아니오"| RUN --> RULE --> GEN
+    GEN -->|"아니오 · 명시 규칙"| RT
+    GEN -->|"예"| FIX
+    FIX -->|"예"| RT
+    FIX -->|"아니오"| HAS
+    HAS -->|"아니오"| RT
+    HAS -->|"예"| MT
+
+    classDef io fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef step fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef ok fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef bad fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
+    class IN io
+    class RUN,RULE step
+    class MS,GEN,FIX,HAS gate
+    class RT,MT ok
+    class MISS bad

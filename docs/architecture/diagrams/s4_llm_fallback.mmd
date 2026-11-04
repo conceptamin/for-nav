@@ -1,0 +1,37 @@
+flowchart TD
+    CALL(["🤖 LLM이 필요한 요청<br/>extract · visit-helper · report · chat"])
+    KEY{"LLM_API_KEY 있음?"}
+    LIM{"LLMLimiter.take()<br/>IP별 분당 · 하루 상한"}
+    GEN["⚙️ generate()<br/>asyncio.timeout · JSON 스키마 강제"]
+    ERR{"타임아웃 · 오류 ·<br/>스키마 불일치?"}
+    RETRY{"시도 < LLM_ATTEMPTS (2)?"}
+    GUARD{"guard 검사<br/>한국어 · 길이 · 진단/추측 금지어<br/>번역은 역번역 비교"}
+    OK(["✅ LLM 결과 사용<br/>llmSlots · translation ok"])
+    FB(["↩️ 결정적 대체<br/>키워드 추출 · 기본 템플릿<br/>translation skipped"])
+    REJ(["⛔ translation rejected<br/>원문만 전달"])
+
+    CALL --> KEY
+    KEY -->|"아니오"| FB
+    KEY -->|"예"| LIM
+    LIM -->|"초과 → limited, 재시도 없음"| FB
+    LIM -->|"통과"| GEN --> ERR
+    ERR -->|"예"| RETRY
+    RETRY -->|"예"| GEN
+    RETRY -->|"아니오 → LLMUnavailableError"| FB
+    ERR -->|"아니오"| GUARD
+    GUARD -->|"통과"| OK
+    GUARD -->|"요약 실패"| FB
+    GUARD -->|"번역 불일치"| REJ
+
+    classDef io fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef step fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef ok fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef warn fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    classDef bad fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
+    class CALL io
+    class GEN step
+    class KEY,LIM,ERR,RETRY,GUARD gate
+    class OK ok
+    class FB warn
+    class REJ bad

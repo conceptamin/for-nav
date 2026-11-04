@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    actor W as 👤 이주노동자 화면
+    participant API as ⚙️ FastAPI
+    participant R as 🧩 규칙 엔진
+    participant M as 📦 진료과 모델
+    participant L as 🤖 LLM
+    participant S as 💾 Store
+
+    W->>API: POST /api/extract (자유 서술)
+    API->>R: extract_from_text (키워드)
+    opt LLM 사용 가능
+        API->>L: LLMExtraction 스키마로 추출
+        L-->>API: 부위 · 증상 · onset · work_type
+    end
+    API-->>W: 합친 추출 결과 (빈 칸만 채움)
+
+    W->>API: POST /api/triage (Intake)
+    API->>M: predict(intake) → departmentTop2
+    API->>R: department_for (규칙표 우선)
+    API-->>W: 추천 진료과 2개 · missing
+
+    W->>API: POST /api/route
+    API->>R: route_coverage (산재 → 건강보험 → 울산지원 → 센터)
+    API-->>W: 경로 · 기관 · 준비 서류
+
+    W->>API: POST /api/visit-helper
+    API->>L: 한 문장 상황 요약
+    L-->>API: 요약 → guard 검사
+    API-->>W: 접수 시트 · 전화 대본 (실패 시 기본 템플릿)
+
+    W->>API: POST /api/report/clinician · /center
+    API->>L: 번역 → 검사 → 역번역 → 비교
+    API-->>W: 보고서 + translation.status (ok · rejected · skipped)
+
+    W->>API: POST /api/center/cases
+    API->>R: rate_urgency · default_category
+    API->>S: add_live(case) + chat token
+    API-->>W: case · nextOpenDate · chatToken

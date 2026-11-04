@@ -1,0 +1,55 @@
+flowchart TD
+    subgraph CL["👤 클라이언트"]
+        WEB["🌐 frontend<br/>www.for-nav.com"]
+        APP["📱 app-front · Flutter<br/>app.for-nav.com"]
+    end
+
+    CF["☁️ Cloudflare 터널<br/>Host 헤더 그대로 전달"]
+
+    subgraph SRV["⚙️ FastAPI · pm2 단일 프로세스 :8000"]
+        MW["🛡️ RequestContext · CORS<br/>request id · access log"]
+        WR["📋 worker.router /api<br/>extract · triage · route<br/>visit-helper · report"]
+        CR["🏢 center.router /api/center<br/>cases · stats · chat · call"]
+        AR["🔐 auth.router /api/auth<br/>이메일 코드 · Google 로그인"]
+        ST["📄 정적 파일 catch-all<br/>Host로 static / static-app 선택"]
+        CORE["🧩 rules · templates · model<br/>llm + LLMLimiter"]
+        HUB["⚡ ChatHub · CallHub · PushNotifier<br/>메모리 상태"]
+    end
+
+    subgraph EXT["🔌 외부 · 로컬 자원"]
+        LLM["🤖 Anthropic API<br/>claude-haiku-5-5"]
+        MOD[("📦 modeling/models v2<br/>editable path 의존성")]
+        DB[("💾 SQLite<br/>DB_PATH 없으면 메모리")]
+        GID["🎫 Google ID 토큰 검증"]
+        FCM["📢 FCM HTTP v1"]
+        MAIL["📨 Resend 메일"]
+    end
+
+    WEB --> CF
+    APP --> CF
+    CF --> MW
+    MW --> WR
+    MW --> CR
+    MW --> AR
+    MW --> ST
+    WR --> CORE
+    CR --> CORE
+    CR --> HUB
+    CORE --> LLM
+    CORE --> MOD
+    CR --> DB
+    AR --> DB
+    AR --> GID
+    AR --> MAIL
+    HUB --> FCM
+
+    classDef client fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef edge fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    classDef app fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef core fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef ext fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class WEB,APP client
+    class CF,MW edge
+    class WR,CR,AR,ST app
+    class CORE,HUB core
+    class LLM,MOD,DB,GID,FCM,MAIL ext

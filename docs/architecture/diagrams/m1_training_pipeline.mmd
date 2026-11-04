@@ -1,0 +1,50 @@
+flowchart TD
+    subgraph SRC["📥 데이터 출처"]
+        K[("Kaggle 증상-질환<br/>4,920행 · 41질환")]
+        H[("HIRA 2025<br/>진료과 × 질환 집계")]
+        G[("병원 안내 페이지<br/>SNUH 28 + 원주세브란스 1")]
+        M[/"수기 매핑 표<br/>symptom_map · disease_kcd<br/>button_kcd · department_guide"/]
+    end
+
+    DL["⚙️ download_data.py<br/>내려받기 + sha256 검증"]
+    SP["⚙️ make_splits.py<br/>중복 제거 → 292행 · 40질환<br/>층화 분할 seed 20261027"]
+    TB["⚙️ build_tables.py<br/>질환→진료과 168행<br/>버튼→진료과 566행"]
+    FE["🧩 featurize()<br/>버튼 입력 → 34개 특성"]
+
+    A["🌲 train_dept_a.py<br/>LightGBM 40질환 분류<br/>3-fold CV → 954 rounds"]
+    B["🧠 train_dept_b.py<br/>numpy MLP 29→32→10<br/>5-fold CV → L2 1e-3 · 125 epochs"]
+    EN["⚖️ tune_ensemble.py<br/>weight × threshold 격자 탐색<br/>튜닝셋 73건"]
+    EV{{"🔒 evaluate.py<br/>test 해시 확인 · 라운드당 1회"}}
+    EX["📦 export_models.py<br/>v0/v1 → v2 복사 + sha256"]
+    OUT[("💾 modeling/models/*/v2<br/>서빙 번들")]
+
+    K --> DL
+    H --> DL
+    DL --> SP
+    M --> SP
+    DL --> TB
+    M --> TB
+    G --> TB
+    SP -->|"train 189 · valid 44"| FE
+    TB -->|"disease_department.csv"| A
+    TB -->|"button_department.csv"| B
+    FE --> A
+    FE --> B
+    A --> EN
+    B --> EN
+    TB -->|"가이드 29조합"| EN
+    SP -.->|"test 59 (봉인)"| EV
+    EN --> EV
+    EV --> EX
+    EX --> OUT
+
+    classDef src fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef step fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef model fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef store fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    class K,H,G,M src
+    class DL,SP,TB,FE,EX step
+    class A,B,EN model
+    class EV gate
+    class OUT store

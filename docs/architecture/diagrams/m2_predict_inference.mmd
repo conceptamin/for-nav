@@ -1,0 +1,47 @@
+flowchart TD
+    IN(["📋 Intake<br/>body_parts · symptoms · onset · injury ..."])
+    LOAD["📦 v2 번들 로드<br/>sha256 확인 · lru_cache"]
+    FE["🧩 featurize() → 34개 특성"]
+
+    subgraph MA["Model A"]
+        A1["🌲 LightGBM<br/>40질환 확률"]
+        A2["✖️ 질환→진료과 행렬<br/>departments.json"]
+        A1 --> A2
+    end
+
+    subgraph MB["Model B"]
+        B0{"injury 모름?"}
+        B1["🧠 MLP 29특성 → 10진료과"]
+        B2["➗ 외상 예/아니오 두 번 돌려 평균"]
+        B0 -->|"아니오"| B1
+        B0 -->|"예"| B2
+    end
+
+    MIX["⚖️ 0.5·A + 0.5·B<br/>10개 진료과 확률"]
+    TH{"최대 확률 < 0.25?"}
+    FB["🏥 family · internal<br/>departmentFallback = true"]
+    TOP["🎯 상위 2개 진료과<br/>동점은 목록 앞쪽"]
+    OUT(["📤 departmentProba · departmentTop2<br/>departmentFallback"])
+
+    IN --> LOAD --> FE
+    FE --> A1
+    FE --> B0
+    A2 --> MIX
+    B1 --> MIX
+    B2 --> MIX
+    MIX --> TH
+    TH -->|"예"| FB
+    TH -->|"아니오"| TOP
+    FB --> OUT
+    TOP --> OUT
+
+    classDef io fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef step fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef model fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef warn fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
+    class IN,OUT io
+    class LOAD,FE,MIX,TOP step
+    class A1,A2,B1,B2 model
+    class TH,B0 gate
+    class FB warn

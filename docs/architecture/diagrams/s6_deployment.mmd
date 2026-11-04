@@ -1,0 +1,29 @@
+flowchart LR
+    GH["🐙 GitHub main push<br/>deploy-backend.yml"]
+    subgraph MAC["🖥️ Mac mini ~/srv/for-nav"]
+        PULL["🔄 git pull --ff-only"]
+        SH["⚙️ deploy.sh<br/>frontend · app-front 빌드<br/>uv sync --frozen"]
+        SWAP["📂 static · static-app 교체"]
+        PM2["🚀 pm2 for-nav<br/>fastapi run :8000"]
+        HC{"/api/health<br/>30초 안에 200?"}
+        CFD["☁️ cloudflared 터널"]
+        MODELS[("📦 ../modeling/models")]
+        SQL[("💾 SQLite")]
+    end
+    USERS["👤 www · app.for-nav.com"]
+
+    GH -->|"SSH :2222"| PULL --> SH --> SWAP --> PM2 --> HC
+    MODELS --> PM2
+    SQL --- PM2
+    USERS --> CFD --> PM2
+
+    classDef ci fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef step fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef run fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef store fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    class GH,USERS ci
+    class PULL,SH,SWAP step
+    class PM2,CFD run
+    class HC gate
+    class MODELS,SQL store

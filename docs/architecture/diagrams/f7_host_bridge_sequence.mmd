@@ -1,0 +1,40 @@
+sequenceDiagram
+    autonumber
+    participant N as 📱 Flutter 호스트
+    participant W as 🌐 app-front 웹
+    participant B as ⚙️ backend
+
+    rect rgb(240, 240, 255)
+    note over N,W: 연결 확인 (protocol 1)
+    N->>W: loadRequest(APP_URL)
+    W->>N: ready{path}
+    N-->>W: init{platform, locale, insets, features[]}
+    note right of W: features에 맞춰 push · speech · googleSignIn 훅 등록
+    end
+
+    rect rgb(235, 255, 235)
+    note over N,B: 네이티브 Google 로그인 (S-03)
+    W->>N: googleSignIn
+    N->>N: GoogleSignIn.authenticate()
+    N-->>W: googleSignInResult{idToken}
+    W->>B: POST /api/auth/worker/google
+    B-->>W: fornav_worker 쿠키
+    end
+
+    rect rgb(255, 245, 230)
+    note over N,B: 푸시 등록과 알림 탭
+    W->>N: pushRegister
+    N->>N: 권한 요청 → FCM getToken
+    N-->>W: pushToken{token}
+    W->>B: POST /api/center/push-devices
+    note over N: 알림 탭 (kind=center, caseId)
+    N-->>W: pushOpen{caseId} (init 뒤에 전달)
+    W->>W: 사례 채팅 시트 열기
+    end
+
+    rect rgb(255, 235, 240)
+    note over N,W: Android 뒤로 가기
+    N->>W: window.fornav.onBack()
+    W-->>N: true(화면 안에서 처리) · false
+    note left of N: false면 앱 종료
+    end

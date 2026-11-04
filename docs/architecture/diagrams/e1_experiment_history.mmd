@@ -1,0 +1,33 @@
+flowchart TD
+    subgraph DEPT["🏥 진료과 추천 (서빙 중)"]
+        D6["✅ 06 Model A<br/>LightGBM<br/>test Top-1 56/59 · Top-2 58/59<br/>가이드셋 Top-2 10/29"]
+        D7["✅ 07 Model B<br/>표 기반 MLP<br/>test Top-1 27/59 · Top-2 45/59<br/>가이드셋 Top-2 23/29"]
+        D8["✅ 08 앙상블 v1<br/>0.5 · 0.5 · 임계 0.25<br/>test Top-1 52/59 · Top-2 58/59<br/>튜닝셋 Top-2 65/73"]
+        D13["⏳ 13 Model B 개선<br/>표 자체 상한 = 현재 B<br/>평가셋 확장 → v3 계획"]
+        D14["⏳ 14 센터 상담 데이터<br/>어휘 커버리지 점검만"]
+        D6 --> D8
+        D7 --> D8
+        D8 -.-> D13
+        D13 -.-> D14
+    end
+
+    subgraph ACU["🚑 응급도 예측 (삭제됨)"]
+        A4["✅ 04 Acuity 모델<br/>목표 응급 재현율 ≥ 95%<br/>test 재현율 42/49 = 85.7%"]
+        A9["✅ 09 활력징후 추가<br/>재현율 동일 36/37<br/>응급 판정만 99 → 124 증가"]
+        A10["✅ 10 모르는 입력 학습<br/>valid 응급 판정 153 → 115<br/>test 재현율 40/49"]
+        A12["✅ 12 파이프라인 재현율<br/>규칙만 17/49<br/>규칙+모델 40/49"]
+        A15["🗑️ 15 Acuity 제거<br/>앱은 응급 판단 안 함<br/>119 버튼 상시 노출"]
+        A4 --> A9
+        A9 -->|"효과 없음 → 채택 안 함"| A10
+        A10 --> A12
+        A12 -->|"2026-10-31 사용자 결정"| A15
+    end
+
+    classDef done fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef pending fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    classDef removed fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
+    classDef past fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class D6,D7,D8 done
+    class D13,D14 pending
+    class A4,A9,A10,A12 past
+    class A15 removed
