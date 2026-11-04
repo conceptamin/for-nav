@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    actor WK as 📱 이주노동자
+    participant SV as ⚙️ 서버 Hub
+    participant DB as 💾 Store
+    participant LL as 🤖 LLM
+    actor CT as 🏢 센터 직원
+    participant FCM as 📢 FCM
+
+    rect rgb(230, 240, 255)
+    note over WK,CT: 채팅 WS /api/center/cases/{id}/chat
+    WK->>SV: 연결 (role=worker, token)
+    CT->>SV: 연결 (role=center, 세션 쿠키)
+    SV-->>WK: history · read
+    CT->>SV: 메시지 (한국어)
+    SV->>LL: translate_message (ko → 사례 언어, 1회)
+    SV->>DB: add_message
+    SV-->>WK: message (원문 + 번역)
+    SV-->>CT: message
+    opt 노동자가 채팅을 보고 있지 않고 60초 안에 보낸 푸시가 없음
+        SV->>FCM: notify(kind, caseId)
+    end
+    end
+
+    rect rgb(235, 255, 235)
+    note over WK,CT: 통화 WS /api/center/cases/{id}/call (역할당 1소켓)
+    WK->>SV: join → joined · history(captions)
+    SV-->>CT: peer present:true
+    WK->>SV: signal (SDP · ICE)
+    SV-->>CT: signal 중계만 (음성은 WebRTC P2P)
+    WK->>SV: caption (음성 인식 문장)
+    SV->>DB: add_caption
+    SV->>LL: translate_line (백그라운드)
+    SV-->>WK: caption + 번역
+    SV-->>CT: caption + 번역
+    WK--xSV: 연결 끊김
+    SV-->>CT: 남은 자막 skipped · peer present:false
+    end
