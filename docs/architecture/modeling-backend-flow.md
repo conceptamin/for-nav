@@ -4,6 +4,7 @@ for nav의 진료과 추천 모델이 어떻게 만들어지고, 서버가 요�
 
 - 모델링 상세: [`modeling/README.md`](../../modeling/README.md), [`modeling/backlog/`](../../modeling/backlog/)
 - 서버 상세: [`backend/README.md`](../../backend/README.md), [`backend/backlog/`](../../backend/backlog/)
+- 화면 쪽 그림: [`frontend-architecture.md`](frontend-architecture.md)
 - 그림 소스는 [`diagrams/`](diagrams/)의 `.mmd` 파일이다. 본문 그림을 고치면 같은 이름의 `.mmd`도 함께 고친다.
 
 ## 목차

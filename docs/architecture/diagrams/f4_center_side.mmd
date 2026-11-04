@@ -1,0 +1,42 @@
+flowchart TD
+    subgraph CS["🏢 센터 화면 (PC)"]
+        LG["C-00 로그인<br/>이메일 코드"]
+        INB["C-01 접수함<br/>사례 목록 · 안 읽은 수"]
+        CD["C-02 사례 상세<br/>상태 · 분류 · 조치"]
+        TALK["CenterTalk<br/>chat · script 모드"]
+        ST["C-03 통계<br/>30 · 90 · 180일 · 지역"]
+        LG --> INB --> CD --> TALK
+        INB --> ST
+    end
+
+    subgraph NET["📡 서버 연결"]
+        A1["POST /auth/code → /auth/verify"]
+        P1["GET /center/cases<br/>2초마다 폴링"]
+        WSD["채팅 WS × 사례 수<br/>안 읽은 수만 셈 · read 안 보냄"]
+        PA["PATCH /center/cases/:id"]
+        WSC["ChatPanel · 채팅 WS"]
+        WSV["CallPanel · 통화 WS<br/>signal · caption"]
+        GS["GET /center/stats<br/>5 미만 칸 가림"]
+    end
+
+    RTC["🔊 RTCPeerConnection<br/>근로자와 음성 P2P"]
+    STUN["☁️ STUN<br/>VITE_ICE_SERVERS"]
+
+    LG -.-> A1
+    INB -.-> P1
+    INB -.-> WSD
+    CD -.-> PA
+    TALK -.-> WSC
+    TALK -.-> WSV
+    ST -.-> GS
+    WSV --> RTC
+    RTC --> STUN
+
+    classDef scr fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef net fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef rt fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef ext fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class LG,INB,CD,TALK,ST scr
+    class A1,P1,WSD,PA,WSC,WSV,GS net
+    class RTC rt
+    class STUN ext

@@ -1,0 +1,54 @@
+flowchart TD
+    subgraph SCR["📱 근로자 화면 순서"]
+        L["S-01 언어 → 동의 → 가입<br/>Google 또는 데모 계정"]
+        IN1["/intake 0-1단계<br/>부위 · 증상 버튼"]
+        IN2["/intake 2단계<br/>자유 서술 · 사진"]
+        IN3["/intake 3단계 추가 질문<br/>onset · 외상 · 업무 · 지역"]
+        RES["/result<br/>추천 진료과 · 지도 · 야간 안내"]
+        COV["/coverage<br/>비용 경로"]
+        VIS["/visit/desk · /visit/call<br/>접수 시트 · 전화 대본"]
+        REP["/report/new → /report/:id<br/>의료진용 보고서"]
+        CEN["/center-request<br/>센터 상담 요청"]
+    end
+
+    subgraph SRV["📡 서버 호출 (먼저 그리고 나중에 교체)"]
+        X["POST /extract · 8초"]
+        T["POST /triage · 3초"]
+        RT["POST /route"]
+        VH["POST /visit-helper"]
+        RC["POST /report/clinician"]
+        CC["POST /report/center → POST /center/cases"]
+    end
+
+    subgraph LOC["⚖️ 브라우저 대체 (domain/)"]
+        LX["extractIntake"]
+        LT["triage()"]
+        LR["routeCoverage · 템플릿"]
+    end
+
+    L --> IN1 --> IN2 --> IN3 --> RES
+    RES --> COV
+    RES --> VIS
+    RES --> REP
+    COV --> CEN
+
+    IN2 -.-> X
+    IN3 -.-> T
+    COV -.-> RT
+    VIS -.-> VH
+    REP -.-> RC
+    CEN -.-> CC
+
+    X -->|"실패 · 단독 모드"| LX
+    T -->|"실패 · 시간 초과"| LT
+    RT -->|"실패"| LR
+    VH -->|"실패"| LR
+    RC -->|"실패"| LR
+    CC -->|"대체 없음 · 오류와 다시 시도"| CEN
+
+    classDef scr fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef srv fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef loc fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    class L,IN1,IN2,IN3,RES,COV,VIS,REP,CEN scr
+    class X,T,RT,VH,RC,CC srv
+    class LX,LT,LR loc

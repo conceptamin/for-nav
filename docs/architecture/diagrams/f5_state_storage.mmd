@@ -1,0 +1,37 @@
+flowchart LR
+    APP["💾 AppStateProvider<br/>useApp()"]
+
+    subgraph SS["🗂️ sessionStorage · 탭을 닫으면 사라짐"]
+        S1["umn.session<br/>lang · consents · intake<br/>photos · triage · coverage"]
+        S2["umn.splash"]
+    end
+
+    subgraph LS["📦 localStorage · 기기에 남음"]
+        L1["umn.account<br/>key · kind demo|google"]
+        L2["umn.device.&lt;accountKey&gt;<br/>profiles · memberReports · myCaseIds<br/>chatTokens · seenCenterMessages"]
+        L3["umn.center.liveCases<br/>umn.center.statusOverrides<br/>단독 모드만"]
+    end
+
+    subgraph MEM["⚡ 메모리"]
+        M1["/api/meta · FCM 토큰"]
+        M2["useSyncExternalStore 스토어<br/>근로자 인증 · 접수함 피드 · 호스트 슬롯"]
+    end
+
+    CK["🔐 HttpOnly 쿠키<br/>fornav_worker · fornav_center<br/>JS에서 읽지 않음"]
+
+    APP --> S1
+    APP --> L1
+    APP --> L2
+    APP --> M1
+    L1 -->|"계정별로 나눔"| L2
+
+    classDef core fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef sess fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef loc fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    classDef mem fill:#E6E6FA,stroke:#333,stroke-width:2px,color:#1a1a4a
+    classDef ck fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class APP core
+    class S1,S2 sess
+    class L1,L2,L3 loc
+    class M1,M2 mem
+    class CK ck

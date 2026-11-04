@@ -1,0 +1,45 @@
+flowchart TD
+    subgraph FL["📱 Flutter 호스트 app/ · Android · iOS"]
+        MAIN["🚀 main.dart<br/>APP_URL dart-define · 세로 고정"]
+        HP["🧭 host_page.dart<br/>WebViewController · JS 채널 ForNav"]
+        NAV["🔀 navigation.dart<br/>같은 출처만 앱 안 · 나머지 외부 앱"]
+        OFF["📴 offline_view.dart<br/>다시 시도 · 119 전화"]
+        PUSH["📢 push.dart<br/>FCM 토큰 · 알림 탭"]
+        SPK["🎙️ speech.dart<br/>speech_to_text 받아쓰기"]
+        GSI["🎫 google_sign_in<br/>네이티브 로그인"]
+        MAIN --> HP
+        HP --> NAV
+        HP --> OFF
+        HP --> PUSH
+        HP --> SPK
+        HP --> GSI
+    end
+
+    subgraph AF["🌐 app-front/ · app.for-nav.com"]
+        AMAIN["⚙️ main.tsx<br/>installHost · 라우트 · /__host"]
+        BR["🔌 bridge/host.ts<br/>ready · init · 요청-응답 대기"]
+        INJ["🪝 훅 주입<br/>setHostPush · setHostSpeech<br/>setNativeGoogleSignIn"]
+        AMAIN --> BR --> INJ
+    end
+
+    subgraph FE["🗂️ frontend/src (별칭 @fe)"]
+        WP["📋 노동자 화면 S-01 ~ S-13<br/>WorkerLayout · AppStateProvider"]
+        API["📡 api/ push · speech · googleId · call"]
+        WP --> API
+    end
+
+    BE["⚙️ backend /api<br/>같은 출처"]
+
+    HP <-->|"postMessage ↔ window.fornav.receive"| BR
+    AMAIN -->|"소스 직접 import"| WP
+    INJ -->|"호스트 구현 등록"| API
+    API --> BE
+
+    classDef host fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
+    classDef web fill:#87CEEB,stroke:#333,stroke-width:2px,color:#0a2a4a
+    classDef shared fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
+    classDef ext fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
+    class MAIN,HP,NAV,OFF,PUSH,SPK,GSI host
+    class AMAIN,BR,INJ web
+    class WP,API shared
+    class BE ext
