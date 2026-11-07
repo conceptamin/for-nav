@@ -158,7 +158,7 @@ flowchart LR
 | 모델 | LightGBM · numpy 2층 MLP · scikit-learn · pandas |
 | LLM | Anthropic Claude Haiku 5.5 (JSON 스키마 출력 고정) |
 | 실시간 | WebRTC 음성 + Web Speech API 받아쓰기 + 서버 번역 자막 |
-| 인프라 | GitHub Actions → Mac mini(pm2) · Cloudflare Tunnel · Vercel |
+| 인프라 | GitHub Actions → Mac mini(pm2) · Cloudflare Tunnel |
 
 ## 숫자로 보는 프로젝트
 
