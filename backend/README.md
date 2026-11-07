@@ -427,7 +427,7 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
 - 메일 발송이 실패해도 202다(실패를 알리면 등록 여부가 드러난다). 서버 로그에 `로그인 코드 메일 실패 <종류> request_id=`만 남는다.
 - 코드·세션 토큰은 sha256 해시만 저장하고, 이메일·코드·토큰·쿠키 값은 로그에 남기지 않는다. 세션은 `CENTER_SESSION_DAYS`(기본 30일) 뒤 끝나고 늘어나지 않는다. `scripts/staff.py remove`는 그 직원의 세션도 지운다.
 - 데모 초기화(`POST /api/center/reset`)는 직원·코드·세션을 지우지 않는다.
-- 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트(예: Vercel)에서 쿠키를 보내는 설정은 하지 않았다.
+- 쿠키는 같은 출처에서만 쓴다(`STATIC_DIR` 서빙, Vite 프록시). 다른 출처 프론트에서 쿠키를 보내는 설정은 하지 않았다.
 
 **`/api/auth/worker/*`** — 근로자 Google 로그인(backlog 21, `WORKER_AUTH=google`일 때)
 

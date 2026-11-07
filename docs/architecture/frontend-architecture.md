@@ -427,5 +427,4 @@ sequenceDiagram
 | app | `fvm flutter build` (Flutter 3.44.7) | `--dart-define-from-file=env/prod.json`(`APP_URL`), `GOOGLE_*_CLIENT_ID`, `FIREBASE_*` | Android · iOS, 세로 고정 |
 
 - **개발 서버**: frontend는 `:5180`, app-front는 `:5181`이다. 둘 다 `/api`(WebSocket 포함)를 `:8000`으로 프록시한다.
-- **Vercel 워크플로**: `main`에는 `frontend/**`가 바뀌면 Vercel에 배포하는 워크플로(`.github/workflows/deploy-frontend.yml`, `frontend/vercel.json`)도 남아 있다.
 - **API 경로**: 운영 주소는 맥미니 경로다. 프론트와 API가 같은 출처라 쿠키와 WebSocket이 `/api`로 바로 간다.
