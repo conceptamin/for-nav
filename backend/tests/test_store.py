@@ -440,15 +440,19 @@ def test_staff_add_remove_list(store: CenterStore):
 
 
 def test_code_attempts_and_replace(store: CenterStore):
-    store.set_code(STAFF, "h1", AT)
-    assert store.add_code_attempt(STAFF) == 1
-    assert store.add_code_attempt(STAFF) == 2
-    store.set_code(STAFF, "h2", AT)
-    code = store.get_code(STAFF)
-    assert code is not None and (code.code_hash, code.attempts, code.expires_at) == ("h2", 0, clock.iso_utc(AT))
-    store.delete_code(STAFF)
-    assert store.get_code(STAFF) is None
-    assert store.add_code_attempt(STAFF) == 0
+    # 새 코드를 넣으면 이전 코드와 시도 수를 덮는다(backlog 33: 확인은 check_code 하나)
+    expires = AT + timedelta(minutes=10)
+    store.set_code(STAFF, "h1", expires)
+    assert not store.check_code(STAFF, "x", AT)
+    assert not store.check_code(STAFF, "x", AT)
+    store.set_code(STAFF, "h2", expires)
+    assert not store.check_code(STAFF, "h1", AT)
+    for _ in range(3):
+        assert not store.check_code(STAFF, "x", AT)
+    assert store.check_code(STAFF, "h2", AT)
+    # 맞은 코드는 한 번 쓰면 지운다
+    assert not store.check_code(STAFF, "h2", AT)
+    assert not store.check_code("who@example.org", "h2", AT)
 
 
 def test_code_requests_window_and_prune(store: CenterStore):
@@ -473,7 +477,7 @@ def test_sessions_expire_and_end_with_staff(store: CenterStore):
     store.set_code(STAFF, "h", AT + timedelta(minutes=10))
     store.remove_staff(STAFF)
     assert store.session_email("t2", AT) is None
-    assert store.get_code(STAFF) is None
+    assert not store.check_code(STAFF, "h", AT)
 
 
 def test_reset_keeps_login_data(store: CenterStore):
