@@ -14,13 +14,14 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app import errors
 from app.chat import CallHub, ChatHub
 from app.google_id import make_verifier
-from app.llm_limit import LLMLimiter
+from app.llm_limit import CaseLimiter, LLMLimiter
 from app.mail import make_mailer
 from app.model import load_model
 from app.push import PushNotifier, make_push_sender
 from app.routers import auth, center, worker
 from app.schemas import Meta
 from app.settings import get_llm_client, settings
+from app.store import store
 
 
 @asynccontextmanager
@@ -42,7 +43,10 @@ app.state.chat = ChatHub()
 # 통화의 열린 연결(backlog 16). 채팅과 같은 이유로 여기서 만든다.
 app.state.call = CallHub()
 # LLM 호출 제한(backlog 20). 설정값이 0이면 꺼져 있고 LLM 클라이언트를 감싸지 않는다.
-app.state.llm_limiter = LLMLimiter(settings.llm_rate_per_min, settings.llm_daily_limit, settings.llm_client_ip_header)
+# 하루 합계는 센터 저장소(llm_usage)에도 남겨 DB_PATH가 있으면 다시 띄워도 이어진다(backlog 34).
+app.state.llm_limiter = LLMLimiter(settings.llm_rate_per_min, settings.llm_daily_limit, settings.llm_client_ip_header, store)
+# 근로자 사례 전송의 IP별 분당 상한(backlog 34). 0이면 꺼져 있다. IP는 LLM 제한과 같은 헤더 규칙으로 본다.
+app.state.case_limiter = CaseLimiter(settings.case_rate_per_min, settings.llm_client_ip_header)
 # 센터 직원 로그인 코드 메일(backlog 17). CENTER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.
 app.state.mail = make_mailer(settings)
 # 근로자 Google 로그인 ID 토큰 검증(backlog 21). WORKER_AUTH=off이면 None이다. 테스트는 가짜로 바꿔 끼운다.

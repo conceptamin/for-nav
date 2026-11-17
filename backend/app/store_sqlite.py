@@ -5,6 +5,7 @@
 # auth_codes: 이메일별 코드 해시, center_sessions: 세션 토큰 해시. reset은 이 넷을 비우지 않는다.
 # 근로자 Google 로그인(backlog 21)은 worker_sessions 하나다(세션 토큰 해시와 계정 키, 이름·이메일 없음). reset은 이것도 비우지 않는다.
 # 근로자 앱 푸시(backlog 28)는 push_devices 하나다(사례 id·기기 토큰·플랫폼·notice·갱신 시각, 계정과 잇지 않는다). reset이 비운다.
+# LLM 호출 제한(backlog 34)은 llm_usage 하나다(Asia/Seoul 날짜별 호출 수, IP 없음). 배포로 다시 띄워도 하루 합계가 이어진다. reset은 비우지 않는다.
 # mock 사례·통계 레코드는 메모리 저장소와 같이 시작 시 메모리에서 만든다(시드 고정이라 id가 같다).
 # 연락처·자유 입력·채팅 메시지·자막이 평문으로 남는다(데모 범위, README "센터 저장소").
 # live_cases 본문은 저장할 때의 계약 그대로 남는다. 읽을 때 옛 계약을 지금 계약으로 바꾸고, 그래도 못 읽는 본문은 건너뛴다(backlog 29).
@@ -122,6 +123,10 @@ CREATE TABLE IF NOT EXISTS push_devices (
     notice TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     PRIMARY KEY (case_id, device_token)
+);
+CREATE TABLE IF NOT EXISTS llm_usage (
+    day TEXT PRIMARY KEY,
+    count INTEGER NOT NULL
 );
 """
 
@@ -478,6 +483,15 @@ class SqliteStore:
     def remove_push_device(self, device_token: str) -> None:
         with self._lock, self._db:
             self._db.execute("DELETE FROM push_devices WHERE device_token = ?", (device_token,))
+
+    def llm_usage_get(self, day: str) -> int:
+        with self._lock:
+            row = self._db.execute("SELECT count FROM llm_usage WHERE day = ?", (day,)).fetchone()
+        return row[0] if row else 0
+
+    def llm_usage_add(self, day: str) -> None:
+        with self._lock, self._db:
+            self._db.execute("INSERT INTO llm_usage (day, count) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET count = count + 1", (day,))
 
     def reset(self) -> None:
         """사례 표 여섯과 푸시 기기 묶음을 비운다. 직원·로그인 표와 파일은 그대로 둔다."""

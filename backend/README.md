@@ -35,7 +35,7 @@ backend/
     settings.py        환경 변수에서 시작 시 한 번 읽는 불변 설정값(운영 시간, 정보 기준일, 허용 출처, LLM), get_llm_client()
     model.py           진료과 모델 연결 — 시작 시 아티팩트 검증, modeling predict() 호출, 실패 시 None
     llm.py             LLM 호출 계층 — LLMClient 프로토콜, generate()(시간 제한·재시도·스키마 검증·원문 미기록)
-    llm_limit.py       LLM 호출 제한 — IP별 60초·서버 전체 하루 상한, 넘으면 LLMError(limited)로 대체 동작, IP 헤더는 루프백일 때만
+    llm_limit.py       LLM 호출 제한 — IP별 60초·서버 전체 하루 상한, 넘으면 LLMError(limited)로 대체 동작, IP 헤더는 루프백일 때만, 하루 합계는 저장소 llm_usage에 유지, 사례 전송 IP별 상한(CaseLimiter)
     llm_providers/
       anthropic.py     Anthropic Messages API 어댑터(JSON 스키마 출력 고정)
     errors.py          공통 오류 형식, X-Request-Id, 접근 로그(HTTP·WebSocket)
@@ -92,7 +92,7 @@ backend/
     test_model_triage.py 규칙표 우선·막연한 분기 진료과·고정 조합·응급도 출력 무시·예측 실패 대체(가짜 predict)
     test_template_slots.py 템플릿 슬롯 채우기·guard 대체·슬롯 밖 문장 불변(가짜 LLM)
     test_translation.py 자유 입력 번역·역번역 거부·호출 실패·금지어 거부(가짜 LLM)
-    test_llm_limit.py  LLM 호출 제한(IP별·하루, 대체 동작, 재시도 없음, 루프백일 때만 IP 헤더, 통화 자막, 로그에 IP 없음)
+    test_llm_limit.py  LLM 호출 제한(IP별·하루, 대체 동작, 재시도 없음, 루프백일 때만 IP 헤더, 통화 자막, 로그에 IP 없음), 하루 합계 재시작 뒤 유지, 사례 전송 IP별 상한
     fakes.py           FakeLLMClient, FakeMailer, FakeVerifier, FakePushSender
 ```
 
@@ -119,7 +119,7 @@ backend/
 | 401 | `UNAUTHORIZED` | 센터 직원 세션이 없거나 끝났다(`센터 로그인이 필요하다`), 로그인 코드가 틀렸다, 근로자 세션이 없다(`근로자 로그인이 필요하다`), Google ID 토큰을 받아들이지 않았다 |
 | 404 | `NOT_FOUND` | 없는 경로·사례(`사례 C-0를 찾을 수 없다`) |
 | 422 | `VALIDATION` | 어긋난 필드 위치만 적는다(요청 값은 넣지 않는다). 경로 안 검사(`days`)도 이 코드 |
-| 429 | `RATE_LIMITED` | 로그인 코드 요청이 보내기 제한을 넘었다 |
+| 429 | `RATE_LIMITED` | 로그인 코드 요청이 보내기 제한을 넘었다, 근로자 사례 전송(`POST /api/center/cases`)이 IP별 분당 상한(`CASE_RATE_PER_MIN`)을 넘었다(backlog 34) |
 | 500 | `INTERNAL` | `서버 오류가 발생했다` |
 | 그 밖 4xx | `BAD_REQUEST` | 예: 405 |
 
@@ -177,6 +177,8 @@ backend/
 // 응답
 { "department": { "primary": "surgery", "alt": "ortho" }, "missing": [] }
 ```
+
+`Intake.freeText`는 500자까지다(근로자 입력란 `maxLength`와 같다). 넘으면 `Intake`를 받는 모든 경로(`/api/triage`, `/api/extract`, `/api/report/*`, `POST /api/center/cases` 등)가 `422`다(backlog 34). 프론트는 이때도 지금처럼 브라우저 규칙·키워드 추출로 대체한다.
 
 **모델이 있을 때(`MODEL_DIR`, backlog 06)** — 같은 요청에 선택 필드 `model`이 더해진다(확률은 줄임).
 
@@ -256,8 +258,8 @@ backend/
   "coverage": { /* CoverageResult 또는 null */ },
   "insurance": "no",
   "contactMethod": "zalo",
-  "contact": "010-0000-0000",
-  "consentedItems": ["증상", "부위", "시작 시점", "국적"],
+  "contact": "010-0000-0000",                  // 100자까지(backlog 34). 근로자 화면은 null을 보낸다
+  "consentedItems": ["증상", "부위", "시작 시점", "국적"],   // 10개까지, 항목마다 20자까지(backlog 34)
   "nationality": "KZ"                         // 선택. ISO 3166-1 alpha-2 두 글자 대문자("kr"·"KOR"·"Korea"는 422). 동의하지 않으면 키째 없다
 }
 // 응답 201
@@ -530,7 +532,8 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_TIMEOUT_S` | `10` | 0보다 큰 초 | LLM 호출 한 번의 시간 제한 |
 | `LLM_ATTEMPTS` | `2` | 1 이상 정수 | 첫 호출 + 재시도 횟수 |
 | `LLM_RATE_PER_MIN` | `0`(끔) | 0 이상 정수 | 클라이언트 IP별 최근 60초 LLM 호출 수 상한(backlog 20) |
-| `LLM_DAILY_LIMIT` | `0`(끔) | 0 이상 정수 | 서버 전체 하루(Asia/Seoul) LLM 호출 수 상한(backlog 20) |
+| `LLM_DAILY_LIMIT` | `0`(끔) | 0 이상 정수 | 서버 전체 하루(Asia/Seoul) LLM 호출 수 상한(backlog 20). `DB_PATH`가 있으면 하루 합계가 재시작 뒤에도 이어진다(backlog 34) |
+| `CASE_RATE_PER_MIN` | `0`(끔) | 0 이상 정수 | 근로자 사례 전송(`POST /api/center/cases`)의 클라이언트 IP별 최근 60초 상한(backlog 34). 넘으면 `429` |
 | `LLM_CLIENT_IP_HEADER` | (없음) | 소문자 헤더 이름, 예: `cf-connecting-ip` | TCP 상대가 루프백일 때만 이 헤더를 클라이언트 IP로 쓴다 |
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
 | `ALLOW_RESET` | `false` | `true` \| `false` | 데모 초기화(backlog 32). `DB_PATH`가 있을 때 `true`여야 `POST /api/center/reset`이 동작한다(지우기 전에 백업). `DB_PATH`가 없으면 이 값과 상관없이 허용 |
@@ -561,7 +564,9 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 - 로그에는 시도 횟수와 실패 종류(`llm attempt=1/2 failed=LLMError/RateLimitError`)만 남는다. 프롬프트·응답 원문은 로그·예외에 들어가지 않는다.
 - SDK 자체 재시도는 끄고 재시도는 `generate()` 한 곳에서만 한다.
 - 서버는 시작 시(lifespan) 클라이언트를 한 번 만들어 `app.state.llm`에 두고 종료 시 닫는다.
-- **호출 제한(backlog 20).** 공급자 호출 한 번(재시도 포함)을 하나로 세고, 클라이언트 IP별 최근 60초 `LLM_RATE_PER_MIN`번, 서버 전체 하루(Asia/Seoul) `LLM_DAILY_LIMIT`번까지 부른다. 넘으면 그 호출은 `LLMError(limited)`로 실패하고 재시도 없이 키가 없을 때와 같은 대체 결과(키워드·기본 템플릿·원문, `skipped`)로 응답한다. API와 상태 코드는 바뀌지 않는다. 근로자 경로와 통화 자막 번역이 같은 제한을 쓴다. 기본값 0은 제한 없음이고, 맥미니는 `deploy/ecosystem.config.cjs`가 60·3000을 켠다. 제한 상태는 프로세스 메모리라 다시 띄우면 0부터 센다. 막힐 때 로그는 `llm limited scope=ip|daily` 한 줄이고 IP는 남기지 않는다.
+- **호출 제한(backlog 20).** 공급자 호출 한 번(재시도 포함)을 하나로 세고, 클라이언트 IP별 최근 60초 `LLM_RATE_PER_MIN`번, 서버 전체 하루(Asia/Seoul) `LLM_DAILY_LIMIT`번까지 부른다. 넘으면 그 호출은 `LLMError(limited)`로 실패하고 재시도 없이 키가 없을 때와 같은 대체 결과(키워드·기본 템플릿·원문, `skipped`)로 응답한다. API와 상태 코드는 바뀌지 않는다. 근로자 경로와 통화 자막 번역이 같은 제한을 쓴다. 기본값 0은 제한 없음이고, 맥미니는 `deploy/ecosystem.config.cjs`가 60·3000을 켠다. IP별 창은 프로세스 메모리라 다시 띄우면 0부터 센다. 하루 합계는 센터 저장소의 `llm_usage`(날짜별 호출 수, IP 없음)에도 올려 `DB_PATH`가 있으면 배포로 다시 띄워도 이어진다. `DB_PATH`가 없으면 다시 띄울 때 0이다(backlog 34). 막힐 때 로그는 `llm limited scope=ip|daily` 한 줄이고 IP는 남기지 않는다.
+- **입력 크기(backlog 34).** `freeText`가 500자로 막혀 있고 출력은 `MAX_TOKENS`로 막혀 있어 호출 한 번의 비용에 상한이 있다. 그래서 문자·토큰 수 예산을 따로 두지 않고 호출 수로 센다.
+- **사례 전송 제한(backlog 34).** `POST /api/center/cases`는 로그인 없이 열려 있고 자유 입력 번역(LLM)과 저장소 쓰기를 부르므로 IP별 최근 60초 `CASE_RATE_PER_MIN`건까지 받는다. 넘으면 `429 RATE_LIMITED`. IP는 LLM 제한과 같은 규칙(`LLM_CLIENT_IP_HEADER`, 루프백일 때만 헤더)으로 보고, 형식이 틀려 `422`가 되는 요청도 센다. 막힐 때 로그는 `case limited scope=ip` 한 줄이다. 맥미니는 `deploy/ecosystem.config.cjs`가 20을 켠다.
 - 클라이언트 IP는 TCP 상대 주소다. `LLM_CLIENT_IP_HEADER`(맥미니 `cf-connecting-ip`)를 주면 상대가 `127.0.0.1`·`::1`(같은 기기의 Cloudflare 터널)일 때만 그 헤더 값을 쓴다. 서버가 `0.0.0.0`으로 떠 있어 같은 망에서 직접 붙은 클라이언트는 헤더를 꾸밀 수 있기 때문이다.
 - 테스트는 가짜 LLM으로 돌고 키·네트워크가 필요 없다. 실제 공급자 확인은 손으로 한 번 돌린다.
 

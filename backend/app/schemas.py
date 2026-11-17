@@ -35,12 +35,22 @@ def absent_if_none(**constraints):
 # ---------------------------------------------------------------------------
 # domain/triage.ts
 # ---------------------------------------------------------------------------
+# 요청 길이 상한(backlog 34). 넘으면 422
+FREE_TEXT_MAX = 500
+# 근로자 화면은 연락처를 보내지 않는다(null). 전화번호·메신저 id를 받을 자리라 넉넉히 둔다
+CONTACT_MAX = 100
+# 동의 항목은 CenterSheet.tsx가 만드는 9종(가장 긴 "경위(업무 중 여부)" 11자)이다
+CONSENTED_ITEMS_MAX = 10
+CONSENTED_ITEM_MAX_LEN = 20
+
+
 class Intake(CamelModel):
     id: str
     language: Lang
     body_parts: list[BodyPart] = []
     symptoms: list[Symptom] = []
-    free_text: str = ""
+    # 근로자 입력란과 같은 500자(frontend Intake.tsx maxLength). LLM 호출 한 번의 입력 크기 상한이다(backlog 34)
+    free_text: str = Field(default="", max_length=FREE_TEXT_MAX)
     onset: Onset | None = None
     work_related: YesNoUnknown | None = None
     work_type: WorkType | None = None
@@ -290,8 +300,10 @@ class CenterCase(CamelModel):
 
 
 class NewCaseRequest(CenterSummaryInput):
-    contact: str | None = None
-    consented_items: list[str] = []
+    contact: str | None = Field(default=None, max_length=CONTACT_MAX)
+    consented_items: list[Annotated[str, StringConstraints(max_length=CONSENTED_ITEM_MAX_LEN)]] = Field(
+        default=[], max_length=CONSENTED_ITEMS_MAX
+    )
     # 동의하지 않았거나 고르지 않았으면 키째 없다
     nationality: Nationality | None = None
 

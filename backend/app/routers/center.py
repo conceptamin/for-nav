@@ -75,7 +75,13 @@ def require_worker(request: Request) -> None:
         raise HTTPException(status_code=401, detail="근로자 로그인이 필요하다")
 
 
-@router.post("/cases", status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_worker)])
+def limit_case_rate(request: Request) -> None:
+    """근로자 사례 전송의 IP별 분당 상한(backlog 34). CASE_RATE_PER_MIN=0이면 늘 통과한다."""
+    if not request.app.state.case_limiter.take(request):
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="요청이 너무 많다. 잠시 뒤 다시 시도한다")
+
+
+@router.post("/cases", status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_worker), Depends(limit_case_rate)])
 async def create_case(req: NewCaseRequest, llm: Annotated[LLMClient | None, Depends(llm_client)]) -> NewCaseResponse:
     """S-12 전송. 요약·긴급도·운영 시간 외 여부·id·접수 시각은 서버가 같은 입력으로 다시 계산한다.
 

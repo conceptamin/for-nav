@@ -29,6 +29,8 @@ module.exports = {
         LLM_DAILY_LIMIT: '3000',
         // Cloudflare 터널(같은 기기, 루프백)이 붙이는 실제 클라이언트 IP
         LLM_CLIENT_IP_HEADER: 'cf-connecting-ip',
+        // 근로자 사례 전송 IP별 분당 상한(backlog 34). 발표장 와이파이처럼 여러 사람이 IP 하나로 보일 수 있어 넉넉히 둔다
+        CASE_RATE_PER_MIN: '20',
       },
       autorestart: true,
       max_restarts: 10,

@@ -1,6 +1,6 @@
 # 34. LLM 입력 크기 상한, 하루 호출 수 유지, 사례 전송 제한
 
-상태: 대기
+상태: 완료
 의존: 20
 
 ## 목표
@@ -30,15 +30,29 @@ backlog 20은 LLM 호출 **횟수**에 상한을 두었지만 입력 크기에�
 - 테스트: `tests/test_api.py`, `tests/test_llm_limit.py`, `tests/test_settings.py`
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과
-- [ ] `freeText` 500자 → `200`, 501자 → `422`(`/api/triage`, `/api/extract`, `POST /api/center/cases`)
-- [ ] 동기화 테스트(`test_parity.py`)가 통과한다. `parity.json`의 입력 중 500자를 넘는 것이 없는지 확인하고 결과에 적는다
-- [ ] 하루 상한: `DB_PATH`=임시 파일, `LLM_DAILY_LIMIT=2`로 2번 호출 → 앱을 새로 만든 뒤(재시작) 3번째 호출이 `source: "keywords"`. 다음 날(Asia/Seoul)에는 다시 `llm`
-- [ ] 사례 전송: `CASE_RATE_PER_MIN=2`로 같은 IP에서 3번 → 세 번째 `429`, 다른 IP는 `201`. `0`이면 제한 없음
-- [ ] 로그에 IP·본문이 남지 않는다(`caplog`)
+- [x] `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 통과
+- [x] `freeText` 500자 → `200`, 501자 → `422`(`/api/triage`, `/api/extract`, `POST /api/center/cases`)
+- [x] 동기화 테스트(`test_parity.py`)가 통과한다. `parity.json`의 입력 중 500자를 넘는 것이 없는지 확인하고 결과에 적는다
+- [x] 하루 상한: `DB_PATH`=임시 파일, `LLM_DAILY_LIMIT=2`로 2번 호출 → 앱을 새로 만든 뒤(재시작) 3번째 호출이 `source: "keywords"`. 다음 날(Asia/Seoul)에는 다시 `llm`
+- [x] 사례 전송: `CASE_RATE_PER_MIN=2`로 같은 IP에서 3번 → 세 번째 `429`, 다른 IP는 `201`. `0`이면 제한 없음
+- [x] 로그에 IP·본문이 남지 않는다(`caplog`)
 
 ## 결과
-(구현 후 작성)
+- `uv run ruff check . && uv run ruff format --check .` → All checks passed, 97 files already formatted
+- `uv run pytest` → 3093 passed(새 테스트 31개, 매개변수 조합과 두 저장소 포함). `test_parity.py` 통과. `parity.json`의 `freeText`는 가장 긴 것이 58자라 500자를 넘는 입력이 없다
+- 실제 서버 확인(`DB_PATH`=임시 파일, `CASE_RATE_PER_MIN=2`, `uv run uvicorn app.main:app`): `POST /api/center/cases`가 `freeText` 501자 `422` → 500자 `201` → `429` → `429`, 로그 `case limited scope=ip` 2줄, 파일에 `llm_usage` 표가 생긴다. 하루 합계 유지는 LLM 키 없이는 LLM이 꺼져 제한기가 돌지 않으므로 테스트로 확인했다(같은 파일을 새로 연 저장소와 새 제한기로 3번째 호출이 `keywords`, 다음 날 `llm`)
+- 바뀐 API
+  - `Intake.freeText` 500자까지. 넘으면 `Intake`를 받는 모든 경로가 `422`
+  - `NewCaseRequest.contact` 100자까지, `consentedItems` 10개까지·항목마다 20자까지. 넘으면 `422`
+  - `POST /api/center/cases`: IP별 최근 60초 `CASE_RATE_PER_MIN`건을 넘으면 `429 RATE_LIMITED`
+- 파일: `app/schemas.py`, `app/llm_limit.py`(`IpWindow`·`CaseLimiter`·`DailyUsage`, 하루 합계 저장), `app/store.py`·`app/store_sqlite.py`(`llm_usage` 표, `llm_usage_get`·`llm_usage_add`), `app/main.py`, `app/routers/center.py`(`limit_case_rate`), `app/settings.py`(`CASE_RATE_PER_MIN`), `deploy/ecosystem.config.cjs`(`CASE_RATE_PER_MIN: '20'`), `.env.example`, `README.md`
+- 결정
+  - 상한 값: `contact` 100자(근로자 화면은 늘 `null`을 보낸다. 전화번호·메신저 id 자리라 넉넉히), `consentedItems` 10개·20자(`frontend/src/components/CenterSheet.tsx`가 만드는 값은 9종이고 가장 긴 것이 "경위(업무 중 여부)" 11자)
+  - 하루 합계는 시작 뒤 첫 호출과 날짜가 바뀐 뒤 첫 호출에서 저장소의 그날 값을 읽는다("시작할 때 읽기"를 첫 호출로 미뤘다. 날짜가 바뀔 때도 같은 길로 읽는다). 메모리 저장소도 `llm_usage`를 구현해 제한기는 저장소를 늘 받고, `DB_PATH`가 없으면 다시 띄울 때 0이다
+  - `llm_usage`는 데모 초기화(`reset`)가 지우지 않는다(사례 데이터가 아니고, 지우면 초기화로 하루 상한을 비울 수 있다)
+  - IP 창은 `IpWindow`로 떼어 LLM 제한과 사례 전송 제한이 같이 쓴다. 사례 전송은 IP 헤더도 `LLM_CLIENT_IP_HEADER`를 그대로 쓴다(따로 설정을 두지 않았다)
+  - 사례 전송 제한은 의존성으로 걸어 본문 검사보다 먼저 센다. 그래서 `422`가 되는 요청도 분당 수에 들어간다(막으려는 것이 반복 요청 자체라 그대로 둔다)
+  - 맥미니 값 20: 발표장 와이파이처럼 여러 사람이 Cloudflare에서 IP 하나로 보일 수 있다. 근로자 한 명은 분당 한두 건을 보낸다
 
 ## 메모
 - 출처: 2026-11-16 코드 리뷰
