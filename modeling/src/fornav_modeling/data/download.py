@@ -57,6 +57,37 @@ SOURCES: tuple[Source, ...] = (
             ),
         ),
     ),
+    # figshare "DDXPlus Dataset (English)" 버전 2(backlog 17). 로그인 없이 받는다. 파일 id는 figshare API의 files[].id다.
+    Source(
+        key="ddxplus",
+        files=(
+            RawFile(
+                name="release_conditions.json",
+                sha256="56edf4682d8e86a4209fc3a33932e50ce03d1cc1fecc326c26d5ef8fa5c24890",
+                url="https://ndownloader.figshare.com/files/62561569",
+            ),
+            RawFile(
+                name="release_evidences.json",
+                sha256="281c78b044ae60514e28ecc9052d08a8225dd3e2db3f00f8788b99c47b05e0c0",
+                url="https://ndownloader.figshare.com/files/40278013",
+            ),
+            RawFile(
+                name="release_train_patients.zip",
+                sha256="174ae1d56f36a15b7144838ecd214e1e1748a5369fc90c559529b6dc6ecfb218",
+                url="https://ndownloader.figshare.com/files/40278019",
+            ),
+            RawFile(
+                name="release_validate_patients.zip",
+                sha256="625a96855becf0efe5da339fd3d440aa99597d48f784957a97dacc3fceaa7e40",
+                url="https://ndownloader.figshare.com/files/40278022",
+            ),
+            RawFile(
+                name="release_test_patients.zip",
+                sha256="ad3bb981f3453fd7abffb35cc595a1c02197e409c581bff97c1265c33eb00d23",
+                url="https://ndownloader.figshare.com/files/40278016",
+            ),
+        ),
+    ),
 )
 
 

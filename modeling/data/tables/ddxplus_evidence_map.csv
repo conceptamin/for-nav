@@ -1,0 +1,276 @@
+evidence,value,body_parts,symptoms,note,source,reviewed
+E_91,,whole,fever,,llm-draft(Claude Opus 5.5),no
+E_55,,none,pain,부위는 값 행이 정한다,llm-draft(Claude Opus 5.5),no
+E_53,,none,pain,,llm-draft(Claude Opus 5.5),no
+E_57,,none,pain,통증이 퍼지는 곳. 부위는 값 행,llm-draft(Claude Opus 5.5),no
+E_54,,none,none,통증 성질은 버튼에 없다,llm-draft(Claude Opus 5.5),no
+E_59,,none,none,통증 속도,llm-draft(Claude Opus 5.5),no
+E_56,,none,none,통증 세기는 통증 점수(서빙에서 비어 있음),llm-draft(Claude Opus 5.5),no
+E_58,,none,none,통증 위치 정확도,llm-draft(Claude Opus 5.5),no
+E_159,,none,none,의식 상태는 증상 버튼이 아니다,llm-draft(Claude Opus 5.5),no
+E_133,,none,none,"발진 부위. 부위는 값 행, 증상은 E_129",llm-draft(Claude Opus 5.5),no
+E_129,,skin,rash,,llm-draft(Claude Opus 5.5),no
+E_130,,none,none,발진 색,llm-draft(Claude Opus 5.5),no
+E_134,,none,none,발진 통증 세기,llm-draft(Claude Opus 5.5),no
+E_132,,none,none,발진 부기 정도,llm-draft(Claude Opus 5.5),no
+E_136,,skin,rash,가려움(기본값 0이 아닐 때),llm-draft(Claude Opus 5.5),no
+E_135,,none,none,,llm-draft(Claude Opus 5.5),no
+E_131,,none,none,,llm-draft(Claude Opus 5.5),no
+E_154,,none,none,창백함 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_155,,chest,none,두근거림 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_210,,abdomen,nausea|bleeding,토혈,llm-draft(Claude Opus 5.5),no
+E_140,,abdomen,bleeding,흑색변,llm-draft(Claude Opus 5.5),no
+E_51,,abdomen,none,설사 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_75,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_89,,whole,none,,llm-draft(Claude Opus 5.5),no
+E_114,,none,none,,llm-draft(Claude Opus 5.5),no
+E_82,,head,dizzy,,llm-draft(Claude Opus 5.5),no
+E_148,,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+E_94,,whole,fever,오한,llm-draft(Claude Opus 5.5),no
+E_220,,chest,pain,숨 쉴 때 아픈 흉통,llm-draft(Claude Opus 5.5),no
+E_161,,none,none,,llm-draft(Claude Opus 5.5),no
+E_179,,abdomen,bleeding,혈변,llm-draft(Claude Opus 5.5),no
+E_162,,none,none,,llm-draft(Claude Opus 5.5),no
+E_173,,abdomen,pain,속쓰림을 복부 통증으로 본다,llm-draft(Claude Opus 5.5),no
+E_33,,none,none,통증 변화 양상,llm-draft(Claude Opus 5.5),no
+E_218,,none,none,운동 시 악화,llm-draft(Claude Opus 5.5),no
+E_93,,foot,numb,,llm-draft(Claude Opus 5.5),no
+E_66,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_163,,none,none,질 분비물 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_30,,abdomen,none,복부 팽만 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_127,,eye,none,눈물 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_181,,ent,none,코막힘 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_88,,whole,none,,llm-draft(Claude Opus 5.5),no
+E_43,,none,none,경련은 레드플래그 키워드로 잡는다,llm-draft(Claude Opus 5.5),no
+E_156,,head,cantmove,얼굴 한쪽 마비,llm-draft(Claude Opus 5.5),no
+E_144,,whole,pain,전신 근육통,llm-draft(Claude Opus 5.5),no
+E_216,,none,none,통증 변화 양상,llm-draft(Claude Opus 5.5),no
+E_201,,chest,cough,,llm-draft(Claude Opus 5.5),no
+E_217,,none,none,,llm-draft(Claude Opus 5.5),no
+E_215,,none,none,,llm-draft(Claude Opus 5.5),no
+E_64,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_96,,none,none,,llm-draft(Claude Opus 5.5),no
+E_50,,whole,none,,llm-draft(Claude Opus 5.5),no
+E_97,,ent,pain,인후통,llm-draft(Claude Opus 5.5),no
+E_9,,ent,swelling,목 림프절(Kaggle swelled_lymph_nodes와 같게),llm-draft(Claude Opus 5.5),no
+E_76,,head,dizzy,,llm-draft(Claude Opus 5.5),no
+E_65,,ent,none,삼킴 곤란 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_74,,eye,none,충혈 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_205,,head,pain,입 벌림 장애·턱 통증,llm-draft(Claude Opus 5.5),no
+E_63,,head,none,말 어눌함은 레드플래그 키워드로 잡는다,llm-draft(Claude Opus 5.5),no
+E_128,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_190,,none,none,,llm-draft(Claude Opus 5.5),no
+E_39,,none,none,의식 상태는 증상 버튼이 아니다,llm-draft(Claude Opus 5.5),no
+E_212,,ent,none,쉰 목소리 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_206,,ent,pain,입안 궤양(Kaggle ulcers_on_tongue와 같게),llm-draft(Claude Opus 5.5),no
+E_52,,eye,none,시력 증상 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_203,,chest,cough,,llm-draft(Claude Opus 5.5),no
+E_38,,head,pain,턱 통증,llm-draft(Claude Opus 5.5),no
+E_172,,eye,none,,llm-draft(Claude Opus 5.5),no
+E_84,,arm|leg,cantmove,,llm-draft(Claude Opus 5.5),no
+E_90,,none,none,,llm-draft(Claude Opus 5.5),no
+E_211,,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+E_166,,abdomen,nausea,,llm-draft(Claude Opus 5.5),no
+E_112,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_178,,skin,bleeding,이상 출혈·멍(Kaggle bruising과 같게),llm-draft(Claude Opus 5.5),no
+E_152,,none,swelling,부기 부위. 부위는 값 행,llm-draft(Claude Opus 5.5),no
+E_151,,none,swelling,,llm-draft(Claude Opus 5.5),no
+E_45,,chest,cough|bleeding,객혈,llm-draft(Claude Opus 5.5),no
+E_194,,ent,breath,흡기 협착음,llm-draft(Claude Opus 5.5),no
+E_83,,head,cantmove,얼굴·눈 근육 약화,llm-draft(Claude Opus 5.5),no
+E_157,,arm|leg,numb,,llm-draft(Claude Opus 5.5),no
+E_176,,whole,cantmove,팔다리·얼굴 약화,llm-draft(Claude Opus 5.5),no
+E_42,,none,none,알레르기 노출은 증상이 아니다,llm-draft(Claude Opus 5.5),no
+E_214,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_150,,none,none,,llm-draft(Claude Opus 5.5),no
+E_32,,none,none,,llm-draft(Claude Opus 5.5),no
+E_221,,none,none,,llm-draft(Claude Opus 5.5),no
+E_202,,chest,cough,,llm-draft(Claude Opus 5.5),no
+E_219,,none,none,,llm-draft(Claude Opus 5.5),no
+E_170,,eye,none,,llm-draft(Claude Opus 5.5),no
+E_77,,chest,cough,,llm-draft(Claude Opus 5.5),no
+E_13,,none,none,,llm-draft(Claude Opus 5.5),no
+E_14,,chest,pain,,llm-draft(Claude Opus 5.5),no
+E_169,,ent,none,,llm-draft(Claude Opus 5.5),no
+E_177,,none,numb,,llm-draft(Claude Opus 5.5),no
+E_175,,whole,none,전신 불편감,llm-draft(Claude Opus 5.5),no
+E_174,,none,none,,llm-draft(Claude Opus 5.5),no
+E_145,,abdomen,none,월경 이상 버튼이 없다(Kaggle과 같게),llm-draft(Claude Opus 5.5),no
+E_92,,skin,rash,얼굴 홍조,llm-draft(Claude Opus 5.5),no
+E_192,,back,cantmove,목 근육 경직(Kaggle stiff_neck과 같게),llm-draft(Claude Opus 5.5),no
+E_188,,abdomen,none,,llm-draft(Claude Opus 5.5),no
+E_164,,chest,none,,llm-draft(Claude Opus 5.5),no
+E_193,,whole,none,근육 경련 버튼이 없다,llm-draft(Claude Opus 5.5),no
+E_168,,ent,none,,llm-draft(Claude Opus 5.5),no
+E_180,,eye,none,,llm-draft(Claude Opus 5.5),no
+E_67,,chest,breath,,llm-draft(Claude Opus 5.5),no
+E_171,,none,none,,llm-draft(Claude Opus 5.5),no
+E_111,,none,none,,llm-draft(Claude Opus 5.5),no
+E_182,,ent,none,,llm-draft(Claude Opus 5.5),no
+E_103,,ent,none,,llm-draft(Claude Opus 5.5),no
+E_23,,none,none,,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_123,none,none,nowhere; 기본값(없음),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_14,back,none,iliac wing,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_15,back,none,iliac wing,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_16,abdomen,none,groin,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_17,abdomen,none,groin,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_18,arm,none,axilla; 겨드랑이는 팔,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_19,arm,none,axilla; 겨드랑이는 팔,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_20,ent,none,tonsil,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_21,ent,none,tonsil,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_22,none,none,anus; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_23,foot,none,posterior aspect of the ankle,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_24,foot,none,posterior aspect of the ankle,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_25,head,none,back of head,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_26,back,none,back of the neck,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_27,arm,none,forearm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_28,arm,none,forearm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_29,chest,none,lower chest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_30,arm,none,biceps,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_31,arm,none,biceps,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_32,ent,none,mouth; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_33,ent,none,thyroid cartilage; 목 앞·옆은 ent,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_34,foot,none,ankle,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_35,foot,none,ankle,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_36,none,none,clitoris; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_37,back,none,coccyx,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_38,back,none,cervical spine,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_39,back,none,thoracic spine,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_40,back,none,lumbar spine,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_41,ent,none,commissure; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_42,ent,none,commissure; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_43,foot,none,lateral side of the foot,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_44,foot,none,lateral side of the foot,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_45,arm,none,elbow,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_46,arm,none,elbow,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_47,leg,none,popliteal fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_48,leg,none,popliteal fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_49,back,none,iliac crest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_50,back,none,iliac crest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_51,leg,none,thigh,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_52,leg,none,thigh,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_53,ent,none,side of the neck; 목 앞·옆은 ent,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_54,ent,none,side of the neck; 목 앞·옆은 ent,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_55,chest,none,side of the chest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_56,chest,none,side of the chest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_57,teeth,none,lower teeth,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_58,teeth,none,lower teeth,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_59,teeth,none,upper teeth,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_60,teeth,none,upper teeth,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_61,ent,none,above the tongue; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_62,head,none,top of the head,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_63,hand,none,finger (ring finger),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_64,hand,none,finger (ring finger),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_65,hand,none,finger (little finger),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_66,hand,none,finger (little finger),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_67,hand,none,finger (index),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_68,hand,none,finger (index),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_69,hand,none,finger (middle),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_70,hand,none,finger (middle),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_72,foot,none,dorsal aspect of the foot,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_73,foot,none,dorsal aspect of the foot,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_74,hand,none,dorsal aspect of the wrist,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_75,hand,none,dorsal aspect of the wrist,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_76,hand,none,dorsal aspect of the hand,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_77,hand,none,dorsal aspect of the hand,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_78,arm,none,palmar side of the forearm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_79,arm,none,palmar side of the forearm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_80,hand,none,palmar face of the wrist,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_81,hand,none,palmar face of the wrist,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_82,back,none,buttock,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_83,back,none,buttock,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_84,abdomen,none,flank,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_85,abdomen,none,flank,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_87,abdomen,none,iliac fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_88,abdomen,none,iliac fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_89,head,none,forehead,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_90,teeth,none,lower gum,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_91,teeth,none,upper gum,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_92,leg,none,knee,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_93,leg,none,knee,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_94,none,none,glans; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_95,none,none,labia majora; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_96,none,none,labia majora; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_97,foot,none,big toe,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_98,foot,none,big toe,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_99,leg,none,hip,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_100,leg,none,hip,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_101,chest,none,upper chest,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_102,none,none,hymen; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_103,abdomen,none,hypochondrium,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_104,abdomen,none,hypochondrium,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_105,leg,none,ischio jambier,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_106,leg,none,ischio jambier,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_108,head,none,cheek,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_109,head,none,cheek,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_110,ent,none,internal cheek; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_111,ent,none,internal cheek; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_113,back,none,renal fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_114,back,none,renal fossa,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_115,ent,none,uvula,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_116,ent,none,bottom lip; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_117,ent,none,upper lip; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_118,head,none,chin,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_119,leg,none,calf,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_120,leg,none,calf,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_121,head,none,jaw,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_122,ent,none,nose,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_124,head,none,occiput,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_125,eye,none,eye,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_126,eye,none,eye,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_127,back,none,scapula,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_128,back,none,scapula,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_129,ent,none,ear,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_130,ent,none,ear,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_131,foot,none,toe (1),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_132,foot,none,toe (1),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_133,foot,none,toe (2),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_134,foot,none,toe (2),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_135,foot,none,toe (3),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_136,foot,none,toe (3),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_137,ent,none,palace; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_139,none,none,vaginal wall; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_140,none,none,vaginal wall; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_141,none,none,vaginal wall; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_142,hand,none,palm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_143,hand,none,palm,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_144,foot,none,little toe (4),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_145,foot,none,little toe (4),llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_146,none,none,labia minora; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_147,none,none,labia minora; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_148,ent,none,pharynx,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_149,foot,none,sole,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_150,foot,none,sole,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_151,hand,none,thumb,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_152,hand,none,thumb,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_153,abdomen,none,pubis,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_155,none,none,penis; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_158,none,none,scrotum; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_159,chest,none,breast,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_160,chest,none,breast,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_162,ent,none,under the tongue; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_163,ent,none,under the jaw; 목 앞·옆은 ent,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_164,foot,none,heel,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_165,foot,none,heel,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_166,head,none,temple,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_167,head,none,temple,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_168,none,none,testicle; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_169,none,none,testicle; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_170,back,none,posterior chest wall,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_171,back,none,posterior chest wall,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_172,leg,none,tibia,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_173,leg,none,tibia,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_174,ent,none,trachea; 목 앞·옆은 ent,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_175,back,none,trapezius,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_176,back,none,trapezius,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_177,arm,none,triceps,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_178,arm,none,triceps,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_185,none,none,urethra; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_186,none,none,vagina; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_187,abdomen,none,belly,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_188,ent,none,vermilion; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_189,ent,none,vermilion; 입안·입술,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_190,none,none,vulval vestibule; 생식기·항문은 버튼 부위가 없다,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_194,arm,none,shoulder,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_195,arm,none,shoulder,llm-draft(Claude Opus 5.5),no
+E_55|E_57|E_133|E_152,V_197,abdomen,none,epigastric,llm-draft(Claude Opus 5.5),no

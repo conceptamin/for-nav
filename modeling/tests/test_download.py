@@ -43,8 +43,9 @@ def fetched(monkeypatch):
     return responses, calls
 
 
-def test_registry_has_two_sources_with_valid_hashes():
-    assert [s.key for s in download.SOURCES] == ["kaggle_symptom", "hira"]
+def test_registry_sources_have_valid_hashes():
+    # DDXPlus는 backlog 17에서 더했다
+    assert [s.key for s in download.SOURCES] == ["kaggle_symptom", "hira", "ddxplus"]
     for source in download.SOURCES:
         names = [f.name for f in source.files]
         assert len(names) == len(set(names))
