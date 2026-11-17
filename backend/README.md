@@ -147,7 +147,7 @@ backend/
 | `POST /api/center/my-cases` | — (frontend 46) | S-13·센터 채팅 시트 | `{ cases: [{ id, token }] }` (1~20개) | `MyCaseView[]` (토큰이 맞는 사례만) |
 | `POST /api/center/push-devices` | — (frontend 48) | 근로자 앱 시작·언어 변경 | `{ deviceToken, platform, notice, cases: [{ id, token }] }` (1~20개) | `{ cases: string[] }` (토큰이 맞아 묶인 사례 id) |
 | `POST /api/center/push-devices/remove` | — (frontend 48) | 로그아웃·계정 바꾸기·내 데이터 지우기 | `{ deviceToken }` | `204` (없는 토큰도) |
-| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다, 푸시 기기 묶음도 지운다) |
+| `POST /api/center/reset` | `resetCenterDemo` | C-01 데모 초기화 | — | `204` (열린 채팅·통화 연결은 4000으로 닫힌다, 푸시 기기 묶음도 지운다). `DB_PATH`가 있으면 `ALLOW_RESET=true`일 때만 동작하고 아니면 `404`(backlog 32) |
 | `WS /api/center/cases/{id}/chat` | — (프론트 미연결) | 근로자·센터 상담 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `WS /api/center/cases/{id}/call` | — (프론트 미연결) | 근로자·센터 통화 | `?role=worker&token=` 또는 `?role=center` | 아래 참고 |
 | `GET /api/center/stats` | `StatsPage`의 집계 | C-03 | `?days=30\|90\|180&district=` | 아래 참고 |
@@ -459,6 +459,7 @@ FCM이 `UNREGISTERED`(404)·`INVALID_ARGUMENT`(400)로 답하면 그 기기 토�
 - mock 사례의 `createdAt`은 "서버 시작 시각 기준 몇 시간 전"으로 만든다. 서버 시작 시 한 번만 만든다.
 - 근로자가 실제로 보낸 사례는 `live: true`로 같은 저장소에 넣는다. `POST /api/center/reset`은 live 사례와 상태 변경만 지우고 mock은 처음 상태로 되돌린다.
 - `DB_PATH`가 있으면 live 사례(`live_cases`: id, 접수 시각, 본문 JSON)와 상태 변경(`case_status`: id, 상태)만 SQLite 파일에 둔다. mock 사례·통계 레코드는 지금처럼 시작 시 메모리에서 만든다(시드 고정이라 재시작해도 id가 같다). `reset`은 두 표를 비우고 파일은 지우지 않는다.
+- `DB_PATH`가 있으면(운영 저장소) `POST /api/center/reset`은 `ALLOW_RESET=true`일 때만 동작하고, 꺼져 있으면 `404`이며 저장소를 건드리지 않는다(로그 `center reset blocked`). 켜져 있으면 지우기 전에 `<DB_PATH>.reset-<UTC 시각>.bak`(예: `center.db.reset-20261117T002730Z.bak`)를 같은 폴더에 쓰고, 백업이 실패하면 지우지 않고 `500`이다. 백업 파일은 자동으로 지우지 않는다(backlog 32).
 - `live_cases` 본문은 저장할 때의 계약 그대로 남는다. 읽을 때 옛 계약을 지금 계약으로 바꾸고(backlog 23 전 단수 `requestType` → `requestTypes` 한 칸 배열), 그래도 읽지 못하는 본문은 그 사례만 목록·조회에서 빼고 `live case skipped id=… error=…` 한 줄을 남긴다(본문은 남기지 않는다). 사례 하나 때문에 `GET /api/center/cases` 전체가 500이 되지 않게 하려는 것이다(backlog 29).
 - SQLite 파일에는 연락처·자유 입력(채팅 메시지·통화 자막 포함)이 **평문으로** 남는다. 데모 범위에서만 쓰고, 보존 기간·삭제 규칙은 PRD 미결이다. `*.db`는 `.gitignore`에 있다.
 - 사례 id: mock은 `C-1001`~`C-1024`, live는 `C-` + 접수 시각 밀리초 끝 5자리(프론트와 같음). 겹치면 뒤에 `-2`를 붙인다.
@@ -532,6 +533,7 @@ CENTER_HOURS=10:00-17:00 uv run fastapi dev app/main.py
 | `LLM_DAILY_LIMIT` | `0`(끔) | 0 이상 정수 | 서버 전체 하루(Asia/Seoul) LLM 호출 수 상한(backlog 20) |
 | `LLM_CLIENT_IP_HEADER` | (없음) | 소문자 헤더 이름, 예: `cf-connecting-ip` | TCP 상대가 루프백일 때만 이 헤더를 클라이언트 IP로 쓴다 |
 | `DB_PATH` | (없음) | 파일 경로(폴더는 있어야 함), 예: `./center.db` | 센터 사례 저장소. 비어 있으면 메모리, 있으면 SQLite 파일 |
+| `ALLOW_RESET` | `false` | `true` \| `false` | 데모 초기화(backlog 32). `DB_PATH`가 있을 때 `true`여야 `POST /api/center/reset`이 동작한다(지우기 전에 백업). `DB_PATH`가 없으면 이 값과 상관없이 허용 |
 | `STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../frontend/dist` | 프론트 빌드 서빙. 비어 있으면 API만 띄우고 `/`는 404다 |
 | `APP_STATIC_DIR` | (없음) | `index.html`이 있는 폴더, 예: `../app-front/dist` | 앱용 웹 빌드(backlog 22). `APP_HOSTS`의 호스트로 온 요청에는 `STATIC_DIR` 대신 이것을 준다. `APP_HOSTS`·`STATIC_DIR`과 함께 있어야 한다 |
 | `APP_HOSTS` | (없음) | 쉼표 구분 호스트 이름(포트 없이), 예: `app.for-nav.com` | 요청의 `Host`가 여기 있으면 앱용 웹 빌드를 준다. 대소문자·포트는 보지 않는다 |

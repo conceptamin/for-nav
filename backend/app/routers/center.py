@@ -8,7 +8,7 @@ import asyncio
 import logging
 import secrets
 from collections.abc import Callable
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from urllib.parse import urlsplit
 
@@ -45,7 +45,7 @@ from app.schemas import (
     PushDeviceResponse,
     StatCell,
 )
-from app.settings import settings
+from app.settings import reset_allowed, settings
 from app.store import MessageTranslation, message_number, store
 from app.templates.reports import build_center_summary
 from app.templates.translate import translate_line, translate_message, translate_note
@@ -225,7 +225,20 @@ async def patch_case(case_id: str, body: CasePatch, request: Request) -> CenterC
 
 @router.post("/reset", status_code=status.HTTP_204_NO_CONTENT, dependencies=staff_only)
 async def reset(request: Request) -> Response:
-    """C-01 데모 초기화: live 사례, 상태 변경, 채팅, 통화 자막을 지우고 열린 채팅·통화 연결을 닫는다."""
+    """C-01 데모 초기화: live 사례, 상태 변경, 채팅, 통화 자막을 지우고 열린 채팅·통화 연결을 닫는다.
+
+    운영 저장소(DB_PATH)에서는 ALLOW_RESET=true일 때만 동작하고, 지우기 전에 같은 폴더에 백업을 남긴다(backlog 32).
+    """
+    if not reset_allowed(settings):
+        logger.warning("center reset blocked")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if settings.db_path:
+        stamp = clock.now().astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+        try:
+            await anyio.to_thread.run_sync(store.backup, f"{settings.db_path}.reset-{stamp}.bak")
+        except Exception:
+            logger.exception("center reset backup failed")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="백업에 실패해 초기화하지 않았다") from None
     store.reset()
     hub: ChatHub = request.app.state.chat
     await hub.close_all()

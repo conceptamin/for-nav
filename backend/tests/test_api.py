@@ -1,6 +1,11 @@
 # 경로별 응답 형태·상태 코드. 값의 세부 일치는 test_parity.py가 맡는다.
 
+import logging
+import os
+import sqlite3
+from dataclasses import replace
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -9,6 +14,7 @@ from app import clock
 from app.data.mock import StatRecord
 from app.main import app
 from app.routers import center
+from app.settings import settings
 from app.store import CenterStore, MemoryStore, store
 from app.store_sqlite import SqliteStore
 from app.vocab import LANGS
@@ -283,6 +289,67 @@ def test_patch_status_and_reset():
     cases = client.get("/api/center/cases").json()
     assert len(cases) == 24
     assert next(c for c in cases if c["id"] == "C-1024")["status"] == "new"
+
+
+# ---------------------------------------------------------------------------
+# 운영 저장소에서 데모 초기화 막기(backlog 32)
+# ---------------------------------------------------------------------------
+@pytest.fixture
+def prod_store(tmp_path, monkeypatch):
+    """DB_PATH가 있는 운영 저장소. live 사례 하나와 채팅 메시지 하나를 넣어 둔다."""
+    path = tmp_path / "center.db"
+    s = SqliteStore(str(path))
+    monkeypatch.setattr(center, "store", s)
+    case_id = _send().json()["case"]["id"]
+    s.add_message(case_id, "worker", "xin chào", clock.now())
+    yield path, s, case_id
+    s.close()
+
+
+def _use_reset_settings(monkeypatch, path: Path, **kw) -> None:
+    monkeypatch.setattr(center, "settings", replace(settings, db_path=str(path), **kw))
+
+
+def _live_count(db: Path) -> int:
+    with sqlite3.connect(db) as conn:
+        return conn.execute("SELECT COUNT(*) FROM live_cases").fetchone()[0]
+
+
+def test_reset_blocked_on_db_path_without_allow(prod_store, monkeypatch, caplog):
+    path, s, case_id = prod_store
+    _use_reset_settings(monkeypatch, path)
+    with caplog.at_level(logging.WARNING, logger="app.routers.center"):
+        r = client.post("/api/center/reset")
+    assert r.status_code == 404
+    assert r.json()["error"]["code"] == "NOT_FOUND"
+    assert "center reset blocked" in caplog.text
+    assert s.get(case_id) is not None
+    assert len(s.messages(case_id)) == 1
+    assert list(path.parent.glob("*.bak")) == []
+
+
+def test_reset_with_allow_backs_up_first(prod_store, monkeypatch):
+    path, s, case_id = prod_store
+    _use_reset_settings(monkeypatch, path, allow_reset=True)
+    assert client.post("/api/center/reset").status_code == 204
+    assert s.get(case_id) is None
+    (bak,) = path.parent.glob("center.db.reset-*.bak")
+    assert _live_count(bak) == 1
+
+
+@pytest.mark.skipif(os.name != "posix" or os.geteuid() == 0, reason="폴더 쓰기 권한으로 백업 실패를 만든다")
+def test_reset_backup_failure_keeps_data(prod_store, monkeypatch):
+    path, s, case_id = prod_store
+    _use_reset_settings(monkeypatch, path, allow_reset=True)
+    path.parent.chmod(0o500)
+    try:
+        r = client.post("/api/center/reset")
+    finally:
+        path.parent.chmod(0o700)
+    assert r.status_code == 500
+    assert s.get(case_id) is not None
+    assert len(s.messages(case_id)) == 1
+    assert list(path.parent.glob("*.bak")) == []
 
 
 @both_stores

@@ -14,6 +14,7 @@ import logging
 import sqlite3
 from collections.abc import Callable
 from datetime import datetime
+from pathlib import Path
 from threading import Lock
 from typing import Any
 
@@ -483,6 +484,19 @@ class SqliteStore:
         with self._lock, self._db:
             for table in ("live_cases", "case_status", "chat_tokens", "chat_messages", "chat_reads", "call_captions", "push_devices"):
                 self._db.execute(f"DELETE FROM {table}")
+
+    def backup(self, path: str) -> None:
+        """sqlite3 온라인 백업으로 path에 같은 내용을 쓴다. 실패하면 쓰다 만 파일을 지우고 예외를 그대로 올린다."""
+        with self._lock:
+            try:
+                dst = sqlite3.connect(path)
+                try:
+                    self._db.backup(dst)
+                finally:
+                    dst.close()
+            except BaseException:
+                Path(path).unlink(missing_ok=True)
+                raise
 
     def close(self) -> None:
         self._db.close()

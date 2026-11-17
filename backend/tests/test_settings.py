@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from app.llm_providers.anthropic import AnthropicClient
-from app.settings import DEFAULT_INFO_DATE, get_llm_client, load_settings, settings
+from app.settings import DEFAULT_INFO_DATE, get_llm_client, load_settings, reset_allowed, settings
 
 BACKEND = Path(__file__).parent.parent
 
@@ -119,6 +119,22 @@ print(json.dumps({"health": TestClient(app).get("/api/health").status_code, "cli
     env = {k: v for k, v in os.environ.items() if not k.startswith(("LLM_", "ANTHROPIC_"))}
     out = subprocess.run([sys.executable, "-c", script], cwd=BACKEND, env=env, capture_output=True, text=True, check=True)
     assert json.loads(out.stdout.strip().splitlines()[-1]) == {"health": 200, "client": True}
+
+
+def test_allow_reset(tmp_path):
+    # 데모 초기화(backlog 32): 메모리 저장소는 늘 허용, DB_PATH가 있으면 ALLOW_RESET=true일 때만
+    db = str(tmp_path / "center.db")
+    assert load_settings({}).allow_reset is False
+    assert reset_allowed(load_settings({}))
+    assert not reset_allowed(load_settings({"DB_PATH": db}))
+    assert not reset_allowed(load_settings({"DB_PATH": db, "ALLOW_RESET": "false"}))
+    assert reset_allowed(load_settings({"DB_PATH": db, "ALLOW_RESET": "true"}))
+
+
+@pytest.mark.parametrize("raw", ["yes", "1", "on", ""])
+def test_allow_reset_rejects(raw):
+    with pytest.raises(ValueError, match="ALLOW_RESET"):
+        load_settings({"ALLOW_RESET": raw})
 
 
 def test_center_auth_defaults():

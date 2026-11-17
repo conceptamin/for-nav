@@ -189,6 +189,10 @@ class CenterStore(Protocol):
         직원 목록·로그인 코드·세션과 근로자 세션은 그대로 둔다(초기화한 직원과 근로자가 로그아웃되지 않게)."""
         ...
 
+    def backup(self, path: str) -> None:
+        """지금 저장소를 path에 복사한다(데모 초기화 전, backlog 32). 메모리 저장소는 아무 일도 하지 않는다. 실패하면 예외다."""
+        ...
+
     def close(self) -> None: ...
 
 
@@ -485,6 +489,9 @@ class MemoryStore:
             self._reads.clear()
             self._captions.clear()
             self._push.clear()
+
+    def backup(self, path: str) -> None:
+        pass
 
     def close(self) -> None:
         pass

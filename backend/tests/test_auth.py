@@ -85,8 +85,9 @@ def use_settings(monkeypatch, **kw) -> None:
 
 
 @pytest.fixture
-def client(store, mailer, clk, monkeypatch):
-    use_settings(monkeypatch, center_auth="email", db_path="center.db")
+def client(store, mailer, clk, tmp_path, monkeypatch):
+    # DB_PATH가 있으면 ALLOW_RESET=true여야 데모 초기화가 된다(backlog 32). 초기화 전 백업은 임시 폴더에 쓴다
+    use_settings(monkeypatch, center_auth="email", db_path=str(tmp_path / "center.db"), allow_reset=True)
     with TestClient(app, base_url=BASE) as c:
         yield c
 
