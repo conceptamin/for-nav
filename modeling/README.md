@@ -91,6 +91,7 @@ uv run pytest                                        # 테스트
 uv run python scripts/download_data.py                   # 원본(data/raw)
 uv run python scripts/make_splits.py                     # 질환·증상 분할(진료과 모델 A)
 uv run python scripts/build_tables.py                    # 진료과 표·검증셋 id
+uv run python scripts/build_ddxplus.py                   # DDXPlus → 버튼 벡터 표(data/processed/ddxplus), 겹침 리포트(backlog 17)
 uv run python scripts/train_dept_a.py                    # models/dept_a/v0
 uv run python scripts/train_dept_b.py                    # models/dept_b/v0
 uv run python scripts/tune_ensemble.py                   # models/ensemble/v1/ensemble.json

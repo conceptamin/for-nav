@@ -66,6 +66,7 @@ modeling/
     data/                       I/O는 이 폴더만 한다
       download.py               출처별 내려받기 + sha256 검증
       kaggle_symptom.py         질환·증상 원본 → 표준 테이블
+      ddxplus.py                DDXPlus 합성 환자 → 버튼 벡터 표준 테이블, Kaggle과의 겹침 리포트(backlog 17)
       hira.py                   질환 → 진료과 통계 적재
       split.py                  질환·증상 데이터 train/valid/test 분리 (id 목록으로 고정)
     features/
@@ -81,7 +82,7 @@ modeling/
     predict.py                  입력 dict → TriageResult.model dict. 백엔드가 부를 순수 함수
 
   scripts/                      명령 하나 = 일 하나. 인자를 받아 패키지 함수를 부르기만 하는 얇은 파일
-    download_data.py  build_tables.py  make_splits.py
+    download_data.py  build_tables.py  build_ddxplus.py  make_splits.py
     train_dept_a.py  train_dept_b.py  tune_ensemble.py
     evaluate.py  export_models.py
 
@@ -93,6 +94,8 @@ modeling/
     tables/                     git 포함. 사람이 검토하는 CSV, 행마다 출처 열
       button_department.csv     버튼 조합 → 진료과 분포 (모델 B 라벨)
       disease_department.csv    질환 → 진료과 비율 (HIRA)
+      ddxplus_evidence_map.csv  DDXPlus 증상 근거·부위 값 → 버튼 부위·증상
+      ddxplus_condition_kcd.csv DDXPlus 질환(icd10-id) → KCD 3단
     test/                       git 제외. splits로 재생성. 평가 명령만 읽는다
 
   models/                       내보낸 아티팩트. 버전 폴더마다 metadata.json
