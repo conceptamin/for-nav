@@ -1,6 +1,6 @@
 # 18. 진료과 안내 조합을 늘리고 최종 평가용 조합을 따로 고정하기
 
-상태: 대기
+상태: 진행 중
 의존: 05
 
 ## 목표
@@ -36,7 +36,25 @@
 - [ ] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과
 
 ## 결과
-(구현 후 작성)
+### 1·2단계: 출처·약관 확인과 조합 모으기(2026-11-17)
+- 출처와 이용약관(확인 2026-11-17)
+  - 세브란스병원 질환백과(`severance`, https://sev.severance.healthcare/health/encyclopedia/): 페이지 끝 "진료과" 칸에 병원별 진료과가 있다. 회원 약관 제18조(https://member.severance.healthcare/member/policy/agreement.do)는 사전 승낙 없는 **영리목적** 이용과 제3자 이용을 막는다. 05의 서울대병원과 같은 조건이라 진료과 사실·URL·짧은 대조 표기만 비영리 데모 검증용으로 적었다
+  - 삼성서울병원 질환백과(`samsung`, https://www.samsunghospital.com/home/healthInfo/): "관련진료과" 칸이 있다. 이용약관 제22조(https://www.samsunghospital.com/home/member/agreement.do)도 사전 승낙 없는 영리목적 이용·제3자 이용을 막는다. 같은 방식으로 적었다
+  - 인제대 백병원 질병백과(`paik`, https://www.paik.ac.kr/paik/user/bbs/BMSR00052/): "[진료과]" 칸이 있다. 약관 제12조②는 위와 같지만, **제11조④가 "개인적인 이용 외에 복사, 가공, … 배포 … 제3자에게 제공하는 행위"를 막아 셋 중 가장 엄하다**(https://www.paik.ac.kr/paik/user/bbs/BMSR00072/view.do?menuNo=200153). 넣을지는 사용자가 정한다(아래)
+  - 쓰지 않은 출처: 국가건강정보포털은 공공누리 제4유형으로 이용은 되지만 진료과 칸이 없다. 분당서울대·경희·아주대는 진료과 칸이 없다. 서울성모·고려대 안암은 페이지를 JavaScript로 그려 읽지 못했다. 부산대·울산대는 질환백과를 찾지 못했다. 서울아산은 05 결정대로 넣지 않았다
+- 모은 조합: `data/tables/department_guide_test.csv`에 **51행**(세브란스 22, 백병원 15, 삼성 14). 모두 `reviewed=no`. 수집은 Claude가 페이지를 열어 진료과 칸을 확인했고, 그중 3건(뇌진탕·식중독·발목 염좌)은 다시 받아 표기가 같은지 대조했다
+  - 1순위 진료과: ortho 15, derm 9, internal 7, neuro 6, ent 5, surgery 4, family 2, ophth 2, dental 1, occ 0(진폐증의 2순위로만 있다)
+  - `injury=yes` 17 / 51
+  - 조정용 29건과 같은 조합(`same_combo`) 0건(`check_guide_test_disjoint`)
+  - 수집할 때 매핑이 약하다고 표시한 행 6건: `head-pain-yes`(안면골 골절), `arm-pain-yes`(회전근개 파열), `hand-pain-yes`(복합부위통증증후군), `whole-cantmove-yes`(파상풍), `whole-nausea-no`(온열질환 예방), `leg-cantmove-no`(척추관협착증)
+  - 진료과 칸이 있는 페이지를 찾지 못한 조합: 눈 화학 화상, 손·팔·다리·발 베임, 손가락 골절, 끼임(압궤), 들다가 허리 삠. 세브란스 "상황별 응급처치"(베인 상처·눈 이물질 등)에는 진료과 칸이 없다
+- 진료과 대응: 05·HIRA 표와 같다(내과 계열 → internal, 마취통증의학과·재활의학과·척추 신경외과 → ortho, 성형외과·심장혈관외과 → surgery, 구강악안면외과 → dental, 응급의학과·소아청소년과·센터 이름은 건너뛴다). 뇌진탕의 신경외과는 neuro, 척수손상·디스크의 신경외과는 ortho로 봤다
+- 구현(3·4단계를 위한 코드, 아직 고정하지 않았다)
+  - 최종 평가용 정답은 **조정용과 다른 파일**(`department_guide_test.csv`)에 둔다. `build_tables.py`가 `department_guide.csv`의 모든 행을 `dept_valid.txt`(조정용)로 쓰기 때문에 같은 표에 두면 조정에 섞인다
+  - `labels/department.py`: `freeze_guide_test`(검토한 행 → `dept_test.txt`·`dept_test.sha256`, 이미 있으면 멈춤, 조정용과 겹치면 멈춤), `load_guide_test`(해시가 다르면 멈춤, 평가 명령만), `held_test_ids`(id만), `check_guide_test_disjoint`. `scripts/freeze_guide_test.py`
+  - 모델 B 학습(`dept_b.split_table`)은 최종 평가용 조합과 같은 표 행을 학습에서도 검증용에서도 뺀다. 학습은 id 목록(`dept_test.txt`)만 읽고 정답 표는 읽지 않는다. 범위 5의 "학습·조정 명령이 `dept_test.txt`를 열지 않는다"는 이렇게 바꿨다: **정답 표(`department_guide_test.csv`)를 여는 코드는 정의·고정 명령·평가 명령뿐이다**(`tests/test_guide_final.py`). 같은 조합을 학습에서 빼려면 id는 읽어야 해서다
+  - `uv run ruff check . && uv run ruff format --check .` → 통과, `uv run pytest` → 137 passed(새 테스트 `tests/test_guide_final.py` 8개)
+- 3단계(사람 검토): 검토용 목록을 저장소 밖 작업 파일로 만들었다(최종 평가용 51 + 조정용 29). 결과 대기
 
 ## 메모
 - 출처: 2026-11-17 데이터 수집 논의. 16을 하기 전에 데이터를 먼저 모으기로 했다. 17(DDXPlus)은 버튼 벡터의 범위를 넓히고, 이 항목은 진료과 정답의 수와 신뢰도를 늘린다

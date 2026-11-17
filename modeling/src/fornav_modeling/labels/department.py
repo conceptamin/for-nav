@@ -9,6 +9,7 @@
 # 질환명은 이 모듈과 모델 A 내부까지만 쓴다(06 이후 산출물에 내보내지 않는다).
 
 import csv
+import hashlib
 import re
 from collections import Counter
 from pathlib import Path
@@ -26,9 +27,15 @@ NONE = "none"
 DISEASE_DEPARTMENT = "disease_department.csv"
 BUTTON_DEPARTMENT = "button_department.csv"
 VALID_IDS = "dept_valid.txt"  # data/splits/ 아래
+# 최종 평가용 안내 조합(backlog 18). 조정용(GUIDE)과 다른 출처에서 모아 사람이 검토한 행만 TEST_IDS로 고정한다.
+# 정답 표(GUIDE_TEST)는 고정 명령과 평가 명령만 읽는다. 학습은 조합 id 목록(TEST_IDS)만 읽어 같은 조합을 학습에서 뺀다.
+GUIDE_TEST = "department_guide_test.csv"
+TEST_IDS = "dept_test.txt"  # data/splits/ 아래
+TEST_IDS_HASH = "dept_test.sha256"  # 고정한 행(정답 포함)의 sha256
 
 DISEASE_COLUMNS = ["disease", "kcd", "department", "ratio", "source", "reviewed"]
 BUTTON_COLUMNS = ["body_part", "symptom", "injury", "department", "prob", "source", "reviewed"]
+GUIDE_COLUMNS = ["body_part", "symptom", "injury", "department", "alt", "url", "site", "evidence", "note", "source", "reviewed"]
 INJURIES = ("yes", "no", "any")
 PROB_FLOOR = 0.01  # 이보다 작은 비율은 통계 잡음으로 보고 버린다
 SUM_TOLERANCE = 1e-3  # 소수 넷째 자리 반올림 오차
@@ -255,17 +262,17 @@ class GuideAnswer(NamedTuple):
     reviewed: bool
 
 
-def read_guide(tables_dir: Path) -> dict[str, GuideAnswer]:
+def read_guide(tables_dir: Path, name: str = GUIDE) -> dict[str, GuideAnswer]:
     """combo_id → 정답. 출처 URL이 없거나 진료과가 열거값 밖이면 TableError."""
     guide: dict[str, GuideAnswer] = {}
-    for row in _read(tables_dir, GUIDE):
-        _check_combo(GUIDE, row)
+    for row in _read(tables_dir, name):
+        _check_combo(name, row)
         cid = combo_id(row["body_part"], row["symptom"], row["injury"])
         alt = row["alt"] or None
         if row["department"] not in DEPARTMENTS or (alt is not None and (alt not in DEPARTMENTS or alt == row["department"])):
-            raise TableError(f"{GUIDE}: {cid}의 진료과가 열거값 밖이거나 1·2순위가 같다")
+            raise TableError(f"{name}: {cid}의 진료과가 열거값 밖이거나 1·2순위가 같다")
         if not row["url"].startswith("https://") or cid in guide:
-            raise TableError(f"{GUIDE}: {cid}의 url이 https가 아니거나 조합이 중복")
+            raise TableError(f"{name}: {cid}의 url이 https가 아니거나 조합이 중복")
         guide[cid] = GuideAnswer(row["department"], alt, row["reviewed"] == "yes")
     return guide
 
@@ -293,6 +300,59 @@ def guide_set(tables_dir: Path, splits_dir: Path) -> tuple[list[str], dict[str, 
     if ids != sorted(guide):
         raise TableError(f"{VALID_IDS}와 {GUIDE}가 다르다. scripts/build_tables.py를 다시 돌린다")
     return ids, guide
+
+
+def _guide_test_rows(tables_dir: Path) -> list[dict[str, str]]:
+    """최종 평가용 표에서 사람이 검토한(reviewed=yes) 행. combo_id 순."""
+    read_guide(tables_dir, GUIDE_TEST)  # 형식 검사
+    rows = [r for r in _read(tables_dir, GUIDE_TEST) if r["reviewed"] == "yes"]
+    return sorted(rows, key=lambda r: combo_id(r["body_part"], r["symptom"], r["injury"]))
+
+
+def _rows_sha256(rows: list[dict[str, str]]) -> str:
+    text = "".join(",".join(row[c] for c in GUIDE_COLUMNS) + "\n" for row in rows)
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def check_guide_test_disjoint(tables_dir: Path) -> list[str]:
+    """최종 평가용 조합 중 조정용 조합과 same_combo인 것. 비어 있어야 한다."""
+    valid = list(read_guide(tables_dir))
+    return sorted(cid for cid in read_guide(tables_dir, GUIDE_TEST) if any(same_combo(cid, v) for v in valid))
+
+
+def freeze_guide_test(tables_dir: Path, splits_dir: Path, force: bool = False) -> dict:
+    """검토한 최종 평가용 행을 id 목록과 해시로 고정한다. 이미 고정했으면 force 없이는 멈춘다(test 목록은 바꾸지 않는다)."""
+    ids_path, hash_path = splits_dir / TEST_IDS, splits_dir / TEST_IDS_HASH
+    if ids_path.exists() and not force:
+        raise TableError(f"{TEST_IDS}가 이미 있다. 바꾸려면 사용자에게 묻고 이유를 backlog에 남긴 뒤 force로 다시 쓴다")
+    if overlap := check_guide_test_disjoint(tables_dir):
+        raise TableError(f"{GUIDE_TEST}에 조정용 조합과 같은 조합이 있다 {overlap}")
+    rows = _guide_test_rows(tables_dir)
+    ids = [combo_id(r["body_part"], r["symptom"], r["injury"]) for r in rows]
+    ids_path.write_text("".join(f"{cid}\n" for cid in ids))
+    hash_path.write_text(f"{_rows_sha256(rows)}  {GUIDE_TEST} reviewed=yes\n")
+    return {
+        "combos": len(ids),
+        "by_department": dict(Counter(r["department"] for r in rows)),
+        "injury_yes": sum(r["injury"] == "yes" for r in rows),
+    }
+
+
+def held_test_ids(splits_dir: Path) -> list[str]:
+    """최종 평가용 조합 id(정답 없음). 학습이 같은 조합을 빼는 데만 쓴다. 아직 고정하지 않았으면 빈 목록."""
+    path = splits_dir / TEST_IDS
+    return path.read_text().split() if path.exists() else []
+
+
+def load_guide_test(tables_dir: Path, splits_dir: Path) -> tuple[list[str], dict[str, GuideAnswer]]:
+    """평가 명령만 부른다. 고정한 행과 해시가 다르면 멈춘다."""
+    rows = _guide_test_rows(tables_dir)
+    expected = (splits_dir / TEST_IDS_HASH).read_text().split()[0]
+    ids = held_test_ids(splits_dir)
+    if _rows_sha256(rows) != expected or ids != [combo_id(r["body_part"], r["symptom"], r["injury"]) for r in rows]:
+        raise TableError(f"{GUIDE_TEST}의 검토 행이 고정한 {TEST_IDS}·{TEST_IDS_HASH}와 다르다")
+    answers = read_guide(tables_dir, GUIDE_TEST)
+    return ids, {cid: answers[cid] for cid in ids}
 
 
 def same_combo(a: str, b: str) -> bool:
