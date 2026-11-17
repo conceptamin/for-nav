@@ -12,6 +12,7 @@
 
 import json
 import logging
+import secrets
 import sqlite3
 from collections.abc import Callable
 from datetime import datetime
@@ -26,11 +27,11 @@ from app.data.mock import StatRecord, build_mock_cases, build_stat_records
 from app.rules.urgency import default_category
 from app.schemas import Caption, CasePatch, CenterCase, ChatMessage, ChatRole, TranslationStatus
 from app.store import (
+    CODE_MAX_ATTEMPTS,
     CODE_REQUEST_KEEP,
     PUSH_CASES_PER_DEVICE,
     PUSH_DEVICE_KEEP,
     PUSH_DEVICES_PER_CASE,
-    AuthCode,
     MessageTranslation,
     PushDevice,
     apply_changes,
@@ -405,20 +406,27 @@ class SqliteStore:
                 (email, code_hash, clock.iso_utc(expires_at)),
             )
 
-    def get_code(self, email: str) -> AuthCode | None:
-        with self._lock:
+    def check_code(self, email: str, code_hash: str, now: datetime) -> bool:
+        """읽기·시도 수 올리기·비교·지우기를 잠금 하나와 트랜잭션 하나 안에서 한다."""
+        with self._lock, self._db:
             row = self._db.execute("SELECT code_hash, expires_at, attempts FROM auth_codes WHERE email = ?", (email,)).fetchone()
-        return AuthCode(*row) if row else None
-
-    def add_code_attempt(self, email: str) -> int:
-        with self._lock, self._db:
-            self._db.execute("UPDATE auth_codes SET attempts = attempts + 1 WHERE email = ?", (email,))
-            row = self._db.execute("SELECT attempts FROM auth_codes WHERE email = ?", (email,)).fetchone()
-        return row[0] if row else 0
-
-    def delete_code(self, email: str) -> None:
-        with self._lock, self._db:
-            self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+            if row is None:
+                return False
+            saved_hash, expires_at, attempts = row
+            if expires_at <= clock.iso_utc(now):
+                self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+                return False
+            attempts += 1
+            if attempts > CODE_MAX_ATTEMPTS:
+                self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+                return False
+            self._db.execute("UPDATE auth_codes SET attempts = ? WHERE email = ?", (attempts, email))
+            if secrets.compare_digest(saved_hash, code_hash):
+                self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+                return True
+            if attempts >= CODE_MAX_ATTEMPTS:
+                self._db.execute("DELETE FROM auth_codes WHERE email = ?", (email,))
+            return False
 
     def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None:
         with self._lock, self._db:

@@ -2,6 +2,10 @@
 # 메모리·SQLite 두 저장소에 돌린다. 메일은 FakeMailer, 시각은 clock.now를 바꿔 고정한다.
 
 import logging
+import secrets
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import datetime, timedelta
 
@@ -9,12 +13,12 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
-from app import clock
+from app import auth, clock
 from app.main import app
 from app.routers import auth as auth_router
 from app.routers import center
 from app.settings import settings
-from app.store import CenterStore, MemoryStore
+from app.store import CODE_MAX_ATTEMPTS, CenterStore, MemoryStore
 from app.store_sqlite import SqliteStore
 from tests.fakes import FakeMailer
 
@@ -367,3 +371,62 @@ def test_staff_cli_needs_db_path(monkeypatch):
 
     monkeypatch.setattr(staff, "settings", replace(settings, db_path=""))
     assert staff.main(["list"]) == 2
+
+
+# ---------------------------------------------------------------------------
+# 코드 확인을 한 번에 처리하기(backlog 33)
+# ---------------------------------------------------------------------------
+CODE = "123456"
+
+
+def _issue(store: CenterStore, expires: datetime = AT + auth.CODE_TTL) -> None:
+    store.add_staff(STAFF, AT)
+    store.set_code(STAFF, auth.hash_secret(CODE), expires)
+
+
+def test_concurrent_wrong_codes_compare_at_most_five_times(store, monkeypatch):
+    _issue(store)
+    compared = 0
+    count_lock = threading.Lock()
+    real = secrets.compare_digest
+
+    def counting(a, b):
+        nonlocal compared
+        with count_lock:
+            compared += 1
+        time.sleep(0.002)  # 비교 중에 다른 요청이 끼어들 틈을 넓힌다
+        return real(a, b)
+
+    monkeypatch.setattr(secrets, "compare_digest", counting)
+    start = threading.Barrier(20)
+
+    def attempt(_: int) -> str | None:
+        start.wait()
+        return auth.verify_code(store, STAFF, "000000", AT, 30)
+
+    with ThreadPoolExecutor(max_workers=20) as pool:
+        results = list(pool.map(attempt, range(20)))
+    assert results == [None] * 20
+    assert compared <= CODE_MAX_ATTEMPTS
+    assert auth.verify_code(store, STAFF, CODE, AT, 30) is None
+
+
+def test_four_wrong_then_right_passes(store):
+    _issue(store)
+    for _ in range(4):
+        assert auth.verify_code(store, STAFF, "000000", AT, 30) is None
+    assert auth.verify_code(store, STAFF, CODE, AT, 30)
+
+
+def test_five_wrong_then_right_is_rejected(store):
+    _issue(store)
+    for _ in range(5):
+        assert auth.verify_code(store, STAFF, "000000", AT, 30) is None
+    assert auth.verify_code(store, STAFF, CODE, AT, 30) is None
+
+
+def test_expired_code_is_rejected_and_deleted(store):
+    _issue(store, expires=AT)
+    assert auth.verify_code(store, STAFF, CODE, AT, 30) is None
+    # 지워졌으므로 만료 전 시각으로 다시 물어도 없다
+    assert auth.verify_code(store, STAFF, CODE, AT - timedelta(minutes=1), 30) is None

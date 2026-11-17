@@ -4,6 +4,7 @@
 # 근로자 Google 로그인(backlog 21)의 세션(계정 키만, 이름·이메일 없음), 근로자 앱 푸시 기기 토큰(backlog 28, 사례에만 묶는다)도 같은 저장소에 둔다.
 # 로그인 코드와 세션 토큰은 해시만 받는다(app/auth.py가 만든다). 시각은 iso_utc 문자열로 두어 문자열 비교가 시각 비교가 된다.
 
+import secrets
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta
@@ -18,6 +19,8 @@ from app.vocab import CASE_ACTIONS, REFERRAL_TARGETS, Lang
 
 # 코드 요청 기록은 보내기 제한(app/auth.py)이 보는 가장 긴 구간만큼만 남긴다.
 CODE_REQUEST_KEEP = timedelta(hours=1)
+# 로그인 코드 하나로 비교할 수 있는 최대 횟수(backlog 33). check_code가 한 잠금 안에서 지킨다
+CODE_MAX_ATTEMPTS = 5
 # 푸시 기기 묶음(backlog 28)은 마지막 등록 뒤 이만큼만 남긴다. 앱을 열 때마다 웹이 다시 등록하므로 쓰는 기기는 계속 남는다
 PUSH_DEVICE_KEEP = timedelta(days=30)
 # 기기 하나에 묶는 사례 수, 사례 하나에 묶는 기기 수. 넘으면 가장 오래 갱신하지 않은 묶음을 지운다
@@ -145,13 +148,13 @@ class CenterStore(Protocol):
 
     def set_code(self, email: str, code_hash: str, expires_at: datetime) -> None: ...
 
-    def get_code(self, email: str) -> AuthCode | None: ...
+    def check_code(self, email: str, code_hash: str, now: datetime) -> bool:
+        """한 잠금(SQLite는 한 트랜잭션) 안에서 코드를 확인한다(backlog 33).
 
-    def add_code_attempt(self, email: str) -> int:
-        """틀린 시도를 하나 올리고 지금까지의 수를 돌려준다. 코드가 없으면 0."""
+        없으면 False, 만료됐으면 지우고 False. 비교 **전에** 시도 수를 올리고, 올린 값이 CODE_MAX_ATTEMPTS를 넘으면 지우고 False.
+        맞으면 지우고 True, 틀리면 False(CODE_MAX_ATTEMPTS번째로 틀렸으면 지운다). 동시 요청 수와 상관없이 비교는 CODE_MAX_ATTEMPTS번을 넘지 않는다.
+        """
         ...
-
-    def delete_code(self, email: str) -> None: ...
 
     def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None: ...
 
@@ -423,21 +426,25 @@ class MemoryStore:
         with self._lock:
             self._codes[email] = AuthCode(code_hash, clock.iso_utc(expires_at))
 
-    def get_code(self, email: str) -> AuthCode | None:
-        with self._lock:
-            return self._codes.get(email)
-
-    def add_code_attempt(self, email: str) -> int:
+    def check_code(self, email: str, code_hash: str, now: datetime) -> bool:
         with self._lock:
             code = self._codes.get(email)
             if code is None:
-                return 0
-            self._codes[email] = replace(code, attempts=code.attempts + 1)
-            return code.attempts + 1
-
-    def delete_code(self, email: str) -> None:
-        with self._lock:
-            self._codes.pop(email, None)
+                return False
+            if code.expires_at <= clock.iso_utc(now):
+                del self._codes[email]
+                return False
+            attempts = code.attempts + 1
+            if attempts > CODE_MAX_ATTEMPTS:
+                del self._codes[email]
+                return False
+            self._codes[email] = replace(code, attempts=attempts)
+            if secrets.compare_digest(code.code_hash, code_hash):
+                del self._codes[email]
+                return True
+            if attempts >= CODE_MAX_ATTEMPTS:
+                del self._codes[email]
+            return False
 
     def add_session(self, token_hash: str, email: str, created_at: datetime, expires_at: datetime) -> None:
         with self._lock:

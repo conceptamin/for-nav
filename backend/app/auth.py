@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 
 from fastapi import Response
 
-from app import clock
 from app.mail import Mailer
 from app.schemas import EMAIL_MAX_LEN, EMAIL_PATTERN
 from app.store import CenterStore
@@ -21,7 +20,6 @@ WORKER_COOKIE = "fornav_worker"
 ACCOUNT_PREFIX = "fornav-worker:"
 ACCOUNT_LEN = 32
 CODE_TTL = timedelta(minutes=10)
-CODE_MAX_ATTEMPTS = 5
 # 보내기 제한. 이메일별 제한은 등록되지 않은 이메일에도 똑같이 건다(429로 등록 여부를 떠보지 못하게).
 RESEND_AFTER = timedelta(seconds=60)
 PER_EMAIL_WINDOW = timedelta(hours=1)
@@ -84,20 +82,12 @@ async def request_code(store: CenterStore, mailer: Mailer, email: str, now: date
 def verify_code(store: CenterStore, email: str, code: str, now: datetime, session_days: int) -> str | None:
     """코드가 맞으면 새 세션 토큰(쿠키 값)을 돌려준다. 틀림·만료·없음은 모두 None이다(이유를 나누지 않는다).
 
-    맞든 틀리든 CODE_MAX_ATTEMPTS번 틀린 코드는 지우고, 맞은 코드도 한 번 쓰면 지운다.
+    CODE_MAX_ATTEMPTS번 틀린 코드는 지우고, 맞은 코드도 한 번 쓰면 지운다. 확인 전체는 저장소의 check_code가
+    잠금 하나 안에서 하므로 동시 요청이 몰려도 비교는 CODE_MAX_ATTEMPTS번을 넘지 않는다(backlog 33).
     """
     email = normalize_email(email)
-    saved = store.get_code(email)
-    if saved is None:
+    if not store.check_code(email, hash_secret(code.strip()), now):
         return None
-    if saved.expires_at <= clock.iso_utc(now):
-        store.delete_code(email)
-        return None
-    if not secrets.compare_digest(saved.code_hash, hash_secret(code.strip())):
-        if store.add_code_attempt(email) >= CODE_MAX_ATTEMPTS:
-            store.delete_code(email)
-        return None
-    store.delete_code(email)
     # 코드를 받은 뒤 직원 목록에서 빠졌으면 세션을 주지 않는다.
     if not store.is_staff(email):
         return None
