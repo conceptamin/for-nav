@@ -1,0 +1,238 @@
+{
+  "conversion": {
+    "raw_patients": 1292579,
+    "dropped_no_symptom": 15129,
+    "kept_patients": 1277450,
+    "rows": 2372,
+    "diseases": 49,
+    "diseases_lost": 0
+  },
+  "vectors": {
+    "ddxplus": 2067,
+    "kaggle": 112,
+    "shared": 28,
+    "ddxplus_only": 2039,
+    "union": 2151,
+    "ddxplus_multi_disease": 178,
+    "patients_in_shared_vectors": {
+      "n": 28381,
+      "of": 1277450
+    }
+  },
+  "kcd": {
+    "codes": 48,
+    "missing_in_hira": 0,
+    "diseases_sharing_kaggle_kcd": {
+      "n": 7,
+      "of": 49
+    }
+  },
+  "buttons_per_row": {
+    "ddxplus": {
+      "body_parts": {
+        "mean": 4.73,
+        "one": {
+          "n": 92,
+          "of": 2372
+        },
+        "two": {
+          "n": 224,
+          "of": 2372
+        },
+        "three_or_more": {
+          "n": 2054,
+          "of": 2372
+        }
+      },
+      "symptoms": {
+        "mean": 2.79,
+        "one": {
+          "n": 330,
+          "of": 2372
+        },
+        "two": {
+          "n": 748,
+          "of": 2372
+        },
+        "three_or_more": {
+          "n": 1294,
+          "of": 2372
+        }
+      }
+    },
+    "kaggle": {
+      "body_parts": {
+        "mean": 3.84,
+        "one": {
+          "n": 26,
+          "of": 292
+        },
+        "two": {
+          "n": 69,
+          "of": 292
+        },
+        "three_or_more": {
+          "n": 197,
+          "of": 292
+        }
+      },
+      "symptoms": {
+        "mean": 2.71,
+        "one": {
+          "n": 48,
+          "of": 292
+        },
+        "two": {
+          "n": 73,
+          "of": 292
+        },
+        "three_or_more": {
+          "n": 171,
+          "of": 292
+        }
+      }
+    }
+  },
+  "rows_by_body_part": {
+    "head": {
+      "n": 976,
+      "of": 2372
+    },
+    "eye": {
+      "n": 105,
+      "of": 2372
+    },
+    "ent": {
+      "n": 1257,
+      "of": 2372
+    },
+    "teeth": {
+      "n": 64,
+      "of": 2372
+    },
+    "chest": {
+      "n": 1599,
+      "of": 2372
+    },
+    "abdomen": {
+      "n": 1098,
+      "of": 2372
+    },
+    "back": {
+      "n": 1174,
+      "of": 2372
+    },
+    "arm": {
+      "n": 1014,
+      "of": 2372
+    },
+    "hand": {
+      "n": 313,
+      "of": 2372
+    },
+    "leg": {
+      "n": 673,
+      "of": 2372
+    },
+    "foot": {
+      "n": 664,
+      "of": 2372
+    },
+    "skin": {
+      "n": 1257,
+      "of": 2372
+    },
+    "whole": {
+      "n": 1023,
+      "of": 2372
+    }
+  },
+  "rows_by_symptom": {
+    "pain": {
+      "n": 1720,
+      "of": 2372
+    },
+    "swelling": {
+      "n": 458,
+      "of": 2372
+    },
+    "cut": {
+      "n": 0,
+      "of": 2372
+    },
+    "bleeding": {
+      "n": 266,
+      "of": 2372
+    },
+    "burn": {
+      "n": 0,
+      "of": 2372
+    },
+    "numb": {
+      "n": 97,
+      "of": 2372
+    },
+    "cantmove": {
+      "n": 139,
+      "of": 2372
+    },
+    "fever": {
+      "n": 322,
+      "of": 2372
+    },
+    "cough": {
+      "n": 473,
+      "of": 2372
+    },
+    "dizzy": {
+      "n": 350,
+      "of": 2372
+    },
+    "rash": {
+      "n": 1171,
+      "of": 2372
+    },
+    "nausea": {
+      "n": 476,
+      "of": 2372
+    },
+    "breath": {
+      "n": 1139,
+      "of": 2372
+    },
+    "chemical": {
+      "n": 0,
+      "of": 2372
+    },
+    "foreign": {
+      "n": 0,
+      "of": 2372
+    }
+  },
+  "trauma_symptom_rows": {
+    "cut": {
+      "n": 0,
+      "of": 2372
+    },
+    "bleeding": {
+      "n": 266,
+      "of": 2372
+    },
+    "burn": {
+      "n": 0,
+      "of": 2372
+    },
+    "cantmove": {
+      "n": 139,
+      "of": 2372
+    },
+    "chemical": {
+      "n": 0,
+      "of": 2372
+    },
+    "foreign": {
+      "n": 0,
+      "of": 2372
+    }
+  }
+}

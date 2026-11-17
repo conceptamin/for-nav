@@ -17,6 +17,7 @@ uv run python scripts/download_data.py --verify  # 내려받지 않고 해시만
 |---|---|---|---|---|
 | `kaggle_symptom/` | 진료과 모델 A | Kaggle "Disease Symptom Prediction" | CC BY-SA 4.0 | 가능. 출처 표시 필요, 상업 이용 가능. 가공한 데이터를 배포하면 같은 라이선스(동일조건변경허락) |
 | `hira/` | 질환 → 진료과 매핑, 모델 B 라벨 | 공공데이터포털, 건강보험심사평가원 | 공공누리 제1유형(출처표시) | 가능. 출처 표시 필요, 상업 이용·변경 가능 |
+| `ddxplus/` | 진료과 모델 A 학습 데이터 확대(backlog 17) | figshare "DDXPlus Dataset (English)", Mila | CC BY 4.0 | 가능. 출처 표시 필요, 상업 이용·변경 가능. 동일조건 조건 없음 |
 
 식별 정보(이름·연락처·기관명) 열은 두 출처 모두 **없음**. 가공 단계에서 지울 열도 없다. 아래 출처별 "식별 정보" 항목에 점검 내용을 적었다.
 
@@ -61,3 +62,27 @@ uv run python scripts/download_data.py --verify  # 내려받지 않고 해시만
   - 열(8): 위와 같고 `진료과목` 대신 `표시과목`
   - 표시과목 26종(`진단방사선과,영상의학과`처럼 쉼표가 든 값이 있어 따옴표로 감싸져 있다), 주상병코드 1,654종
 - 식별 정보: 없음. 진료과목·상병 단위 집계이고 기관명·개인 열이 없다
+
+## ddxplus — 진료과 모델 A 학습 데이터 확대(backlog 17)
+
+확인 날짜 **2026-11-17**.
+
+- 데이터: "DDXPlus Dataset (English)", Arsene Fansi Tchango 외(Mila). https://figshare.com/articles/dataset/DDXPlus_Dataset_English_/22687585 (버전 2, 게시 2026-03-09, DOI `10.6084/m9.figshare.22687585.v2`). 논문 https://arxiv.org/abs/2205.09148, 코드 https://github.com/mila-iqia/ddxplus
+- 라이선스: **CC BY 4.0**(figshare API `GET https://api.figshare.com/v2/articles/22687585`의 `license`). 출처 표시가 필요하고 상업 이용·변경이 가능하다. 동일조건변경허락 조건은 없다. 그 밖의 이용 제한 문구는 README·figshare에 없다
+- 생성 방식: 상용 의료 지식베이스와 규칙 기반 진단 시스템으로 만든 **합성 환자**다(GitHub README). 실제 환자 기록이 아니다. 급성기 진료를 전제로 만들어 호흡기·심장·감염 질환이 많다
+- 내려받기: 로그인 없이 `https://ndownloader.figshare.com/files/<파일 id>`. 받은 md5가 figshare API의 `computed_md5`와 같은지 확인했다
+
+| 파일 | 파일 id | 크기(바이트) | md5(figshare) | sha256 | 행 |
+|---|---|---|---|---|---|
+| `release_conditions.json` | 62561569 | 20,889 | `a992eadcff3099dd72e1820fbd2115aa` | `56edf4682d8e86a4209fc3a33932e50ce03d1cc1fecc326c26d5ef8fa5c24890` | 질환 49 |
+| `release_evidences.json` | 40278013 | 120,263 | `0660962abe0bbf99e1fb77188c253597` | `281c78b044ae60514e28ecc9052d08a8225dd3e2db3f00f8788b99c47b05e0c0` | 근거 223 |
+| `release_train_patients.zip` | 40278019 | 140,923,730 | `f75a78420ccb061951daa4db2d62139b` | `174ae1d56f36a15b7144838ecd214e1e1748a5369fc90c559529b6dc6ecfb218` | 1,025,602 |
+| `release_validate_patients.zip` | 40278022 | 18,706,053 | `e4db88e9082f18410de6fd0cb7e74d18` | `625a96855becf0efe5da339fd3d440aa99597d48f784957a97dacc3fceaa7e40` | 132,448 |
+| `release_test_patients.zip` | 40278016 | 18,986,243 | `6fd53d331cf19ed4439bf4f46b92ee94` | `ad3bb981f3453fd7abffb35cc595a1c02197e409c581bff97c1265c33eb00d23` | 134,529 |
+
+- 형식: 환자 zip마다 확장자 없는 CSV 하나(`release_<part>_patients`), UTF-8, 머리글 1행. 열 6개: `AGE`, `DIFFERENTIAL_DIAGNOSIS`, `SEX`, `PATHOLOGY`, `EVIDENCES`, `INITIAL_EVIDENCE`. 환자 합계 **1,292,579**
+- 근거: 223개 = 증상 110(이진 96, 범주 9, 다중 선택 5) + 병력 113. 근거 이름은 `E_<번호>`, 값은 `V_<번호>`이고 영어 문구는 `question_en`, `value_meaning[값].en`에 있다. 부위를 묻는 다중 선택 근거 넷(`E_55` 통증 부위, `E_57` 통증이 퍼지는 곳, `E_133` 발진 부위, `E_152` 부기 부위)은 같은 부위 값 165개(좌우 구분, "nowhere" 포함)를 쓴다
+- 질환: 49종, 질환마다 `icd10-id`가 있다. KCD 3단으로 줄이면 질환별 코드 50개, 고유 48개다(폐렴 하나가 두 코드). 48개 모두 HIRA 2025 두 파일에 있다. Kaggle 질환과 같은 KCD 3단 코드를 쓰는 질환은 7개다
+- 외상: 손상 코드(S·T)는 3개다. 자발성 늑골 골절(S22), 아나필락시스(T78), 스콤브로이드 식중독(T61)이고 열상·염좌·화상·외상성 골절은 없다
+- 식별 정보: 없음. 합성 환자이고 열은 나이·성별·질환·근거뿐이다
+

@@ -1,6 +1,6 @@
 # 17. DDXPlus 합성 환자 데이터를 버튼 벡터로 옮겨 모델 A 학습 데이터 늘리기
 
-상태: 대기
+상태: 완료
 의존: 02, 05
 
 ## 목표
@@ -38,15 +38,49 @@ DDXPlus는 합성 환자 약 130만 명의 기록이다. 질환 49종에 증상�
 - 출력: `data/tables/ddxplus_evidence_map.csv`, `data/tables/ddxplus_condition_kcd.csv`, `data/processed/ddxplus/`(git 제외), `reports/ddxplus_v0.{json,md}`, `data/README.md`의 새 절과 요약 표 행. 새 모듈 `data/ddxplus.py`와 스크립트는 `CLAUDE.md`·`README.md`의 폴더 표에 함께 적는다
 
 ## 완료 기준
-- [ ] 1의 확인 결과(라이선스 이름·버전, URL, sha256, 행 수, 질환 목록 확인 여부, 통증 부위 근거 코드)가 `data/README.md`와 `## 결과`에 있고, 사용자가 다음 단계로 가도 된다고 한 날짜가 `## 결과`에 있다
-- [ ] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 원본이 없는 환경(CI)에서는 변환 테스트를 건너뛴다(지금 방식)
-- [ ] 같은 원본으로 두 번 돌리면 `data/processed/ddxplus/`의 해시가 같다
-- [ ] 6의 수치가 모두 분자 / 분모로 리포트에 있다
-- [ ] 리포트·표·아티팩트에 질환명이 없다(표에는 근거 코드와 KCD만 있다)
-- [ ] 하위 작업 3·4의 표에 `source`·`reviewed` 열이 있고, `reviewed=no` 행 수가 `## 결과`에 있다
+- [x] 1의 확인 결과(라이선스 이름·버전, URL, sha256, 행 수, 질환 목록 확인 여부, 통증 부위 근거 코드)가 `data/README.md`와 `## 결과`에 있고, 사용자가 다음 단계로 가도 된다고 한 날짜가 `## 결과`에 있다
+- [x] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 원본이 없는 환경(CI)에서는 변환 테스트를 건너뛴다(지금 방식)
+- [x] 같은 원본으로 두 번 돌리면 `data/processed/ddxplus/`의 해시가 같다
+- [x] 6의 수치가 모두 분자 / 분모로 리포트에 있다
+- [x] 리포트·표·아티팩트에 질환명이 없다(표에는 근거 코드와 KCD만 있다)
+- [x] 하위 작업 3·4의 표에 `source`·`reviewed` 열이 있고, `reviewed=no` 행 수가 `## 결과`에 있다
 
 ## 결과
-(구현 후 작성)
+### 1단계 확인(2026-11-17)
+- 라이선스: **CC BY 4.0**. figshare 웹 페이지는 자동 요청을 막지만(403) API `GET https://api.figshare.com/v2/articles/22687585`이 `license.name = "CC BY 4.0"`을 돌려준다. 영어판 버전 2, 게시 2026-03-09. 그 밖의 이용 제한 문구는 없다
+- 내려받기: 로그인 없이 `https://ndownloader.figshare.com/files/<id>`로 받았다. 파일 5개의 md5가 API `computed_md5`와 모두 같다. 파일 id·크기·sha256은 `data/README.md` "ddxplus" 절에 있다
+- 행 수: train 1,025,602 / validate 132,448 / test 134,529, 합계 1,292,579
+- 질환 49종 목록·`icd10-id`를 확인했다. KCD 3단 고유 48개이고 **HIRA에 없는 코드는 0 / 48**이다. Kaggle 질환과 같은 KCD를 쓰는 질환은 처음에 5 / 49로 적었으나, Kaggle 쪽 여러 코드 칸을 나누지 않고 비교한 실수였다. 바로 센 값은 **7 / 49**다(A15, B20, I21, J18, J30, J45, K21)
+- 외상: 손상 코드 질환은 3 / 49(S22 자발성 늑골 골절, T78 아나필락시스, T61 스콤브로이드 식중독)이고 열상·염좌·화상은 없다. 메모의 예상과 같다. 외상 범위는 18과 13이 맡는다
+- 통증 부위 근거: 영어판 `E_55`("Do you feel pain somewhere?", 다중 선택)다. `E_57`(통증이 퍼지는 곳), `E_133`(발진 부위), `E_152`(부기 부위)도 같은 부위 값 165개를 쓴다. 부위 값은 손가락·좌우까지 나뉘어 있어 버튼 부위 13종으로 옮길 수 있다
+- HIRA 원본은 `data/README.md`의 sha256과 같은 파일로 대조했다
+- 다음 단계(2~6) 진행 승인: 2026-11-17 사용자 확인
+
+### 2~6단계(2026-11-17)
+- 실행
+  - `uv run python scripts/download_data.py --verify` → 원본 11개 모두 `ok`(ddxplus 5개 포함)
+  - `uv run python scripts/build_ddxplus.py` → 약 25초. 두 번 돌려 `data/processed/ddxplus/ddxplus.csv`의 sha256이 같다(`206a96dd…0e828`)
+  - `uv run ruff check . && uv run ruff format --check .` → 통과, `uv run pytest` → 144 passed(새 테스트 `tests/test_ddxplus.py` 15개, 원본이 없으면 2개는 건너뛴다)
+- 변환(`reports/ddxplus_v0.{json,md}`)
+  - 원본 환자 1,292,579명 중 우리 증상이 없어 뺀 환자 15,129 / 1,292,579, 남은 환자 1,277,450 / 1,292,579
+  - (질환, 버튼 벡터) 중복을 지운 뒤 **2,372행**, 질환 49 / 49가 남는다
+- 버튼 벡터
+  - DDXPlus 고유 벡터 **2,067개**(Kaggle 112개). 겹치는 벡터 28 / 2,067, 합치면 2,151개
+  - 질환이 둘 이상인 DDXPlus 벡터 178 / 2,067
+  - 겹치는 벡터에 든 환자 28,381 / 1,277,450
+- 행당 켜진 버튼 수: 부위 평균 DDXPlus 4.73, Kaggle 3.84. 부위 3개 이상인 행이 DDXPlus 2,054 / 2,372, Kaggle 197 / 292. 증상 평균은 2.79와 2.71이다. 앱 사용자는 보통 한두 개를 누르므로 두 데이터 모두 실제 입력보다 버튼이 많다(아래 메모)
+- KCD: 3단 코드 48개, HIRA에 없는 코드 0 / 48. Kaggle과 같은 KCD를 쓰는 질환 7 / 49
+- 외상: `cut`·`burn`·`chemical`·`foreign` 행 0 / 2,372, `bleeding` 266 / 2,372, `cantmove` 139 / 2,372. 예상대로 열상·화상·화학 노출은 비어 있다
+- 매핑 표
+  - `ddxplus_evidence_map.csv` 275행 = 근거 행 110(증상 근거 전부) + 부위 값 행 165. 부위 값 행은 근거 넷(`E_55|E_57|E_133|E_152`)이 같이 쓴다. **275 / 275가 `reviewed=no`**(LLM 초안). 부위 값 165개 중 버튼 부위가 없는 값(생식기·항문, "nowhere")은 19개다
+  - `ddxplus_condition_kcd.csv` 49행, **49 / 49가 `reviewed=no`**. `icd10-id`를 3단으로 자르기만 했다(폐렴 `j17, j18` → `J17|J18`)
+- 만든 파일: `src/fornav_modeling/data/ddxplus.py`, `scripts/build_ddxplus.py`, `data/tables/ddxplus_evidence_map.csv`, `data/tables/ddxplus_condition_kcd.csv`, `reports/ddxplus_v0.{json,md}`, `tests/test_ddxplus.py`. `download.py`에 `ddxplus` 출처, `CLAUDE.md`·`README.md` 폴더 표와 명령 목록
+- 결정
+  - 범주·다중 선택 근거는 값이 원본 `default_value`(통증 부위 "nowhere", 세기 0 등)면 없는 것으로 본다. 그러지 않으면 통증 세기 0인 환자도 통증이 켜진다
+  - 버리는 기준은 Kaggle과 같이 "우리 증상이 하나도 없는 환자"다(문서의 "버튼이 하나도 없는 환자"보다 조금 넓다. 부위만 있고 증상이 없는 입력은 백엔드가 모델까지 보내지 않는다)
+  - 질환 라벨은 이름이 아니라 `ddxplus:<icd10-id>`이고, 조건 표도 `icd10-id`를 열쇠로 한다. 표·리포트에 질환명이 없는 것을 테스트로 확인한다(원본이 있을 때)
+  - 처리 결과는 CSV로 쓴다(같은 입력이면 같은 바이트). 합친 환자 수를 `patients` 열에 남긴다
+  - 부위 값 대응: 입안·입술·목 앞(갑상연골·기관·턱 밑)은 `ent`, 잇몸은 `teeth`, 목 뒤·엉덩이·장골능은 `back`, 겨드랑이는 `arm`, 고관절은 `leg`. 생식기·항문은 버튼 부위가 없어 `none`이다
 
 ## 메모
 - 출처: 2026-11-17 데이터 수집 논의. 사용자가 "지금 데이터로는 뭘 해도 아쉽다"고 해서, 16을 하기 전에 데이터를 먼저 모으기로 했다
@@ -56,3 +90,9 @@ DDXPlus는 합성 환자 약 130만 명의 기록이다. 질환 49종에 증상�
 - 크기: 원본 약 130만 행이다. 학습·평가 명령은 로컬에서 몇 분 안에 끝나야 한다(`CLAUDE.md`). 변환은 한 번 하고 `data/processed/`에 저장해 학습은 줄어든 표만 읽게 한다
 - 중복 제거 뒤 빈도: `(질환, 버튼 벡터)` 중복을 지우면 "이 벡터에 이 질환이 몇 명이었나"가 사라진다. 한 벡터에 질환이 여럿이면 균등하게 나오게 된다. 빈도를 가중치로 남길지는 16에서 정하고, 6에서 질환이 둘 이상인 벡터 수를 먼저 본다
 - 조사 출처(2026-11-17): GitHub README(`icd10-id`, 근거 형식 B/C/M, `E_`·`V_` 코드, 환자 열 `AGE, SEX, PATHOLOGY, EVIDENCES, INITIAL_EVIDENCE, DIFFERENTIAL_DIAGNOSIS`), 논문 https://arxiv.org/abs/2205.09148 (근거 223개 = 이진 208 + 범주 10 + 다중 선택 5)
+- **16으로 넘기는 것(2026-11-17, 17 결과에서)**
+  - 행당 버튼 수: 두 출처 모두 부위가 평균 4개 안팎으로 켜져 있어 사용자 입력(한두 개)과 다르다. 학습 행에서 일부 버튼만 남긴 행을 만들지(13의 5단계 "여러 개 선택"과 반대 방향), 평가를 버튼 수별로 나눠 적을지 정한다
+  - 크기 차이: DDXPlus 2,372행 대 Kaggle 292행이다. 합치면 DDXPlus 질환(호흡기·심장·감염) 쪽으로 쏠린다. 출처별 가중치나 출처별 평가를 정한다
+  - 질환이 둘 이상인 벡터 178개가 있다. `patients` 열을 가중치로 쓰면 그 벡터의 질환 비율이 살아난다
+  - 매핑 표 275 + 49행이 모두 `reviewed=no`다. 16에서 학습에 쓰기 전에 사람이 볼 범위를 정한다(최소한 부위 값 165행)
+
