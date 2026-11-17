@@ -59,6 +59,12 @@ def test_llm_limit_env():
     assert (s.llm_rate_per_min, s.llm_daily_limit, s.llm_client_ip_header) == (60, 3000, "cf-connecting-ip")
 
 
+def test_case_rate_env():
+    """사례 전송 IP별 분당 상한(backlog 34). 기본은 꺼져 있다."""
+    assert load_settings({}).case_rate_per_min == 0
+    assert load_settings({"CASE_RATE_PER_MIN": "10"}).case_rate_per_min == 10
+
+
 @pytest.mark.parametrize(
     "env",
     [
@@ -78,6 +84,8 @@ def test_llm_limit_env():
         {"LLM_RATE_PER_MIN": "ten"},
         {"LLM_DAILY_LIMIT": "-5"},
         {"LLM_DAILY_LIMIT": "1.5"},
+        {"CASE_RATE_PER_MIN": "-1"},
+        {"CASE_RATE_PER_MIN": "two"},
     ],
 )
 def test_rejects_bad_values(env):

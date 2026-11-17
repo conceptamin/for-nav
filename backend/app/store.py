@@ -187,6 +187,15 @@ class CenterStore(Protocol):
         """그 기기의 묶음을 모두 지운다. 없으면 아무것도 하지 않는다."""
         ...
 
+    # 하루 LLM 호출 수(backlog 34). 날짜는 Asia/Seoul YYYY-MM-DD. 데모 초기화는 지우지 않는다
+    def llm_usage_get(self, day: str) -> int:
+        """그 날 센 호출 수. 없으면 0."""
+        ...
+
+    def llm_usage_add(self, day: str) -> None:
+        """그 날 호출 수를 하나 올린다."""
+        ...
+
     def reset(self) -> None:
         """데모 초기화: 실제 전송 사례, 상태 변경, 채팅 토큰·메시지·읽음, 통화 자막, 푸시 기기 묶음을 지운다. mock은 처음 상태로 돌아간다.
         직원 목록·로그인 코드·세션과 근로자 세션은 그대로 둔다(초기화한 직원과 근로자가 로그아웃되지 않게)."""
@@ -278,6 +287,7 @@ class MemoryStore:
         self._worker_sessions: dict[str, tuple[str, str]] = {}
         # (사례 id, 기기 토큰) → 묶음. 갱신하면 끝으로 옮겨 넣은 순서가 갱신 순서다
         self._push: dict[tuple[str, str], PushDevice] = {}
+        self._llm_usage: dict[str, int] = {}
 
     def all(self) -> list[CenterCase]:
         with self._lock:
@@ -496,6 +506,14 @@ class MemoryStore:
             self._reads.clear()
             self._captions.clear()
             self._push.clear()
+
+    def llm_usage_get(self, day: str) -> int:
+        with self._lock:
+            return self._llm_usage.get(day, 0)
+
+    def llm_usage_add(self, day: str) -> None:
+        with self._lock:
+            self._llm_usage[day] = self._llm_usage.get(day, 0) + 1
 
     def backup(self, path: str) -> None:
         pass

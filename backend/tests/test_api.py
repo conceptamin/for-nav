@@ -352,6 +352,39 @@ def test_reset_backup_failure_keeps_data(prod_store, monkeypatch):
     assert list(path.parent.glob("*.bak")) == []
 
 
+# ---------------------------------------------------------------------------
+# 요청 길이 상한(backlog 34)
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(("n", "code"), [(500, 200), (501, 422)])
+def test_free_text_limit_on_triage_and_extract(n, code):
+    intake = {**INTAKE, "freeText": "가" * n}
+    assert client.post("/api/triage", json=intake).status_code == code
+    assert client.post("/api/extract", json={"intake": intake}).status_code == code
+
+
+@both_stores
+@pytest.mark.parametrize(("n", "code"), [(500, 201), (501, 422)])
+def test_free_text_limit_on_send_case(n, code):
+    assert _send(intake={**INTAKE, "freeText": "가" * n}).status_code == code
+
+
+@both_stores
+@pytest.mark.parametrize(
+    ("over", "code"),
+    [
+        ({"contact": "1" * 100}, 201),
+        ({"contact": "1" * 101}, 422),
+        ({"consentedItems": ["경위(업무 중 여부)", "제도 경로 결과", "자유 입력 메모"]}, 201),
+        ({"consentedItems": [f"항목{i}" for i in range(10)]}, 201),
+        ({"consentedItems": [f"항목{i}" for i in range(11)]}, 422),
+        ({"consentedItems": ["가" * 20]}, 201),
+        ({"consentedItems": ["가" * 21]}, 422),
+    ],
+)
+def test_send_case_contact_and_consent_limits(over, code):
+    assert _send(**over).status_code == code
+
+
 @both_stores
 def test_send_case_default_category():
     assert _send(requestTypes=["policy"]).json()["case"]["category"] == "insurance"

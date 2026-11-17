@@ -56,6 +56,8 @@ class Settings:
     llm_daily_limit: int = 0
     # 클라이언트 IP를 담은 헤더(소문자, 예: cf-connecting-ip). TCP 상대가 루프백(터널)일 때만 믿는다. 빈 값이면 상대 주소
     llm_client_ip_header: str = ""
+    # 근로자 사례 전송(POST /api/center/cases)의 IP별 분당 상한(backlog 34). 0이면 끈다. 넘으면 429
+    case_rate_per_min: int = 0
     # 센터 사례 SQLite 파일. 빈 문자열이면 메모리 저장소(재시작하면 mock 시드 상태)
     db_path: str = ""
     # 데모 초기화(backlog 32). DB_PATH가 있으면(운영 저장소) 이 값이 true일 때만 POST /api/center/reset이 동작한다
@@ -261,6 +263,7 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
                     llm_rate_per_min=_limit("LLM_RATE_PER_MIN", env.get("LLM_RATE_PER_MIN", "0")),
                     llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
                     llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
+                    case_rate_per_min=_limit("CASE_RATE_PER_MIN", env.get("CASE_RATE_PER_MIN", "0")),
                     db_path=_db_path(env.get("DB_PATH", "")),
                     allow_reset=_bool("ALLOW_RESET", env.get("ALLOW_RESET", "false")),
                     static_dir=_static_dir(env.get("STATIC_DIR", "")),

@@ -13,10 +13,11 @@ from test_call import KO, VI, line, pair, send_case
 
 from app import clock
 from app.chat import CallHub
-from app.llm_limit import LLMLimiter, client_key
+from app.llm_limit import CaseLimiter, LLMLimiter, client_key
 from app.main import app
 from app.routers import center
 from app.store import MemoryStore
+from app.store_sqlite import SqliteStore
 
 AT = datetime(2026, 10, 31, 23, 59, 0, tzinfo=clock.SEOUL)
 INTAKE = {
@@ -44,7 +45,7 @@ def limited(monkeypatch):
     now = {"t": AT}
     monkeypatch.setattr(clock, "now", lambda: now["t"])
 
-    def make(llm: FakeLLMClient, per_min: int = 0, daily: int = 0, header: str = "") -> dict:
+    def make(llm: FakeLLMClient | None, per_min: int = 0, daily: int = 0, header: str = "") -> dict:
         monkeypatch.setattr(app.state, "llm", llm, raising=False)
         monkeypatch.setattr(app.state, "llm_limiter", LLMLimiter(per_min, daily, header))
         return now
@@ -169,3 +170,92 @@ def test_call_caption_over_limit_is_sent_as_original(monkeypatch):
             c = staff.receive_json()["caption"]
             assert (c["text"], c["translated"], c["translation"]) == (VI, None, "skipped")
     assert len(fake.prompts) == 1
+
+
+# ---------------------------------------------------------------------------
+# 하루 합계 유지·사례 전송 제한(backlog 34)
+# ---------------------------------------------------------------------------
+def test_daily_limit_survives_restart_with_db_path(limited, tmp_path, monkeypatch):
+    """DB_PATH가 있으면 서버를 다시 띄워도(저장소·제한기를 새로 만들어도) 하루 합계가 이어진다."""
+    path = str(tmp_path / "center.db")
+    fake = FakeLLMClient([LLM_OUT] * 10)
+    now = limited(fake)
+    first = SqliteStore(path)
+    monkeypatch.setattr(app.state, "llm_limiter", LLMLimiter(daily=2, usage=first))
+    assert [source(), source()] == ["llm", "llm"]
+    first.close()
+
+    # 재시작: 같은 파일을 새로 열고 제한기도 새로 만든다
+    second = SqliteStore(path)
+    monkeypatch.setattr(app.state, "llm_limiter", LLMLimiter(daily=2, usage=second))
+    assert source() == "keywords"
+    assert len(fake.prompts) == 2
+    # 다음 날(Asia/Seoul)에는 다시 부른다. AT은 23:59이다
+    now["t"] = AT + timedelta(minutes=2)
+    assert source() == "llm"
+    assert second.llm_usage_get("2026-10-31") == 2
+    assert second.llm_usage_get("2026-11-01") == 1
+    second.close()
+
+
+def test_daily_limit_without_db_path_restarts_from_zero(limited):
+    fake = FakeLLMClient([LLM_OUT] * 10)
+    limited(fake, daily=1)
+    assert [source(), source()] == ["llm", "keywords"]
+    limited(fake, daily=1)
+    assert source() == "llm"
+
+
+CASE_BODY = {
+    "intake": INTAKE,
+    "requestTypes": ["booking"],
+    "coverage": None,
+    "insurance": "no",
+    "contactMethod": None,
+    "contact": "010-1234-5678",
+    "consentedItems": ["자유 입력 메모"],
+}
+
+
+@pytest.fixture
+def case_store(monkeypatch):
+    # LLM은 limited(None)으로 끈다(자유 입력 번역 없이 보낸다)
+    monkeypatch.setattr(center, "store", MemoryStore())
+
+
+def send_from(peer: str, forwarded: str | None = None) -> int:
+    headers = {"cf-connecting-ip": forwarded} if forwarded else {}
+    return TestClient(app, client=(peer, 50000)).post("/api/center/cases", json=CASE_BODY, headers=headers).status_code
+
+
+def test_case_rate_limits_per_ip(case_store, limited, monkeypatch, caplog):
+    now = limited(None)
+    monkeypatch.setattr(app.state, "case_limiter", CaseLimiter(2))
+    with caplog.at_level(logging.INFO):
+        codes = [send_from("10.0.0.1") for _ in range(3)]
+        r = TestClient(app, client=("10.0.0.1", 50000)).post("/api/center/cases", json=CASE_BODY)
+    assert codes == [201, 201, 429]
+    assert r.json()["error"]["code"] == "RATE_LIMITED"
+    # 다른 IP는 따로 센다
+    assert send_from("10.0.0.2") == 201
+    # 60초가 지나면 다시 받는다
+    now["t"] = AT + timedelta(seconds=61)
+    assert send_from("10.0.0.1") == 201
+    # 로그에 IP·연락처·자유 입력이 없다
+    assert "case limited scope=ip" in caplog.text
+    for secret in ("10.0.0.1", "010-1234-5678", INTAKE["freeText"]):
+        assert secret not in caplog.text
+
+
+def test_case_rate_uses_tunnel_header_like_llm(case_store, limited, monkeypatch):
+    limited(None)
+    monkeypatch.setattr(app.state, "case_limiter", CaseLimiter(1, "cf-connecting-ip"))
+    assert send_from(*TUNNEL[:1], forwarded="203.0.113.5") == 201
+    assert send_from(*TUNNEL[:1], forwarded="203.0.113.5") == 429
+    assert send_from(*TUNNEL[:1], forwarded="203.0.113.6") == 201
+
+
+def test_case_rate_zero_is_off(case_store, limited, monkeypatch):
+    limited(None)
+    monkeypatch.setattr(app.state, "case_limiter", CaseLimiter(0))
+    assert [send_from("10.0.0.1") for _ in range(5)] == [201] * 5

@@ -488,6 +488,26 @@ def test_reset_keeps_login_data(store: CenterStore):
     assert store.session_email("t1", AT) == STAFF
 
 
+def test_llm_usage_counts_per_day_and_survives_reset(store: CenterStore):
+    # 하루 LLM 호출 수(backlog 34). 날짜별로 따로 세고 데모 초기화는 지우지 않는다
+    assert store.llm_usage_get("2026-11-17") == 0
+    store.llm_usage_add("2026-11-17")
+    store.llm_usage_add("2026-11-17")
+    store.llm_usage_add("2026-11-18")
+    store.reset()
+    assert (store.llm_usage_get("2026-11-17"), store.llm_usage_get("2026-11-18")) == (2, 1)
+
+
+def test_sqlite_keeps_llm_usage_after_restart(tmp_path: Path):
+    path = str(tmp_path / "center.db")
+    s = SqliteStore(path, STARTED)
+    s.llm_usage_add("2026-11-17")
+    s.close()
+    s = SqliteStore(path, STARTED)
+    assert s.llm_usage_get("2026-11-17") == 1
+    s.close()
+
+
 def test_sqlite_keeps_login_data_after_restart(tmp_path: Path):
     path = str(tmp_path / "center.db")
     s = SqliteStore(path, STARTED)

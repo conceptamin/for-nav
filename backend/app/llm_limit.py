@@ -3,13 +3,15 @@
 공개 주소에서 로그인 없이 부를 수 있는 LLM 자리(추출·템플릿 슬롯·번역·통화 자막)의 비용 상한이다.
 공급자 호출 한 번(재시도 포함)을 하나로 세고, 클라이언트 IP별 최근 60초와 서버 전체 하루(Asia/Seoul)에 상한을 둔다.
 넘으면 `LLMError(LIMITED)`를 올려 기존 실패 경로를 탄다. 부르는 쪽은 키워드 사전·기본 템플릿·원문으로 응답하고 API는 바뀌지 않는다.
-상태는 프로세스 메모리에 있어 서버를 다시 띄우면 0부터 센다(`--workers 1` 전제는 채팅·통화와 같다).
+IP별 창은 프로세스 메모리에 있어 서버를 다시 띄우면 0부터 센다(`--workers 1` 전제는 채팅·통화와 같다).
+하루 합계는 저장소(`llm_usage`)에도 올려, `DB_PATH`가 있으면 배포로 다시 띄워도 이어진다(backlog 34). 메모리 저장소는 다시 띄우면 0이다.
+근로자 사례 전송(`POST /api/center/cases`)의 IP별 분당 상한(`CaseLimiter`, backlog 34)도 같은 IP 창과 `client_key`를 쓴다.
 """
 
 import logging
 from collections import deque
 from datetime import date
-from typing import Any
+from typing import Any, Protocol
 
 from starlette.requests import HTTPConnection
 
@@ -23,40 +25,33 @@ WINDOW_S = 60.0
 LOOPBACK = frozenset({"127.0.0.1", "::1"})
 
 
-class LLMLimiter:
-    def __init__(self, per_min: int = 0, daily: int = 0, ip_header: str = "") -> None:
-        self.per_min = per_min
-        self.daily = daily
-        self.ip_header = ip_header
+class DailyUsage(Protocol):
+    """하루 호출 수를 남기는 곳(CenterStore가 구현한다)."""
+
+    def llm_usage_get(self, day: str) -> int: ...
+
+    def llm_usage_add(self, day: str) -> None: ...
+
+
+class IpWindow:
+    """키(클라이언트 IP)별 최근 60초 요청 수. limit이 0이면 늘 통과한다."""
+
+    def __init__(self, limit: int) -> None:
+        self.limit = limit
         self._recent: dict[str, deque[float]] = {}
-        self._day: date | None = None
-        self._today = 0
         self._swept = 0.0
 
-    @property
-    def enabled(self) -> bool:
-        return bool(self.per_min or self.daily)
-
-    def take(self, key: str) -> bool:
-        """호출 하나를 센다. 상한을 넘었으면 세지 않고 False다. await가 없어 이벤트 루프 안에서 끊기지 않는다."""
-        now = clock.now()
-        t = now.timestamp()
-        if now.date() != self._day:
-            self._day, self._today = now.date(), 0
+    def take(self, key: str, t: float) -> bool:
+        """상한 안이면 하나 세고 True, 넘었으면 세지 않고 False."""
+        if not self.limit:
+            return True
         self._sweep(t)
-        if self.daily and self._today >= self.daily:
-            # IP는 개인 정보라 로그에 남기지 않는다.
-            logger.warning("llm limited scope=daily")
+        recent = self._recent.setdefault(key, deque())
+        while recent and recent[0] <= t - WINDOW_S:
+            recent.popleft()
+        if len(recent) >= self.limit:
             return False
-        if self.per_min:
-            recent = self._recent.setdefault(key, deque())
-            while recent and recent[0] <= t - WINDOW_S:
-                recent.popleft()
-            if len(recent) >= self.per_min:
-                logger.warning("llm limited scope=ip")
-                return False
-            recent.append(t)
-        self._today += 1
+        recent.append(t)
         return True
 
     def _sweep(self, t: float) -> None:
@@ -65,6 +60,40 @@ class LLMLimiter:
             return
         self._swept = t
         self._recent = {k: q for k, q in self._recent.items() if q and q[-1] > t - WINDOW_S}
+
+
+class LLMLimiter:
+    def __init__(self, per_min: int = 0, daily: int = 0, ip_header: str = "", usage: DailyUsage | None = None) -> None:
+        self.per_min = per_min
+        self.daily = daily
+        self.ip_header = ip_header
+        self._usage = usage
+        self._window = IpWindow(per_min)
+        self._day: date | None = None
+        self._today = 0
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.per_min or self.daily)
+
+    def take(self, key: str) -> bool:
+        """호출 하나를 센다. 상한을 넘었으면 세지 않고 False다. await가 없어 이벤트 루프 안에서 끊기지 않는다."""
+        now = clock.now()
+        if now.date() != self._day:
+            # 시작 뒤 첫 호출과 날짜가 바뀐 뒤 첫 호출에서 저장소의 그날 합계를 읽는다(다시 띄워도 이어지게)
+            self._day = now.date()
+            self._today = self._usage.llm_usage_get(self._day.isoformat()) if self._usage else 0
+        if self.daily and self._today >= self.daily:
+            # IP는 개인 정보라 로그에 남기지 않는다.
+            logger.warning("llm limited scope=daily")
+            return False
+        if not self._window.take(key, now.timestamp()):
+            logger.warning("llm limited scope=ip")
+            return False
+        self._today += 1
+        if self._usage:
+            self._usage.llm_usage_add(self._day.isoformat())
+        return True
 
     def wrap(self, client: LLMClient | None, conn: HTTPConnection) -> LLMClient | None:
         """요청을 보낸 클라이언트 몫으로 세는 클라이언트. LLM이 없거나 제한이 모두 꺼져 있으면 그대로 돌려준다."""
@@ -84,6 +113,21 @@ def client_key(conn: HTTPConnection, ip_header: str) -> str:
         if forwarded:
             return forwarded
     return peer
+
+
+class CaseLimiter:
+    """근로자 사례 전송의 IP별 분당 상한(backlog 34). per_min이 0이면 끈다."""
+
+    def __init__(self, per_min: int = 0, ip_header: str = "") -> None:
+        self.ip_header = ip_header
+        self._window = IpWindow(per_min)
+
+    def take(self, conn: HTTPConnection) -> bool:
+        if self._window.take(client_key(conn, self.ip_header), clock.now().timestamp()):
+            return True
+        # IP·본문은 로그에 남기지 않는다.
+        logger.warning("case limited scope=ip")
+        return False
 
 
 class LimitedLLMClient:
