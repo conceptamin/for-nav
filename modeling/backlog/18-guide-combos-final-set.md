@@ -1,6 +1,6 @@
 # 18. 진료과 안내 조합을 늘리고 최종 평가용 조합을 따로 고정하기
 
-상태: 진행 중
+상태: 완료
 의존: 05
 
 ## 목표
@@ -28,12 +28,12 @@
 - 출력: 늘어난 `department_guide.csv`, `data/splits/dept_test.txt`·`dept_test.sha256`(새로 만든다), 검토 결과가 반영된 `reviewed` 열, `data/README.md` 출처 절. `labels/department.py`가 `dept_test.txt`를 읽는 함수(평가 명령만 부른다)
 
 ## 완료 기준
-- [ ] 출처별 이용약관 확인 결과와 URL이 `## 결과`에 있다
-- [ ] 안내 조합 수가 출처별·`reviewed`별 분자 / 분모로 적혀 있다(기존 29 포함)
-- [ ] 최종 평가용 조합이 **30건 이상**이고, 1순위 진료과별 건수와 `injury=yes` 건수가 적혀 있다. 30건이 안 되면 그 수와 이유를 적고 사용자와 기준을 다시 정한다
-- [ ] 최종 평가용 조합과 조정용(`dept_valid.txt`)이 겹치지 않고(`same_combo` 기준 0건), 이를 확인하는 테스트가 있다
-- [ ] 고정 날짜와 "고정 전 모델 출력을 보지 않았다"는 확인이 `## 결과`에 있다
-- [ ] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과
+- [x] 출처별 이용약관 확인 결과와 URL이 `## 결과`에 있다
+- [x] 안내 조합 수가 출처별·`reviewed`별 분자 / 분모로 적혀 있다(기존 29 포함)
+- [x] 최종 평가용 조합이 **30건 이상**이고, 1순위 진료과별 건수와 `injury=yes` 건수가 적혀 있다. 30건이 안 되면 그 수와 이유를 적고 사용자와 기준을 다시 정한다
+- [x] 최종 평가용 조합과 조정용(`dept_valid.txt`)이 겹치지 않고(`same_combo` 기준 0건), 이를 확인하는 테스트가 있다
+- [x] 고정 날짜와 "고정 전 모델 출력을 보지 않았다"는 확인이 `## 결과`에 있다
+- [x] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과
 
 ## 결과
 ### 1·2단계: 출처·약관 확인과 조합 모으기(2026-11-17)
@@ -54,7 +54,23 @@
   - `labels/department.py`: `freeze_guide_test`(검토한 행 → `dept_test.txt`·`dept_test.sha256`, 이미 있으면 멈춤, 조정용과 겹치면 멈춤), `load_guide_test`(해시가 다르면 멈춤, 평가 명령만), `held_test_ids`(id만), `check_guide_test_disjoint`. `scripts/freeze_guide_test.py`
   - 모델 B 학습(`dept_b.split_table`)은 최종 평가용 조합과 같은 표 행을 학습에서도 검증용에서도 뺀다. 학습은 id 목록(`dept_test.txt`)만 읽고 정답 표는 읽지 않는다. 범위 5의 "학습·조정 명령이 `dept_test.txt`를 열지 않는다"는 이렇게 바꿨다: **정답 표(`department_guide_test.csv`)를 여는 코드는 정의·고정 명령·평가 명령뿐이다**(`tests/test_guide_final.py`). 같은 조합을 학습에서 빼려면 id는 읽어야 해서다
   - `uv run ruff check . && uv run ruff format --check .` → 통과, `uv run pytest` → 137 passed(새 테스트 `tests/test_guide_final.py` 8개)
-- 3단계(사람 검토): 검토용 목록을 저장소 밖 작업 파일로 만들었다(최종 평가용 36 + 조정용 29). 결과 대기
+### 3·4단계: 사람 검토와 고정(2026-11-17)
+- 검토: 사용자가 검토용 목록(저장소 밖 작업 파일, 조합·진료과·근거 표기·URL)을 보고 "매핑이 약하다고 표시한 행(⚠) 빼고 전부 맞음"으로 정했다. ⚠ 행은 `reviewed=no`로 남겼다
+  - 최종 평가용 `department_guide_test.csv`: `reviewed=yes` 31 / 36. no 5건은 수집 때 매핑이 약하다고 표시한 `head-pain-yes`, `arm-pain-yes`, `hand-pain-yes`, `whole-cantmove-yes`, `leg-cantmove-no`
+  - 조정용 `department_guide.csv`: `reviewed=yes` 23 / 29. no 6건은 05가 검토가 필요하다고 적은 `chest-chemical-any`, `ent-pain-yes`, `skin-burn-no`, `skin-chemical-any`, `skin-cut-yes`, `whole-chemical-any`
+  - 출처별 `reviewed=yes`: 세브란스 20 / 22, 삼성 11 / 14(최종 평가용), 서울대병원·원주세브란스 23 / 29(조정용)
+- 고정: `uv run python scripts/freeze_guide_test.py` → `data/splits/dept_test.txt`(31 조합), `dept_test.sha256`(`7ff05603…61fdc51`, 검토 행 기준)
+  - 1순위 진료과: derm 7, ortho 6, internal 5, ent 5, neuro 3, surgery 2, family 1, ophth 1, dental 1, occ 0
+  - `injury=yes` 3 / 31. 외상 조합은 최종 평가에서 3건뿐이라 외상 수치는 따로 적되 결론을 내리지 않는다
+  - 조정용 29건과 같은 조합 0건(고정 명령이 확인하고 멈춘다)
+- **고정 전에 모델 A·B·앙상블의 출력을 새 조합에 대해 보지 않았다.** 이 작업에서 학습·예측 명령을 돌리지 않았다
+- 테스트: `tests/test_guide_final.py`에 커밋한 고정 목록·해시가 정답 표와 맞는지(31건) 확인하는 테스트를 더했다. 범위 5의 격리 테스트는 `test_split_isolation.py` 대신 이 파일에 두었다
+- `data/README.md`에 안내 조합 표 출처 절을 더했다
+- `uv run ruff check . && uv run ruff format --check .` → 통과, `uv run pytest` → 138 passed
+- 남은 것
+  - 30건 기준에서 1건 차이다. 한 건이 3%p쯤이다(메모). 외상 조합 3건, occ 0건이라 진료과별 수치는 얇다
+  - `models/ensemble.py`의 리포트 문구 `"안내 조합 29건은 모두 reviewed=no"`는 이제 맞지 않는다. 지난 라운드 리포트는 그때 사실이라 그대로 두고, 16에서 조정 셋을 바꿔 다시 돌릴 때 고친다(16 메모)
+  - 진료과 칸이 있는 페이지를 찾지 못한 외상 조합(베임·손가락 골절·끼임·눈 화학 화상)은 다른 출처가 생기면 더한다. 이미 고정한 목록은 사용자와 정하지 않고 바꾸지 않는다
 
 ## 메모
 - 출처: 2026-11-17 데이터 수집 논의. 16을 하기 전에 데이터를 먼저 모으기로 했다. 17(DDXPlus)은 버튼 벡터의 범위를 넓히고, 이 항목은 진료과 정답의 수와 신뢰도를 늘린다

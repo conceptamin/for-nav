@@ -80,6 +80,14 @@ def test_committed_final_table_is_valid_and_disjoint():
     assert dept.check_guide_test_disjoint(TABLES) == []
 
 
+def test_committed_freeze_matches_table():
+    # 2026-11-17 고정: 검토한 31건. 정답 표의 reviewed=yes 행이 바뀌면 해시가 달라져 멈춘다
+    splits = MODELING / "data" / "splits"
+    ids, answers = dept.load_guide_test(TABLES, splits)
+    assert ids == dept.held_test_ids(splits) == sorted(answers)
+    assert len(ids) == 31
+
+
 def test_only_freeze_and_evaluation_read_final_answers():
     pattern = re.compile(r"GUIDE_TEST\b|load_guide_test|department_guide_test")
     offenders = []
