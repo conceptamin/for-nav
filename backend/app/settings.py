@@ -58,6 +58,8 @@ class Settings:
     llm_client_ip_header: str = ""
     # 센터 사례 SQLite 파일. 빈 문자열이면 메모리 저장소(재시작하면 mock 시드 상태)
     db_path: str = ""
+    # 데모 초기화(backlog 32). DB_PATH가 있으면(운영 저장소) 이 값이 true일 때만 POST /api/center/reset이 동작한다
+    allow_reset: bool = False
 
     # 프론트 빌드 폴더(frontend/dist). 빈 문자열이면 정적 파일을 서빙하지 않는다(API만)
     static_dir: str = ""
@@ -260,6 +262,7 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
                     llm_daily_limit=_limit("LLM_DAILY_LIMIT", env.get("LLM_DAILY_LIMIT", "0")),
                     llm_client_ip_header=env.get("LLM_CLIENT_IP_HEADER", "").strip().lower(),
                     db_path=_db_path(env.get("DB_PATH", "")),
+                    allow_reset=_bool("ALLOW_RESET", env.get("ALLOW_RESET", "false")),
                     static_dir=_static_dir(env.get("STATIC_DIR", "")),
                     app_static_dir=_static_dir(env.get("APP_STATIC_DIR", ""), "APP_STATIC_DIR"),
                     app_hosts=_hosts(env.get("APP_HOSTS", "")),
@@ -287,6 +290,11 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
 
 
 settings = load_settings()
+
+
+def reset_allowed(s: Settings) -> bool:
+    """메모리 저장소(로컬 개발·테스트)는 늘 초기화할 수 있다. SQLite 파일은 ALLOW_RESET=true일 때만이다."""
+    return not s.db_path or s.allow_reset
 
 
 def get_llm_client(s: Settings | None = None) -> LLMClient | None:
