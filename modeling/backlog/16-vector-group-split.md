@@ -52,3 +52,4 @@
 - 버전: 13이 계획한 `dept_b/v3`·`ensemble/v3`는 이 항목 뒤로 밀려 `v4`가 된다(13 `## 메모`에 적음)
 - 이 항목이 병합되면 `docs/` 브랜치로 루트 `README.md`의 모델 표·"진료과 test Top-2 98.3%"와 `docs/architecture/modeling-backend-flow.md`의 수치를 새 값으로 바꾼다
 - 17 결과(2026-11-17): DDXPlus 2,372행·고유 벡터 2,067개가 생겼다. 합칠 때 정할 것(행당 버튼 수, 출처 크기 차이, `patients` 가중치, 매핑 표 검토 범위)은 17 `## 메모` 끝에 적었다
+- (2026-11-17, 18에서) 최종 평가용 안내 조합 31건을 고정했다(`dept_test.txt`). 조정용 29건 중 `reviewed=yes`는 23건이다. `models/ensemble.py`의 리포트 문구 `"안내 조합 29건은 모두 reviewed=no"`는 이 항목에서 조정 셋을 바꿀 때 실제 건수로 고친다

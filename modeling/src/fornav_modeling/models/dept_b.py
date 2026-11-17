@@ -167,10 +167,12 @@ def select_hyperparams(table: Mapping[str, dept.Distribution]) -> dict:
     }
 
 
-def split_table(table: Mapping[str, dept.Distribution], valid_ids: list[str]) -> tuple[dict, dict]:
-    """(학습 표, 검증용으로 뺀 표). 검증 조합과 same_combo인 표 행은 학습에서 뺀다."""
-    held = {cid for cid in table if any(dept.same_combo(cid, v) for v in valid_ids)}
-    return {c: d for c, d in table.items() if c not in held}, {c: table[c] for c in sorted(held)}
+def split_table(table: Mapping[str, dept.Distribution], valid_ids: list[str], test_ids: list[str] = ()) -> tuple[dict, dict]:
+    """(학습 표, 검증용으로 뺀 표). 검증 조합과 same_combo인 표 행은 학습에서 빼 검증용으로 둔다.
+    최종 평가용 조합(backlog 18, id만)과 same_combo인 행은 학습에서도 검증용에서도 뺀다."""
+    final = {cid for cid in table if any(dept.same_combo(cid, t) for t in test_ids)}
+    held = {cid for cid in table if cid not in final and any(dept.same_combo(cid, v) for v in valid_ids)}
+    return {c: d for c, d in table.items() if c not in held | final}, {c: table[c] for c in sorted(held)}
 
 
 def kl_divergence(T: np.ndarray, P: np.ndarray) -> np.ndarray:
@@ -200,7 +202,7 @@ def train_round(tables_dir: Path, splits_dir: Path, model_dir: Path, reports_dir
     """표에서 검증 조합을 빼고 학습해, 검증셋(안내 정답)과 뺀 표 행(HIRA 분포)으로 평가하고 저장한다."""
     table = dept.read_button_department(tables_dir)
     valid_ids, guide = dept.guide_set(tables_dir, splits_dir)
-    train_table, held_table = split_table(table, valid_ids)
+    train_table, held_table = split_table(table, valid_ids, dept.held_test_ids(splits_dir))
     hyper = select_hyperparams(train_table)
     _, X_train, T_train, w_train = training_rows(train_table)
     model = DeptB().fit(X_train, T_train, w_train, hyper["l2"], hyper["epochs"])

@@ -82,7 +82,7 @@ modeling/
     predict.py                  입력 dict → TriageResult.model dict. 백엔드가 부를 순수 함수
 
   scripts/                      명령 하나 = 일 하나. 인자를 받아 패키지 함수를 부르기만 하는 얇은 파일
-    download_data.py  build_tables.py  build_ddxplus.py  make_splits.py
+    download_data.py  build_tables.py  build_ddxplus.py  make_splits.py  freeze_guide_test.py
     train_dept_a.py  train_dept_b.py  tune_ensemble.py
     evaluate.py  export_models.py
 
@@ -94,6 +94,7 @@ modeling/
     tables/                     git 포함. 사람이 검토하는 CSV, 행마다 출처 열
       button_department.csv     버튼 조합 → 진료과 분포 (모델 B 라벨)
       disease_department.csv    질환 → 진료과 비율 (HIRA)
+      department_guide_test.csv 최종 평가용 안내 조합 정답(backlog 18). 고정 명령·평가 명령만 읽는다
       ddxplus_evidence_map.csv  DDXPlus 증상 근거·부위 값 → 버튼 부위·증상
       ddxplus_condition_kcd.csv DDXPlus 질환(icd10-id) → KCD 3단
     test/                       git 제외. splits로 재생성. 평가 명령만 읽는다
