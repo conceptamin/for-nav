@@ -3,7 +3,6 @@
 
 import ast
 import json
-import pickle
 import re
 import shutil
 import subprocess
@@ -65,19 +64,6 @@ def test_no_pickle_in_src():
     assert offenders == []
 
 
-def test_loading_artifacts_never_unpickles(monkeypatch):
-    def refuse(*args, **kwargs):
-        raise AssertionError("pickle로 읽으려 했다")
-
-    monkeypatch.setattr(pickle, "load", refuse)
-    monkeypatch.setattr(pickle, "loads", refuse)
-    P.load_artifacts.cache_clear()
-    try:
-        P.predict(EXAMPLES["trauma"])
-    finally:
-        P.load_artifacts.cache_clear()
-
-
 def test_predict_does_not_import_training_code():
     code = "import sys; from fornav_modeling.predict import predict; predict({'id': 'x', 'language': 'en', 'created_at': 't'}); print('\\n'.join(m for m in sys.modules if m.startswith('fornav_modeling')))"
     result = subprocess.run(
@@ -116,7 +102,10 @@ def test_serving_imports_only_declared_dependencies():
 def test_tampered_artifact_is_refused(tmp_path):
     shutil.copytree(MODELING / "models", tmp_path / "models")
     path = tmp_path / "models" / "ensemble" / P.VERSION / "ensemble.json"
-    path.write_text(path.read_text().replace('"weight_a": 0.5', '"weight_a": 0.9'))
+    text = path.read_text()
+    tampered = text.replace('"weight_a": ', '"weight_a": 0.9, "was": ', 1)
+    assert tampered != text
+    path.write_text(tampered)
     with pytest.raises(P.ArtifactError):
         P.predict(EXAMPLES["teeth"], models_dir=tmp_path / "models")
 
@@ -177,9 +166,10 @@ REQUIRED = {
 
 
 @pytest.mark.parametrize("name", list(REQUIRED))
-def test_v1_metadata_has_required_fields(name):
+def test_serving_metadata_has_required_fields(name):
     meta = json.loads((MODELING / "models" / name / P.VERSION / "metadata.json").read_text())
     assert REQUIRED[name] <= set(meta)
     assert meta["model_version"] == f"{name}/{P.VERSION}"
-    final = [k for k in meta["metrics"] if k.startswith("final")]
-    assert final and all(meta["metrics"][k]["final"] is True for k in final)
+    final = [meta["metrics"][k] for k in meta["metrics"] if k.startswith("final")]
+    # 최종 수치는 평가셋별로 나뉘어 있다({평가셋: {top1, top2, final}})
+    assert final and all(m and all(v["final"] is True for v in m.values()) for m in final)

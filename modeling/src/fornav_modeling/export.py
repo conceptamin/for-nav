@@ -3,6 +3,8 @@
 # - metadata.json: 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 가중치·폴백 기준, 피처·라벨 순서, 검증·최종 측정값, 생성 시각,
 #   파일별 sha256(predict.py가 불러올 때 확인한다). 측정값은 reports/의 JSON에서 옮기고, 최종(test) 리포트가 없으면 멈춘다.
 # - 불러올 때 코드를 실행하는 형식은 쓰지 않는다(LightGBM 텍스트, JSON).
+# - v3(backlog 16): 모델 A는 Kaggle+DDXPlus를 벡터 단위로 나눈 train으로 다시 학습했고(dept_a/v3), 모델 B는 다시 학습하지 않아
+#   v2와 같은 가중치(dept_b/v0)다. 최종 수치는 새 test와 18의 최종 평가용 안내 조합을 한 번 평가한 ensemble_v3_test에서 옮긴다.
 
 import hashlib
 import json
@@ -11,8 +13,8 @@ from pathlib import Path
 from fornav_modeling.predict import VERSION
 from fornav_modeling.schema import DEPARTMENTS
 
-SOURCE_ROUNDS = {"dept_a": "v0", "dept_b": "v0"}
-ENSEMBLE_ROUND = "v1"
+SOURCE_ROUNDS = {"dept_a": "v3", "dept_b": "v0"}
+ENSEMBLE_ROUND = "v3"
 COPIED = {"dept_a": ("model.txt", "departments.json"), "dept_b": ("weights.json",)}
 
 
@@ -41,9 +43,12 @@ def export_all(models_dir: Path, reports_dir: Path, created_at: str) -> dict[str
 
 
 def report_names() -> dict[str, str]:
-    """리포트 열쇠(dept_a, dept_a_test, …) → 파일 이름(dept_a_v0, dept_a_v0_test, …)."""
+    """리포트 열쇠(dept_a, dept_a_test, …) → 파일 이름(dept_a_v3, dept_a_v3_test, …). 모델 B의 test 수치는 앙상블 test의 B 단독이다
+    (옛 dept_b_v0_test는 벡터가 겹친 옛 분할의 값이다)."""
     rounds = SOURCE_ROUNDS | {"ensemble": ENSEMBLE_ROUND}
-    return {f"{name}{suffix}": f"{name}_{r}{suffix}" for name, r in rounds.items() for suffix in ("", "_test")}
+    names = {f"{name}{suffix}": f"{name}_{r}{suffix}" for name, r in rounds.items() for suffix in ("", "_test")}
+    del names["dept_b_test"]
+    return names
 
 
 def _dept_a_meta(meta: dict, reports: dict) -> dict:
@@ -53,9 +58,10 @@ def _dept_a_meta(meta: dict, reports: dict) -> dict:
         "source": f"dept_a/{SOURCE_ROUNDS['dept_a']}",
         **{k: meta[k] for k in ("seed", "lightgbm_params", "num_rounds", "data", "feature_names", "labels", "output")},
         "metrics": {
-            "valid_kaggle": _topk(results["valid"]["department"]),
+            "valid": {k: _topk(v) for k, v in results["valid"].items()},
             "valid_guide": _topk(results["guide"]["all"]),
-            "final_test_kaggle": _topk(reports["dept_a_test"]["department"]) | {"final": True},
+            "final_test": {k: _topk(v) | {"final": True} for k, v in reports["dept_a_test"]["department"].items()},
+            "final_guide": _final(reports["ensemble_test"], "A 단독", "final_guide"),
         },
     }
 
@@ -66,11 +72,13 @@ def _dept_b_meta(meta: dict, reports: dict) -> dict:
         "model_version": f"dept_b/{VERSION}",
         "source": f"dept_b/{SOURCE_ROUNDS['dept_b']}",
         **{k: meta[k] for k in ("seed", "architecture", "hyperparams", "data", "feature_names", "input_features", "labels")},
+        "same_weights_as": "dept_b/v2(다시 학습하지 않았다, backlog 16)",
         "metrics": {
             "valid_guide": _topk(results["guide"]["all"]),
             "valid_guide_trauma": _topk(results["guide"]["trauma"]),
             "held_out_table_kl_mean": results["held_out_table"]["kl_mean"],
-            "final_test_kaggle": _topk(reports["dept_b_test"]["department"]) | {"final": True},
+            "final_test": _final(reports["ensemble_test"], "B 단독"),
+            "final_guide": _final(reports["ensemble_test"], "B 단독", "final_guide"),
         },
     }
 
@@ -96,12 +104,18 @@ def _ensemble_meta(params: dict, reports: dict, components: dict[str, dict]) -> 
         "metrics": {
             "tuning": tuning["results"][chosen],
             "tuning_leave_one_out": tuning["leave_one_out"],
-            "final_test_kaggle": reports["ensemble_test"]["results"][final]["all"] | {"final": True},
+            "final_test": {k: v | {"final": True} for k, v in reports["ensemble_test"]["results"][final].items()},
         },
     }
 
 
 _BUILDERS = {"dept_a": _dept_a_meta, "dept_b": _dept_b_meta}
+
+
+def _final(test_report: dict, rule: str, prefix: str = "test_") -> dict:
+    """앙상블 test 리포트에서 한 규칙(A 단독, B 단독)의 평가셋별 Top-1·Top-2."""
+    by_set = test_report["results"][rule]
+    return {k: _topk(v) | {"final": True} for k, v in by_set.items() if k.startswith(prefix)}
 
 
 def _topk(m: dict) -> dict:

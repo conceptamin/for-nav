@@ -7,6 +7,8 @@
 # 만드는 표(build_tables.py가 쓴다. 손으로 고치지 않는다)
 #   disease_department.csv, button_department.csv  KCD 코드의 HIRA 환자 비율. 1% 미만은 버리고 다시 합을 1로 맞춘다
 # 질환명은 이 모듈과 모델 A 내부까지만 쓴다(06 이후 산출물에 내보내지 않는다).
+# DDXPlus 질환(backlog 16): KCD 3단 코드가 Kaggle 질환과 겹치면 그 Kaggle 라벨로 합치고, 아니면 `ddxplus:<KCD>` 라벨을 쓴다
+#   (KCD가 같은 DDXPlus 질환끼리도 한 라벨이 된다). 진료과 비율은 어느 쪽이든 그 KCD의 HIRA 분포다(사용자 결정, 2026-11-19).
 
 import csv
 import hashlib
@@ -95,6 +97,26 @@ def read_disease_kcd(tables_dir: Path) -> dict[str, list[str]]:
             raise TableError(f"{DISEASE_KCD}: 중복 질환 {row['disease']!r}")
         mapping[row["disease"]] = _kcds(DISEASE_KCD, row["kcd"])
     return mapping
+
+
+DDXPLUS_LABEL_PREFIX = "ddxplus:"
+
+
+def ddxplus_labels(condition_kcd: dict[str, list[str]], disease_kcd: dict[str, list[str]]) -> dict[str, str]:
+    """DDXPlus icd10-id → 모델 A 질환 라벨. KCD가 Kaggle 질환 하나와 겹치면 그 라벨, 없으면 ddxplus:<KCD>. 둘 이상과 겹치면 TableError."""
+    labels = {}
+    for icd10, codes in condition_kcd.items():
+        hits = [disease for disease, kcds in disease_kcd.items() if set(kcds) & set(codes)]
+        if len(hits) > 1:
+            raise TableError(f"DDXPlus {icd10}의 KCD {codes}가 Kaggle 질환 {len(hits)}개와 겹친다. 합칠 라벨을 정한다")
+        labels[icd10] = hits[0] if hits else DDXPLUS_LABEL_PREFIX + "|".join(codes)
+    return labels
+
+
+def ddxplus_label_kcd(condition_kcd: dict[str, list[str]], disease_kcd: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Kaggle로 합치지 않은 DDXPlus 라벨 → KCD 코드. disease_department.csv에 Kaggle 질환과 함께 쓴다."""
+    labels = ddxplus_labels(condition_kcd, disease_kcd)
+    return {label: condition_kcd[icd10] for icd10, label in sorted(labels.items()) if label.startswith(DDXPLUS_LABEL_PREFIX)}
 
 
 def read_button_kcd(tables_dir: Path) -> list[dict[str, str]]:
@@ -367,17 +389,18 @@ def same_combo(a: str, b: str) -> bool:
 # ---------------------------------------------------------------------------
 def build_tables(raw_dir: Path, tables_dir: Path, splits_dir: Path) -> dict:
     """입력 표 + HIRA 원본 → 만드는 표 두 개와 검증셋 id 목록을 쓰고, 다시 읽어 검증한 뒤 요약을 돌려준다."""
-    from fornav_modeling.data import hira, kaggle_symptom
+    from fornav_modeling.data import ddxplus, hira, kaggle_symptom
 
     counts = hira.read_counts(raw_dir)
     disease_kcd = read_disease_kcd(tables_dir)
     if missing := sorted(set(kaggle_symptom.diseases(raw_dir)) - set(disease_kcd)):
         raise TableError(f"{DISEASE_KCD}에 없는 Kaggle 질환 {missing}")
+    label_kcd = disease_kcd | ddxplus_label_kcd(ddxplus.read_condition_kcd(tables_dir), disease_kcd)
     symptom_map = read_symptom_map(tables_dir)
     if set(symptom_map) != set(kaggle_symptom.symptoms(raw_dir)):
         raise TableError(f"{SYMPTOM_MAP}의 증상이 Kaggle 원본의 증상과 다르다")
     button_kcd = read_button_kcd(tables_dir)
-    write_table(tables_dir / DISEASE_DEPARTMENT, DISEASE_COLUMNS, build_disease_department(disease_kcd, counts))
+    write_table(tables_dir / DISEASE_DEPARTMENT, DISEASE_COLUMNS, build_disease_department(label_kcd, counts))
     write_table(tables_dir / BUTTON_DEPARTMENT, BUTTON_COLUMNS, build_button_department(button_kcd, counts))
 
     diseases = read_disease_department(tables_dir)

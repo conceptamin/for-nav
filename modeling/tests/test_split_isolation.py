@@ -1,24 +1,30 @@
-# 분할이 결정적이고 겹치지 않는지, 학습 쪽 경로가 data/test를 열지 않는지.
+# 분할이 결정적이고 겹치지 않는지(행도 버튼 벡터도), 두 출처를 합치는 규칙, 학습 쪽 경로가 data/test를 열지 않는지.
 
 import os
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
-from fornav_modeling.data import split
+from fornav_modeling.data import ddxplus, split
 from fornav_modeling.data.split import SplitError
 
 MODELING = Path(__file__).resolve().parents[1]
+DATA = MODELING / "data"
+HAS_SOURCES = (DATA / "raw" / "kaggle_symptom" / "dataset.csv").exists() and (DATA / "processed" / ddxplus.PROCESSED_FILE).exists()
 
 # data/test를 읽어도 되는 곳: 분할을 만드는 코드와 평가 명령(04에서 추가)뿐이다.
 TEST_READERS = {"src/fornav_modeling/data/split.py", "scripts/make_splits.py", "scripts/evaluate.py"}
 
 
 def synthetic_table(n=200):
+    """질환 셋(비율 1:2:2), 두 행씩 같은 버튼 벡터. 벡터 하나에는 질환이 하나다."""
     labels = ["d0"] * (n // 5) + ["d1"] * (2 * n // 5) + ["d2"] * (n - n // 5 - 2 * n // 5)
-    return pd.DataFrame({"id": [f"symptom_{i:04d}" for i in range(1, n + 1)], "disease": labels})
+    return pd.DataFrame(
+        {"id": [f"symptom_{i:04d}" for i in range(1, n + 1)], "disease": labels, "vector": [f"v{i // 2}" for i in range(n)]}
+    )
 
 
 def test_split_is_deterministic_disjoint_and_complete():
@@ -28,7 +34,15 @@ def test_split_is_deterministic_disjoint_and_complete():
     sets = {name: set(v) for name, v in ids.items()}
     assert not (sets["train"] & sets["valid"]) and not (sets["train"] & sets["test"]) and not (sets["valid"] & sets["test"])
     assert sets["train"] | sets["valid"] | sets["test"] == set(table["id"])
-    assert len(ids["test"]) == 40 and len(ids["valid"]) == 30
+    assert len(ids["test"]) == 40 and len(ids["valid"]) == 32  # 5겹 중 하나, 나머지의 5겹 중 하나
+
+
+def test_split_keeps_vector_groups_together():
+    table = synthetic_table()
+    vector = dict(zip(table["id"], table["vector"], strict=True))
+    by_split = {name: {vector[i] for i in v} for name, v in split.split_ids(table).items()}
+    assert not (by_split["train"] & by_split["valid"]) and not (by_split["train"] & by_split["test"])
+    assert not (by_split["valid"] & by_split["test"])
 
 
 def test_split_is_stratified():
@@ -36,13 +50,61 @@ def test_split_is_stratified():
     labels = dict(zip(table["id"], table["disease"], strict=True))
     for name, ids in split.split_ids(table).items():
         share = sum(labels[i] == "d0" for i in ids) / len(ids)
-        assert share == pytest.approx(0.2, abs=0.02), name
+        assert share == pytest.approx(0.2, abs=0.05), name
+
+
+def test_combine_sources_merges_labels_and_keeps_vector_shares():
+    kaggle = pd.DataFrame(
+        {
+            "id": ["symptom_0001", "symptom_0002"],
+            "disease": ["K", "L"],
+            "body_parts": [["skin"], ["skin"]],
+            "symptoms": [["rash"], ["rash"]],
+        }
+    )
+    ddx = pd.DataFrame(
+        {
+            "id": ["ddxplus_000001", "ddxplus_000002", "ddxplus_000003"],
+            "disease": ["ddxplus:x1", "ddxplus:x2", "ddxplus:y"],
+            "kcd": ["X01", "X01", "Y01"],
+            "body_parts": ["skin", "skin", ""],
+            "symptoms": ["rash", "rash", "fever"],
+            "patients": [3, 1, 4],
+        }
+    )
+    # x1·x2는 KCD가 같아 한 라벨(ddxplus:X01)이 되고 같은 벡터라 한 행으로 합친다. y는 Kaggle K와 KCD가 겹친다고 본다
+    table, summary = split.combine_sources(kaggle, ddx, {"x1": "ddxplus:X01", "x2": "ddxplus:X01", "y": "K"})
+    rows = table.set_index("id")
+    assert list(rows.index) == ["ddxplus_000001", "ddxplus_000003", "symptom_0001", "symptom_0002"]
+    assert rows.loc["ddxplus_000001", "disease"] == "ddxplus:X01" and rows.loc["ddxplus_000003", "disease"] == "K"
+    assert rows["share"].to_dict() == {"ddxplus_000001": 1.0, "ddxplus_000003": 1.0, "symptom_0001": 0.5, "symptom_0002": 0.5}
+    assert rows.loc["ddxplus_000003", "vector"] == "/fever" and rows.loc["symptom_0001", "vector"] == "skin/rash"
+    assert summary["ddxplus_rows_merged_by_label"] == 1 and summary["vectors"]["shared"] == 1
+
+
+def test_train_weights_balance_sources():
+    table = pd.DataFrame({"source": ["kaggle"] * 2 + ["ddxplus"] * 6, "share": [1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 0.25, 0.75]})
+    w = split.train_weights(table)
+    assert w[:2].sum() == pytest.approx(w[2:].sum()) and w.mean() == pytest.approx(1.0)
+    assert w[2] == pytest.approx(w[3]) and w[7] == pytest.approx(3 * w[6])
 
 
 def test_committed_splits_are_disjoint():
-    ids = {name: split.read_split_ids(MODELING / "data" / "splits", name) for name in split.SPLITS}
-    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 292
+    ids = {name: split.read_split_ids(DATA / "splits", name) for name in split.SPLITS}
+    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 2457
     assert all(v == sorted(v) for v in ids.values())
+
+
+@pytest.mark.skipif(not HAS_SOURCES, reason="원본이 없다(download_data.py, build_ddxplus.py)")
+def test_committed_splits_share_no_button_vector():
+    # 원본으로 표를 다시 만들어, 커밋한 id 목록의 세 셋이 같은 버튼 벡터를 갖지 않는지 본다(data/test는 열지 않는다)
+    table, _ = split.symptom_table(DATA / "raw", DATA / "tables", DATA / "processed")
+    vector = dict(zip(table["id"], table["vector"], strict=True))
+    ids = {name: split.read_split_ids(DATA / "splits", name) for name in split.SPLITS}
+    assert set(vector) == set().union(*ids.values())
+    sets = {name: {vector[i] for i in v} for name, v in ids.items()}
+    assert not (sets["train"] & sets["valid"]) and not (sets["train"] & sets["test"]) and not (sets["valid"] & sets["test"])
+    assert np.isclose(table.groupby(["source", "vector"])["share"].sum(), 1.0).all()
 
 
 @pytest.fixture

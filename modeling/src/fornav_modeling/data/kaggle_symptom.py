@@ -3,6 +3,7 @@
 # (Symptom-severity.csv의 표기와 같아진다). 질환명은 `Diabetes `처럼 끝 공백이 있어 앞뒤 공백을 지우고 연속 공백을 하나로 줄인다.
 # 표준 테이블(standardize): 원본 4,920행은 같은 (질환, 증상 집합)이 6~90번씩 반복된 것이라 304개 고유 행으로 줄인다.
 # 반복을 남기면 같은 행이 train과 test에 함께 들어간다. 반복 횟수는 원본을 만든 쪽의 생성 방식이라 가중치로 쓰지 않는다.
+# 모델이 보는 것은 버튼 벡터라, 원본 증상이 달라도 버튼 벡터가 같으면 같은 행이다. 그래서 (질환, 버튼 벡터)로 한 번 더 줄인다(backlog 16).
 # 증상은 symptom_map.csv로 우리 BodyPart·Symptom으로 옮기고, 우리 Symptom이 하나도 남지 않는 행은 버린다
 # (백엔드는 증상이 없으면 진료과를 추천하지 않으므로 그런 입력이 모델까지 오지 않는다).
 
@@ -51,31 +52,29 @@ def symptoms(raw_dir: Path) -> list[str]:
 
 
 def standardize(rows: list[tuple[str, list[str]]], symptom_map: dict[str, tuple[list[str], list[str]]]) -> tuple[pd.DataFrame, dict]:
-    """원본 행 → (표준 테이블, 변환 요약). id는 남은 고유 행의 원본 첫 등장 순서로 symptom_0001부터 매긴다.
+    """원본 행 → (표준 테이블, 변환 요약). (질환, 버튼 벡터)마다 한 행이고, id는 원본 첫 등장 순서로 symptom_0001부터 매긴다.
     body_parts·symptoms는 schema 순서의 목록이라 features/buttons.featurize에 그대로 넘길 수 있다."""
     if missing := sorted({s for _, row in rows for s in row} - set(symptom_map)):
         raise KeyError(f"symptom_map에 없는 증상 {missing}")
     unique: dict[tuple[str, frozenset[str]], list[str]] = {}
     for disease, row in rows:
         unique.setdefault((disease, frozenset(row)), sorted(set(row)))
-    records, dropped = [], []
+    vectors: dict[tuple[str, tuple[str, ...], tuple[str, ...]], None] = {}
+    dropped, used = [], set()
     for (disease, _), raw in unique.items():
         body_parts = {b for s in raw for b in symptom_map[s][0]}
         symptoms = {y for s in raw for y in symptom_map[s][1]}
         if not symptoms:
             dropped.append(disease)
             continue
-        records.append(
-            {
-                "disease": disease,
-                "body_parts": [b for b in BODY_PARTS if b in body_parts],
-                "symptoms": [y for y in SYMPTOMS if y in symptoms],
-                "raw_symptoms": "|".join(raw),
-            }
-        )
-    table = pd.DataFrame(records)
+        used |= {s for s in raw if symptom_map[s][0] or symptom_map[s][1]}
+        key = (disease, tuple(b for b in BODY_PARTS if b in body_parts), tuple(y for y in SYMPTOMS if y in symptoms))
+        vectors.setdefault(key, None)
+    table = pd.DataFrame(
+        [{"disease": d, "body_parts": list(b), "symptoms": list(y)} for d, b, y in vectors], columns=["disease", "body_parts", "symptoms"]
+    )
     table.insert(0, "id", [f"symptom_{i:04d}" for i in range(1, len(table) + 1)])
-    used = {s for r in records for s in r["raw_symptoms"].split("|") if symptom_map[s][1] or symptom_map[s][0]}
+    kept = len(unique) - len(dropped)
     summary = {
         "raw_rows": len(rows),
         "unique_rows": len(unique),
@@ -83,7 +82,9 @@ def standardize(rows: list[tuple[str, list[str]]], symptom_map: dict[str, tuple[
             "rows": len(dropped),
             "diseases_lost": len(set(dropped) - set(table["disease"])),
         },  # 질환명은 리포트에 내지 않는다
+        "same_disease_and_vector": {"n": kept - len(table), "of": kept},  # 원본 증상은 달라도 버튼 벡터가 같아 합친 행
         "rows": len(table),
+        "vectors": len({(b, y) for _, b, y in vectors}),
         "diseases": int(table["disease"].nunique()),
         "kaggle_symptoms": {
             "total": len(symptom_map),
@@ -92,8 +93,8 @@ def standardize(rows: list[tuple[str, list[str]]], symptom_map: dict[str, tuple[
             "mapped_seen_in_rows": len(used),
         },
         "button_features_seen": {
-            "body_parts": sorted({b for r in records for b in r["body_parts"]}, key=BODY_PARTS.index),
-            "symptoms": sorted({y for r in records for y in r["symptoms"]}, key=SYMPTOMS.index),
+            "body_parts": sorted({b for _, bs, _ in vectors for b in bs}, key=BODY_PARTS.index),
+            "symptoms": sorted({y for _, _, ys in vectors for y in ys}, key=SYMPTOMS.index),
         },
     }
     return table, summary

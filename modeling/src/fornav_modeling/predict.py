@@ -1,6 +1,6 @@
 # 백엔드가 부를 예측 함수(backlog 08). 입력은 백엔드 Intake 필드 이름(snake_case)의 dict, 출력은 TriageResult.model 자리에 넣을 dict.
 # - 진료과만 예측한다. 응급도 모델은 앱이 응급 여부를 판정하지 않기로 해서 지웠다(backlog 15).
-# - 아티팩트(models/<이름>/v2/)만 읽는다. 학습 코드(fornav_modeling.models.*, scikit-learn)를 import하지 않는다
+# - 아티팩트(models/<이름>/v3/)만 읽는다. 학습 코드(fornav_modeling.models.*, scikit-learn)를 import하지 않는다
 #   (tests/test_predict_contract.py가 확인한다). 불러올 때 metadata.json에 적힌 sha256과 파일이 다르면 멈춘다.
 # - 진료과 규칙표는 백엔드가 이 함수 앞에서 실행한다. 여기에는 규칙이 없다.
 # - 백엔드 Intake에 없는 피처(통증 점수·의식 상태·나이대·성별)는 NaN이다. 모델 A는 이 넷과 발생 시점·손상 여부를 쓰지 않고(피처 중요도 0),
@@ -22,7 +22,7 @@ from fornav_modeling.features.buttons import FEATURE_NAMES, featurize
 from fornav_modeling.schema import DEPARTMENTS, Department
 
 MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
-VERSION = "v2"
+VERSION = "v3"
 
 
 class ArtifactError(RuntimeError):

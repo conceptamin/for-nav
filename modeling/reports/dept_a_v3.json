@@ -1,0 +1,1389 @@
+{
+  "round": "v3",
+  "model_version": "dept_a/v3",
+  "seed": 20261028,
+  "lightgbm_params": {
+    "objective": "multiclass",
+    "learning_rate": 0.05,
+    "num_leaves": 7,
+    "min_data_in_leaf": 3,
+    "lambda_l2": 1.0,
+    "seed": 20261028,
+    "deterministic": true,
+    "num_threads": 1,
+    "force_row_wise": true,
+    "verbosity": -1,
+    "num_class": 81
+  },
+  "num_rounds": 156,
+  "num_rounds_rule": "train 안 층화 3겹 교차검증(버튼 벡터 그룹 단위), multi_logloss 조기 종료(50라운드)",
+  "data": {
+    "processed_sha256": "ad61a4f4dde070dc61c84fa38033acb783d131faec94d1e061fcf51d39188d3e",
+    "train_ids_sha256": "5d04ee27e55a62645f91efa521ee57a3f164cba49a44c85e2264e1cb0e36b56e",
+    "valid_ids_sha256": "e391d57db0faadef2bfab332e368d7b21b42f0af673dff8f0fcf4c60296780d4",
+    "disease_department_sha256": "5e15c569f2799848150b9b1724e09ef6d95fab4911f577a606daa6903b26eb18",
+    "rows": {
+      "train": 1572,
+      "valid": 393
+    },
+    "rows_by_source": {
+      "train": {
+        "ddxplus": 1494,
+        "kaggle": 78
+      },
+      "valid": {
+        "ddxplus": 375,
+        "kaggle": 18
+      }
+    },
+    "classes": 81,
+    "classes_in_train": 77,
+    "sources": {
+      "kaggle": "Kaggle Disease Symptom Prediction(CC BY-SA 4.0)",
+      "ddxplus": "DDXPlus(CC BY 4.0, 합성 환자). 근거·질환 매핑 표는 LLM 초안이고 사람 검토 전(reviewed=no, 사용자 결정 2026-11-19)"
+    },
+    "weight_rule": "같은 출처·같은 버튼 벡터 안 질환 몫(DDXPlus 환자 수 비율, Kaggle 균등) × 출처마다 합이 같게"
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "truth": "질환 라벨을 disease_department.csv로 바꾼 1순위 진료과",
+  "results": {
+    "valid": {
+      "전체": {
+        "top1": {
+          "n": 367,
+          "of": 393,
+          "value": 0.9338
+        },
+        "top2": {
+          "n": 379,
+          "of": 393,
+          "value": 0.9644
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 323,
+              "of": 326,
+              "value": 0.9908
+            },
+            "top2": {
+              "n": 326,
+              "of": 326,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 2,
+              "of": 14,
+              "value": 0.1429
+            },
+            "top2": {
+              "n": 8,
+              "of": 14,
+              "value": 0.5714
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 29,
+              "of": 34,
+              "value": 0.8529
+            },
+            "top2": {
+              "n": 29,
+              "of": 34,
+              "value": 0.8529
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 10,
+              "of": 13,
+              "value": 0.7692
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "kaggle": {
+        "top1": {
+          "n": 12,
+          "of": 18,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 11,
+              "of": 13,
+              "value": 0.8462
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "ddxplus": {
+        "top1": {
+          "n": 355,
+          "of": 375,
+          "value": 0.9467
+        },
+        "top2": {
+          "n": 365,
+          "of": 375,
+          "value": 0.9733
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 312,
+              "of": 313,
+              "value": 0.9968
+            },
+            "top2": {
+              "n": 313,
+              "of": 313,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 2,
+              "of": 14,
+              "value": 0.1429
+            },
+            "top2": {
+              "n": 8,
+              "of": 14,
+              "value": 0.5714
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 29,
+              "of": 32,
+              "value": 0.9062
+            },
+            "top2": {
+              "n": 29,
+              "of": 32,
+              "value": 0.9062
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 10,
+              "of": 13,
+              "value": 0.7692
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "버튼 2개": {
+        "top1": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "per_class": {
+          "internal": {
+            "top1": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "버튼 3~4개": {
+        "top1": {
+          "n": 35,
+          "of": 50,
+          "value": 0.7
+        },
+        "top2": {
+          "n": 43,
+          "of": 50,
+          "value": 0.86
+        },
+        "per_class": {
+          "surgery": {
+            "top1": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 23,
+              "of": 24,
+              "value": 0.9583
+            },
+            "top2": {
+              "n": 24,
+              "of": 24,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 1,
+              "of": 9,
+              "value": 0.1111
+            },
+            "top2": {
+              "n": 7,
+              "of": 9,
+              "value": 0.7778
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 8,
+              "of": 12,
+              "value": 0.6667
+            },
+            "top2": {
+              "n": 8,
+              "of": 12,
+              "value": 0.6667
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "버튼 5개 이상": {
+        "top1": {
+          "n": 326,
+          "of": 334,
+          "value": 0.976
+        },
+        "top2": {
+          "n": 330,
+          "of": 334,
+          "value": 0.988
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 295,
+              "of": 297,
+              "value": 0.9933
+            },
+            "top2": {
+              "n": 297,
+              "of": 297,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 20,
+              "of": 21,
+              "value": 0.9524
+            },
+            "top2": {
+              "n": 20,
+              "of": 21,
+              "value": 0.9524
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 9,
+              "of": 11,
+              "value": 0.8182
+            },
+            "top2": {
+              "n": 11,
+              "of": 11,
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "valid_baseline_prior": {
+      "전체": {
+        "top1": {
+          "n": 326,
+          "of": 393,
+          "value": 0.8295
+        },
+        "top2": {
+          "n": 339,
+          "of": 393,
+          "value": 0.8626
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 326,
+              "of": 326,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 326,
+              "of": 326,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 14,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 14,
+              "value": 0.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 34,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 34,
+              "value": 0.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 13,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "kaggle": {
+        "top1": {
+          "n": 13,
+          "of": 18,
+          "value": 0.7222
+        },
+        "top2": {
+          "n": 13,
+          "of": 18,
+          "value": 0.7222
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "ddxplus": {
+        "top1": {
+          "n": 313,
+          "of": 375,
+          "value": 0.8347
+        },
+        "top2": {
+          "n": 326,
+          "of": 375,
+          "value": 0.8693
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 313,
+              "of": 313,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 313,
+              "of": 313,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 14,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 14,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 32,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 32,
+              "value": 0.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 13,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 13,
+              "of": 13,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "버튼 2개": {
+        "top1": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "top2": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "per_class": {
+          "internal": {
+            "top1": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 5,
+              "of": 5,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "버튼 3~4개": {
+        "top1": {
+          "n": 24,
+          "of": 50,
+          "value": 0.48
+        },
+        "top2": {
+          "n": 26,
+          "of": 50,
+          "value": 0.52
+        },
+        "per_class": {
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 24,
+              "of": 24,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 24,
+              "of": 24,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 9,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 9,
+              "value": 0.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 12,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 12,
+              "value": 0.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          }
+        }
+      },
+      "버튼 5개 이상": {
+        "top1": {
+          "n": 297,
+          "of": 334,
+          "value": 0.8892
+        },
+        "top2": {
+          "n": 308,
+          "of": 334,
+          "value": 0.9222
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 297,
+              "of": 297,
+              "value": 1.0
+            },
+            "top2": {
+              "n": 297,
+              "of": 297,
+              "value": 1.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 0,
+              "of": 21,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 21,
+              "value": 0.0
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 11,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 11,
+              "of": 11,
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "cv_train_valid": {
+      "department": {
+        "top1": {
+          "n": 1841,
+          "of": 1965,
+          "value": 0.9369
+        },
+        "top2": {
+          "n": 1912,
+          "of": 1965,
+          "value": 0.973
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 3,
+              "of": 10,
+              "value": 0.3
+            },
+            "top2": {
+              "n": 5,
+              "of": 10,
+              "value": 0.5
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 7,
+              "of": 19,
+              "value": 0.3684
+            },
+            "top2": {
+              "n": 15,
+              "of": 19,
+              "value": 0.7895
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 1612,
+              "of": 1635,
+              "value": 0.9859
+            },
+            "top2": {
+              "n": 1631,
+              "of": 1635,
+              "value": 0.9976
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 29,
+              "of": 63,
+              "value": 0.4603
+            },
+            "top2": {
+              "n": 42,
+              "of": 63,
+              "value": 0.6667
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 2,
+              "of": 5,
+              "value": 0.4
+            },
+            "top2": {
+              "n": 2,
+              "of": 5,
+              "value": 0.4
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 136,
+              "of": 159,
+              "value": 0.8553
+            },
+            "top2": {
+              "n": 145,
+              "of": 159,
+              "value": 0.9119
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 52,
+              "of": 74,
+              "value": 0.7027
+            },
+            "top2": {
+              "n": 72,
+              "of": 74,
+              "value": 0.973
+            }
+          }
+        }
+      },
+      "disease_top1": {
+        "n": 1606,
+        "of": 1965
+      }
+    },
+    "guide": {
+      "all": {
+        "top1": {
+          "n": 3,
+          "of": 29,
+          "value": 0.1034
+        },
+        "top2": {
+          "n": 10,
+          "of": 29,
+          "value": 0.3448
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 6,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 6,
+              "value": 0.1667
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 2,
+              "of": 4,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 0,
+              "of": 4,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 4,
+              "value": 0.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 2,
+              "of": 2,
+              "value": 1.0
+            }
+          },
+          "derm": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            },
+            "top2": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 3,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 3,
+              "value": 0.3333
+            }
+          },
+          "occ": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          }
+        }
+      },
+      "reviewed_yes": {
+        "top1": {
+          "n": 3,
+          "of": 23,
+          "value": 0.1304
+        },
+        "top2": {
+          "n": 8,
+          "of": 23,
+          "value": 0.3478
+        },
+        "per_class": {
+          "ortho": {
+            "top1": {
+              "n": 0,
+              "of": 6,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 6,
+              "value": 0.1667
+            }
+          },
+          "surgery": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "internal": {
+            "top1": {
+              "n": 2,
+              "of": 4,
+              "value": 0.5
+            },
+            "top2": {
+              "n": 3,
+              "of": 4,
+              "value": 0.75
+            }
+          },
+          "ophth": {
+            "top1": {
+              "n": 0,
+              "of": 4,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 4,
+              "value": 0.0
+            }
+          },
+          "ent": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 1,
+              "value": 1.0
+            }
+          },
+          "dental": {
+            "top1": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 0,
+              "of": 1,
+              "value": 0.0
+            }
+          },
+          "neuro": {
+            "top1": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            },
+            "top2": {
+              "n": 1,
+              "of": 4,
+              "value": 0.25
+            }
+          },
+          "family": {
+            "top1": {
+              "n": 0,
+              "of": 2,
+              "value": 0.0
+            },
+            "top2": {
+              "n": 1,
+              "of": 2,
+              "value": 0.5
+            }
+          }
+        }
+      },
+      "reviewed_no_rows": 6
+    }
+  }
+}

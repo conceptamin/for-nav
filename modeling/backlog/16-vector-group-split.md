@@ -1,6 +1,6 @@
 # 16. 질환·증상 데이터를 버튼 벡터 단위로 다시 나누고 모델 A·앙상블을 다시 평가하기(v3)
 
-상태: 대기
+상태: 완료
 의존: 03, 06, 08, 17, 18
 
 ## 목표
@@ -33,18 +33,119 @@
 - 출력: 새 `data/splits/symptom_*.txt`·`symptom_test.sha256`, `data/splits/v2/`(옛 목록), `models/{dept_a,dept_b,ensemble}/v3/`, `reports/dept_a_v3{,_test}.{json,md}`, `reports/ensemble_v3{,_test}.{json,md}`, `README.md`(modeling)의 서빙 버전·수치. 새 폴더 `data/splits/v2/`는 `CLAUDE.md`·`README.md`의 폴더 표에 함께 적는다
 
 ## 완료 기준
-- [ ] 사용자 승인 날짜가 `## 결과`에 있다
-- [ ] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 같은 seed 두 번 → 같은 분할·같은 `model.txt` 해시
-- [ ] 세 셋 사이에 겹치는 버튼 벡터가 0개이고, 이를 확인하는 테스트가 있다
-- [ ] 셋별 행 수·벡터 수·질환 수, 지운 중복 행 수를 분자·분모로 적는다
-- [ ] 모델 A v3의 rounds 수, valid Top-1·Top-2를 v2와 함께 적는다
-- [ ] 앙상블 v3의 가중치·폴백 기준값, 조정 셋 결과와 leave-one-out 결과를 적는다
-- [ ] 새 test 1회 결과(A·B·앙상블, Top-1·Top-2·폴백 비율)를 분자·분모로 적고, v2 test 수치를 "벡터가 겹친 분할"로 표시해 나란히 둔다
-- [ ] `predict` 예시 입력 3건(08과 같은 입력)의 v2·v3 출력을 나란히 적는다
-- [ ] `backend/`에서 `MODEL_DIR=../modeling/models`로 실제 `/api/triage`를 한 번 불러 `model` 필드가 나오는 것을 확인한다(백엔드 테스트는 모델을 가짜로 바꾸므로 이 경로를 지켜 주지 않는다)
+- [x] 사용자 승인 날짜가 `## 결과`에 있다
+- [x] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 같은 seed 두 번 → 같은 분할·같은 `model.txt` 해시
+- [x] 세 셋 사이에 겹치는 버튼 벡터가 0개이고, 이를 확인하는 테스트가 있다
+- [x] 셋별 행 수·벡터 수·질환 수, 지운 중복 행 수를 분자·분모로 적는다
+- [x] 모델 A v3의 rounds 수, valid Top-1·Top-2를 v2와 함께 적는다
+- [x] 앙상블 v3의 가중치·폴백 기준값, 조정 셋 결과와 leave-one-out 결과를 적는다
+- [x] 새 test 1회 결과(A·B·앙상블, Top-1·Top-2·폴백 비율)를 분자·분모로 적고, v2 test 수치를 "벡터가 겹친 분할"로 표시해 나란히 둔다
+- [x] `predict` 예시 입력 3건(08과 같은 입력)의 v2·v3 출력을 나란히 적는다
+- [x] `backend/`에서 `MODEL_DIR=../modeling/models`로 실제 `/api/triage`를 한 번 불러 `model` 필드가 나오는 것을 확인한다(백엔드 테스트는 모델을 가짜로 바꾸므로 이 경로를 지켜 주지 않는다)
 
 ## 결과
-(구현 후 작성)
+### 결정(2026-11-19)
+- **사용자 승인 2026-11-19**: test id 목록 교체를 승인했다. 옛 목록(`symptom_{train,valid,test}.txt`, `symptom_test.sha256`)은 `data/splits/v2/`로 옮겼다
+- 사용자가 정한 것
+  - 질환 라벨: 두 출처의 합집합. KCD 3단이 Kaggle 질환과 겹치는 DDXPlus 질환(7개)은 그 Kaggle 라벨로 합치고, 나머지는 `ddxplus:<KCD>` 라벨이다(KCD가 같은 DDXPlus 질환 2쌍도 한 라벨). 라벨 80개 = Kaggle 40 + DDXPlus 40. 진료과 비율은 그 KCD의 HIRA 분포로 `disease_department.csv`에 더했다(`labels/department.ddxplus_labels`)
+  - 가중치: 같은 출처·같은 버튼 벡터 안 질환 몫(DDXPlus는 환자 수 비율, Kaggle은 빈도가 없어 균등)을, 출처마다 합이 같게 늘린다(`split.train_weights`, 평균 1)
+  - DDXPlus 매핑 표(근거 275 + 질환 49행)는 검토 없이 쓰고 `reviewed=no`를 메타데이터에 적는다(`dept_a/v3` `data.sources`)
+- Claude가 정한 것
+  - 행당 버튼 수: 학습 행은 바꾸지 않고(줄인 행을 만드는 것은 13의 일), 평가를 버튼 수(부위 + 증상)별로 `2개`, `3~4개`, `5개 이상`으로 나눠 적는다
+  - valid 비율: `StratifiedGroupKFold`는 겹 수로 나눠서, test는 5겹 중 하나(20%), valid는 나머지의 5겹 중 하나(전체의 16%)다. 15%에 가장 가까운 정수 겹 수다
+  - 모델 A 클래스: `disease_department.csv`의 라벨 80개 전부. 벡터 단위로 나누면 행이 적은 질환이 train에 안 들어갈 수 있다(train에 있는 라벨 77개)
+  - **앙상블 선택 규칙을 08과 다르게 했다**: 08은 Top-2 적중 수를 그대로 더했다(안내 29 + Kaggle valid 44). 지금 valid는 DDXPlus 375건이라 그대로 더하면 앱 입력에 가까운 안내 조합 29건이 묻힌다. 출처(안내 조합, Kaggle valid, DDXPlus valid)마다 Top-2 적중률을 같은 비중으로 더한 값으로 고른다(사용자가 고른 출처 균형과 같은 생각). 동점 규칙은 08과 같다
+  - 조정 셋의 안내 조합: `dept_valid.txt` 29건 전부(18의 최종 평가용과 겹치는 조합은 0건). 리포트 문구 `"안내 조합 29건은 모두 reviewed=no"`는 실제 건수(`guide_reviewed`: 23 / 29)로 바꿨다
+
+### 데이터·분할
+- `uv run python scripts/build_ddxplus.py` → `uv run python scripts/build_tables.py` → `uv run python scripts/make_splits.py`
+- Kaggle 중복 기준 변경: (질환, 원본 증상 집합) 304행 → 우리 증상 없는 12행 제외 292행 → (질환, 버튼 벡터) **118행**(합친 행 174 / 292), 벡터 112개, 질환 40개
+- DDXPlus: 2,372행 → 라벨을 합친 뒤 같은 (라벨, 벡터)가 된 33행을 환자 수를 더해 합쳐 **2,339행**
+- 합친 표 2,457행, 고유 벡터 2,151개(Kaggle 112, DDXPlus 2,067, 공유 28), 질환이 둘 이상인 벡터 195개
+
+| 셋 | 행 | Kaggle | DDXPlus | 벡터 | 질환(라벨 80개 중) |
+|---|---|---|---|---|---|
+| train | 1,572 / 2,457 | 78 | 1,494 | 1,377 | 77 |
+| valid | 393 / 2,457 | 18 | 375 | 344 | 57(train에 없는 라벨 3) |
+| test | 492 / 2,457 | 22 | 470 | 430 | 62(train에 없는 라벨 2) |
+
+- 셋 사이 공유 벡터: train–valid 0, train–test 0, valid–test 0(`tests/test_split_isolation.py::test_committed_splits_share_no_button_vector`, 원본이 없으면 건너뛴다)
+- 같은 seed로 다시 돌리면 같은 목록이 나온다: `make_splits.py`를 두 번 돌려 커밋 대조(`_check_unchanged`)가 통과했고, 목록·test 해시의 sha256이 같았다
+
+### 모델 A v3
+- `uv run python scripts/train_dept_a.py --round v3` → 6초. 같은 seed로 두 번 → `model.txt` sha256 `920b09c4…a2ed3b` 같음
+- rounds: **156**(v2 954). 교차검증 겹을 버튼 벡터 단위로 나눴다
+- valid(진료과 Top-1 / Top-2)
+
+| 평가셋 | v3 | 기준선(train 질환 빈도, 입력 안 봄) | v2(벡터가 겹친 분할) |
+|---|---|---|---|
+| valid 전체 | 367/393 · 379/393 | 326/393 · 339/393 | — |
+| valid Kaggle | 12/18 · 14/18 | 13/18 · 13/18 | 40/44 · 42/44 |
+| valid DDXPlus | 355/375 · 365/375 | 313/375 · 326/375 | — |
+| valid 버튼 2개 / 3~4개 / 5개 이상 | 6/9 · 6/9, 35/50 · 43/50, 326/334 · 330/334 | | |
+| train+valid 3겹(벡터 그룹) | 1841/1965 · 1912/1965 | | 221/233 · 226/233 |
+| 조정용 안내 조합 29 | 3/29 · 10/29 | | 5/29 · 10/29 |
+
+- **읽을 때 주의**: DDXPlus는 정답 진료과의 83%(313 / 375)가 내과라, 입력을 보지 않는 기준선도 Top-1 313/375다. 전체·DDXPlus 수치는 높아 보이지만 기준선과의 차이를 봐야 한다. Kaggle valid는 Top-1이 기준선보다 낮다(12 대 13 / 18)
+
+### 앙상블 v3
+- `uv run python scripts/tune_ensemble.py --round v3`(모델 A `dept_a/v3`, 모델 B `dept_b/v0`) → **A 0.4 : B 0.6, 폴백 기준 0.25**(v2: A 0.5, 0.25)
+- 조정 셋 결과(Top-1 · Top-2 · 폴백)
+
+| 평가셋 | 선택 | leave-one-out | A 단독 | B 단독 |
+|---|---|---|---|---|
+| 안내 조합 29 | 16 · 22 · 1 | 16 · 20 · 1 | 3 · 10 · 0 | 18 · 23 · 0 |
+| 안내 조합 reviewed=yes 23 | 15 · 19 · 0 | 15 · 18 · 0 | 3 · 8 · 0 | 15 · 20 · 0 |
+| 안내 외상 10 | 4 · 6 · 1 | 4 · 5 · 1 | 0 · 3 · 0 | 6 · 7 · 0 |
+| Kaggle valid 18 | 10 · 15 · 0 | 10 · 14 · 0 | 12 · 14 · 0 | 6 · 13 · 0 |
+| DDXPlus valid 375 | 266 · 362 · 0 | 266 · 362 · 0 | 355 · 365 · 0 | 171 · 253 · 0 |
+
+- v2 조정 셋(안내 29 + Kaggle valid 44, 벡터가 겹친 분할): 선택 65/73 Top-2, leave-one-out 63/73, 안내 조합 22/29(leave-one-out 20/29)
+- 선택은 Top-2만 보므로 Top-1이 A 단독보다 많이 낮다(DDXPlus valid 266 대 355 / 375)
+
+### test 1회 평가(2026-11-19)
+- `uv run python scripts/evaluate.py --model dept_a --round v3`, `uv run python scripts/evaluate.py --model ensemble --round v3`(18의 최종 평가용 31건을 해시 확인 뒤 함께). 각 한 번만 돌렸다
+
+| 평가셋 | 앙상블 v3 — 최종 | A 단독 | B 단독 |
+|---|---|---|---|
+| test 전체 492 | 329 · 473 · 0 | 454 · 471 · 0 | 211 · 356 · 0 |
+| test Kaggle 22 | 16 · 19 · 0 | 16 · 18 · 0 | 12 · 16 · 0 |
+| test DDXPlus 470 | 313 · 454 · 0 | 438 · 453 · 0 | 199 · 340 · 0 |
+| test 버튼 2개 18 | 11 · 12 · 0 | 11 · 14 · 0 | 11 · 14 · 0 |
+| test 버튼 3~4개 49 | 23 · 44 · 0 | 39 · 44 · 0 | 12 · 21 · 0 |
+| test 버튼 5개 이상 425 | 295 · 417 · 0 | 404 · 413 · 0 | 188 · 321 · 0 |
+| **최종 평가용 안내 조합 31(18)** | **19 · 23 · 0** | 6 · 15 · 0 | 19 · 24 · 0 |
+| 그중 외상 3 | 2 · 2 · 0 | 0 · 0 · 0 | 2 · 2 · 0 |
+
+- v2 test(**벡터가 겹친 분할**, Kaggle 59행): 앙상블 52 · 58 · 0, A 단독 56 · 58, B 단독 27 · 45. 루트 `README.md`의 "진료과 test Top-2 98.3%"는 이 A 단독 값이다
+- 읽을 때 주의
+  - 앱 입력에 가장 가까운 최종 평가용 안내 조합에서 앙상블 Top-2는 23/31이고 B 단독(24/31)보다 1건 낮다. A 단독은 15/31이다
+  - **모델 B 수치는 낙관적이다**: 모델 B(`dept_b/v0` = v2·v3 가중치)는 18 이전에 학습해, 최종 평가용 31 조합 중 26개와 같은 조합의 표 행(`button_department.csv`, HIRA 라벨)으로 학습했다. 정답(안내 페이지)과 라벨 출처는 다르지만 입력은 본 적이 있다. 이 항목은 모델 B를 다시 학습하지 않는다(범위). 18 규칙대로 그 행을 뺀 모델 B는 13에서 만든다
+  - test Top-2 전체 473/492는 DDXPlus(내과 위주)가 대부분이라 앱 사용 장면의 성능으로 읽지 않는다. 버튼 2개 행은 18건뿐이다
+  - test에서 버튼 2개 행은 앙상블 Top-2(12/18)가 A·B 단독(14/18)보다 낮다
+
+### 서빙 묶음 v3
+- `uv run python scripts/export_models.py` → `models/{dept_a,dept_b,ensemble}/v3/`, `predict.VERSION = "v3"`. `dept_b/v3`는 v2와 같은 가중치(`weights.json` sha256 `fd6930ea…`)이고 메타데이터 `same_weights_as`에 적었다. 모델 B의 최종 수치는 앙상블 test의 "B 단독"에서 옮겼다(옛 `dept_b_v0_test`는 옛 분할 값). v2 폴더는 남겼다
+- `predict` 예시(08과 같은 입력, `departmentTop2`와 두 확률, 폴백 없음)
+
+| 입력 | v2 | v3 |
+|---|---|---|
+| 배 + 통증·구역·열 | internal 0.767, family 0.181 | internal 0.761, family 0.196 |
+| 손 + 베임·출혈, 손상 있음 | surgery 0.448, ortho 0.321 | **ortho 0.378, internal 0.334** |
+| 치아 + 통증·부기 | dental 0.424, internal 0.314 | dental 0.509, internal 0.381 |
+
+  - 손 열상의 2순위가 내과로 바뀌었다. A 가중치가 0.4로 줄었지만 모델 A가 내과 위주인 DDXPlus로 학습해 외상 입력에도 내과 확률을 크게 낸다
+- 백엔드 확인: `cd backend && MODEL_DIR=../modeling/models uv run python …`(`TestClient(app)`을 lifespan과 함께 열어 실제 앱으로 호출) → `POST /api/triage`(배 + 통증·구역·열) 200, `model.departmentProba`가 나오고 `department`는 internal / family, `predict.VERSION` v3
+
+### 코드·테스트
+- `data/kaggle_symptom.py`(벡터 기준 중복 제거), `data/split.py`(두 출처 합치기 `combine_sources`, 그룹 분할, `train_weights`, 리포트), `labels/department.py`(`ddxplus_labels`, `build_tables`가 DDXPlus 라벨도 쓴다), `models/dept_a.py`(가중치, 그룹 겹, 출처·버튼 수별 평가, 출처별 기준선), `models/ensemble.py`(행렬 계산, 출처 균형 선택, 최종 평가용 조합 평가), `export.py`, `predict.py`, `scripts/evaluate.py`
+- 테스트: 그룹 분할·출처 합치기·가중치·커밋 분할의 벡터 비공유(`test_split_isolation.py`), 라벨 합치기(`test_labels.py`), 앙상블 계산이 서빙 `top2`와 같은지·출처 균형 점수·동점 규칙(`test_ensemble.py` 새 파일), 벡터 중복 제거(`test_dept_a.py`). 아무것도 단언하지 않던 `test_loading_artifacts_never_unpickles`를 지웠다. `test_tampered_artifact_is_refused`는 고른 가중치 값에 기대지 않게 고쳤다
+- `uv run ruff check . && uv run ruff format --check .` → 통과, `uv run pytest` → 160 passed
+
+### 남은 것
+- 이 항목이 병합되면 `docs/` 브랜치로 루트 `README.md`의 "진료과 test Top-2 98.3%"와 `docs/architecture/modeling-backend-flow.md`의 수치를 바꾼다(메모)
+- 모델 B를 18 규칙대로 다시 학습하고(최종 평가용 조합 행 제외), 외상 입력에서 모델 A의 내과 쏠림을 줄이는 일은 13에서 한다
+- DDXPlus 매핑 표 검토(`reviewed=no` 324행)는 하지 않았다
 
 ## 메모
 - 출처: 2026-11-16 코드 리뷰. 겹침 확인은 스크래치 스크립트로 했고 저장소는 바뀌지 않았다. 이 확인에서 옛 test에 대해 "train에 있던 벡터 / 없던 벡터"별 모델 A 적중률(Top-1 41 / 42, 15 / 17)을 계산했다. 옛 test는 이미 열어 본 셈이라 새로 나누는 것이 맞다
