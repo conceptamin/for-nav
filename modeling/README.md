@@ -21,7 +21,7 @@
 
 | 구성 요소 | 방식 / 모델 | 학습 데이터 | 출력 | 평가 지표 |
 |---|---|---|---|---|
-| **진료과 모델 A** (증상 → 질환 → 진료과) | **LightGBM** 다중 분류 | Kaggle Disease Symptom Prediction + HIRA 질병별 진료과 통계 | 진료과 확률 분포 | Top-2 적중률 |
+| **진료과 모델 A** (증상 → 질환 → 진료과) | **LightGBM** 다중 분류 | Kaggle Disease Symptom Prediction + DDXPlus(합성 환자, backlog 16) + HIRA 질병별 진료과 통계 | 진료과 확률 분포 | Top-2 적중률 |
 | **진료과 모델 B** (직접 분류) | **소형 MLP** (소프트 라벨 학습) | 직접 구축한 "버튼 조합 → 진료과 분포" 테이블 | 진료과 확률 분포 | Top-2 적중률 |
 | 진료과 앙상블 | A·B 가중 평균 | 검증 데이터로 가중치 조정 | 상위 2개 진료과 | Top-2 적중률 |
 | 명확 케이스 처리 | 규칙 | 없음 | 진료과 확정 | — |
@@ -89,25 +89,25 @@ uv run pytest                                        # 테스트
 
 ```sh
 uv run python scripts/download_data.py                   # 원본(data/raw)
-uv run python scripts/make_splits.py                     # 질환·증상 분할(진료과 모델 A)
-uv run python scripts/build_tables.py                    # 진료과 표·검증셋 id
 uv run python scripts/build_ddxplus.py                   # DDXPlus → 버튼 벡터 표(data/processed/ddxplus), 겹침 리포트(backlog 17)
-uv run python scripts/train_dept_a.py                    # models/dept_a/v0
-uv run python scripts/train_dept_b.py                    # models/dept_b/v0
-uv run python scripts/tune_ensemble.py                   # models/ensemble/v1/ensemble.json
-uv run python scripts/evaluate.py --model <dept_a|dept_b|ensemble> --round <v0|v1>   # test 1회, "최종"
-uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v2/
+uv run python scripts/build_tables.py                    # 진료과 표(Kaggle·DDXPlus 질환 라벨)·검증셋 id
+uv run python scripts/make_splits.py                     # Kaggle+DDXPlus를 합쳐 버튼 벡터 단위로 분할(진료과 모델 A, backlog 16)
+uv run python scripts/train_dept_a.py --round v3         # models/dept_a/v3
+uv run python scripts/train_dept_b.py                    # models/dept_b/v0(v3도 이 가중치)
+uv run python scripts/tune_ensemble.py --round v3        # models/ensemble/v3/ensemble.json
+uv run python scripts/evaluate.py --model <dept_a|ensemble> --round v3   # test 1회, "최종". 앙상블은 18의 최종 평가용 안내 조합도
+uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v3/
 ```
 
 ## 아티팩트와 `predict`
 
-서빙은 `models/*/v2/`만 읽는다(08의 `v1` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
+서빙은 `models/*/v3/`만 읽는다(08의 `v1`, 벡터가 겹친 옛 분할로 잰 `v2` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
 
 | 폴더 | 파일 | 내용 |
 |---|---|---|
-| `dept_a/v2/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
-| `dept_b/v2/` | `weights.json` | MLP 가중치(`W1`, `b1`, `W2`, `b2`), 입력 피처·라벨 순서 |
-| `ensemble/v2/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
+| `dept_a/v3/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
+| `dept_b/v3/` | `weights.json` | MLP 가중치(`W1`, `b1`, `W2`, `b2`), 입력 피처·라벨 순서 |
+| `ensemble/v3/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
 
 `metadata.json`에는 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 가중치·폴백 기준, 피처·라벨 순서, 검증·최종(test) 측정값, 생성 시각이 있다.
 
@@ -149,7 +149,7 @@ modeling/
   scripts/                 명령 하나 = 일 하나. 패키지 함수를 부르기만 한다
   data/
     raw/  processed/  test/   git 제외(폴더만 .gitkeep)
-    splits/                train/valid/test id 목록 + 해시(git 포함)
+    splits/                train/valid/test id 목록 + 해시(git 포함). v2/는 옛 분할 기록
     tables/                사람이 검토하는 CSV, 행마다 출처 열(git 포함)
   models/                  내보낸 아티팩트. 버전 폴더마다 metadata.json
   notebooks/               탐색용. 커밋 시 출력 제거

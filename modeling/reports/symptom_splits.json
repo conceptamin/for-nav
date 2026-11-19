@@ -1,62 +1,132 @@
 {
   "seed": 20261027,
-  "sizes": {
-    "test": 0.2,
-    "valid": 0.15
+  "folds": {
+    "test": 5,
+    "valid": 5
   },
   "conversion": {
-    "raw_rows": 4920,
-    "unique_rows": 304,
-    "dropped_no_symptom": {
-      "rows": 12,
-      "diseases_lost": 1
+    "kaggle": {
+      "raw_rows": 4920,
+      "unique_rows": 304,
+      "dropped_no_symptom": {
+        "rows": 12,
+        "diseases_lost": 1
+      },
+      "same_disease_and_vector": {
+        "n": 174,
+        "of": 292
+      },
+      "rows": 118,
+      "vectors": 112,
+      "diseases": 40,
+      "kaggle_symptoms": {
+        "total": 131,
+        "to_our_symptom": 75,
+        "dropped": 56,
+        "mapped_seen_in_rows": 101
+      },
+      "button_features_seen": {
+        "body_parts": [
+          "head",
+          "eye",
+          "ent",
+          "chest",
+          "abdomen",
+          "back",
+          "arm",
+          "hand",
+          "leg",
+          "foot",
+          "skin",
+          "whole"
+        ],
+        "symptoms": [
+          "pain",
+          "swelling",
+          "bleeding",
+          "numb",
+          "cantmove",
+          "fever",
+          "cough",
+          "dizzy",
+          "rash",
+          "nausea",
+          "breath"
+        ]
+      }
     },
-    "rows": 292,
-    "diseases": 40,
-    "kaggle_symptoms": {
-      "total": 131,
-      "to_our_symptom": 75,
-      "dropped": 56,
-      "mapped_seen_in_rows": 101
-    },
-    "button_features_seen": {
-      "body_parts": [
-        "head",
-        "eye",
-        "ent",
-        "chest",
-        "abdomen",
-        "back",
-        "arm",
-        "hand",
-        "leg",
-        "foot",
-        "skin",
-        "whole"
-      ],
-      "symptoms": [
-        "pain",
-        "swelling",
-        "bleeding",
-        "numb",
-        "cantmove",
-        "fever",
-        "cough",
-        "dizzy",
-        "rash",
-        "nausea",
-        "breath"
-      ]
+    "combined": {
+      "ddxplus_rows_before_label_merge": 2372,
+      "ddxplus_rows_merged_by_label": 33,
+      "rows": {
+        "kaggle": 118,
+        "ddxplus": 2339
+      },
+      "labels": 80,
+      "labels_shared_by_sources": 7,
+      "vectors": {
+        "kaggle": 112,
+        "ddxplus": 2067,
+        "shared": 28,
+        "all": 2151
+      },
+      "vectors_with_several_labels": 195
     }
   },
   "rows": {
-    "train": 189,
-    "valid": 44,
-    "test": 59
+    "train": {
+      "n": 1572,
+      "of": 2457
+    },
+    "valid": {
+      "n": 393,
+      "of": 2457
+    },
+    "test": {
+      "n": 492,
+      "of": 2457
+    }
   },
-  "diseases_per_split": {
-    "train": 40,
-    "valid": 40,
-    "test": 40
+  "rows_by_source": {
+    "train": {
+      "ddxplus": 1494,
+      "kaggle": 78
+    },
+    "valid": {
+      "ddxplus": 375,
+      "kaggle": 18
+    },
+    "test": {
+      "ddxplus": 470,
+      "kaggle": 22
+    }
+  },
+  "vectors": {
+    "train": 1377,
+    "valid": 344,
+    "test": 430
+  },
+  "diseases": {
+    "train": {
+      "n": 77,
+      "of": 80
+    },
+    "valid": {
+      "n": 57,
+      "of": 80
+    },
+    "test": {
+      "n": 62,
+      "of": 80
+    }
+  },
+  "diseases_only_outside_train": {
+    "valid": 3,
+    "test": 2
+  },
+  "shared_vectors": {
+    "train_valid": 0,
+    "train_test": 0,
+    "valid_test": 0
   }
 }

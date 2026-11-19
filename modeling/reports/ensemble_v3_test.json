@@ -1,0 +1,436 @@
+{
+  "round": "v3",
+  "final": true,
+  "note": "test 평가는 이 라운드에서 한 번만 했다",
+  "rows": {
+    "test_전체": 492,
+    "test_kaggle": 22,
+    "test_ddxplus": 470,
+    "test_버튼 2개": 18,
+    "test_버튼 3~4개": 49,
+    "test_버튼 5개 이상": 425,
+    "final_guide": 31,
+    "final_guide_trauma": 3
+  },
+  "ensemble_sha256": "de3b393d1f91caf2129d8d55cc60d44b20454cd7b78295aefa8b45121367db61",
+  "components": {
+    "dept_a": "dept_a/v3",
+    "dept_b": "dept_b/v0"
+  },
+  "results": {
+    "앙상블(A 0.4, 폴백 기준 0.25) — 최종": {
+      "test_전체": {
+        "top1": {
+          "n": 329,
+          "of": 492,
+          "value": 0.6687
+        },
+        "top2": {
+          "n": 473,
+          "of": 492,
+          "value": 0.9614
+        },
+        "fallback": {
+          "n": 0,
+          "of": 492,
+          "value": 0.0
+        }
+      },
+      "test_kaggle": {
+        "top1": {
+          "n": 16,
+          "of": 22,
+          "value": 0.7273
+        },
+        "top2": {
+          "n": 19,
+          "of": 22,
+          "value": 0.8636
+        },
+        "fallback": {
+          "n": 0,
+          "of": 22,
+          "value": 0.0
+        }
+      },
+      "test_ddxplus": {
+        "top1": {
+          "n": 313,
+          "of": 470,
+          "value": 0.666
+        },
+        "top2": {
+          "n": 454,
+          "of": 470,
+          "value": 0.966
+        },
+        "fallback": {
+          "n": 0,
+          "of": 470,
+          "value": 0.0
+        }
+      },
+      "test_버튼 2개": {
+        "top1": {
+          "n": 11,
+          "of": 18,
+          "value": 0.6111
+        },
+        "top2": {
+          "n": 12,
+          "of": 18,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "test_버튼 3~4개": {
+        "top1": {
+          "n": 23,
+          "of": 49,
+          "value": 0.4694
+        },
+        "top2": {
+          "n": 44,
+          "of": 49,
+          "value": 0.898
+        },
+        "fallback": {
+          "n": 0,
+          "of": 49,
+          "value": 0.0
+        }
+      },
+      "test_버튼 5개 이상": {
+        "top1": {
+          "n": 295,
+          "of": 425,
+          "value": 0.6941
+        },
+        "top2": {
+          "n": 417,
+          "of": 425,
+          "value": 0.9812
+        },
+        "fallback": {
+          "n": 0,
+          "of": 425,
+          "value": 0.0
+        }
+      },
+      "final_guide": {
+        "top1": {
+          "n": 19,
+          "of": 31,
+          "value": 0.6129
+        },
+        "top2": {
+          "n": 23,
+          "of": 31,
+          "value": 0.7419
+        },
+        "fallback": {
+          "n": 0,
+          "of": 31,
+          "value": 0.0
+        }
+      },
+      "final_guide_trauma": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        }
+      }
+    },
+    "A 단독": {
+      "test_전체": {
+        "top1": {
+          "n": 454,
+          "of": 492,
+          "value": 0.9228
+        },
+        "top2": {
+          "n": 471,
+          "of": 492,
+          "value": 0.9573
+        },
+        "fallback": {
+          "n": 0,
+          "of": 492,
+          "value": 0.0
+        }
+      },
+      "test_kaggle": {
+        "top1": {
+          "n": 16,
+          "of": 22,
+          "value": 0.7273
+        },
+        "top2": {
+          "n": 18,
+          "of": 22,
+          "value": 0.8182
+        },
+        "fallback": {
+          "n": 0,
+          "of": 22,
+          "value": 0.0
+        }
+      },
+      "test_ddxplus": {
+        "top1": {
+          "n": 438,
+          "of": 470,
+          "value": 0.9319
+        },
+        "top2": {
+          "n": 453,
+          "of": 470,
+          "value": 0.9638
+        },
+        "fallback": {
+          "n": 0,
+          "of": 470,
+          "value": 0.0
+        }
+      },
+      "test_버튼 2개": {
+        "top1": {
+          "n": 11,
+          "of": 18,
+          "value": 0.6111
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "test_버튼 3~4개": {
+        "top1": {
+          "n": 39,
+          "of": 49,
+          "value": 0.7959
+        },
+        "top2": {
+          "n": 44,
+          "of": 49,
+          "value": 0.898
+        },
+        "fallback": {
+          "n": 0,
+          "of": 49,
+          "value": 0.0
+        }
+      },
+      "test_버튼 5개 이상": {
+        "top1": {
+          "n": 404,
+          "of": 425,
+          "value": 0.9506
+        },
+        "top2": {
+          "n": 413,
+          "of": 425,
+          "value": 0.9718
+        },
+        "fallback": {
+          "n": 0,
+          "of": 425,
+          "value": 0.0
+        }
+      },
+      "final_guide": {
+        "top1": {
+          "n": 6,
+          "of": 31,
+          "value": 0.1935
+        },
+        "top2": {
+          "n": 15,
+          "of": 31,
+          "value": 0.4839
+        },
+        "fallback": {
+          "n": 0,
+          "of": 31,
+          "value": 0.0
+        }
+      },
+      "final_guide_trauma": {
+        "top1": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        },
+        "top2": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        },
+        "fallback": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        }
+      }
+    },
+    "B 단독": {
+      "test_전체": {
+        "top1": {
+          "n": 211,
+          "of": 492,
+          "value": 0.4289
+        },
+        "top2": {
+          "n": 356,
+          "of": 492,
+          "value": 0.7236
+        },
+        "fallback": {
+          "n": 0,
+          "of": 492,
+          "value": 0.0
+        }
+      },
+      "test_kaggle": {
+        "top1": {
+          "n": 12,
+          "of": 22,
+          "value": 0.5455
+        },
+        "top2": {
+          "n": 16,
+          "of": 22,
+          "value": 0.7273
+        },
+        "fallback": {
+          "n": 0,
+          "of": 22,
+          "value": 0.0
+        }
+      },
+      "test_ddxplus": {
+        "top1": {
+          "n": 199,
+          "of": 470,
+          "value": 0.4234
+        },
+        "top2": {
+          "n": 340,
+          "of": 470,
+          "value": 0.7234
+        },
+        "fallback": {
+          "n": 0,
+          "of": 470,
+          "value": 0.0
+        }
+      },
+      "test_버튼 2개": {
+        "top1": {
+          "n": 11,
+          "of": 18,
+          "value": 0.6111
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "test_버튼 3~4개": {
+        "top1": {
+          "n": 12,
+          "of": 49,
+          "value": 0.2449
+        },
+        "top2": {
+          "n": 21,
+          "of": 49,
+          "value": 0.4286
+        },
+        "fallback": {
+          "n": 0,
+          "of": 49,
+          "value": 0.0
+        }
+      },
+      "test_버튼 5개 이상": {
+        "top1": {
+          "n": 188,
+          "of": 425,
+          "value": 0.4424
+        },
+        "top2": {
+          "n": 321,
+          "of": 425,
+          "value": 0.7553
+        },
+        "fallback": {
+          "n": 0,
+          "of": 425,
+          "value": 0.0
+        }
+      },
+      "final_guide": {
+        "top1": {
+          "n": 19,
+          "of": 31,
+          "value": 0.6129
+        },
+        "top2": {
+          "n": 24,
+          "of": 31,
+          "value": 0.7742
+        },
+        "fallback": {
+          "n": 0,
+          "of": 31,
+          "value": 0.0
+        }
+      },
+      "final_guide_trauma": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 3,
+          "value": 0.0
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,10 @@
 #   LightGBM은 학습 때 값이 없던 피처로는 분기하지 않으므로 서빙 때 그 값이 들어와도 예측이 바뀌지 않는다(테스트로 확인).
 # - 질환명은 이 모듈 안에서만 쓴다. 내보내는 파일에는 질환 번호(클래스 순서)별 진료과 비율 행렬만 두고, 출력·메타데이터·리포트에는
 #   질환명을 넣지 않는다. 진료과 정답은 질환 라벨을 disease_department.csv로 바꾼 1순위 진료과다.
-# - 데이터가 작다(train 189행, 질환 40종, 질환당 2~7행). 잎 크기를 작게 두고 라운드 수는 train 안 3겹 교차검증으로 정한다.
+# - 학습 데이터(backlog 16): Kaggle + DDXPlus를 합친 표(data/split.py). 질환 라벨 80개, 진료과 비율은 disease_department.csv.
+#   클래스는 그 표의 라벨 전부다(train에 없는 라벨도 둔다. 벡터 단위로 나누면 행이 적은 질환이 train에 안 들어갈 수 있다).
+# - 가중치: split.train_weights(같은 벡터 안 질환 몫 × 출처마다 합이 같게). 라운드 수는 train 안 3겹 교차검증으로 정하고,
+#   겹은 버튼 벡터 단위로 나눈다(같은 벡터가 두 겹에 있으면 조기 종료가 늦어진다. v2는 189행에 954라운드였다).
 
 import hashlib
 import json
@@ -14,7 +17,7 @@ from typing import Any
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedGroupKFold
 
 from fornav_modeling.data import split
 from fornav_modeling.data.download import sha256_file
@@ -38,7 +41,7 @@ PARAMS = {
 }
 MAX_ROUNDS = 1000
 EARLY_STOPPING_ROUNDS = 50
-CV_FOLDS = 3  # 질환당 train 행이 2~7개라 5겹은 한 겹에 질환이 빠진다
+CV_FOLDS = 3
 
 MODEL_FILE = "model.txt"  # LightGBM 텍스트(질환 번호 0..K-1을 예측한다)
 DEPARTMENTS_FILE = "departments.json"  # 질환 번호별 진료과 비율 행렬. 질환명은 없다
@@ -52,12 +55,20 @@ class DeptA:
         self.booster = booster
         self.class_departments = class_departments  # (질환 수, len(DEPARTMENTS)), 행 합 1
 
-    def fit(self, X: np.ndarray, y: np.ndarray, class_departments: np.ndarray, num_rounds: int | None = None) -> "DeptA":
-        """y는 질환 번호(0..K-1). num_rounds를 주지 않으면 X, y 안에서 교차검증 조기 종료로 정한다."""
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        class_departments: np.ndarray,
+        num_rounds: int | None = None,
+        weight: np.ndarray | None = None,
+        groups: np.ndarray | None = None,
+    ) -> "DeptA":
+        """y는 질환 번호(0..K-1). num_rounds를 주지 않으면 X, y 안에서 교차검증 조기 종료로 정한다(groups가 있으면 그룹 단위 겹)."""
         params = PARAMS | {"num_class": len(class_departments)}
         if num_rounds is None:
-            num_rounds = cv_num_rounds(X, y, params)
-        self.booster = lgb.train(params, _dataset(X, y), num_boost_round=num_rounds)
+            num_rounds = cv_num_rounds(X, y, params, weight, groups)
+        self.booster = lgb.train(params, _dataset(X, y, weight), num_boost_round=num_rounds)
         self.class_departments = class_departments
         return self
 
@@ -106,19 +117,25 @@ def true_departments(diseases, disease_department: Mapping[str, dept.Distributio
     return np.array([DEPARTMENTS.index(dept.top(disease_department[d], 1)[0]) for d in diseases], dtype=np.int64)
 
 
-def cv_num_rounds(X: np.ndarray, y: np.ndarray, params: dict) -> int:
+def cv_num_rounds(X: np.ndarray, y: np.ndarray, params: dict, weight: np.ndarray | None = None, groups: np.ndarray | None = None) -> int:
     result = lgb.cv(
         params,
-        _dataset(X, y),
+        _dataset(X, y, weight),
         num_boost_round=MAX_ROUNDS,
-        folds=StratifiedKFold(CV_FOLDS, shuffle=True, random_state=SEED).split(X, y),
+        folds=list(_folds(X, y, groups)),
         callbacks=[lgb.early_stopping(EARLY_STOPPING_ROUNDS, verbose=False)],
     )
     return len(result["valid multi_logloss-mean"])
 
 
-def _dataset(X: np.ndarray, y: np.ndarray) -> lgb.Dataset:
-    return lgb.Dataset(X, label=y, feature_name=list(FEATURE_NAMES), free_raw_data=False)
+def _folds(X: np.ndarray, y: np.ndarray, groups: np.ndarray | None):
+    """층화 겹. groups가 있으면 같은 그룹(버튼 벡터)은 한 겹에만 둔다."""
+    groups = np.arange(len(y)) if groups is None else groups
+    return StratifiedGroupKFold(CV_FOLDS, shuffle=True, random_state=SEED).split(X, y, groups)
+
+
+def _dataset(X: np.ndarray, y: np.ndarray, weight: np.ndarray | None = None) -> lgb.Dataset:
+    return lgb.Dataset(X, label=y, weight=weight, feature_name=list(FEATURE_NAMES), free_raw_data=False)
 
 
 def sha256_text(text: str) -> str:
@@ -129,26 +146,28 @@ def sha256_text(text: str) -> str:
 
 
 def train_round(processed_dir: Path, splits_dir: Path, tables_dir: Path, model_dir: Path, reports_dir: Path, round_name: str) -> dict:
-    """train으로 학습하고 valid(Kaggle)와 진료과 검증셋(department_guide.csv)으로 평가해 저장한다. test는 읽지 않는다."""
+    """train으로 학습하고 valid(출처별)와 진료과 검증셋(department_guide.csv)으로 평가해 저장한다. test는 읽지 않는다."""
     train, valid = (split.load_symptom_dev(processed_dir, splits_dir, name) for name in split.DEV_SPLITS)
     disease_department = dept.read_disease_department(tables_dir)
-    classes = sorted(train["disease"].unique())
-    if unseen := set(valid["disease"]) - set(classes):
-        raise ValueError(f"valid에만 있는 질환 {len(unseen)}개 — 분할을 확인한다")
+    classes = sorted(disease_department)
+    if unknown := (set(train["disease"]) | set(valid["disease"])) - set(classes):
+        raise ValueError(f"disease_department.csv에 없는 질환 라벨 {len(unknown)}개 — scripts/build_tables.py를 다시 돌린다")
     matrix = class_department_matrix(classes, disease_department)
     X_train, y_train = featurize_many(train.to_dict("records")), _encode(train["disease"], classes)
     X_valid, y_valid = featurize_many(valid.to_dict("records")), _encode(valid["disease"], classes)
+    w_train, g_train = split.train_weights(train), train["vector"].to_numpy()
 
-    model = DeptA().fit(X_train, y_train, matrix)
+    model = DeptA().fit(X_train, y_train, matrix, weight=w_train, groups=g_train)
+    dev = pd.concat([train, valid], ignore_index=True)
     results = {
-        "valid": _evaluate(model, X_valid, valid["disease"], y_valid, disease_department),
-        "valid_baseline_prior": _prior_baseline(y_train, matrix, valid["disease"], disease_department),
+        "valid": evaluate_rows(model, valid, disease_department),
+        "valid_baseline_prior": _prior_baseline(y_train, w_train, matrix, valid, disease_department),
         "cv_train_valid": _cv_train_valid(
             model.num_rounds,
             np.vstack([X_train, X_valid]),
             np.concatenate([y_train, y_valid]),
             matrix,
-            pd.concat([train["disease"], valid["disease"]]),
+            dev,
             disease_department,
         ),
         "guide": evaluate_guide(model, tables_dir, splits_dir),
@@ -162,13 +181,20 @@ def train_round(processed_dir: Path, splits_dir: Path, tables_dir: Path, model_d
         "seed": SEED,
         "lightgbm_params": PARAMS | {"num_class": len(classes)},
         "num_rounds": model.num_rounds,
-        "num_rounds_rule": f"train 안 층화 {CV_FOLDS}겹 교차검증, multi_logloss 조기 종료({EARLY_STOPPING_ROUNDS}라운드)",
+        "num_rounds_rule": f"train 안 층화 {CV_FOLDS}겹 교차검증(버튼 벡터 그룹 단위), multi_logloss 조기 종료({EARLY_STOPPING_ROUNDS}라운드)",
         "data": {
             "processed_sha256": sha256_file(processed_dir / split.SYMPTOM_PROCESSED_FILE),
             **{f"{name}_ids_sha256": sha256_file(split.split_path(splits_dir, name, "symptom")) for name in split.DEV_SPLITS},
             "disease_department_sha256": sha256_file(tables_dir / dept.DISEASE_DEPARTMENT),
             "rows": {"train": len(train), "valid": len(valid)},
+            "rows_by_source": {name: _count(part["source"]) for name, part in (("train", train), ("valid", valid))},
             "classes": len(classes),
+            "classes_in_train": int(train["disease"].nunique()),
+            "sources": {
+                "kaggle": "Kaggle Disease Symptom Prediction(CC BY-SA 4.0)",
+                "ddxplus": "DDXPlus(CC BY 4.0, 합성 환자). 근거·질환 매핑 표는 LLM 초안이고 사람 검토 전(reviewed=no, 사용자 결정 2026-11-19)",
+            },
+            "weight_rule": "같은 출처·같은 버튼 벡터 안 질환 몫(DDXPlus 환자 수 비율, Kaggle 균등) × 출처마다 합이 같게",
         },
         "feature_names": list(FEATURE_NAMES),
         "labels": list(DEPARTMENTS),
@@ -181,7 +207,7 @@ def train_round(processed_dir: Path, splits_dir: Path, tables_dir: Path, model_d
         (model_dir / file_name).write_text(text)
     metadata = {k: report[k] for k in ("model_version", "seed", "lightgbm_params", "num_rounds", "data", "feature_names", "labels")}
     metadata |= {
-        "status": "임시(backlog 06). 형식 확정은 backlog 08",
+        "status": "학습 라운드. 서빙 묶음은 export.py가 쓴다",
         "files": {name: sha256_text(text) for name, text in files.items()},
         "output": "질환 확률(내부) × departments.json의 질환 번호별 진료과 비율 → 진료과 10종 확률",
     }
@@ -191,13 +217,35 @@ def train_round(processed_dir: Path, splits_dir: Path, tables_dir: Path, model_d
         f"dept_a_{round_name}",
         report,
         {
-            "LightGBM valid(Kaggle)": results["valid"]["department"],
-            "기준선: train 질환 빈도 valid(Kaggle)": results["valid_baseline_prior"],
-            "LightGBM train+valid 3겹 교차검증": results["cv_train_valid"]["department"],
-            "LightGBM 진료과 검증셋(guide)": results["guide"]["all"],
+            **{f"LightGBM valid {k}": v for k, v in results["valid"].items()},
+            **{
+                f"기준선(train 질환 빈도) valid {k}": v for k, v in results["valid_baseline_prior"].items() if k in ("전체", *split.SOURCES)
+            },
+            "LightGBM train+valid 3겹 교차검증(벡터 그룹)": results["cv_train_valid"]["department"],
+            "LightGBM 진료과 검증셋(guide) 전체": results["guide"]["all"],
+            "LightGBM 진료과 검증셋(guide) reviewed=yes": results["guide"]["reviewed_yes"],
         },
     )
     return report
+
+
+BUTTON_BUCKETS = (("버튼 2개", 2, 2), ("버튼 3~4개", 3, 4), ("버튼 5개 이상", 5, 99))  # 부위 + 증상 수. 앱 사용자는 보통 2~3개
+
+
+def row_masks(rows: pd.DataFrame) -> dict[str, np.ndarray]:
+    """평가를 나눠 적는 행 묶음: 전체, 출처별, 버튼 수별(부위 + 증상)."""
+    buttons = np.array([len(b) + len(s) for b, s in zip(rows["body_parts"], rows["symptoms"], strict=True)])
+    masks = {"전체": np.ones(len(rows), dtype=bool)}
+    masks |= {source: (rows["source"] == source).to_numpy() for source in split.SOURCES}
+    masks |= {name: (buttons >= lo) & (buttons <= hi) for name, lo, hi in BUTTON_BUCKETS}
+    return masks
+
+
+def evaluate_rows(model: "DeptA", rows: pd.DataFrame, disease_department) -> dict[str, dict]:
+    """행 묶음마다 진료과 Top-k(분자·분모). 행이 없는 묶음은 뺀다."""
+    proba = model.predict_proba(featurize_many(rows.to_dict("records")))
+    y = true_departments(rows["disease"], disease_department)
+    return {name: topk_metrics(proba[m], y[m], DEPARTMENTS) for name, m in row_masks(rows).items() if m.any()}
 
 
 def evaluate_guide(model: DeptA, tables_dir: Path, splits_dir: Path) -> dict:
@@ -214,7 +262,7 @@ def evaluate_guide(model: DeptA, tables_dir: Path, splits_dir: Path) -> dict:
 
 
 def evaluate_test_round(test: pd.DataFrame, model_dir: Path, tables_dir: Path, reports_dir: Path, round_name: str) -> dict:
-    """저장한 모델로 test(Kaggle)를 평가해 '최종'으로 기록한다. 라운드마다 한 번만 — 이미 있으면 멈춘다."""
+    """저장한 모델로 test(출처별·버튼 수별)를 평가해 '최종'으로 기록한다. 라운드마다 한 번만 — 이미 있으면 멈춘다."""
     name = f"dept_a_{round_name}_test"
     if (reports_dir / f"{name}.json").exists():
         raise FileExistsError(f"{name}.json이 이미 있다. test 평가는 라운드마다 한 번만 한다. 조정했다면 새 라운드로 기록한다")
@@ -222,50 +270,48 @@ def evaluate_test_round(test: pd.DataFrame, model_dir: Path, tables_dir: Path, r
     texts = {f: (model_dir / f).read_text() for f in (MODEL_FILE, DEPARTMENTS_FILE)}
     if {f: sha256_text(t) for f, t in texts.items()} != metadata["files"]:
         raise ValueError(f"{model_dir}의 모델 파일이 {METADATA_FILE}에 적힌 해시와 다르다")
-    model = DeptA.from_files(texts)
-    X = featurize_many(test.to_dict("records"))
-    y = true_departments(test["disease"], dept.read_disease_department(tables_dir))
-    result = topk_metrics(model.predict_proba(X), y, DEPARTMENTS)
+    result = evaluate_rows(DeptA.from_files(texts), test, dept.read_disease_department(tables_dir))
     report = {
         "round": round_name,
         "final": True,
         "note": "test 평가는 이 라운드에서 한 번만 했다",
         "rows": len(test),
+        "rows_by_source": _count(test["source"]),
         "files": metadata["files"],
         "department": result,
     }
-    _write_report(reports_dir, name, report, {"LightGBM test(Kaggle) — 최종": result})
+    _write_report(reports_dir, name, report, {f"LightGBM test {k} — 최종": v for k, v in result.items()})
     return report
 
 
+def _count(values) -> dict[str, int]:
+    return {k: int(v) for k, v in pd.Series(values).value_counts().sort_index().items()}
+
+
 def _encode(diseases, classes: list[str]) -> np.ndarray:
-    return np.array([classes.index(d) for d in diseases], dtype=np.int64)
+    index = {c: i for i, c in enumerate(classes)}
+    return np.array([index[d] for d in diseases], dtype=np.int64)
 
 
-def _evaluate(model: DeptA, X: np.ndarray, diseases, y: np.ndarray, disease_department) -> dict:
-    disease_hit = model.predict_disease_proba(X).argmax(axis=1) == y
-    return {
-        "department": topk_metrics(model.predict_proba(X), true_departments(diseases, disease_department), DEPARTMENTS),
-        "disease_top1": {"n": int(disease_hit.sum()), "of": len(y)},  # 질환명 없이 건수만
-    }
+def _prior_baseline(y_train: np.ndarray, w_train: np.ndarray, matrix: np.ndarray, rows: pd.DataFrame, disease_department) -> dict:
+    """입력을 보지 않고 train 질환 빈도(학습 가중치) × 진료과 비율로 같은 분포를 내는 기준선. 행 묶음마다."""
+    prior = np.bincount(y_train, weights=w_train, minlength=len(matrix)) / w_train.sum() @ matrix
+    proba, y = np.tile(prior, (len(rows), 1)), true_departments(rows["disease"], disease_department)
+    return {name: topk_metrics(proba[m], y[m], DEPARTMENTS) for name, m in row_masks(rows).items() if m.any()}
 
 
-def _prior_baseline(y_train: np.ndarray, matrix: np.ndarray, diseases, disease_department) -> dict:
-    """입력을 보지 않고 train 질환 빈도 × 진료과 비율로 같은 분포를 내는 기준선."""
-    prior = np.bincount(y_train, minlength=len(matrix)) / len(y_train) @ matrix
-    return topk_metrics(np.tile(prior, (len(diseases), 1)), true_departments(diseases, disease_department), DEPARTMENTS)
-
-
-def _cv_train_valid(num_rounds: int, X: np.ndarray, y: np.ndarray, matrix: np.ndarray, diseases: pd.Series, disease_department) -> dict:
-    """train+valid를 층화 3겹으로 나눠 각 행을 그 행이 빠진 모델로 예측한다(라운드 수는 train으로 정한 값 고정)."""
+def _cv_train_valid(num_rounds: int, X: np.ndarray, y: np.ndarray, matrix: np.ndarray, rows: pd.DataFrame, disease_department) -> dict:
+    """train+valid를 벡터 그룹 층화 3겹으로 나눠 각 행을 그 행이 빠진 모델로 예측한다(라운드 수는 train으로 정한 값 고정)."""
     proba = np.zeros((len(y), len(DEPARTMENTS)))
     disease_hit = np.zeros(len(y), dtype=bool)
-    for train_idx, held_idx in StratifiedKFold(CV_FOLDS, shuffle=True, random_state=SEED).split(X, y):
-        model = DeptA().fit(X[train_idx], y[train_idx], matrix, num_rounds=num_rounds)
+    groups = rows["vector"].to_numpy()
+    for train_idx, held_idx in _folds(X, y, groups):
+        part = rows.iloc[train_idx]
+        model = DeptA().fit(X[train_idx], y[train_idx], matrix, num_rounds=num_rounds, weight=split.train_weights(part))
         proba[held_idx] = model.predict_proba(X[held_idx])
         disease_hit[held_idx] = model.predict_disease_proba(X[held_idx]).argmax(axis=1) == y[held_idx]
     return {
-        "department": topk_metrics(proba, true_departments(diseases, disease_department), DEPARTMENTS),
+        "department": topk_metrics(proba, true_departments(rows["disease"], disease_department), DEPARTMENTS),
         "disease_top1": {"n": int(disease_hit.sum()), "of": len(y)},
     }
 

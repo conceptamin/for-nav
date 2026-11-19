@@ -91,6 +91,7 @@ modeling/
     raw/                        git 제외. 원본 그대로
     processed/                  git 제외. 만드는 스크립트만 커밋
     splits/                     git 포함. train/valid/test id 목록 + 재생성한 파일의 해시
+      v2/                       옛 질환·증상 분할(행 id로만 나눠 버튼 벡터가 겹쳤다). 옛 수치 재현용 기록(backlog 16)
     tables/                     git 포함. 사람이 검토하는 CSV, 행마다 출처 열
       button_department.csv     버튼 조합 → 진료과 분포 (모델 B 라벨)
       disease_department.csv    질환 → 진료과 비율 (HIRA)
@@ -100,7 +101,7 @@ modeling/
     test/                       git 제외. splits로 재생성. 평가 명령만 읽는다
 
   models/                       내보낸 아티팩트. 버전 폴더마다 metadata.json
-    dept_a/v2/   dept_b/v2/   ensemble/v2/   (서빙. v0·v1은 학습 라운드 기록)
+    dept_a/v3/   dept_b/v3/   ensemble/v3/   (서빙. v0·v1·v2는 기록. dept_a/v3·ensemble/v3은 학습 라운드와 서빙이 같은 폴더)
 
   notebooks/                    탐색용. 커밋 시 출력 제거
   reports/                      평가 결과 JSON·표
@@ -108,7 +109,8 @@ modeling/
     test_features.py            버튼 → 피처가 결정적인지
     test_labels.py              진료과 매핑
     test_determinism.py         같은 seed 두 번 → 같은 해시
-    test_split_isolation.py     학습 명령이 data/test를 열지 않는지
+    test_split_isolation.py     학습 명령이 data/test를 열지 않는지, 세 셋이 버튼 벡터를 공유하지 않는지
+    test_ensemble.py            앙상블 조정 계산이 서빙 함수와 같은지, 출처 균형 점수
     test_predict_contract.py    출력이 TriageResult.model 형태이고 Department 10종만 나오는지
 ```
 

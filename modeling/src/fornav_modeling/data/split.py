@@ -1,25 +1,35 @@
-# 질환·증상 데이터(진료과 모델 A, backlog 06)를 train/valid/test로 나누고 id 목록으로 고정한다. 질환으로 층화한다.
+# 질환·증상 데이터(진료과 모델 A)를 train/valid/test로 나누고 id 목록으로 고정한다.
+# - 출처 두 개를 한 표로 합친다(backlog 16): Kaggle(kaggle_symptom.standardize)과 DDXPlus(ddxplus.read_processed, build_ddxplus.py가 만든다).
+#   행은 (출처, 질환 라벨, 버튼 벡터)마다 하나다. DDXPlus 질환 라벨은 labels/department.ddxplus_labels로 Kaggle 라벨과 합친다.
+# - 같은 버튼 벡터의 행은 출처와 상관없이 언제나 같은 셋에 넣는다(StratifiedGroupKFold, 질환 층화). 모델이 보는 것은 버튼 벡터라
+#   같은 벡터가 train과 test에 함께 있으면 외운 답을 맞힌 것이 된다. 옛 분할(v2)은 행 id로만 나눠 test 59행 중 42행이 train과 벡터가 같았다.
+# - share 열: 같은 출처·같은 벡터 안에서 그 행(질환)의 몫. 합이 1이다. DDXPlus는 환자 수 비율, Kaggle은 빈도가 없어 균등.
+#   학습 가중치는 이것을 출처마다 합이 같게 늘린 값이다(train_weights, 사용자 결정 2026-11-19).
 # - data/splits/symptom_{train,valid,test}.txt: id 목록(git 포함). 한번 커밋한 목록은 바꾸지 않는다(바꾸려면 사용자에게 묻는다)
+#   옛 목록은 data/splits/v2/에 기록으로 둔다(backlog 16, 사용자 승인 2026-11-19)
 # - data/splits/symptom_test.sha256: 재생성한 data/test/symptom_test.parquet의 sha256(git 포함)
 # - data/processed/symptom.parquet: train·valid 행만(split 열). 학습·조정은 이 파일만 읽는다
 # - data/test/symptom_test.parquet: test 행만. 평가 명령만 load_symptom_test로 읽는다
 # test 행은 processed에 넣지 않아, 학습 쪽 코드가 test 행을 메모리에 올릴 길 자체를 없앤다.
-# 응급도 데이터(triage_*) 분할은 응급도 모델과 함께 지웠다(backlog 15).
 
 import json
+from collections import Counter
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedGroupKFold
 
-from fornav_modeling.data import kaggle_symptom
+from fornav_modeling.data import ddxplus, kaggle_symptom
 from fornav_modeling.data.download import sha256_file
 
 SEED = 20261027
-TEST_SIZE = 0.20  # 전체 대비
-VALID_SIZE = 0.15  # 전체 대비
+TEST_FOLDS = 5  # 전체를 5겹 → 한 겹이 test(20%)
+VALID_FOLDS = 5  # 나머지를 5겹 → 한 겹이 valid(전체의 16%). 옛 비율 15%에 가장 가까운 정수 겹 수
 SPLITS = ("train", "valid", "test")
 DEV_SPLITS = ("train", "valid")
+SOURCES = ("kaggle", "ddxplus")
+COLUMNS = ["id", "source", "disease", "body_parts", "symptoms", "vector", "share"]
 
 SYMPTOM_PROCESSED_FILE = "symptom.parquet"
 SYMPTOM_TEST_FILE = "symptom_test.parquet"
@@ -30,12 +40,24 @@ class SplitError(RuntimeError):
     pass
 
 
-def split_ids(table: pd.DataFrame, label: str = "disease", seed: int = SEED) -> dict[str, list[str]]:
-    """라벨로 층화해 나눈다. 같은 테이블·seed면 같은 결과. 각 목록은 id 순으로 정렬한다."""
-    ids, labels = table["id"].tolist(), table[label].tolist()
-    rest_ids, test_ids, rest_labels, _ = train_test_split(ids, labels, test_size=TEST_SIZE, stratify=labels, random_state=seed)
-    train_ids, valid_ids = train_test_split(rest_ids, test_size=VALID_SIZE / (1 - TEST_SIZE), stratify=rest_labels, random_state=seed)
-    return {"train": sorted(train_ids), "valid": sorted(valid_ids), "test": sorted(test_ids)}
+def vector_key(body_parts, symptoms) -> str:
+    """버튼 벡터 → 그룹 열쇠. body_parts·symptoms는 schema 순서의 목록이다."""
+    return "|".join(body_parts) + "/" + "|".join(symptoms)
+
+
+def split_ids(table: pd.DataFrame, label: str = "disease", group: str = "vector", seed: int = SEED) -> dict[str, list[str]]:
+    """그룹(버튼 벡터)을 한 셋에 모으면서 라벨로 층화해 나눈다. 같은 테이블·seed면 같은 결과. 각 목록은 id 순으로 정렬한다."""
+    table = table.reset_index(drop=True)
+    rest, test = next(StratifiedGroupKFold(TEST_FOLDS, shuffle=True, random_state=seed).split(table, table[label], table[group]))
+    rest_table = table.iloc[rest].reset_index(drop=True)
+    train, valid = next(
+        StratifiedGroupKFold(VALID_FOLDS, shuffle=True, random_state=seed).split(rest_table, rest_table[label], rest_table[group])
+    )
+    return {
+        "train": sorted(rest_table["id"].iloc[train]),
+        "valid": sorted(rest_table["id"].iloc[valid]),
+        "test": sorted(table["id"].iloc[test]),
+    }
 
 
 def split_path(splits_dir: Path, name: str, prefix: str = "symptom") -> Path:
@@ -46,13 +68,75 @@ def read_split_ids(splits_dir: Path, name: str, prefix: str = "symptom") -> list
     return split_path(splits_dir, name, prefix).read_text().split()
 
 
+def combine_sources(kaggle: pd.DataFrame, ddx: pd.DataFrame, labels: dict[str, str]) -> tuple[pd.DataFrame, dict]:
+    """Kaggle 표준 테이블 + DDXPlus 표준 테이블(ddxplus.read_processed) → 한 표. labels는 DDXPlus icd10-id → 질환 라벨.
+    DDXPlus는 라벨을 합친 뒤 같은 (라벨, 벡터)가 되면 환자 수를 더해 한 행으로 둔다(id는 먼저 나온 행)."""
+    kaggle_rows = pd.DataFrame(
+        {
+            "id": kaggle["id"],
+            "source": "kaggle",
+            "disease": kaggle["disease"],
+            "body_parts": kaggle["body_parts"],
+            "symptoms": kaggle["symptoms"],
+            "patients": 1,
+        }
+    )
+    merged: dict[tuple[str, str, str], dict] = {}
+    for row in ddx.itertuples():
+        label = labels[row.disease.removeprefix(ddxplus.LABEL_PREFIX)]
+        key = (label, row.body_parts, row.symptoms)
+        if key in merged:
+            merged[key]["patients"] += row.patients
+        else:
+            merged[key] = {
+                "id": row.id,
+                "source": "ddxplus",
+                "disease": label,
+                "body_parts": [v for v in row.body_parts.split("|") if v],
+                "symptoms": [v for v in row.symptoms.split("|") if v],
+                "patients": row.patients,
+            }
+    ddx_rows = pd.DataFrame(list(merged.values()), columns=kaggle_rows.columns)
+    table = pd.concat([kaggle_rows, ddx_rows], ignore_index=True)
+    table["vector"] = [vector_key(b, s) for b, s in zip(table["body_parts"], table["symptoms"], strict=True)]
+    table["share"] = table["patients"] / table.groupby(["source", "vector"])["patients"].transform("sum")
+    summary = {
+        "ddxplus_rows_before_label_merge": len(ddx),
+        "ddxplus_rows_merged_by_label": len(ddx) - len(ddx_rows),
+        "rows": {s: int((table["source"] == s).sum()) for s in SOURCES},
+        "labels": int(table["disease"].nunique()),
+        "labels_shared_by_sources": len(set(kaggle_rows["disease"]) & set(ddx_rows["disease"])),
+        "vectors": {
+            **{s: int(table.loc[table["source"] == s, "vector"].nunique()) for s in SOURCES},
+            "shared": len(set(table.loc[table["source"] == "kaggle", "vector"]) & set(table.loc[table["source"] == "ddxplus", "vector"])),
+            "all": int(table["vector"].nunique()),
+        },
+        "vectors_with_several_labels": int((table.groupby("vector")["disease"].nunique() > 1).sum()),
+    }
+    return table[COLUMNS].sort_values("id", ignore_index=True), summary
+
+
+def train_weights(table: pd.DataFrame) -> np.ndarray:
+    """학습 가중치: share를 출처마다 합이 (행 수 / 출처 수)가 되게 늘린다. 평균 가중치는 1이다."""
+    sources = table["source"].unique()
+    totals = table.groupby("source")["share"].transform("sum")
+    return (table["share"] * len(table) / len(sources) / totals).to_numpy(dtype=np.float64)
+
+
+def symptom_table(raw_dir: Path, tables_dir: Path, processed_dir: Path) -> tuple[pd.DataFrame, dict]:
+    from fornav_modeling.labels.department import ddxplus_labels, read_disease_kcd, read_symptom_map
+
+    kaggle, kaggle_summary = kaggle_symptom.standardize(kaggle_symptom.read_dataset(raw_dir), read_symptom_map(tables_dir))
+    labels = ddxplus_labels(ddxplus.read_condition_kcd(tables_dir), read_disease_kcd(tables_dir))
+    table, summary = combine_sources(kaggle, ddxplus.read_processed(processed_dir), labels)
+    return table, {"kaggle": kaggle_summary, "combined": summary}
+
+
 def make_symptom_splits(
     raw_dir: Path, tables_dir: Path, processed_dir: Path, splits_dir: Path, test_dir: Path, reports_dir: Path, force: bool = False
 ) -> dict:
-    """질환·증상 원본 → 표준 테이블 → 질환 층화 분할 → 파일 쓰기 → 리포트(질환명 없이 건수만)."""
-    from fornav_modeling.labels.department import read_symptom_map
-
-    table, summary = kaggle_symptom.standardize(kaggle_symptom.read_dataset(raw_dir), read_symptom_map(tables_dir))
+    """원본 → 두 출처를 합친 표준 테이블 → 벡터 그룹·질환 층화 분할 → 파일 쓰기 → 리포트(질환명 없이 건수만)."""
+    table, summary = symptom_table(raw_dir, tables_dir, processed_dir)
     ids = split_ids(table)
     _write_dataset(
         table,
@@ -64,17 +148,32 @@ def make_symptom_splits(
         test_dir,
         force,
     )
-    labels = dict(zip(table["id"], table["disease"], strict=True))
-    report = {
-        "seed": SEED,
-        "sizes": {"test": TEST_SIZE, "valid": VALID_SIZE},
-        "conversion": summary,
-        "rows": {name: len(ids[name]) for name in SPLITS},
-        "diseases_per_split": {name: len({labels[i] for i in ids[name]}) for name in SPLITS},
-    }
+    report = {"seed": SEED, "folds": {"test": TEST_FOLDS, "valid": VALID_FOLDS}, "conversion": summary, **split_summary(table, ids)}
     reports_dir.mkdir(parents=True, exist_ok=True)
     (reports_dir / "symptom_splits.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     return report
+
+
+def split_summary(table: pd.DataFrame, ids: dict[str, list[str]]) -> dict:
+    """셋별 행·벡터·질환 수(출처별)와 셋 사이 벡터 겹침. 질환명은 넣지 않는다."""
+    rows = table.set_index("id")
+    sets = {name: rows.loc[ids[name]] for name in SPLITS}
+    vectors = {name: set(part["vector"]) for name, part in sets.items()}
+    all_labels = set(table["disease"])
+    return {
+        "rows": {name: {"n": len(part), "of": len(table)} for name, part in sets.items()},
+        "rows_by_source": {name: dict(Counter(part["source"])) for name, part in sets.items()},
+        "vectors": {name: len(v) for name, v in vectors.items()},
+        "diseases": {name: {"n": int(part["disease"].nunique()), "of": len(all_labels)} for name, part in sets.items()},
+        "diseases_only_outside_train": {
+            name: len(set(part["disease"]) - set(sets["train"]["disease"])) for name, part in sets.items() if name != "train"
+        },
+        "shared_vectors": {
+            "train_valid": len(vectors["train"] & vectors["valid"]),
+            "train_test": len(vectors["train"] & vectors["test"]),
+            "valid_test": len(vectors["valid"] & vectors["test"]),
+        },
+    }
 
 
 def load_symptom_dev(processed_dir: Path, splits_dir: Path, name: str) -> pd.DataFrame:

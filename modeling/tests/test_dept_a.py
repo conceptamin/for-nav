@@ -81,20 +81,22 @@ def test_standardize_dedupes_converts_and_drops_empty():
         ("A", ["skin_rash", "itching"]),  # 같은 집합 → 하나로
         ("B", ["fatigue"]),  # 우리 증상이 없다 → 버린다
         ("C", ["knee_pain", "fatigue"]),
+        ("A", ["itching"]),  # 원본 증상은 다르지만 버튼 벡터(skin / rash)가 같다 → 하나로(backlog 16)
     ]
     table, summary = kaggle_symptom.standardize(rows, SYMPTOM_MAP)
     assert table["id"].tolist() == ["symptom_0001", "symptom_0002"]
     assert table["disease"].tolist() == ["A", "C"]
     assert table["body_parts"].tolist() == [["skin"], ["leg", "whole"]]  # schema 순서
     assert table["symptoms"].tolist() == [["rash"], ["pain"]]
-    assert summary["unique_rows"] == 3 and summary["dropped_no_symptom"] == {"rows": 1, "diseases_lost": 1}
+    assert summary["unique_rows"] == 4 and summary["dropped_no_symptom"] == {"rows": 1, "diseases_lost": 1}
+    assert summary["same_disease_and_vector"] == {"n": 1, "of": 3} and summary["vectors"] == 2
     with pytest.raises(KeyError):
         kaggle_symptom.standardize([("A", ["unknown"])], SYMPTOM_MAP)
 
 
 def test_committed_symptom_splits_are_disjoint_and_stratified():
     ids = {name: split.read_split_ids(MODELING / "data" / "splits", name, "symptom") for name in split.SPLITS}
-    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 292
+    assert sum(len(v) for v in ids.values()) == len(set().union(*ids.values())) == 2457
     assert all(v == sorted(v) for v in ids.values())
 
 

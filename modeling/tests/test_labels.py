@@ -53,8 +53,20 @@ def test_read_symptom_map_none_is_empty(tmp_path):
 
 
 def test_committed_disease_table_covers_every_disease():
+    # Kaggle 질환 + Kaggle과 KCD가 겹치지 않는 DDXPlus 라벨(backlog 16)
+    from fornav_modeling.data import ddxplus
+
     table = dept.read_disease_department(TABLES)
-    assert set(table) == set(dept.read_disease_kcd(TABLES))
+    kaggle = dept.read_disease_kcd(TABLES)
+    assert set(table) == set(kaggle) | set(dept.ddxplus_label_kcd(ddxplus.read_condition_kcd(TABLES), kaggle))
+
+
+def test_ddxplus_labels_merge_by_kcd():
+    kaggle = {"K": ["A01", "A02"], "L": ["B01"]}
+    labels = dept.ddxplus_labels({"a": ["A02"], "b": ["C01"], "c": ["C01"], "d": ["D01", "D02"]}, kaggle)
+    assert labels == {"a": "K", "b": "ddxplus:C01", "c": "ddxplus:C01", "d": "ddxplus:D01|D02"}
+    with pytest.raises(dept.TableError, match="겹친다"):
+        dept.ddxplus_labels({"x": ["A01", "B01"]}, kaggle)
 
 
 def test_committed_button_table_matches_input_combos():
