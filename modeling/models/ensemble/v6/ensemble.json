@@ -1,0 +1,31 @@
+{
+ "by_buttons": [
+  {
+   "max_buttons": 2,
+   "weight_a": 0.2,
+   "weight_b": 0.8,
+   "fallback_threshold": 0.2
+  },
+  {
+   "max_buttons": 4,
+   "weight_a": 0.8,
+   "weight_b": 0.2,
+   "fallback_threshold": 0.3
+  },
+  {
+   "max_buttons": null,
+   "weight_a": 0.7,
+   "weight_b": 0.3,
+   "fallback_threshold": 0.3
+  }
+ ],
+ "button_count": "부위 + 증상 버튼 수",
+ "fallback": [
+  "family",
+  "internal"
+ ],
+ "components": {
+  "dept_a": "dept_a/v3",
+  "dept_b": "dept_b/v5"
+ }
+}

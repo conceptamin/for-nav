@@ -42,6 +42,7 @@ CV_FOLDS = 5
 CV_REPEATS = 5  # repeated_cv: 조합 단위 5겹을 seed를 바꿔 다섯 번
 PAIR_FLOOR = 0.01  # 곱한 뒤 정규화할 때 한쪽에만 있는 진료과가 0이 되지 않게 더하는 값(표의 PROB_FLOOR와 같다)
 PAIR_WEIGHT = 0.5  # 합성 행 가중치 합 = 단일 조합 행 가중치 합 × 이 값
+GUIDE_WEIGHT = 1.0
 
 
 @dataclass(frozen=True)
@@ -55,6 +56,8 @@ class Setting:
     seeds: tuple[int, ...] = (SEED,)  # 여럿이면 같은 하이퍼파라미터로 seed마다 학습해 평균한다
     pairs: str | None = None  # None | "mean" | "product"
     pair_weight: float = PAIR_WEIGHT
+    guide: bool = False  # backlog 19: 학습용 안내 조합(department_guide_train.csv)을 학습 행으로 더한다
+    guide_weight: float = GUIDE_WEIGHT  # 안내 조합 버튼 키 하나의 가중치(표 조합 하나 = 1)
 
 
 V0 = Setting()
@@ -66,7 +69,11 @@ CANDIDATES: dict[str, Setting] = {
     "wide_seeds5": replace(_WIDE, seeds=_SEEDS5),
     "wide_seeds5_pairs_mean": replace(_WIDE, seeds=_SEEDS5, pairs="mean"),
     "wide_seeds5_pairs_product": replace(_WIDE, seeds=_SEEDS5, pairs="product"),
+    "v0_guide": replace(V0, guide=True),
+    "wide_seeds5_guide": replace(_WIDE, seeds=_SEEDS5, guide=True),
+    "wide_seeds5_pairs_mean_guide": replace(_WIDE, seeds=_SEEDS5, pairs="mean", guide=True),
 }
+Guide = Mapping[str, tuple[dict, dept.Distribution]]  # dept.guide_train_table의 결과
 
 WEIGHTS_FILE = "weights.json"
 METADATA_FILE = "metadata.json"  # 임시 형식. 확정은 backlog 08
@@ -184,7 +191,11 @@ def _export_members(members: list[dict[str, np.ndarray]]) -> dict[str, Any]:
 
 
 def training_rows(
-    table: Mapping[str, dept.Distribution], pairs: str | None = None, pair_weight: float = PAIR_WEIGHT
+    table: Mapping[str, dept.Distribution],
+    pairs: str | None = None,
+    pair_weight: float = PAIR_WEIGHT,
+    guide: Guide | None = None,
+    guide_weight: float = GUIDE_WEIGHT,
 ) -> tuple[list[str], np.ndarray, np.ndarray, np.ndarray]:
     """{combo_id: 분포} → (행마다의 combo_id, X_in, T, w). any 조합은 손상 있음·없음 두 행(가중치 0.5씩)으로 편다.
     pairs가 있으면 synthetic_pairs의 두 개 선택 행을 뒤에 붙인다. 합성 행 가중치 합은 단일 조합 행 가중치 합 × pair_weight."""
@@ -196,6 +207,8 @@ def training_rows(
         each = pair_weight * len(table) / len(synthetic) if synthetic else 0.0
         for cid, intake, target in synthetic:
             _append(cids, rows, targets, weights, cid, intake, target, each)
+    for key, (intake, dist) in (guide or {}).items():
+        _append(cids, rows, targets, weights, f"guide:{key}", intake, [dist.get(d, 0.0) for d in DEPARTMENTS], guide_weight)
     return cids, np.array(rows), np.array(targets), np.array(weights)
 
 
@@ -234,7 +247,7 @@ def synthetic_pairs(table: Mapping[str, dept.Distribution], how: str) -> list[tu
     return out
 
 
-def select_hyperparams(table: Mapping[str, dept.Distribution], setting: Setting = V0) -> dict:
+def select_hyperparams(table: Mapping[str, dept.Distribution], setting: Setting = V0, guide: Guide | None = None) -> dict:
     """학습 조합을 5겹으로 나눠(조합 단위, any의 두 행은 같은 겹) 은닉 × L2 × 에폭을 고른다. 기준은 겹 밖 단일 조합의 소프트 교차엔트로피 평균.
     합성 행은 겹 안 조합끼리만 만든다. 초기화 seed는 setting.seeds[0]."""
     combos = sorted(table)
@@ -243,7 +256,8 @@ def select_hyperparams(table: Mapping[str, dept.Distribution], setting: Setting 
     grid = [(h, l2) for h in setting.hidden for l2 in setting.l2]
     losses = {cell: np.zeros(len(checkpoints)) for cell in grid}
     for train_idx, held_idx in folds:
-        _, X_tr, T_tr, w_tr = training_rows({combos[i]: table[combos[i]] for i in train_idx}, setting.pairs, setting.pair_weight)
+        train_fold = {combos[i]: table[combos[i]] for i in train_idx}
+        _, X_tr, T_tr, w_tr = training_rows(train_fold, setting.pairs, setting.pair_weight, _guide(setting, guide), setting.guide_weight)
         _, X_ho, T_ho, w_ho = training_rows({combos[i]: table[combos[i]] for i in held_idx})
         for hidden, l2 in grid:
             params = _init(setting.seeds[0], hidden)
@@ -268,10 +282,17 @@ def select_hyperparams(table: Mapping[str, dept.Distribution], setting: Setting 
     }
 
 
-def fit_setting(table: Mapping[str, dept.Distribution], setting: Setting = V0) -> tuple["DeptB", dict]:
-    """설정대로 하이퍼파라미터를 고르고 표 전체(합성 행 포함)로 학습한다."""
-    hyper = select_hyperparams(table, setting)
-    _, X, T, w = training_rows(table, setting.pairs, setting.pair_weight)
+def _guide(setting: Setting, guide: Guide | None) -> Guide | None:
+    if setting.guide and guide is None:
+        raise ValueError("안내 조합을 쓰는 설정인데 guide_train_table을 넘기지 않았다")
+    return guide if setting.guide else None
+
+
+def fit_setting(table: Mapping[str, dept.Distribution], setting: Setting = V0, guide: Guide | None = None) -> tuple["DeptB", dict]:
+    """설정대로 하이퍼파라미터를 고르고 표 전체(합성 행·안내 조합 행 포함)로 학습한다.
+    하이퍼파라미터 교차검증의 겹 밖 손실은 표 조합으로만 잰다(안내 조합 행은 모든 겹에서 학습에 들어간다)."""
+    hyper = select_hyperparams(table, setting, guide)
+    _, X, T, w = training_rows(table, setting.pairs, setting.pair_weight, _guide(setting, guide), setting.guide_weight)
     model = DeptB().fit(X, T, w, hyper["l2"], hyper["epochs"], hyper["hidden"], setting.seeds)
     return model, hyper | {"train_rows": len(T)}
 
@@ -299,9 +320,9 @@ def repeated_cv(table: Mapping[str, dept.Distribution], predictor, repeats: int 
     return {"combos": len(combos), "folds": CV_FOLDS, "repeats": repeats, "summary": summary, "per_repeat": per_repeat}
 
 
-def mlp_predictor(setting: Setting):
+def mlp_predictor(setting: Setting, guide: Guide | None = None):
     def predict(train: Mapping[str, dept.Distribution], cids: list[str]) -> np.ndarray:
-        model, _ = fit_setting(train, setting)
+        model, _ = fit_setting(train, setting, guide)
         return model.predict_proba(featurize_many([dept.combo_intake(c) for c in cids]))
 
     return predict
@@ -401,7 +422,8 @@ def cv_round(tables_dir: Path, splits_dir: Path, reports_dir: Path) -> dict:
     """학습 표(검증·최종 평가 조합과 같은 행을 뺀 표)로 후보 설정·비교 기준선을 반복 교차검증하고 고른 설정을 적는다(backlog 13 2·5·6단계)."""
     valid_ids, _ = dept.guide_set(tables_dir, splits_dir)
     train_table, _ = split_table(dept.read_button_department(tables_dir), valid_ids, dept.held_test_ids(splits_dir))
-    cv = {name: repeated_cv(train_table, mlp_predictor(setting)) for name, setting in CANDIDATES.items()}
+    guide = dept.guide_train_table(tables_dir, splits_dir)
+    cv = {name: repeated_cv(train_table, mlp_predictor(setting, guide)) for name, setting in CANDIDATES.items()}
     chosen = choose_setting(cv)
     baselines = {"logistic": repeated_cv(train_table, logistic_predictor), "backoff": repeated_cv(train_table, backoff_predictor)}
     report = {
@@ -441,7 +463,8 @@ def train_round(
     table = dept.read_button_department(tables_dir)
     valid_ids, guide = dept.guide_set(tables_dir, splits_dir)
     train_table, held_table = split_table(table, valid_ids, dept.held_test_ids(splits_dir))
-    model, hyper = fit_setting(train_table, setting)
+    guide_train = dept.guide_train_table(tables_dir, splits_dir) if setting.guide else None
+    model, hyper = fit_setting(train_table, setting, guide_train)
     valid = split.load_symptom_dev(processed_dir, splits_dir, "valid")
 
     old_v0 = json.loads((models_dir / "dept_b" / "v0" / WEIGHTS_FILE).read_text())
@@ -490,6 +513,8 @@ def train_round(
                 "guide": len(valid_ids),
             },
             "train_rows": hyper["train_rows"],
+            "guide_train_keys": len(guide_train or {}),
+            "guide_train_rows": len(dept.read_guide_train(tables_dir)) if setting.guide else 0,
         },
         "input_features": list(INPUT_FEATURES),
         "labels": list(DEPARTMENTS),

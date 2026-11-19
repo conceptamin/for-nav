@@ -7,6 +7,7 @@
 #   v2와 같은 가중치(dept_b/v0)다. 최종 수치는 새 test와 18의 최종 평가용 안내 조합을 한 번 평가한 ensemble_v3_test에서 옮긴다.
 # - v4(backlog 13): 모델 A는 v3 그대로(dept_a/v3), 모델 B는 보정·보강한 표에서 최종 평가 조합을 빼고 다시 학습했다(dept_b/v4).
 #   앙상블은 다시 조정했고(ensemble/v4), 최종 수치는 ensemble_v4_test에서 옮긴다.
+# - v6(backlog 19): 모델 A는 v3 그대로, 모델 B는 병원 안내 조합을 더해 학습한 dept_b/v5, 앙상블은 버튼 수별 가중치(ensemble/v6).
 
 import hashlib
 import json
@@ -15,8 +16,8 @@ from pathlib import Path
 from fornav_modeling.predict import VERSION
 from fornav_modeling.schema import DEPARTMENTS
 
-SOURCE_ROUNDS = {"dept_a": "v3", "dept_b": "v4"}
-ENSEMBLE_ROUND = "v4"
+SOURCE_ROUNDS = {"dept_a": "v3", "dept_b": "v5"}
+ENSEMBLE_ROUND = "v6"
 COPIED = {"dept_a": ("model.txt", "departments.json"), "dept_b": ("weights.json",)}
 
 
@@ -97,11 +98,9 @@ def _ensemble_meta(params: dict, reports: dict, components: dict[str, dict]) -> 
             name: {"version": components[name]["model_version"], "files": components[name]["files"]} for name in ("dept_a", "dept_b")
         },
         "tuned_with": params["components"],
-        "weight_a": params["weight_a"],
-        "weight_b": params["weight_b"],
-        "fallback_threshold": params["fallback_threshold"],
+        **{k: params[k] for k in ("weight_a", "weight_b", "fallback_threshold", "by_buttons", "button_count") if k in params},
         "fallback": params["fallback"],
-        "fallback_rule": "앙상블 분포의 최대 확률 < fallback_threshold이면 상위 2개를 fallback(가정의학과, 내과)으로 바꾼다",
+        "fallback_rule": "앙상블 분포의 최대 확률 < fallback_threshold(버튼 수별)이면 상위 2개를 fallback(가정의학과, 내과)으로 바꾼다",
         "selection_rule": tuning["rule"],
         "labels": list(DEPARTMENTS),
         "metrics": {

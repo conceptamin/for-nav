@@ -1,0 +1,1112 @@
+{
+  "candidates": {
+    "v0": {
+      "hyperparams": {
+        "hidden": 32,
+        "l2": 0.001,
+        "epochs": 500,
+        "train_rows": 119
+      },
+      "weight_a": 0.5,
+      "fallback_threshold": 0.25,
+      "b_alone": {
+        "guide": {
+          "top1": {
+            "n": 17,
+            "of": 29,
+            "value": 0.5862
+          },
+          "top2": {
+            "n": 23,
+            "of": 29,
+            "value": 0.7931
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 7,
+            "of": 18,
+            "value": 0.3889
+          },
+          "top2": {
+            "n": 10,
+            "of": 18,
+            "value": 0.5556
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 158,
+            "of": 375,
+            "value": 0.4213
+          },
+          "top2": {
+            "n": 203,
+            "of": 375,
+            "value": 0.5413
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 5,
+            "of": 10,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "selected": {
+        "guide": {
+          "top1": {
+            "n": 14,
+            "of": 29,
+            "value": 0.4828
+          },
+          "top2": {
+            "n": 24,
+            "of": 29,
+            "value": 0.8276
+          },
+          "fallback": {
+            "n": 2,
+            "of": 29,
+            "value": 0.069
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 12,
+            "of": 18,
+            "value": 0.6667
+          },
+          "top2": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 303,
+            "of": 375,
+            "value": 0.808
+          },
+          "top2": {
+            "n": 364,
+            "of": 375,
+            "value": 0.9707
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 5,
+            "of": 10,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "leave_one_out": {
+        "guide": {
+          "top1": {
+            "n": 13,
+            "of": 29,
+            "value": 0.4483
+          },
+          "top2": {
+            "n": 22,
+            "of": 29,
+            "value": 0.7586
+          },
+          "fallback": {
+            "n": 1,
+            "of": 29,
+            "value": 0.0345
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 12,
+            "of": 18,
+            "value": 0.6667
+          },
+          "top2": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 303,
+            "of": 375,
+            "value": 0.808
+          },
+          "top2": {
+            "n": 364,
+            "of": 375,
+            "value": 0.9707
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 5,
+            "of": 10,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 7,
+            "of": 10,
+            "value": 0.7
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "loo_balanced_top2": 490758.0
+    },
+    "v0_guide": {
+      "hyperparams": {
+        "hidden": 32,
+        "l2": 0.001,
+        "epochs": 100,
+        "train_rows": 187
+      },
+      "weight_a": 0.3,
+      "fallback_threshold": 0.25,
+      "b_alone": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 13,
+            "of": 18,
+            "value": 0.7222
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 190,
+            "of": 375,
+            "value": 0.5067
+          },
+          "top2": {
+            "n": 252,
+            "of": 375,
+            "value": 0.672
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 7,
+            "of": 10,
+            "value": 0.7
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "selected": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "top2": {
+            "n": 16,
+            "of": 18,
+            "value": 0.8889
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 221,
+            "of": 375,
+            "value": 0.5893
+          },
+          "top2": {
+            "n": 354,
+            "of": 375,
+            "value": 0.944
+          },
+          "fallback": {
+            "n": 2,
+            "of": 375,
+            "value": 0.0053
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 6,
+            "of": 10,
+            "value": 0.6
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "leave_one_out": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 23,
+            "of": 29,
+            "value": 0.7931
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 221,
+            "of": 375,
+            "value": 0.5893
+          },
+          "top2": {
+            "n": 354,
+            "of": 375,
+            "value": 0.944
+          },
+          "fallback": {
+            "n": 2,
+            "of": 375,
+            "value": 0.0053
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 6,
+            "of": 10,
+            "value": 0.6
+          },
+          "top2": {
+            "n": 7,
+            "of": 10,
+            "value": 0.7
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "loo_balanced_top2": 503163.0
+    },
+    "wide_seeds5_guide": {
+      "hyperparams": {
+        "hidden": 16,
+        "l2": 0.003,
+        "epochs": 545,
+        "train_rows": 187
+      },
+      "weight_a": 0.3,
+      "fallback_threshold": 0.25,
+      "b_alone": {
+        "guide": {
+          "top1": {
+            "n": 20,
+            "of": 29,
+            "value": 0.6897
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 13,
+            "of": 18,
+            "value": 0.7222
+          },
+          "top2": {
+            "n": 16,
+            "of": 18,
+            "value": 0.8889
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 211,
+            "of": 375,
+            "value": 0.5627
+          },
+          "top2": {
+            "n": 321,
+            "of": 375,
+            "value": 0.856
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 6,
+            "of": 10,
+            "value": 0.6
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "selected": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "top2": {
+            "n": 17,
+            "of": 18,
+            "value": 0.9444
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 251,
+            "of": 375,
+            "value": 0.6693
+          },
+          "top2": {
+            "n": 356,
+            "of": 375,
+            "value": 0.9493
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 6,
+            "of": 10,
+            "value": 0.6
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "leave_one_out": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 14,
+            "of": 18,
+            "value": 0.7778
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 251,
+            "of": 375,
+            "value": 0.6693
+          },
+          "top2": {
+            "n": 356,
+            "of": 375,
+            "value": 0.9493
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 6,
+            "of": 10,
+            "value": 0.6
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "loo_balanced_top2": 517707.0
+    },
+    "wide_seeds5_pairs_mean": {
+      "hyperparams": {
+        "hidden": 32,
+        "l2": 0.001,
+        "epochs": 185,
+        "train_rows": 817
+      },
+      "weight_a": 0.4,
+      "fallback_threshold": 0.2,
+      "b_alone": {
+        "guide": {
+          "top1": {
+            "n": 19,
+            "of": 29,
+            "value": 0.6552
+          },
+          "top2": {
+            "n": 22,
+            "of": 29,
+            "value": 0.7586
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 9,
+            "of": 18,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 11,
+            "of": 18,
+            "value": 0.6111
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 110,
+            "of": 375,
+            "value": 0.2933
+          },
+          "top2": {
+            "n": 152,
+            "of": 375,
+            "value": 0.4053
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 7,
+            "of": 10,
+            "value": 0.7
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "selected": {
+        "guide": {
+          "top1": {
+            "n": 16,
+            "of": 29,
+            "value": 0.5517
+          },
+          "top2": {
+            "n": 24,
+            "of": 29,
+            "value": 0.8276
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 12,
+            "of": 18,
+            "value": 0.6667
+          },
+          "top2": {
+            "n": 16,
+            "of": 18,
+            "value": 0.8889
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 236,
+            "of": 375,
+            "value": 0.6293
+          },
+          "top2": {
+            "n": 351,
+            "of": 375,
+            "value": 0.936
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 5,
+            "of": 10,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "leave_one_out": {
+        "guide": {
+          "top1": {
+            "n": 16,
+            "of": 29,
+            "value": 0.5517
+          },
+          "top2": {
+            "n": 24,
+            "of": 29,
+            "value": 0.8276
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 11,
+            "of": 18,
+            "value": 0.6111
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 236,
+            "of": 375,
+            "value": 0.6293
+          },
+          "top2": {
+            "n": 351,
+            "of": 375,
+            "value": 0.936
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 5,
+            "of": 10,
+            "value": 0.5
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "loo_balanced_top2": 508347.0
+    },
+    "wide_seeds5_pairs_mean_guide": {
+      "hyperparams": {
+        "hidden": 32,
+        "l2": 0.003,
+        "epochs": 110,
+        "train_rows": 885
+      },
+      "weight_a": 0.6,
+      "fallback_threshold": 0.2,
+      "b_alone": {
+        "guide": {
+          "top1": {
+            "n": 21,
+            "of": 29,
+            "value": 0.7241
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 12,
+            "of": 18,
+            "value": 0.6667
+          },
+          "top2": {
+            "n": 17,
+            "of": 18,
+            "value": 0.9444
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 164,
+            "of": 375,
+            "value": 0.4373
+          },
+          "top2": {
+            "n": 217,
+            "of": 375,
+            "value": 0.5787
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 7,
+            "of": 10,
+            "value": 0.7
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "selected": {
+        "guide": {
+          "top1": {
+            "n": 9,
+            "of": 29,
+            "value": 0.3103
+          },
+          "top2": {
+            "n": 26,
+            "of": 29,
+            "value": 0.8966
+          },
+          "fallback": {
+            "n": 0,
+            "of": 29,
+            "value": 0.0
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 13,
+            "of": 18,
+            "value": 0.7222
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 334,
+            "of": 375,
+            "value": 0.8907
+          },
+          "top2": {
+            "n": 368,
+            "of": 375,
+            "value": 0.9813
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 2,
+            "of": 10,
+            "value": 0.2
+          },
+          "top2": {
+            "n": 9,
+            "of": 10,
+            "value": 0.9
+          },
+          "fallback": {
+            "n": 0,
+            "of": 10,
+            "value": 0.0
+          }
+        }
+      },
+      "leave_one_out": {
+        "guide": {
+          "top1": {
+            "n": 9,
+            "of": 29,
+            "value": 0.3103
+          },
+          "top2": {
+            "n": 25,
+            "of": 29,
+            "value": 0.8621
+          },
+          "fallback": {
+            "n": 1,
+            "of": 29,
+            "value": 0.0345
+          }
+        },
+        "kaggle_valid": {
+          "top1": {
+            "n": 13,
+            "of": 18,
+            "value": 0.7222
+          },
+          "top2": {
+            "n": 15,
+            "of": 18,
+            "value": 0.8333
+          },
+          "fallback": {
+            "n": 0,
+            "of": 18,
+            "value": 0.0
+          }
+        },
+        "ddxplus_valid": {
+          "top1": {
+            "n": 334,
+            "of": 375,
+            "value": 0.8907
+          },
+          "top2": {
+            "n": 368,
+            "of": 375,
+            "value": 0.9813
+          },
+          "fallback": {
+            "n": 0,
+            "of": 375,
+            "value": 0.0
+          }
+        },
+        "guide_trauma": {
+          "top1": {
+            "n": 2,
+            "of": 10,
+            "value": 0.2
+          },
+          "top2": {
+            "n": 8,
+            "of": 10,
+            "value": 0.8
+          },
+          "fallback": {
+            "n": 1,
+            "of": 10,
+            "value": 0.1
+          }
+        }
+      },
+      "loo_balanced_top2": 523971.0
+    }
+  },
+  "chosen": "wide_seeds5_pairs_mean_guide",
+  "guide_train_keys": 64,
+  "rule": "모델 B 설정 후보마다 B를 학습해 조정 셋에서 앙상블 가중치·폴백 기준값을 고르고, 출처별 Top-1·Top-2와 leave-one-out을 잰다(backlog 19).\n    고르는 기준은 leave-one-out 출처 균형 Top-2(정수 비교). 같으면 후보 목록 앞쪽(단순한 설정)."
+}

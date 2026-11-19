@@ -1,11 +1,12 @@
 # 백엔드가 부를 예측 함수(backlog 08). 입력은 백엔드 Intake 필드 이름(snake_case)의 dict, 출력은 TriageResult.model 자리에 넣을 dict.
 # - 진료과만 예측한다. 응급도 모델은 앱이 응급 여부를 판정하지 않기로 해서 지웠다(backlog 15).
-# - 아티팩트(models/<이름>/v4/)만 읽는다. 학습 코드(fornav_modeling.models.*, scikit-learn)를 import하지 않는다
+# - 아티팩트(models/<이름>/v6/)만 읽는다. 학습 코드(fornav_modeling.models.*, scikit-learn)를 import하지 않는다
 #   (tests/test_predict_contract.py가 확인한다). 불러올 때 metadata.json에 적힌 sha256과 파일이 다르면 멈춘다.
 # - 진료과 규칙표는 백엔드가 이 함수 앞에서 실행한다. 여기에는 규칙이 없다.
 # - 백엔드 Intake에 없는 피처(통증 점수·의식 상태·나이대·성별)는 NaN이다. 모델 A는 이 넷과 발생 시점·손상 여부를 쓰지 않고(피처 중요도 0),
 #   모델 B는 부위·증상에 손상 여부만 더 쓴다.
 # - 진료과: 모델 A·B 분포의 가중 평균. 최대 확률이 폴백 기준값 미만이면 상위 2개를 가정의학과·내과로 바꾼다.
+#   v6(backlog 19)부터 가중치·기준값은 누른 버튼 수(부위 + 증상)마다 다르다(ensemble.json의 by_buttons).
 # 앙상블·모델 B 추론 함수(combine, top2, predict_from_weights)는 학습 코드도 이 모듈에서 가져다 쓴다 — 서빙과 학습이 같은 함수다.
 
 import hashlib
@@ -22,7 +23,7 @@ from fornav_modeling.features.buttons import FEATURE_NAMES, featurize
 from fornav_modeling.schema import DEPARTMENTS, Department
 
 MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
-VERSION = "v4"
+VERSION = "v6"
 
 
 class ArtifactError(RuntimeError):
@@ -35,8 +36,9 @@ class ArtifactError(RuntimeError):
 def predict(intake: Mapping[str, Any], models_dir: Path | None = None) -> dict:
     """Intake dict → {departmentProba, departmentTop2, departmentFallback}."""
     a = load_artifacts(str(models_dir or MODELS_DIR))
-    department = combine(dept_a_proba(a, intake), dept_b_proba(a, intake), a["weight_a"])
-    top, fallback = top2(department, a["fallback_threshold"], a["fallback"])  # 조정·평가(models/ensemble.py)와 같은 값으로 고른다
+    weight_a, threshold = ensemble_rule(a["rules"], button_count(intake))  # 조정·평가(models/ensemble.py)와 같은 함수
+    department = combine(dept_a_proba(a, intake), dept_b_proba(a, intake), weight_a)
+    top, fallback = top2(department, threshold, a["fallback"])
     # 모델 A의 질환별 진료과 비율은 소수 넷째 자리로 반올림돼 행 합이 1에서 1e-4쯤 벗어난다. 내보내는 분포만 합 1로 맞춘다
     department = department / department.sum()
     return {
@@ -53,6 +55,31 @@ def dept_a_proba(a: Mapping[str, Any], intake: Mapping[str, Any]) -> np.ndarray:
 
 def dept_b_proba(a: Mapping[str, Any], intake: Mapping[str, Any]) -> np.ndarray:
     return predict_from_weights(a["dept_b_weights"], np.array([featurize(intake)], dtype=np.float64))[0]
+
+
+Rule = tuple[int | None, float, float]  # (이 버튼 수 이하에 적용 — None이면 나머지 전부, 모델 A 가중치, 폴백 기준값)
+
+
+def button_count(intake: Mapping[str, Any]) -> int:
+    return sum(len(v) for v in (intake.get("body_parts"), intake.get("symptoms")) if v is not None)
+
+
+def ensemble_rule(rules: list[Rule], n_buttons: int) -> tuple[float, float]:
+    """버튼 수에 맞는 (모델 A 가중치, 폴백 기준값). rules는 max_buttons 오름차순이고 마지막은 None."""
+    for max_buttons, weight_a, threshold in rules:
+        if max_buttons is None or n_buttons <= max_buttons:
+            return weight_a, threshold
+    raise ArtifactError("ensemble.json의 버튼 수 규칙이 모든 버튼 수를 덮지 않는다")
+
+
+def ensemble_rules(params: Mapping[str, Any]) -> list[Rule]:
+    """ensemble.json → 규칙 목록. by_buttons가 없으면(v5까지) 가중치 하나를 모든 버튼 수에 쓴다."""
+    if "by_buttons" not in params:
+        return [(None, float(params["weight_a"]), float(params["fallback_threshold"]))]
+    rules = [(r["max_buttons"], float(r["weight_a"]), float(r["fallback_threshold"])) for r in params["by_buttons"]]
+    if rules[-1][0] is not None or any(a[0] is None or (b[0] is not None and a[0] >= b[0]) for a, b in zip(rules, rules[1:], strict=False)):
+        raise ArtifactError("ensemble.json by_buttons는 max_buttons 오름차순이고 마지막만 null이어야 한다")
+    return rules
 
 
 def combine(p_a: np.ndarray, p_b: np.ndarray, weight_a: float) -> np.ndarray:
@@ -122,8 +149,7 @@ def load_artifacts(models_dir: str) -> dict[str, Any]:
         "dept_a_booster": lgb.Booster(model_str=texts["dept_a"]["model.txt"]),
         "class_departments": np.array(departments["class_departments"], dtype=np.float64),
         "dept_b_weights": json.loads(texts["dept_b"]["weights.json"]),
-        "weight_a": float(ensemble["weight_a"]),
-        "fallback_threshold": float(ensemble["fallback_threshold"]),
+        "rules": ensemble_rules(ensemble),
         "fallback": tuple(ensemble["fallback"]),
     }
 

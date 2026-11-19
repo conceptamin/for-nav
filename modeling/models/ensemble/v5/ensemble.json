@@ -1,0 +1,13 @@
+{
+ "weight_a": 0.6,
+ "weight_b": 0.4,
+ "fallback_threshold": 0.2,
+ "fallback": [
+  "family",
+  "internal"
+ ],
+ "components": {
+  "dept_a": "dept_a/v3",
+  "dept_b": "dept_b/v5"
+ }
+}

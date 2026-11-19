@@ -83,7 +83,7 @@ modeling/
 
   scripts/                      명령 하나 = 일 하나. 인자를 받아 패키지 함수를 부르기만 하는 얇은 파일
     download_data.py  build_tables.py  build_ddxplus.py  make_splits.py  freeze_guide_test.py
-    train_dept_a.py  cv_dept_b.py  train_dept_b.py  tune_ensemble.py
+    train_dept_a.py  cv_dept_b.py  compare_dept_b.py  train_dept_b.py  tune_ensemble.py
     evaluate.py  export_models.py
 
   data/
@@ -96,12 +96,13 @@ modeling/
       button_department.csv     버튼 조합 → 진료과 분포 (모델 B 라벨)
       disease_department.csv    질환 → 진료과 비율 (HIRA)
       department_guide_test.csv 최종 평가용 안내 조합 정답(backlog 18). 고정 명령·평가 명령만 읽는다
+      department_guide_train.csv 모델 B 학습용 병원 안내 조합(backlog 19). 평가 조합과 겹치는 행은 학습에서 뺀다
       ddxplus_evidence_map.csv  DDXPlus 증상 근거·부위 값 → 버튼 부위·증상
       ddxplus_condition_kcd.csv DDXPlus 질환(icd10-id) → KCD 3단
     test/                       git 제외. splits로 재생성. 평가 명령만 읽는다
 
   models/                       내보낸 아티팩트. 버전 폴더마다 metadata.json
-    dept_a/v4/   dept_b/v4/   ensemble/v4/   (서빙. v0~v3은 기록. dept_b/v4·ensemble/v4는 학습 라운드와 서빙이 같은 폴더)
+    dept_a/v6/   dept_b/v6/   ensemble/v6/   (서빙. v0~v5는 기록. ensemble/v6은 학습 라운드와 서빙이 같은 폴더)
 
   notebooks/                    탐색용. 커밋 시 출력 제거
   reports/                      평가 결과 JSON·표

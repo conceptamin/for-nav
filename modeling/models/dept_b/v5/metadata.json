@@ -1,0 +1,207 @@
+{
+  "model_version": "dept_b/v5",
+  "seed": 20261028,
+  "setting": {
+    "name": "wide_seeds5_pairs_mean_guide",
+    "hidden": [
+      8,
+      16,
+      32
+    ],
+    "l2": [
+      0.001,
+      0.003,
+      0.01,
+      0.03,
+      0.1
+    ],
+    "max_epochs": 2000,
+    "check_every": 5,
+    "seeds": [
+      20261028,
+      20261029,
+      20261030,
+      20261031,
+      20261032
+    ],
+    "pairs": "mean",
+    "pair_weight": 0.5,
+    "guide": true,
+    "guide_weight": 1.0
+  },
+  "architecture": {
+    "inputs": 29,
+    "hidden": 32,
+    "activation": "relu",
+    "outputs": 10,
+    "members": 5,
+    "optimizer": "전체 배치 Adam, 학습률 0.01"
+  },
+  "hyperparams": {
+    "hidden": 32,
+    "l2": 0.003,
+    "epochs": 110,
+    "cv_soft_cross_entropy": 1.371425,
+    "grid": {
+      "hidden=8 l2=0.001": {
+        "best_epochs": 170,
+        "best_loss": 1.38773
+      },
+      "hidden=8 l2=0.003": {
+        "best_epochs": 280,
+        "best_loss": 1.388517
+      },
+      "hidden=8 l2=0.01": {
+        "best_epochs": 1030,
+        "best_loss": 1.460338
+      },
+      "hidden=8 l2=0.03": {
+        "best_epochs": 130,
+        "best_loss": 1.71698
+      },
+      "hidden=8 l2=0.1": {
+        "best_epochs": 145,
+        "best_loss": 1.990255
+      },
+      "hidden=16 l2=0.001": {
+        "best_epochs": 200,
+        "best_loss": 1.397741
+      },
+      "hidden=16 l2=0.003": {
+        "best_epochs": 305,
+        "best_loss": 1.378838
+      },
+      "hidden=16 l2=0.01": {
+        "best_epochs": 515,
+        "best_loss": 1.449398
+      },
+      "hidden=16 l2=0.03": {
+        "best_epochs": 75,
+        "best_loss": 1.707278
+      },
+      "hidden=16 l2=0.1": {
+        "best_epochs": 65,
+        "best_loss": 1.974168
+      },
+      "hidden=32 l2=0.001": {
+        "best_epochs": 105,
+        "best_loss": 1.382042
+      },
+      "hidden=32 l2=0.003": {
+        "best_epochs": 110,
+        "best_loss": 1.371425
+      },
+      "hidden=32 l2=0.01": {
+        "best_epochs": 1875,
+        "best_loss": 1.45585
+      },
+      "hidden=32 l2=0.03": {
+        "best_epochs": 55,
+        "best_loss": 1.706209
+      },
+      "hidden=32 l2=0.1": {
+        "best_epochs": 50,
+        "best_loss": 1.955953
+      }
+    },
+    "rule": "학습 조합 5겹 교차검증(조합 단위), 은닉 [8, 16, 32] × L2 [0.001, 0.003, 0.01, 0.03, 0.1] × 에폭 5~2000(5 간격), 겹 밖 소프트 교차엔트로피 평균 최소",
+    "train_rows": 885
+  },
+  "data": {
+    "button_department_sha256": "94b711dfb1b5872990d10ce713a5d962ed185f0d6551b5127e735c0cde9db39f",
+    "dept_valid_sha256": "867210c86a65c6e9cbae07035e11baf5fde6430a3d1c4e4890388c054c285b75",
+    "combos": {
+      "table": 143,
+      "train": 90,
+      "held_out": 27,
+      "dropped_final": 26,
+      "guide": 29
+    },
+    "train_rows": 885,
+    "guide_train_keys": 64,
+    "guide_train_rows": 446
+  },
+  "input_features": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "status": "학습 라운드. 서빙 묶음은 export.py가 쓴다",
+  "files": {
+    "weights.json": "6ee1671eae81fecff7d4cd359da115cd39faf004651c809c28b433bcb3dd1dfe"
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ]
+}
