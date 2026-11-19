@@ -93,21 +93,22 @@ uv run python scripts/build_ddxplus.py                   # DDXPlus → 버튼 �
 uv run python scripts/build_tables.py                    # 진료과 표(Kaggle·DDXPlus 질환 라벨)·검증셋 id
 uv run python scripts/make_splits.py                     # Kaggle+DDXPlus를 합쳐 버튼 벡터 단위로 분할(진료과 모델 A, backlog 16)
 uv run python scripts/train_dept_a.py --round v3         # models/dept_a/v3
-uv run python scripts/train_dept_b.py                    # models/dept_b/v0(v3도 이 가중치)
-uv run python scripts/tune_ensemble.py --round v3        # models/ensemble/v3/ensemble.json
-uv run python scripts/evaluate.py --model <dept_a|ensemble> --round v3   # test 1회, "최종". 앙상블은 18의 최종 평가용 안내 조합도
-uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v3/
+uv run python scripts/cv_dept_b.py                       # 모델 B 설정 후보·비교 기준선 반복 교차검증, 설정 선택(backlog 13)
+uv run python scripts/train_dept_b.py --round v4 --setting <선택한 설정>   # models/dept_b/v4
+uv run python scripts/tune_ensemble.py --round v4        # models/ensemble/v4/ensemble.json
+uv run python scripts/evaluate.py --model ensemble --round v4   # test 1회, "최종". 18의 최종 평가용 안내 조합도. 모델 A의 test는 v3에서 쟀다
+uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v4/
 ```
 
 ## 아티팩트와 `predict`
 
-서빙은 `models/*/v3/`만 읽는다(08의 `v1`, 벡터가 겹친 옛 분할로 잰 `v2` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
+서빙은 `models/*/v4/`만 읽는다(08의 `v1`, 벡터가 겹친 옛 분할로 잰 `v2`, 모델 B를 다시 학습하기 전 `v3` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
 
 | 폴더 | 파일 | 내용 |
 |---|---|---|
-| `dept_a/v3/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
-| `dept_b/v3/` | `weights.json` | MLP 가중치(`W1`, `b1`, `W2`, `b2`), 입력 피처·라벨 순서 |
-| `ensemble/v3/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
+| `dept_a/v4/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
+| `dept_b/v4/` | `weights.json` | seed별 MLP 가중치(`members`마다 `W1`, `b1`, `W2`, `b2`, 확률을 평균), 입력 피처·라벨 순서 |
+| `ensemble/v4/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
 
 `metadata.json`에는 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 가중치·폴백 기준, 피처·라벨 순서, 검증·최종(test) 측정값, 생성 시각이 있다.
 

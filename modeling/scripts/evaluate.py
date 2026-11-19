@@ -1,7 +1,7 @@
 # test 평가 명령. data/test를 읽는 유일한 명령이다. 라운드마다 한 번만 실행하고 결과를 '최종'으로 기록한다.
 #   uv run python scripts/evaluate.py --model dept_a --round v0   reports/dept_a_v0_test.{json,md}
 #   uv run python scripts/evaluate.py --model dept_b --round v0   reports/dept_b_v0_test.{json,md} (Kaggle 질환·증상 test, 모델 A와 같은 행)
-#   uv run python scripts/evaluate.py --model ensemble --round v3   reports/ensemble_v3_test.{json,md}
+#   uv run python scripts/evaluate.py --model ensemble --round v4   reports/ensemble_v4_test.{json,md}
 #     앙상블은 18의 최종 평가용 안내 조합(dept_test.txt, 고정 해시 확인)도 함께 평가한다
 
 import argparse

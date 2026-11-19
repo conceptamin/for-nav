@@ -32,6 +32,7 @@ ent,fever,any,J02|J03|J06,,인두염·편도염·상기도 감염,llm-draft(Clau
 ent,cough,any,J06,,상기도 감염,llm-draft(Claude Opus 5.5),no
 ent,dizzy,any,H81,,전정 장애(귀 어지러움),llm-draft(Claude Opus 5.5),no
 ent,chemical,any,,occ:0.4|internal:0.3|ent:0.2|family:0.1,산재: 가스·분진 흡입 후 목 자극. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+ent,breath,no,J30|J31|J34,,코막힘·비염·비강 장애로 숨쉬기 불편(backlog 13),llm-draft(Claude Opus 5.5),no
 teeth,pain,any,K02|K04|K05|K08,,충치·치수 질환·잇몸병,llm-draft(Claude Opus 5.5),no
 teeth,swelling,any,K04|K05,,치근단 농양·잇몸병,llm-draft(Claude Opus 5.5),no
 teeth,bleeding,any,K05,,잇몸 출혈,llm-draft(Claude Opus 5.5),no
@@ -48,6 +49,7 @@ chest,rash,any,B02,,대상포진(띠 모양 발진),llm-draft(Claude Opus 5.5),n
 chest,nausea,any,K21,,역류성 식도염,llm-draft(Claude Opus 5.5),no
 chest,breath,any,J45|J44|R06,,천식·만성 폐쇄성 폐질환·호흡 이상(레드플래그 breathing이라 진료과 추천까지 오지 않는다),llm-draft(Claude Opus 5.5),no
 chest,chemical,any,,occ:0.4|internal:0.4|family:0.2,산재: 가스·분진 흡입 후 가슴 증상. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+chest,dizzy,no,R00|R42|I49,,두근거림·어지러움·부정맥(backlog 13),llm-draft(Claude Opus 5.5),no
 abdomen,pain,no,R10|K29|K30,,복통·위염·소화불량,llm-draft(Claude Opus 5.5),no
 abdomen,pain,yes,S30|S39,,복부 타박·손상,llm-draft(Claude Opus 5.5),no
 abdomen,swelling,no,R14,,복부 팽만,llm-draft(Claude Opus 5.5),no
@@ -58,6 +60,7 @@ abdomen,burn,yes,T21,,몸통 화상,llm-draft(Claude Opus 5.5),no
 abdomen,fever,any,A09,,감염성 위장염,llm-draft(Claude Opus 5.5),no
 abdomen,nausea,any,R11|A09|K29,,구역·구토·위장염·위염,llm-draft(Claude Opus 5.5),no
 abdomen,chemical,any,,occ:0.4|internal:0.4|family:0.2,산재: 화학물질 섭취·흡입 후 복부 증상. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+abdomen,rash,any,B02|L30,,대상포진·피부염(backlog 13),llm-draft(Claude Opus 5.5),no
 back,pain,no,M54|M51,,등 통증·추간판 장애,llm-draft(Claude Opus 5.5),no
 back,pain,yes,S33|S32|S23,,산재: 중량물 운반 중 요추 염좌·골절,llm-draft(Claude Opus 5.5),no
 back,swelling,yes,S30,,허리·골반 타박,llm-draft(Claude Opus 5.5),no
@@ -67,6 +70,9 @@ back,numb,any,M51|M54,,추간판 장애·방사통,llm-draft(Claude Opus 5.5),no
 back,cantmove,no,M54|M51,,등 통증으로 움직이기 어려움,llm-draft(Claude Opus 5.5),no
 back,cantmove,yes,S33|S32,,산재: 요추 염좌·골절,llm-draft(Claude Opus 5.5),no
 back,rash,any,B02,,대상포진,llm-draft(Claude Opus 5.5),no
+back,bleeding,yes,S21|S31,,등·허리 열상 출혈(backlog 13),llm-draft(Claude Opus 5.5),no
+back,fever,any,N10|N39,,옆구리 통증과 발열(신우신염·요로 감염)(backlog 13),llm-draft(Claude Opus 5.5),no
+back,nausea,no,N20|N23,,옆구리 통증과 구역(요로 결석·신산통)(backlog 13),llm-draft(Claude Opus 5.5),no
 arm,pain,no,M75|M77,,어깨 병변·팔꿈치 상과염,llm-draft(Claude Opus 5.5),no
 arm,pain,yes,S43|S46|S42|S52|S53,,어깨·팔 염좌·근육 손상·골절,llm-draft(Claude Opus 5.5),no
 arm,swelling,no,M25|M70,,관절 삼출·점액낭염,llm-draft(Claude Opus 5.5),no
@@ -78,6 +84,8 @@ arm,numb,any,G56|M50,,팔 신경 병증·경추 추간판 장애,llm-draft(Claud
 arm,cantmove,no,M75,,어깨 병변(오십견 등),llm-draft(Claude Opus 5.5),no
 arm,cantmove,yes,S42|S43|S52|S53,,어깨·팔 골절·탈구,llm-draft(Claude Opus 5.5),no
 arm,chemical,any,,occ:0.4|derm:0.35|surgery:0.15|family:0.1,산재: 피부 화학물질 노출. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+arm,fever,any,L02|L03,,팔 피부 고름집·연조직염(backlog 13),llm-draft(Claude Opus 5.5),no
+arm,rash,any,L23|L24|L25|L30,,접촉 피부염·피부염(backlog 13),llm-draft(Claude Opus 5.5),no
 hand,pain,no,M65|M25,,건초염·관절 장애,llm-draft(Claude Opus 5.5),no
 hand,pain,yes,S63|S62|S60|S66,,손목·손 염좌·골절·힘줄 손상,llm-draft(Claude Opus 5.5),no
 hand,swelling,no,M65|M25,,건초염·관절 장애,llm-draft(Claude Opus 5.5),no
@@ -89,6 +97,7 @@ hand,numb,any,G56,,손목터널증후군 등 팔 신경 병증,llm-draft(Claude 
 hand,cantmove,yes,S62|S63|S66|S67,,산재: 기계 끼임·골절·힘줄 손상,llm-draft(Claude Opus 5.5),no
 hand,rash,any,L23|L24|L30,,접촉 피부염,llm-draft(Claude Opus 5.5),no
 hand,chemical,any,,occ:0.4|derm:0.35|surgery:0.15|family:0.1,산재: 피부 화학물질 노출. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+hand,fever,any,L02|L03,,손 고름집·연조직염(backlog 13),llm-draft(Claude Opus 5.5),no
 leg,pain,no,M17|M23|M25,,무릎 관절증·무릎 내부 장애,llm-draft(Claude Opus 5.5),no
 leg,pain,yes,S83|S82|S80|S72,,무릎·다리 염좌·골절·타박,llm-draft(Claude Opus 5.5),no
 leg,swelling,no,I83|I80|R60,,정맥류·정맥염·부종,llm-draft(Claude Opus 5.5),no
@@ -99,6 +108,8 @@ leg,burn,yes,T24,,엉덩이·다리 화상,llm-draft(Claude Opus 5.5),no
 leg,numb,any,M54|M51|G57,,좌골신경통·추간판 장애·다리 신경 병증,llm-draft(Claude Opus 5.5),no
 leg,cantmove,yes,S72|S82|S83,,산재: 추락·낙하물에 의한 다리 골절·무릎 손상,llm-draft(Claude Opus 5.5),no
 leg,chemical,any,,occ:0.4|derm:0.35|surgery:0.15|family:0.1,산재: 피부 화학물질 노출. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+leg,fever,any,L02|L03,,다리 고름집·연조직염(backlog 13),llm-draft(Claude Opus 5.5),no
+leg,rash,any,L23|L24|L25|L30,,접촉 피부염·피부염(backlog 13),llm-draft(Claude Opus 5.5),no
 foot,pain,no,M10|M72|M77,,통풍·족저근막염·건염,llm-draft(Claude Opus 5.5),no
 foot,pain,yes,S93|S92|S90,,발목 염좌·발 골절·타박,llm-draft(Claude Opus 5.5),no
 foot,swelling,no,M10|R60,,통풍·부종,llm-draft(Claude Opus 5.5),no
@@ -110,6 +121,7 @@ foot,numb,any,G57,,다리 신경 병증,llm-draft(Claude Opus 5.5),no
 foot,cantmove,yes,S92|S93|S97,,산재: 낙하물·끼임에 의한 발 골절·으깸 손상,llm-draft(Claude Opus 5.5),no
 foot,rash,any,B35|L30,,발 백선·피부염,llm-draft(Claude Opus 5.5),no
 foot,chemical,any,,occ:0.4|derm:0.35|surgery:0.15|family:0.1,산재: 피부 화학물질 노출. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+foot,fever,any,L02|L03,,발 고름집·연조직염(backlog 13),llm-draft(Claude Opus 5.5),no
 skin,pain,any,B02|L02|L03,,대상포진·농양·봉와직염,llm-draft(Claude Opus 5.5),no
 skin,swelling,any,L03|L02|L50,,봉와직염·농양·두드러기,llm-draft(Claude Opus 5.5),no
 skin,cut,yes,T14,,부위 불명 열상,llm-draft(Claude Opus 5.5),no
@@ -128,3 +140,5 @@ whole,dizzy,any,R42,,어지러움,llm-draft(Claude Opus 5.5),no
 whole,rash,any,L50|L27|L30,,두드러기·약물 발진·피부염,llm-draft(Claude Opus 5.5),no
 whole,nausea,any,A09|R11,,위장염·구역,llm-draft(Claude Opus 5.5),no
 whole,chemical,any,,occ:0.4|internal:0.4|family:0.2,산재: 화학물질 전신 노출·중독 의심. 백엔드 규칙(chemical → occ)에 맞춘다,llm-draft(Claude Opus 5.5),no
+whole,cut,yes,T01|T14,,여러 부위·부위 불명 열상(backlog 13),llm-draft(Claude Opus 5.5),no
+whole,bleeding,yes,T01|T14,,여러 부위·부위 불명 열상 출혈(backlog 13),llm-draft(Claude Opus 5.5),no

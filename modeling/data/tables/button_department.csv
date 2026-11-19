@@ -21,24 +21,22 @@ head,swelling,yes,ophth,0.0852,hira:2025,no
 head,swelling,yes,derm,0.0735,hira:2025,no
 head,swelling,yes,dental,0.0231,hira:2025,no
 head,swelling,yes,internal,0.0134,hira:2025,no
-head,cut,yes,surgery,0.3508,hira:2025,no
-head,cut,yes,ortho,0.2897,hira:2025,no
-head,cut,yes,family,0.2085,hira:2025,no
-head,cut,yes,ent,0.0784,hira:2025,no
-head,cut,yes,dental,0.0460,hira:2025,no
-head,cut,yes,derm,0.0155,hira:2025,no
-head,cut,yes,internal,0.0112,hira:2025,no
-head,bleeding,yes,surgery,0.3508,hira:2025,no
-head,bleeding,yes,ortho,0.2897,hira:2025,no
-head,bleeding,yes,family,0.2085,hira:2025,no
-head,bleeding,yes,ent,0.0784,hira:2025,no
-head,bleeding,yes,dental,0.0460,hira:2025,no
-head,bleeding,yes,derm,0.0155,hira:2025,no
-head,bleeding,yes,internal,0.0112,hira:2025,no
-head,burn,yes,surgery,0.4692,hira:2025,no
-head,burn,yes,derm,0.2754,hira:2025,no
-head,burn,yes,family,0.2219,hira:2025,no
-head,burn,yes,ortho,0.0335,hira:2025,no
+head,cut,yes,surgery,0.5043,hira:2025+trauma-rule(backlog 13),no
+head,cut,yes,ortho,0.2250,hira:2025+trauma-rule(backlog 13),no
+head,cut,yes,family,0.1620,hira:2025+trauma-rule(backlog 13),no
+head,cut,yes,ent,0.0609,hira:2025+trauma-rule(backlog 13),no
+head,cut,yes,dental,0.0357,hira:2025+trauma-rule(backlog 13),no
+head,cut,yes,derm,0.0120,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,surgery,0.5043,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,ortho,0.2250,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,family,0.1620,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,ent,0.0609,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,dental,0.0357,hira:2025+trauma-rule(backlog 13),no
+head,bleeding,yes,derm,0.0120,hira:2025+trauma-rule(backlog 13),no
+head,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+head,burn,yes,derm,0.2594,hira:2025+trauma-rule(backlog 13),no
+head,burn,yes,family,0.2090,hira:2025+trauma-rule(backlog 13),no
+head,burn,yes,ortho,0.0316,hira:2025+trauma-rule(backlog 13),no
 head,numb,no,neuro,0.5994,hira:2025,no
 head,numb,no,ortho,0.2253,hira:2025,no
 head,numb,no,ent,0.0523,hira:2025,no
@@ -115,20 +113,19 @@ ent,swelling,no,ent,0.4667,hira:2025,no
 ent,swelling,no,family,0.3255,hira:2025,no
 ent,swelling,no,internal,0.1957,hira:2025,no
 ent,swelling,no,surgery,0.0121,hira:2025,no
-ent,cut,yes,surgery,0.3484,hira:2025,no
-ent,cut,yes,ortho,0.2906,hira:2025,no
-ent,cut,yes,family,0.2110,hira:2025,no
-ent,cut,yes,ent,0.0777,hira:2025,no
-ent,cut,yes,dental,0.0454,hira:2025,no
-ent,cut,yes,derm,0.0155,hira:2025,no
-ent,cut,yes,internal,0.0113,hira:2025,no
+ent,cut,yes,surgery,0.5044,hira:2025+trauma-rule(backlog 13),no
+ent,cut,yes,ortho,0.2250,hira:2025+trauma-rule(backlog 13),no
+ent,cut,yes,family,0.1634,hira:2025+trauma-rule(backlog 13),no
+ent,cut,yes,ent,0.0602,hira:2025+trauma-rule(backlog 13),no
+ent,cut,yes,dental,0.0351,hira:2025+trauma-rule(backlog 13),no
+ent,cut,yes,derm,0.0120,hira:2025+trauma-rule(backlog 13),no
 ent,bleeding,any,ent,0.8216,hira:2025,no
 ent,bleeding,any,internal,0.1335,hira:2025,no
 ent,bleeding,any,family,0.0450,hira:2025,no
-ent,burn,yes,surgery,0.4692,hira:2025,no
-ent,burn,yes,derm,0.2754,hira:2025,no
-ent,burn,yes,family,0.2219,hira:2025,no
-ent,burn,yes,ortho,0.0335,hira:2025,no
+ent,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+ent,burn,yes,derm,0.2594,hira:2025+trauma-rule(backlog 13),no
+ent,burn,yes,family,0.2090,hira:2025+trauma-rule(backlog 13),no
+ent,burn,yes,ortho,0.0316,hira:2025+trauma-rule(backlog 13),no
 ent,fever,any,ent,0.4040,hira:2025,no
 ent,fever,any,family,0.3128,hira:2025,no
 ent,fever,any,internal,0.2715,hira:2025,no
@@ -147,6 +144,9 @@ ent,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 ent,chemical,any,internal,0.3000,llm-draft(Claude Opus 5.5),no
 ent,chemical,any,ent,0.2000,llm-draft(Claude Opus 5.5),no
 ent,chemical,any,family,0.1000,llm-draft(Claude Opus 5.5),no
+ent,breath,no,ent,0.6356,hira:2025,no
+ent,breath,no,family,0.2062,hira:2025,no
+ent,breath,no,internal,0.1583,hira:2025,no
 teeth,pain,any,dental,1.0000,hira:2025,no
 teeth,swelling,any,dental,1.0000,hira:2025,no
 teeth,bleeding,any,dental,1.0000,hira:2025,no
@@ -163,21 +163,19 @@ chest,swelling,yes,ortho,0.6787,hira:2025,no
 chest,swelling,yes,surgery,0.1587,hira:2025,no
 chest,swelling,yes,family,0.1476,hira:2025,no
 chest,swelling,yes,internal,0.0149,hira:2025,no
-chest,cut,yes,ortho,0.3866,hira:2025,no
-chest,cut,yes,family,0.3648,hira:2025,no
-chest,cut,yes,surgery,0.2119,hira:2025,no
-chest,cut,yes,internal,0.0242,hira:2025,no
-chest,cut,yes,derm,0.0125,hira:2025,no
-chest,bleeding,yes,ortho,0.3866,hira:2025,no
-chest,bleeding,yes,family,0.3648,hira:2025,no
-chest,bleeding,yes,surgery,0.2119,hira:2025,no
-chest,bleeding,yes,internal,0.0242,hira:2025,no
-chest,bleeding,yes,derm,0.0125,hira:2025,no
-chest,burn,yes,surgery,0.3852,hira:2025,no
-chest,burn,yes,family,0.2902,hira:2025,no
-chest,burn,yes,derm,0.2230,hira:2025,no
-chest,burn,yes,ortho,0.0787,hira:2025,no
-chest,burn,yes,internal,0.0229,hira:2025,no
+chest,cut,yes,surgery,0.5040,hira:2025+trauma-rule(backlog 13),no
+chest,cut,yes,ortho,0.2472,hira:2025+trauma-rule(backlog 13),no
+chest,cut,yes,family,0.2333,hira:2025+trauma-rule(backlog 13),no
+chest,cut,yes,internal,0.0155,hira:2025+trauma-rule(backlog 13),no
+chest,bleeding,yes,surgery,0.5040,hira:2025+trauma-rule(backlog 13),no
+chest,bleeding,yes,ortho,0.2472,hira:2025+trauma-rule(backlog 13),no
+chest,bleeding,yes,family,0.2333,hira:2025+trauma-rule(backlog 13),no
+chest,bleeding,yes,internal,0.0155,hira:2025+trauma-rule(backlog 13),no
+chest,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+chest,burn,yes,family,0.2360,hira:2025+trauma-rule(backlog 13),no
+chest,burn,yes,derm,0.1814,hira:2025+trauma-rule(backlog 13),no
+chest,burn,yes,ortho,0.0640,hira:2025+trauma-rule(backlog 13),no
+chest,burn,yes,internal,0.0186,hira:2025+trauma-rule(backlog 13),no
 chest,cantmove,yes,ortho,0.7732,hira:2025,no
 chest,cantmove,yes,surgery,0.1320,hira:2025,no
 chest,cantmove,yes,family,0.0753,hira:2025,no
@@ -211,6 +209,12 @@ chest,breath,any,surgery,0.0141,hira:2025,no
 chest,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 chest,chemical,any,internal,0.4000,llm-draft(Claude Opus 5.5),no
 chest,chemical,any,family,0.2000,llm-draft(Claude Opus 5.5),no
+chest,dizzy,no,internal,0.4793,hira:2025,no
+chest,dizzy,no,neuro,0.1699,hira:2025,no
+chest,dizzy,no,family,0.1597,hira:2025,no
+chest,dizzy,no,ent,0.1295,hira:2025,no
+chest,dizzy,no,ortho,0.0514,hira:2025,no
+chest,dizzy,no,surgery,0.0102,hira:2025,no
 abdomen,pain,no,internal,0.6322,hira:2025,no
 abdomen,pain,no,family,0.2744,hira:2025,no
 abdomen,pain,no,ent,0.0434,hira:2025,no
@@ -223,22 +227,22 @@ abdomen,pain,yes,internal,0.0114,hira:2025,no
 abdomen,swelling,no,internal,0.7214,hira:2025,no
 abdomen,swelling,no,family,0.1702,hira:2025,no
 abdomen,swelling,no,surgery,0.1084,hira:2025,no
-abdomen,cut,yes,family,0.4041,hira:2025,no
-abdomen,cut,yes,ortho,0.3962,hira:2025,no
-abdomen,cut,yes,surgery,0.1769,hira:2025,no
-abdomen,cut,yes,internal,0.0228,hira:2025,no
+abdomen,cut,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+abdomen,cut,yes,family,0.2455,hira:2025+trauma-rule(backlog 13),no
+abdomen,cut,yes,ortho,0.2407,hira:2025+trauma-rule(backlog 13),no
+abdomen,cut,yes,internal,0.0139,hira:2025+trauma-rule(backlog 13),no
 abdomen,bleeding,no,internal,0.8971,hira:2025,no
 abdomen,bleeding,no,family,0.0532,hira:2025,no
 abdomen,bleeding,no,surgery,0.0497,hira:2025,no
-abdomen,bleeding,yes,family,0.4041,hira:2025,no
-abdomen,bleeding,yes,ortho,0.3962,hira:2025,no
-abdomen,bleeding,yes,surgery,0.1769,hira:2025,no
-abdomen,bleeding,yes,internal,0.0228,hira:2025,no
-abdomen,burn,yes,surgery,0.3852,hira:2025,no
-abdomen,burn,yes,family,0.2902,hira:2025,no
-abdomen,burn,yes,derm,0.2230,hira:2025,no
-abdomen,burn,yes,ortho,0.0787,hira:2025,no
-abdomen,burn,yes,internal,0.0229,hira:2025,no
+abdomen,bleeding,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+abdomen,bleeding,yes,family,0.2455,hira:2025+trauma-rule(backlog 13),no
+abdomen,bleeding,yes,ortho,0.2407,hira:2025+trauma-rule(backlog 13),no
+abdomen,bleeding,yes,internal,0.0139,hira:2025+trauma-rule(backlog 13),no
+abdomen,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+abdomen,burn,yes,family,0.2360,hira:2025+trauma-rule(backlog 13),no
+abdomen,burn,yes,derm,0.1814,hira:2025+trauma-rule(backlog 13),no
+abdomen,burn,yes,ortho,0.0640,hira:2025+trauma-rule(backlog 13),no
+abdomen,burn,yes,internal,0.0186,hira:2025+trauma-rule(backlog 13),no
 abdomen,fever,any,internal,0.6447,hira:2025,no
 abdomen,fever,any,family,0.3269,hira:2025,no
 abdomen,fever,any,ent,0.0166,hira:2025,no
@@ -251,6 +255,13 @@ abdomen,nausea,any,surgery,0.0149,hira:2025,no
 abdomen,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 abdomen,chemical,any,internal,0.4000,llm-draft(Claude Opus 5.5),no
 abdomen,chemical,any,family,0.2000,llm-draft(Claude Opus 5.5),no
+abdomen,rash,any,derm,0.4391,hira:2025,no
+abdomen,rash,any,family,0.3258,hira:2025,no
+abdomen,rash,any,internal,0.1373,hira:2025,no
+abdomen,rash,any,ortho,0.0412,hira:2025,no
+abdomen,rash,any,surgery,0.0231,hira:2025,no
+abdomen,rash,any,ent,0.0185,hira:2025,no
+abdomen,rash,any,neuro,0.0151,hira:2025,no
 back,pain,no,ortho,0.7081,hira:2025,no
 back,pain,no,family,0.2195,hira:2025,no
 back,pain,no,internal,0.0431,hira:2025,no
@@ -264,15 +275,15 @@ back,swelling,yes,ortho,0.7909,hira:2025,no
 back,swelling,yes,family,0.1485,hira:2025,no
 back,swelling,yes,surgery,0.0494,hira:2025,no
 back,swelling,yes,internal,0.0112,hira:2025,no
-back,cut,yes,ortho,0.3948,hira:2025,no
-back,cut,yes,family,0.3934,hira:2025,no
-back,cut,yes,surgery,0.1885,hira:2025,no
-back,cut,yes,internal,0.0233,hira:2025,no
-back,burn,yes,surgery,0.3852,hira:2025,no
-back,burn,yes,family,0.2902,hira:2025,no
-back,burn,yes,derm,0.2230,hira:2025,no
-back,burn,yes,ortho,0.0787,hira:2025,no
-back,burn,yes,internal,0.0229,hira:2025,no
+back,cut,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+back,cut,yes,ortho,0.2433,hira:2025+trauma-rule(backlog 13),no
+back,cut,yes,family,0.2424,hira:2025+trauma-rule(backlog 13),no
+back,cut,yes,internal,0.0144,hira:2025+trauma-rule(backlog 13),no
+back,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+back,burn,yes,family,0.2360,hira:2025+trauma-rule(backlog 13),no
+back,burn,yes,derm,0.1814,hira:2025+trauma-rule(backlog 13),no
+back,burn,yes,ortho,0.0640,hira:2025+trauma-rule(backlog 13),no
+back,burn,yes,internal,0.0186,hira:2025+trauma-rule(backlog 13),no
 back,numb,any,ortho,0.7081,hira:2025,no
 back,numb,any,family,0.2195,hira:2025,no
 back,numb,any,internal,0.0431,hira:2025,no
@@ -294,6 +305,18 @@ back,rash,any,ortho,0.0908,hira:2025,no
 back,rash,any,neuro,0.0376,hira:2025,no
 back,rash,any,surgery,0.0298,hira:2025,no
 back,rash,any,ent,0.0218,hira:2025,no
+back,bleeding,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+back,bleeding,yes,ortho,0.2433,hira:2025+trauma-rule(backlog 13),no
+back,bleeding,yes,family,0.2424,hira:2025+trauma-rule(backlog 13),no
+back,bleeding,yes,internal,0.0144,hira:2025+trauma-rule(backlog 13),no
+back,fever,any,internal,0.6629,hira:2025,no
+back,fever,any,family,0.2979,hira:2025,no
+back,fever,any,surgery,0.0206,hira:2025,no
+back,fever,any,ortho,0.0186,hira:2025,no
+back,nausea,no,internal,0.4879,hira:2025,no
+back,nausea,no,family,0.3894,hira:2025,no
+back,nausea,no,surgery,0.0788,hira:2025,no
+back,nausea,no,ortho,0.0439,hira:2025,no
 arm,pain,no,ortho,0.8347,hira:2025,no
 arm,pain,no,family,0.1413,hira:2025,no
 arm,pain,no,surgery,0.0131,hira:2025,no
@@ -309,21 +332,19 @@ arm,swelling,no,surgery,0.0145,hira:2025,no
 arm,swelling,yes,ortho,0.8931,hira:2025,no
 arm,swelling,yes,family,0.0848,hira:2025,no
 arm,swelling,yes,surgery,0.0221,hira:2025,no
-arm,cut,yes,ortho,0.5454,hira:2025,no
-arm,cut,yes,family,0.3092,hira:2025,no
-arm,cut,yes,surgery,0.1145,hira:2025,no
-arm,cut,yes,internal,0.0200,hira:2025,no
-arm,cut,yes,derm,0.0108,hira:2025,no
-arm,bleeding,yes,ortho,0.5454,hira:2025,no
-arm,bleeding,yes,family,0.3092,hira:2025,no
-arm,bleeding,yes,surgery,0.1145,hira:2025,no
-arm,bleeding,yes,internal,0.0200,hira:2025,no
-arm,bleeding,yes,derm,0.0108,hira:2025,no
-arm,burn,yes,surgery,0.3485,hira:2025,no
-arm,burn,yes,family,0.3047,hira:2025,no
-arm,burn,yes,derm,0.2377,hira:2025,no
-arm,burn,yes,ortho,0.0900,hira:2025,no
-arm,burn,yes,internal,0.0191,hira:2025,no
+arm,cut,yes,surgery,0.5031,hira:2025+trauma-rule(backlog 13),no
+arm,cut,yes,ortho,0.3099,hira:2025+trauma-rule(backlog 13),no
+arm,cut,yes,family,0.1757,hira:2025+trauma-rule(backlog 13),no
+arm,cut,yes,internal,0.0114,hira:2025+trauma-rule(backlog 13),no
+arm,bleeding,yes,surgery,0.5031,hira:2025+trauma-rule(backlog 13),no
+arm,bleeding,yes,ortho,0.3099,hira:2025+trauma-rule(backlog 13),no
+arm,bleeding,yes,family,0.1757,hira:2025+trauma-rule(backlog 13),no
+arm,bleeding,yes,internal,0.0114,hira:2025+trauma-rule(backlog 13),no
+arm,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+arm,burn,yes,family,0.2338,hira:2025+trauma-rule(backlog 13),no
+arm,burn,yes,derm,0.1824,hira:2025+trauma-rule(backlog 13),no
+arm,burn,yes,ortho,0.0691,hira:2025+trauma-rule(backlog 13),no
+arm,burn,yes,internal,0.0147,hira:2025+trauma-rule(backlog 13),no
 arm,numb,any,ortho,0.8584,hira:2025,no
 arm,numb,any,family,0.0913,hira:2025,no
 arm,numb,any,neuro,0.0390,hira:2025,no
@@ -340,6 +361,16 @@ arm,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 arm,chemical,any,derm,0.3500,llm-draft(Claude Opus 5.5),no
 arm,chemical,any,surgery,0.1500,llm-draft(Claude Opus 5.5),no
 arm,chemical,any,family,0.1000,llm-draft(Claude Opus 5.5),no
+arm,fever,any,family,0.3898,hira:2025,no
+arm,fever,any,derm,0.2945,hira:2025,no
+arm,fever,any,ortho,0.1308,hira:2025,no
+arm,fever,any,surgery,0.0806,hira:2025,no
+arm,fever,any,internal,0.0733,hira:2025,no
+arm,fever,any,ent,0.0310,hira:2025,no
+arm,rash,any,derm,0.5626,hira:2025,no
+arm,rash,any,family,0.3751,hira:2025,no
+arm,rash,any,internal,0.0464,hira:2025,no
+arm,rash,any,surgery,0.0160,hira:2025,no
 hand,pain,no,ortho,0.7988,hira:2025,no
 hand,pain,no,family,0.1413,hira:2025,no
 hand,pain,no,internal,0.0435,hira:2025,no
@@ -354,19 +385,19 @@ hand,swelling,no,surgery,0.0164,hira:2025,no
 hand,swelling,yes,ortho,0.8544,hira:2025,no
 hand,swelling,yes,family,0.1225,hira:2025,no
 hand,swelling,yes,surgery,0.0231,hira:2025,no
-hand,cut,yes,ortho,0.6056,hira:2025,no
-hand,cut,yes,family,0.2528,hira:2025,no
-hand,cut,yes,surgery,0.1238,hira:2025,no
-hand,cut,yes,internal,0.0178,hira:2025,no
-hand,bleeding,yes,ortho,0.6056,hira:2025,no
-hand,bleeding,yes,family,0.2528,hira:2025,no
-hand,bleeding,yes,surgery,0.1238,hira:2025,no
-hand,bleeding,yes,internal,0.0178,hira:2025,no
-hand,burn,yes,surgery,0.3546,hira:2025,no
-hand,burn,yes,family,0.3181,hira:2025,no
-hand,burn,yes,derm,0.2044,hira:2025,no
-hand,burn,yes,ortho,0.1020,hira:2025,no
-hand,burn,yes,internal,0.0209,hira:2025,no
+hand,cut,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+hand,cut,yes,ortho,0.3456,hira:2025+trauma-rule(backlog 13),no
+hand,cut,yes,family,0.1443,hira:2025+trauma-rule(backlog 13),no
+hand,cut,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+hand,bleeding,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+hand,bleeding,yes,ortho,0.3456,hira:2025+trauma-rule(backlog 13),no
+hand,bleeding,yes,family,0.1443,hira:2025+trauma-rule(backlog 13),no
+hand,bleeding,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+hand,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+hand,burn,yes,family,0.2464,hira:2025+trauma-rule(backlog 13),no
+hand,burn,yes,derm,0.1584,hira:2025+trauma-rule(backlog 13),no
+hand,burn,yes,ortho,0.0790,hira:2025+trauma-rule(backlog 13),no
+hand,burn,yes,internal,0.0162,hira:2025+trauma-rule(backlog 13),no
 hand,numb,any,ortho,0.7221,hira:2025,no
 hand,numb,any,neuro,0.1500,hira:2025,no
 hand,numb,any,family,0.0981,hira:2025,no
@@ -383,6 +414,12 @@ hand,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 hand,chemical,any,derm,0.3500,llm-draft(Claude Opus 5.5),no
 hand,chemical,any,surgery,0.1500,llm-draft(Claude Opus 5.5),no
 hand,chemical,any,family,0.1000,llm-draft(Claude Opus 5.5),no
+hand,fever,any,family,0.3898,hira:2025,no
+hand,fever,any,derm,0.2945,hira:2025,no
+hand,fever,any,ortho,0.1308,hira:2025,no
+hand,fever,any,surgery,0.0806,hira:2025,no
+hand,fever,any,internal,0.0733,hira:2025,no
+hand,fever,any,ent,0.0310,hira:2025,no
 leg,pain,no,ortho,0.7620,hira:2025,no
 leg,pain,no,family,0.1754,hira:2025,no
 leg,pain,no,internal,0.0440,hira:2025,no
@@ -397,21 +434,19 @@ leg,swelling,no,ortho,0.0569,hira:2025,no
 leg,swelling,yes,ortho,0.8667,hira:2025,no
 leg,swelling,yes,family,0.1151,hira:2025,no
 leg,swelling,yes,surgery,0.0181,hira:2025,no
-leg,cut,yes,ortho,0.5729,hira:2025,no
-leg,cut,yes,family,0.2917,hira:2025,no
-leg,cut,yes,surgery,0.1072,hira:2025,no
-leg,cut,yes,internal,0.0182,hira:2025,no
-leg,cut,yes,derm,0.0101,hira:2025,no
-leg,bleeding,yes,ortho,0.5729,hira:2025,no
-leg,bleeding,yes,family,0.2917,hira:2025,no
-leg,bleeding,yes,surgery,0.1072,hira:2025,no
-leg,bleeding,yes,internal,0.0182,hira:2025,no
-leg,bleeding,yes,derm,0.0101,hira:2025,no
-leg,burn,yes,surgery,0.4497,hira:2025,no
-leg,burn,yes,family,0.2556,hira:2025,no
-leg,burn,yes,derm,0.1808,hira:2025,no
-leg,burn,yes,ortho,0.0970,hira:2025,no
-leg,burn,yes,internal,0.0169,hira:2025,no
+leg,cut,yes,surgery,0.5028,hira:2025+trauma-rule(backlog 13),no
+leg,cut,yes,ortho,0.3226,hira:2025+trauma-rule(backlog 13),no
+leg,cut,yes,family,0.1643,hira:2025+trauma-rule(backlog 13),no
+leg,cut,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+leg,bleeding,yes,surgery,0.5028,hira:2025+trauma-rule(backlog 13),no
+leg,bleeding,yes,ortho,0.3226,hira:2025+trauma-rule(backlog 13),no
+leg,bleeding,yes,family,0.1643,hira:2025+trauma-rule(backlog 13),no
+leg,bleeding,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+leg,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+leg,burn,yes,family,0.2322,hira:2025+trauma-rule(backlog 13),no
+leg,burn,yes,derm,0.1643,hira:2025+trauma-rule(backlog 13),no
+leg,burn,yes,ortho,0.0881,hira:2025+trauma-rule(backlog 13),no
+leg,burn,yes,internal,0.0154,hira:2025+trauma-rule(backlog 13),no
 leg,numb,any,ortho,0.7074,hira:2025,no
 leg,numb,any,family,0.2197,hira:2025,no
 leg,numb,any,internal,0.0429,hira:2025,no
@@ -424,6 +459,16 @@ leg,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 leg,chemical,any,derm,0.3500,llm-draft(Claude Opus 5.5),no
 leg,chemical,any,surgery,0.1500,llm-draft(Claude Opus 5.5),no
 leg,chemical,any,family,0.1000,llm-draft(Claude Opus 5.5),no
+leg,fever,any,family,0.3898,hira:2025,no
+leg,fever,any,derm,0.2945,hira:2025,no
+leg,fever,any,ortho,0.1308,hira:2025,no
+leg,fever,any,surgery,0.0806,hira:2025,no
+leg,fever,any,internal,0.0733,hira:2025,no
+leg,fever,any,ent,0.0310,hira:2025,no
+leg,rash,any,derm,0.5626,hira:2025,no
+leg,rash,any,family,0.3751,hira:2025,no
+leg,rash,any,internal,0.0464,hira:2025,no
+leg,rash,any,surgery,0.0160,hira:2025,no
 foot,pain,no,ortho,0.7526,hira:2025,no
 foot,pain,no,family,0.1404,hira:2025,no
 foot,pain,no,internal,0.0927,hira:2025,no
@@ -438,19 +483,19 @@ foot,swelling,no,surgery,0.0316,hira:2025,no
 foot,swelling,yes,ortho,0.8710,hira:2025,no
 foot,swelling,yes,family,0.1136,hira:2025,no
 foot,swelling,yes,surgery,0.0154,hira:2025,no
-foot,cut,yes,ortho,0.6101,hira:2025,no
-foot,cut,yes,family,0.2776,hira:2025,no
-foot,cut,yes,surgery,0.0940,hira:2025,no
-foot,cut,yes,internal,0.0184,hira:2025,no
-foot,bleeding,yes,ortho,0.6101,hira:2025,no
-foot,bleeding,yes,family,0.2776,hira:2025,no
-foot,bleeding,yes,surgery,0.0940,hira:2025,no
-foot,bleeding,yes,internal,0.0184,hira:2025,no
-foot,burn,yes,surgery,0.4299,hira:2025,no
-foot,burn,yes,family,0.2820,hira:2025,no
-foot,burn,yes,derm,0.1372,hira:2025,no
-foot,burn,yes,ortho,0.1291,hira:2025,no
-foot,burn,yes,internal,0.0218,hira:2025,no
+foot,cut,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+foot,cut,yes,ortho,0.3367,hira:2025+trauma-rule(backlog 13),no
+foot,cut,yes,family,0.1532,hira:2025+trauma-rule(backlog 13),no
+foot,cut,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+foot,bleeding,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+foot,bleeding,yes,ortho,0.3367,hira:2025+trauma-rule(backlog 13),no
+foot,bleeding,yes,family,0.1532,hira:2025+trauma-rule(backlog 13),no
+foot,bleeding,yes,internal,0.0102,hira:2025+trauma-rule(backlog 13),no
+foot,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+foot,burn,yes,family,0.2473,hira:2025+trauma-rule(backlog 13),no
+foot,burn,yes,derm,0.1203,hira:2025+trauma-rule(backlog 13),no
+foot,burn,yes,ortho,0.1132,hira:2025+trauma-rule(backlog 13),no
+foot,burn,yes,internal,0.0191,hira:2025+trauma-rule(backlog 13),no
 foot,numb,any,ortho,0.6402,hira:2025,no
 foot,numb,any,family,0.2303,hira:2025,no
 foot,numb,any,neuro,0.0916,hira:2025,no
@@ -469,6 +514,12 @@ foot,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 foot,chemical,any,derm,0.3500,llm-draft(Claude Opus 5.5),no
 foot,chemical,any,surgery,0.1500,llm-draft(Claude Opus 5.5),no
 foot,chemical,any,family,0.1000,llm-draft(Claude Opus 5.5),no
+foot,fever,any,family,0.3898,hira:2025,no
+foot,fever,any,derm,0.2945,hira:2025,no
+foot,fever,any,ortho,0.1308,hira:2025,no
+foot,fever,any,surgery,0.0806,hira:2025,no
+foot,fever,any,internal,0.0733,hira:2025,no
+foot,fever,any,ent,0.0310,hira:2025,no
 skin,pain,any,family,0.3745,hira:2025,no
 skin,pain,any,derm,0.2771,hira:2025,no
 skin,pain,any,internal,0.1210,hira:2025,no
@@ -482,23 +533,21 @@ skin,swelling,any,internal,0.1463,hira:2025,no
 skin,swelling,any,ortho,0.0822,hira:2025,no
 skin,swelling,any,surgery,0.0537,hira:2025,no
 skin,swelling,any,ent,0.0267,hira:2025,no
-skin,cut,yes,derm,0.2945,hira:2025,no
-skin,cut,yes,family,0.2591,hira:2025,no
-skin,cut,yes,ortho,0.2514,hira:2025,no
-skin,cut,yes,surgery,0.1287,hira:2025,no
-skin,cut,yes,internal,0.0506,hira:2025,no
-skin,cut,yes,ent,0.0157,hira:2025,no
-skin,bleeding,yes,derm,0.2945,hira:2025,no
-skin,bleeding,yes,family,0.2591,hira:2025,no
-skin,bleeding,yes,ortho,0.2514,hira:2025,no
-skin,bleeding,yes,surgery,0.1287,hira:2025,no
-skin,bleeding,yes,internal,0.0506,hira:2025,no
-skin,bleeding,yes,ent,0.0157,hira:2025,no
-skin,burn,yes,derm,0.4254,hira:2025,no
-skin,burn,yes,family,0.3961,hira:2025,no
-skin,burn,yes,surgery,0.0812,hira:2025,no
-skin,burn,yes,ortho,0.0691,hira:2025,no
-skin,burn,yes,internal,0.0283,hira:2025,no
+skin,cut,yes,surgery,0.5045,hira:2025+trauma-rule(backlog 13),no
+skin,cut,yes,derm,0.1705,hira:2025+trauma-rule(backlog 13),no
+skin,cut,yes,family,0.1500,hira:2025+trauma-rule(backlog 13),no
+skin,cut,yes,ortho,0.1456,hira:2025+trauma-rule(backlog 13),no
+skin,cut,yes,internal,0.0293,hira:2025+trauma-rule(backlog 13),no
+skin,bleeding,yes,surgery,0.5045,hira:2025+trauma-rule(backlog 13),no
+skin,bleeding,yes,derm,0.1705,hira:2025+trauma-rule(backlog 13),no
+skin,bleeding,yes,family,0.1500,hira:2025+trauma-rule(backlog 13),no
+skin,bleeding,yes,ortho,0.1456,hira:2025+trauma-rule(backlog 13),no
+skin,bleeding,yes,internal,0.0293,hira:2025+trauma-rule(backlog 13),no
+skin,burn,yes,surgery,0.5000,hira:2025+trauma-rule(backlog 13),no
+skin,burn,yes,derm,0.2315,hira:2025+trauma-rule(backlog 13),no
+skin,burn,yes,family,0.2155,hira:2025+trauma-rule(backlog 13),no
+skin,burn,yes,ortho,0.0376,hira:2025+trauma-rule(backlog 13),no
+skin,burn,yes,internal,0.0154,hira:2025+trauma-rule(backlog 13),no
 skin,rash,any,derm,0.5069,hira:2025,no
 skin,rash,any,family,0.3748,hira:2025,no
 skin,rash,any,internal,0.0876,hira:2025,no
@@ -519,11 +568,10 @@ whole,swelling,any,family,0.2439,hira:2025,no
 whole,swelling,any,surgery,0.0671,hira:2025,no
 whole,swelling,any,ortho,0.0618,hira:2025,no
 whole,swelling,any,ent,0.0135,hira:2025,no
-whole,burn,yes,surgery,0.4164,hira:2025,no
-whole,burn,yes,family,0.3484,hira:2025,no
-whole,burn,yes,derm,0.2018,hira:2025,no
-whole,burn,yes,ortho,0.0234,hira:2025,no
-whole,burn,yes,internal,0.0100,hira:2025,no
+whole,burn,yes,surgery,0.5043,hira:2025+trauma-rule(backlog 13),no
+whole,burn,yes,family,0.3011,hira:2025+trauma-rule(backlog 13),no
+whole,burn,yes,derm,0.1744,hira:2025+trauma-rule(backlog 13),no
+whole,burn,yes,ortho,0.0202,hira:2025+trauma-rule(backlog 13),no
 whole,numb,any,neuro,0.6754,hira:2025,no
 whole,numb,any,ortho,0.1893,hira:2025,no
 whole,numb,any,internal,0.0601,hira:2025,no
@@ -565,3 +613,13 @@ whole,nausea,any,ortho,0.0101,hira:2025,no
 whole,chemical,any,occ,0.4000,llm-draft(Claude Opus 5.5),no
 whole,chemical,any,internal,0.4000,llm-draft(Claude Opus 5.5),no
 whole,chemical,any,family,0.2000,llm-draft(Claude Opus 5.5),no
+whole,cut,yes,surgery,0.5047,hira:2025+trauma-rule(backlog 13),no
+whole,cut,yes,derm,0.1686,hira:2025+trauma-rule(backlog 13),no
+whole,cut,yes,family,0.1514,hira:2025+trauma-rule(backlog 13),no
+whole,cut,yes,ortho,0.1459,hira:2025+trauma-rule(backlog 13),no
+whole,cut,yes,internal,0.0294,hira:2025+trauma-rule(backlog 13),no
+whole,bleeding,yes,surgery,0.5047,hira:2025+trauma-rule(backlog 13),no
+whole,bleeding,yes,derm,0.1686,hira:2025+trauma-rule(backlog 13),no
+whole,bleeding,yes,family,0.1514,hira:2025+trauma-rule(backlog 13),no
+whole,bleeding,yes,ortho,0.1459,hira:2025+trauma-rule(backlog 13),no
+whole,bleeding,yes,internal,0.0294,hira:2025+trauma-rule(backlog 13),no

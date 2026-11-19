@@ -94,10 +94,62 @@ def test_committed_tables_hold_out_every_guide_combo():
     ids, _ = dept.guide_set(MODELING / "data" / "tables", MODELING / "data" / "splits")
     train, held = dept_b.split_table(dept.read_button_department(MODELING / "data" / "tables"), ids)
     assert not any(dept.same_combo(c, v) for c in train for v in ids)
-    assert len(train) + len(held) == 129
+    assert len(train) + len(held) == 143  # backlog 13에서 빈 조합 14개를 채웠다
 
 
 def test_kl_divergence():
     T = np.array([[0.5, 0.5, 0.0], [1.0, 0.0, 0.0]])
     assert dept_b.kl_divergence(T, T).tolist() == [0.0, 0.0]
     assert dept_b.kl_divergence(T, np.array([[0.25, 0.25, 0.5]] * 2))[1] == pytest.approx(np.log(4))
+
+
+def test_seed_members_average_their_predictions():
+    _, X, T, w = dept_b.training_rows(DEPT_B_TABLE)
+    seeds = (dept_b.SEED, dept_b.SEED + 1)
+    both = dept_b.DeptB().fit(X, T, w, 1e-3, 100, hidden=8, seeds=seeds)
+    each = [dept_b.DeptB().fit(X, T, w, 1e-3, 100, hidden=8, seeds=(s,)) for s in seeds]
+    full = featurize_many([{"body_parts": ["hand"], "symptoms": ["cut"]}, {"body_parts": ["eye"], "symptoms": ["pain"], "injury": False}])
+    weights = json.loads(json.dumps(both.weights))
+    assert len(weights["members"]) == 2 and weights["hidden"] == 8
+    assert np.allclose(dept_b.predict_from_weights(weights, full), np.mean([m.predict_proba(full) for m in each], axis=0))
+
+
+def test_synthetic_pairs_share_one_part_and_mix():
+    table = {
+        "hand-cut-yes": {"ortho": 0.6, "surgery": 0.4},
+        "hand-pain-no": {"ortho": 1.0},
+        "hand-burn-any": {"surgery": 1.0},
+        "arm-cut-yes": {"surgery": 1.0},
+    }
+    pairs = {cid: (intake, mixed) for cid, intake, mixed in dept_b.synthetic_pairs(table, "mean")}
+    # 손상 있음·없음 쌍(hand-cut-yes + hand-pain-no)과 부위·증상이 둘 다 다른 쌍은 없다
+    assert sorted(pairs) == ["arm-cut-yes+hand-cut-yes", "hand-burn-any+hand-cut-yes", "hand-burn-any+hand-pain-no"]
+    intake, mixed = pairs["arm-cut-yes+hand-cut-yes"]
+    assert intake == {"body_parts": ["arm", "hand"], "symptoms": ["cut"], "injury": True}
+    assert mixed[DEPARTMENTS.index("surgery")] == pytest.approx(0.7)
+    assert pairs["hand-burn-any+hand-pain-no"][0]["injury"] is False
+    product = {cid: mixed for cid, _, mixed in dept_b.synthetic_pairs(table, "product")}
+    assert sum(product["arm-cut-yes+hand-cut-yes"]) == pytest.approx(1.0)
+    assert product["arm-cut-yes+hand-cut-yes"][DEPARTMENTS.index("surgery")] > 0.7  # 곱하면 둘 다 높은 쪽이 더 커진다
+
+
+def test_synthetic_rows_weigh_pair_weight_of_singles():
+    _, _, _, w = dept_b.training_rows(DEPT_B_TABLE, "mean", 0.5)
+    singles = len(dept_b.training_rows(DEPT_B_TABLE)[3])
+    assert w[:singles].sum() == pytest.approx(len(DEPT_B_TABLE)) and w[singles:].sum() == pytest.approx(0.5 * len(DEPT_B_TABLE))
+
+
+def test_choose_setting_needs_more_than_v0_spread():
+    def cv(mean, std=0.0):
+        return {"summary": {"kl_mean": {"mean": mean, "std": std}}}
+
+    assert dept_b.choose_setting({"v0": cv(0.40, 0.05), "wide": cv(0.36)}) == "v0"
+    assert dept_b.choose_setting({"v0": cv(0.40, 0.05), "wide": cv(0.34), "wide_seeds5": cv(0.30)}) == "wide_seeds5"
+
+
+def test_backoff_uses_same_combo_then_part_averages():
+    train = {"hand-cut-yes": {"surgery": 1.0}, "hand-pain-no": {"ortho": 1.0}, "arm-rash-any": {"derm": 1.0}}
+    out = dept_b.backoff_predictor(train, ["hand-cut-any", "arm-cut-yes"])
+    assert out[0][DEPARTMENTS.index("surgery")] == 1.0
+    # arm-cut: 같은 부위(arm-rash) 평균과 같은 증상(hand-cut) 평균의 평균
+    assert out[1][DEPARTMENTS.index("derm")] == pytest.approx(0.5) and out[1][DEPARTMENTS.index("surgery")] == pytest.approx(0.5)

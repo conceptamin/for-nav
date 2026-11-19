@@ -1,6 +1,6 @@
-# 13. 진료과 모델 B 개선(평가셋 확대 → 표 보강 → 모델 정리, v3)
+# 13. 진료과 모델 B 개선(평가셋 확대 → 표 보강 → 모델 정리, v4)
 
-상태: 대기
+상태: 완료
 의존: 07, 08, 16, 18
 
 ## 목표
@@ -21,21 +21,138 @@
   - PyTorch 등 새 학습 의존성(07에서 numpy로 정함)
 
 ## 입력·출력
-- 입력: `data/tables/{button_department,department_guide,button_kcd}.csv`, `data/splits/dept_valid.txt`, `models/dept_a/v2/`
-- 출력: 갱신한 표와 `dept_valid.txt`(+ 해시), `models/dept_b/v3/`, `models/ensemble/v3/`, `reports/dept_b_v3{,_test}.{json,md}`, `reports/ensemble_v3{,_test}.{json,md}`
+- 입력: `data/tables/{button_department,department_guide,button_kcd}.csv`, `data/splits/{dept_valid,dept_test}.txt`, `models/dept_a/v3/`
+- 출력: 갱신한 표, `models/dept_b/v4/`, `models/ensemble/v4/`, `reports/dept_b_cv.{json,md}`, `reports/dept_b_v4.{json,md}`, `reports/ensemble_v4{,_test}.{json,md}`, 서빙 `models/*/v4/`(16 이후 버전, 메모)
 
 ## 완료 기준
-- [ ] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 같은 seed 두 번 → 같은 `weights.json` 해시
-- [ ] 진료과 평가셋 크기와 `reviewed=yes` 건수를 분자·분모로 기록
-- [ ] 표 반복 교차검증의 평균·편차를 v0 설정과 v3 설정 모두 기록
-- [ ] 안내 조합 Top-1·Top-2를 v0, 표 조회(상한), 로지스틱, v3로 같은 셋에서 비교(외상·산재 조합 따로)
-- [ ] 07의 표에 없는 조합 6개를 v3로 다시 보고, 온몸 + 출혈(손상 있음) 상위 2개에 외과 또는 정형외과가 있는지 적음
-- [ ] 여러 개 선택 입력 성능을 Kaggle valid 44건으로 v0과 v3 비교
-- [ ] 앙상블 v3 조정 셋 결과와 leave-one-out, test 1회 결과를 08 표와 같은 형식으로 기록
-- [ ] 학습 1분 이내
+산출물 버전은 16이 v3을 써서 v4로 올렸다(메모 2026-11-16). 아래 "v3"은 v4로 읽는다. Kaggle valid는 16의 재분할로 44건이 아니라 18건이다.
+- [x] `uv run ruff check . && uv run ruff format --check .`, `uv run pytest` 통과. 같은 seed 두 번 → 같은 `weights.json` 해시
+- [x] 진료과 평가셋 크기와 `reviewed=yes` 건수를 분자·분모로 기록
+- [x] 표 반복 교차검증의 평균·편차를 v0 설정과 v3 설정 모두 기록
+- [x] 안내 조합 Top-1·Top-2를 v0, 표 조회(상한), 로지스틱, v3로 같은 셋에서 비교(외상·산재 조합 따로)
+- [x] 07의 표에 없는 조합 6개를 v3로 다시 보고, 온몸 + 출혈(손상 있음) 상위 2개에 외과 또는 정형외과가 있는지 적음
+- [x] 여러 개 선택 입력 성능을 Kaggle valid 44건으로 v0과 v3 비교
+- [x] 앙상블 v3 조정 셋 결과와 leave-one-out, test 1회 결과를 08 표와 같은 형식으로 기록
+- [x] 학습 1분 이내
 
 ## 결과
-(구현 후 작성)
+2026-11-19. 브랜치 `modeling/dept-b-v4`.
+
+### 결정(사용자, 2026-11-19)
+- 3단계 외상 보정: **규칙 보정**. 손상 있음 + 베임·출혈·화상 조합의 외과 비율을 0.5로 올리고 나머지 0.5를 원래 비율대로 나눈다. 외과가 이미 0.5 이상이거나 백엔드 명확 케이스 부위(눈·치아)는 두고, 통증·부기·못 움직임은 HIRA 그대로다(`labels/department.py` `trauma_rule`). 바꾼 행은 `source`가 `hira:2025+trauma-rule(backlog 13)`이다.
+  - 주의: 규칙은 행마다가 아니라 증상 종류로 한 번에 정했지만, 이 문서 메모의 진단(검증 조합 `skin-cut-yes`·`skin-burn-yes`의 안내 정답이 외과)을 이미 본 뒤에 정했다. 그래서 조정용 안내 조합 수치는 낙관적일 수 있고, 판단은 최종 평가용 31건으로 한다.
+- 4단계 빈 조합: **말이 되는 쌍만** KCD를 붙여 채운다(`llm-draft(Claude Opus 5.5)`, `reviewed=no`). 평가 조합과 같은 조합(`skin-burn-no`, `skin-numb-*`, `whole-breath-no` 등)은 어차피 학습에서 빠져 넣지 않았다. 이물감(foreign)은 백엔드가 부위와 관계없이 안과로 보내는 명확 케이스라 넣지 않았다. 귀·코 외상(`ent-*-yes`)은 3단 KCD(S02 = 얼굴뼈·치아 골절)가 치과로 쏠려 넣지 않았다.
+- 5단계 여러 개 선택: **학습 때 코드로만 합성**(`dept_b.synthetic_pairs`). 표는 단일 조합 그대로다.
+- 서빙: **v4로 바꿈**(test 결과를 본 뒤 사용자 결정).
+
+### 1단계 평가셋(18)
+- 조정용 안내 조합 29건 중 `reviewed=yes` 23 / 29. 최종 평가용 31건은 모두 `reviewed=yes`(31 / 36행, 18에서 고정)
+- 최종 평가용 조합과 같은 표 행은 학습에서 뺀다(18). 그래서 표 143개 조합 중 학습 90, 조정용으로 뺀 27, 최종 평가 때문에 뺀 26이다. 옛 v0은 이 26개를 학습했다
+
+### 3·4단계 표 변경 (`uv run python scripts/build_tables.py`)
+- `button_kcd.csv` 129 → 143행(+14): `ent-breath-no`, `chest-dizzy-no`, `abdomen-rash-any`, `back-bleeding-yes`, `back-fever-any`, `back-nausea-no`, `arm-fever-any`, `arm-rash-any`, `hand-fever-any`, `leg-fever-any`, `leg-rash-any`, `foot-fever-any`, `whole-cut-yes`, `whole-bleeding-yes`
+- 표에 있는 부위·증상 쌍 110 → 124 / 195. 명확 케이스 충돌 0
+- 외상 보정한 조합 32개(손상 있음 + 베임 11·출혈 10·화상 11, 146행). `disease_department.csv`는 바뀌지 않았다
+
+### 2·5·6단계 반복 교차검증 (`uv run python scripts/cv_dept_b.py` → `reports/dept_b_cv.{json,md}`, 1334초)
+학습 표 90개 조합, 조합 단위 5겹 × 반복 5번(seed 다름). 바깥 겹마다 안쪽 5겹으로 하이퍼파라미터를 다시 고른다. 값은 반복 5번의 평균 ± 표준편차, Top-k 정답은 표 1순위, 분모는 반복마다 90.
+
+| 설정 | KL 평균 | Top-1 | Top-2 |
+|---|---|---|---|
+| v0(은닉 32, L2 3개, 에폭 25 간격) — **선택** | 0.3239 ± 0.0340 | 0.7800 ± 0.0257 | 0.8933 ± 0.0166 |
+| 넓힌 범위(은닉 8·16·32 × L2 5개 × 에폭 5 간격) | 0.3148 ± 0.0236 | 0.8067 ± 0.0218 | 0.9022 ± 0.0191 |
+| 넓힌 범위 + seed 5개 평균 | 0.3080 ± 0.0237 | 0.8244 ± 0.0257 | 0.9155 ± 0.0054 |
+| + 두 개 선택 합성(평균) | 0.3051 ± 0.0223 | 0.8111 ± 0.0172 | 0.9089 ± 0.0044 |
+| + 두 개 선택 합성(곱한 뒤 정규화) | 0.3205 ± 0.0190 | 0.7933 ± 0.0334 | 0.8911 ± 0.0129 |
+| 다항 로지스틱(C=1) | 0.5510 ± 0.0186 | 0.6933 ± 0.0151 | 0.8089 ± 0.0109 |
+| 표 조회 + 백오프 | 0.5958 ± 0.1359 | 0.6933 ± 0.0166 | 0.8689 ± 0.0178 |
+
+- 고르는 규칙(구현 전에 정함, `dept_b.choose_setting`): KL 평균이 가장 낮은 후보가 v0보다 v0의 반복 간 표준편차(0.0340) 넘게 낮을 때만 바꾼다. 가장 낮은 합성(평균)이 0.0188 낮아 넘지 못해 **v0 설정을 유지**했다. 합성 방식은 고른다면 평균이다(곱은 v0과 차이 없음)
+- 한계: 교차검증은 단일 조합만 정답이 있어, 합성 행이 여러 개 선택 입력을 낫게 하는지는 이 셋으로 재지 못한다
+
+### v4 학습 (`uv run python scripts/train_dept_b.py --round v4 --setting v0` → `models/dept_b/v4/`, `reports/dept_b_v4.{json,md}`, 3.1초)
+- 은닉 32, L2 0.001, 에폭 500(교차검증 소프트 교차엔트로피 1.2865). 학습 119행(any 펼침 포함)
+- 같은 seed로 다시 학습 → `weights.json` sha256 `c9bc617e…cdffd` 같음
+- 뺀 표 행 27개 KL 평균 0.3075(옛 v0 0.2676), 학습 행 0.0233. 뺀 표 행 기준 Top-1 22 / 27, Top-2 25 / 27
+
+조정용 안내 조합 29건(같은 셋, 정답 = 안내 1순위)
+
+| 모델 | 전체 Top-1 | 전체 Top-2 | 외상·산재 Top-1 | 외상·산재 Top-2 | 그 밖 Top-1 | 그 밖 Top-2 |
+|---|---|---|---|---|---|---|
+| 옛 v0(최종 평가 조합도 학습) | 18 / 29 | 23 / 29 | 6 / 10 | 7 / 10 | 12 / 19 | 16 / 19 |
+| 표 상한(뺀 행 포함, 보정 후 표) | 20 / 29 | 25 / 29 | 5 / 10 | 7 / 10 | 15 / 19 | 18 / 19 |
+| 로지스틱 | 14 / 29 | 18 / 29 | 5 / 10 | 7 / 10 | 9 / 19 | 11 / 19 |
+| 표 조회 + 백오프 | 14 / 29 | 18 / 29 | 6 / 10 | 6 / 10 | 8 / 19 | 12 / 19 |
+| **v4** | 17 / 29 | 23 / 29 | 5 / 10 | 8 / 10 | 12 / 19 | 15 / 19 |
+
+- 표 상한이 18 / 29·23 / 29(10-31 진단)에서 20 / 29·25 / 29로 오른 것은 외상 보정이 `skin-cut-yes`·`skin-burn-yes` 행의 1순위를 외과로 바꿨기 때문이다(위 주의)
+- `reviewed=yes` 23건만: v4 Top-1 16 / 23, Top-2 19 / 23
+
+07의 표에 없던 조합 6개(v4 상위 2개)
+
+| 입력 | 옛 v0 | v4 |
+|---|---|---|
+| 등 + 출혈, 손상 있음 | ortho·family | surgery·family (이번에 표에 넣은 조합) |
+| 팔 + 발진 | derm·family | derm·family (이번에 표에 넣은 조합) |
+| 치아 + 발열 | dental·internal | ent·internal (백엔드 명확 케이스가 치과로 먼저 보낸다) |
+| 온몸 + 출혈, 손상 있음 | family·internal | **surgery**·family (이번에 표에 넣은 조합) |
+| 손 + 베임·출혈, 손상 있음 | ortho·family | surgery·ortho |
+| 머리·온몸 + 발열·기침, 손상 없음 | internal·ent | internal·ent |
+
+- 온몸 + 출혈(손상 있음) 상위 2개에 외과가 있다. 다만 이번에 표를 채워 더는 "표에 없는 조합"이 아니다
+
+여러 개 선택 입력: 질환·증상 valid(정답 = 질환의 1순위 진료과, 버튼 = 부위 + 증상 수)
+
+| 묶음 | 옛 v0 Top-1 | 옛 v0 Top-2 | v4 Top-1 | v4 Top-2 |
+|---|---|---|---|---|
+| Kaggle valid | 6 / 18 | 13 / 18 | 7 / 18 | 10 / 18 |
+| DDXPlus valid | 171 / 375 | 253 / 375 | 158 / 375 | 203 / 375 |
+| 버튼 2개 | 0 / 9 | 5 / 9 | 5 / 9 | 5 / 9 |
+| 버튼 3~4개 | 17 / 50 | 22 / 50 | 18 / 50 | 21 / 50 |
+| 버튼 5개 이상 | 160 / 334 | 239 / 334 | 142 / 334 | 187 / 334 |
+
+- v4가 여러 개 선택 입력에서 더 나빠졌다(Top-2 266 / 393 → 213 / 393). 학습에서 뺀 최종 평가 조합 26개에 내과 쪽 조합(가슴·숨참, 가슴·발열, 머리·발열, 귀코목·기침 등)이 많아, 내과 정답이 83%인 DDXPlus에서 손해를 본 것으로 본다(원인 분석은 test를 보지 않고 valid와 표만으로 했다)
+
+### 앙상블 v4 (`uv run python scripts/tune_ensemble.py --round v4`, 08·16과 같은 규칙)
+선택: A 0.5 : B 0.5, 폴백 기준 0.25(v3은 A 0.4). 칸은 Top-1 · Top-2 · 폴백
+
+| 조정 셋 | A 단독 | B 단독 | 0.5 : 0.5 폴백 없음 | 선택 | leave-one-out |
+|---|---|---|---|---|---|
+| 안내 조합 | 3/29 · 10/29 · 0/29 | 17/29 · 23/29 · 0/29 | 13/29 · 23/29 · 0/29 | 14/29 · 24/29 · 2/29 | 13/29 · 22/29 · 1/29 |
+| Kaggle valid | 12/18 · 14/18 · 0/18 | 7/18 · 10/18 · 0/18 | 12/18 · 14/18 · 0/18 | 12/18 · 14/18 · 0/18 | 12/18 · 14/18 · 0/18 |
+| DDXPlus valid | 355/375 · 365/375 · 0/375 | 158/375 · 203/375 · 0/375 | 303/375 · 364/375 · 0/375 | 303/375 · 364/375 · 0/375 | 303/375 · 364/375 · 0/375 |
+| 안내 외상·산재 | 0/10 · 3/10 · 0/10 | 5/10 · 8/10 · 0/10 | 5/10 · 8/10 · 0/10 | 5/10 · 8/10 · 0/10 | 5/10 · 7/10 · 0/10 |
+
+### test 1회 (`uv run python scripts/evaluate.py --model ensemble --round v4` → `reports/ensemble_v4_test.{json,md}`)
+| 평가셋 | 앙상블 v4 — 최종 | A 단독 | B v4 단독 | 참고: 앙상블 v3 | 참고: B v3(옛 v0) |
+|---|---|---|---|---|---|
+| test 전체 | 368/492 · 467/492 | 454/492 · 471/492 | 187/492 · 266/492 | 329/492 · 473/492 | 211/492 · 356/492 |
+| test Kaggle | 15/22 · 18/22 | 16/22 · 18/22 | 11/22 · 13/22 | 16/22 · 19/22 | 12/22 · 16/22 |
+| test DDXPlus | 353/470 · 449/470 | 438/470 · 453/470 | 176/470 · 253/470 | 313/470 · 454/470 | 199/470 · 340/470 |
+| 최종 안내 31건 | 14/31 · 22/31 | 6/31 · 15/31 | 17/31 · 20/31 | 19/31 · 23/31 | 19/31 · 24/31 |
+| 최종 안내 외상·산재 | 1/3 · 2/3 | 0/3 · 0/3 | 2/3 · 2/3 | 2/3 · 2/3 | 2/3 · 2/3 |
+
+(칸은 Top-1 · Top-2, 폴백 발동은 모두 0)
+- v3의 최종 안내 31건 수치는 모델 B가 그 31건 중 26건과 같은 조합을 학습한 값이라 부풀려져 있다. v4는 그 조합을 빼고 학습해 처음으로 깨끗한 값이다. 깨끗한 값끼리 비교할 v3 수치는 없다
+- Kaggle·DDXPlus test(모델 B가 학습하지 않은 데이터)에서는 v4 앙상블 Top-2가 v3보다 6건 낮다(467 / 492, 473 / 492)
+
+### 서빙 (`uv run python scripts/export_models.py`)
+- `models/{dept_a,dept_b,ensemble}/v4/`. `predict.VERSION = "v4"`. 모델 A는 v3 그대로(`model.txt` sha256 `920b09c4…a2ed3b`), `dept_b/v4/weights.json` `c9bc617e…cdffd`, `ensemble/v4/ensemble.json` `370ec69f…a6e4`
+- 백엔드 확인: `MODEL_DIR=../modeling/models`로 `POST /api/triage`(손 + 베임, 손상 있음) → 200, `model.departmentProba` 상위 internal 0.42 · surgery 0.26 · ortho 0.17. 모델 A의 외상 입력 내과 쏠림(16 메모)은 그대로다
+- 검사: `uv run ruff check . && uv run ruff format --check .` 통과, `uv run pytest` 167 passed. backend `uv run pytest` 3101 passed
+
+### 만든·바꾼 파일
+- `src/fornav_modeling/labels/department.py`: `trauma_rule`, `build_button_department`에서 적용
+- `src/fornav_modeling/models/dept_b.py`: `Setting`·`CANDIDATES`, 은닉 크기 선택, seed 여러 개 평균(`members`), `synthetic_pairs`, `repeated_cv`, 비교 기준선(로지스틱, 표 조회 + 백오프, 표 상한), `choose_setting`, `cv_round`, 질환·증상 valid 평가
+- `src/fornav_modeling/predict.py`: `members` 평균 추론, `VERSION = "v4"`
+- `scripts/cv_dept_b.py`(새 명령), `scripts/train_dept_b.py`(`--setting`)
+- `ensemble.py` `COMPONENTS`, `export.py` v4
+- 표: `button_kcd.csv`, `button_department.csv`. 리포트: `dept_b_cv`, `dept_b_v4`, `ensemble_v4`, `ensemble_v4_test`
+
+### 남은 문제
+- 모델 B가 내과 쪽 조합을 잃어 여러 개 선택 입력에서 약해졌다. 최종 평가 조합과 겹치지 않는 내과 조합을 표에 더하는 것이 다음 후보다
+- 넓힌 범위·seed 평균·합성은 교차검증에서 조금 나았지만 정한 문턱을 넘지 못했다. 표가 커지면 다시 잰다
+- 외상 보정 규칙과 새 KCD 행(`reviewed=no`)은 사람 검토가 남았다
 
 ## 메모
 - **진단(2026-10-31, 스크래치 스크립트, 저장소 변경 없음)**
