@@ -29,7 +29,7 @@ FALLBACK = ("family", "internal")
 _FALLBACK_INDEX = [DEPARTMENTS.index(d) for d in FALLBACK]
 INITIAL_WEIGHT = 0.5
 ENSEMBLE_FILE = "ensemble.json"
-COMPONENTS = {"dept_a": "v3", "dept_b": "v0"}  # 조정에 쓰는 학습 라운드. dept_b/v0은 서빙 v2·v3과 같은 가중치
+COMPONENTS = {"dept_a": "v3", "dept_b": "v4"}  # 조정에 쓰는 학습 라운드. dept_b/v4는 backlog 13에서 다시 학습한 모델 B
 TUNING_SOURCES = ("guide", *split.SOURCES)
 
 

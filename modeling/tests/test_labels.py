@@ -1,5 +1,6 @@
 # 진료과 표(backlog 05).
 
+import csv
 import re
 from pathlib import Path
 
@@ -213,3 +214,21 @@ def test_read_counts_sums_both_files_and_drops_unmapped(tmp_path):
     assert hira.department_ratio(counts, ["J00"]) == {"internal": 2 / 3, "family": 1 / 3}
     with pytest.raises(KeyError):
         hira.department_ratio(counts, ["J00", "Z99"])
+
+
+def test_trauma_rule_raises_surgery_for_open_wounds_and_burns():
+    dist = {"ortho": 0.6, "family": 0.3, "surgery": 0.1}
+    ruled = dept.trauma_rule("hand", "cut", "yes", dist)
+    assert ruled == {"surgery": 0.5, "ortho": pytest.approx(0.3333, abs=1e-4), "family": pytest.approx(0.1667, abs=1e-4)}
+    assert dept.trauma_rule("hand", "cut", "no", dist) is None  # 손상 없음
+    assert dept.trauma_rule("hand", "pain", "yes", dist) is None  # 통증은 정형외과 그대로
+    assert dept.trauma_rule("eye", "cut", "yes", dist) is None  # 명확 케이스 부위는 규칙이 먼저다
+    assert dept.trauma_rule("skin", "burn", "yes", {"surgery": 0.6, "derm": 0.4}) is None  # 이미 0.5 이상
+
+
+def test_committed_button_table_marks_trauma_rule_rows():
+    rows = list(csv.DictReader((TABLES / dept.BUTTON_DEPARTMENT).open(encoding="utf-8")))
+    ruled = {(r["body_part"], r["symptom"], r["injury"]) for r in rows if r["source"].endswith(dept.TRAUMA_RULE_SOURCE)}
+    assert ruled and all(i == "yes" and s in dept.TRAUMA_RULE_SYMPTOMS for _, s, i in ruled)
+    table = dept.read_button_department(TABLES)
+    assert all(table[dept.combo_id(*key)]["surgery"] >= dept.TRAUMA_RULE_SURGERY for key in ruled)

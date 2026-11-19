@@ -5,6 +5,8 @@
 # - 불러올 때 코드를 실행하는 형식은 쓰지 않는다(LightGBM 텍스트, JSON).
 # - v3(backlog 16): 모델 A는 Kaggle+DDXPlus를 벡터 단위로 나눈 train으로 다시 학습했고(dept_a/v3), 모델 B는 다시 학습하지 않아
 #   v2와 같은 가중치(dept_b/v0)다. 최종 수치는 새 test와 18의 최종 평가용 안내 조합을 한 번 평가한 ensemble_v3_test에서 옮긴다.
+# - v4(backlog 13): 모델 A는 v3 그대로(dept_a/v3), 모델 B는 보정·보강한 표에서 최종 평가 조합을 빼고 다시 학습했다(dept_b/v4).
+#   앙상블은 다시 조정했고(ensemble/v4), 최종 수치는 ensemble_v4_test에서 옮긴다.
 
 import hashlib
 import json
@@ -13,8 +15,8 @@ from pathlib import Path
 from fornav_modeling.predict import VERSION
 from fornav_modeling.schema import DEPARTMENTS
 
-SOURCE_ROUNDS = {"dept_a": "v3", "dept_b": "v0"}
-ENSEMBLE_ROUND = "v3"
+SOURCE_ROUNDS = {"dept_a": "v3", "dept_b": "v4"}
+ENSEMBLE_ROUND = "v4"
 COPIED = {"dept_a": ("model.txt", "departments.json"), "dept_b": ("weights.json",)}
 
 
@@ -44,7 +46,7 @@ def export_all(models_dir: Path, reports_dir: Path, created_at: str) -> dict[str
 
 def report_names() -> dict[str, str]:
     """리포트 열쇠(dept_a, dept_a_test, …) → 파일 이름(dept_a_v3, dept_a_v3_test, …). 모델 B의 test 수치는 앙상블 test의 B 단독이다
-    (옛 dept_b_v0_test는 벡터가 겹친 옛 분할의 값이다)."""
+    (모델 B는 질환·증상 데이터로 학습하지 않아 따로 test 평가하지 않는다)."""
     rounds = SOURCE_ROUNDS | {"ensemble": ENSEMBLE_ROUND}
     names = {f"{name}{suffix}": f"{name}_{r}{suffix}" for name, r in rounds.items() for suffix in ("", "_test")}
     del names["dept_b_test"]
@@ -71,10 +73,11 @@ def _dept_b_meta(meta: dict, reports: dict) -> dict:
     return {
         "model_version": f"dept_b/{VERSION}",
         "source": f"dept_b/{SOURCE_ROUNDS['dept_b']}",
-        **{k: meta[k] for k in ("seed", "architecture", "hyperparams", "data", "feature_names", "input_features", "labels")},
-        "same_weights_as": "dept_b/v2(다시 학습하지 않았다, backlog 16)",
+        **{k: meta[k] for k in ("seed", "setting", "architecture", "hyperparams", "data", "feature_names", "input_features", "labels")},
+        "table_changes": "외상 보정 규칙과 빈 조합 채우기(backlog 13). 최종 평가용 조합과 같은 표 행은 학습에서 뺐다",
         "metrics": {
             "valid_guide": _topk(results["guide"]["all"]),
+            "valid_symptom": {k: _topk(v) for k, v in results["symptom_valid"].items()},
             "valid_guide_trauma": _topk(results["guide"]["trauma"]),
             "held_out_table_kl_mean": results["held_out_table"]["kl_mean"],
             "final_test": _final(reports["ensemble_test"], "B 단독"),

@@ -1,0 +1,358 @@
+{
+  "model_version": "dept_b/v4",
+  "source": "dept_b/v4",
+  "seed": 20261028,
+  "setting": {
+    "name": "v0",
+    "hidden": [
+      32
+    ],
+    "l2": [
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "max_epochs": 3000,
+    "check_every": 25,
+    "seeds": [
+      20261028
+    ],
+    "pairs": null,
+    "pair_weight": 0.5
+  },
+  "architecture": {
+    "inputs": 29,
+    "hidden": 32,
+    "activation": "relu",
+    "outputs": 10,
+    "members": 1,
+    "optimizer": "전체 배치 Adam, 학습률 0.01"
+  },
+  "hyperparams": {
+    "hidden": 32,
+    "l2": 0.001,
+    "epochs": 500,
+    "cv_soft_cross_entropy": 1.286487,
+    "grid": {
+      "hidden=32 l2=0.0001": {
+        "best_epochs": 100,
+        "best_loss": 1.317036
+      },
+      "hidden=32 l2=0.001": {
+        "best_epochs": 500,
+        "best_loss": 1.286487
+      },
+      "hidden=32 l2=0.01": {
+        "best_epochs": 75,
+        "best_loss": 1.384975
+      }
+    },
+    "rule": "학습 조합 5겹 교차검증(조합 단위), 은닉 [32] × L2 [0.0001, 0.001, 0.01] × 에폭 25~3000(25 간격), 겹 밖 소프트 교차엔트로피 평균 최소",
+    "train_rows": 119
+  },
+  "data": {
+    "button_department_sha256": "94b711dfb1b5872990d10ce713a5d962ed185f0d6551b5127e735c0cde9db39f",
+    "dept_valid_sha256": "867210c86a65c6e9cbae07035e11baf5fde6430a3d1c4e4890388c054c285b75",
+    "combos": {
+      "table": 143,
+      "train": 90,
+      "held_out": 27,
+      "dropped_final": 26,
+      "guide": 29
+    },
+    "train_rows": 119
+  },
+  "feature_names": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "pain_score",
+    "mental",
+    "age_group",
+    "onset",
+    "sex_male",
+    "injury"
+  ],
+  "input_features": [
+    "body_head",
+    "body_eye",
+    "body_ent",
+    "body_teeth",
+    "body_chest",
+    "body_abdomen",
+    "body_back",
+    "body_arm",
+    "body_hand",
+    "body_leg",
+    "body_foot",
+    "body_skin",
+    "body_whole",
+    "symptom_pain",
+    "symptom_swelling",
+    "symptom_cut",
+    "symptom_bleeding",
+    "symptom_burn",
+    "symptom_numb",
+    "symptom_cantmove",
+    "symptom_fever",
+    "symptom_cough",
+    "symptom_dizzy",
+    "symptom_rash",
+    "symptom_nausea",
+    "symptom_breath",
+    "symptom_chemical",
+    "symptom_foreign",
+    "injury"
+  ],
+  "labels": [
+    "ortho",
+    "surgery",
+    "internal",
+    "ophth",
+    "ent",
+    "derm",
+    "dental",
+    "neuro",
+    "family",
+    "occ"
+  ],
+  "table_changes": "외상 보정 규칙과 빈 조합 채우기(backlog 13). 최종 평가용 조합과 같은 표 행은 학습에서 뺐다",
+  "metrics": {
+    "valid_guide": {
+      "top1": {
+        "n": 17,
+        "of": 29,
+        "value": 0.5862
+      },
+      "top2": {
+        "n": 23,
+        "of": 29,
+        "value": 0.7931
+      }
+    },
+    "valid_symptom": {
+      "전체": {
+        "top1": {
+          "n": 165,
+          "of": 393,
+          "value": 0.4198
+        },
+        "top2": {
+          "n": 213,
+          "of": 393,
+          "value": 0.542
+        }
+      },
+      "kaggle": {
+        "top1": {
+          "n": 7,
+          "of": 18,
+          "value": 0.3889
+        },
+        "top2": {
+          "n": 10,
+          "of": 18,
+          "value": 0.5556
+        }
+      },
+      "ddxplus": {
+        "top1": {
+          "n": 158,
+          "of": 375,
+          "value": 0.4213
+        },
+        "top2": {
+          "n": 203,
+          "of": 375,
+          "value": 0.5413
+        }
+      },
+      "버튼 2개": {
+        "top1": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "top2": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        }
+      },
+      "버튼 3~4개": {
+        "top1": {
+          "n": 18,
+          "of": 50,
+          "value": 0.36
+        },
+        "top2": {
+          "n": 21,
+          "of": 50,
+          "value": 0.42
+        }
+      },
+      "버튼 5개 이상": {
+        "top1": {
+          "n": 142,
+          "of": 334,
+          "value": 0.4251
+        },
+        "top2": {
+          "n": 187,
+          "of": 334,
+          "value": 0.5599
+        }
+      }
+    },
+    "valid_guide_trauma": {
+      "top1": {
+        "n": 5,
+        "of": 10,
+        "value": 0.5
+      },
+      "top2": {
+        "n": 8,
+        "of": 10,
+        "value": 0.8
+      }
+    },
+    "held_out_table_kl_mean": 0.3075,
+    "final_test": {
+      "test_전체": {
+        "top1": {
+          "n": 187,
+          "of": 492,
+          "value": 0.3801
+        },
+        "top2": {
+          "n": 266,
+          "of": 492,
+          "value": 0.5407
+        },
+        "final": true
+      },
+      "test_kaggle": {
+        "top1": {
+          "n": 11,
+          "of": 22,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 13,
+          "of": 22,
+          "value": 0.5909
+        },
+        "final": true
+      },
+      "test_ddxplus": {
+        "top1": {
+          "n": 176,
+          "of": 470,
+          "value": 0.3745
+        },
+        "top2": {
+          "n": 253,
+          "of": 470,
+          "value": 0.5383
+        },
+        "final": true
+      },
+      "test_버튼 2개": {
+        "top1": {
+          "n": 4,
+          "of": 18,
+          "value": 0.2222
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "final": true
+      },
+      "test_버튼 3~4개": {
+        "top1": {
+          "n": 11,
+          "of": 49,
+          "value": 0.2245
+        },
+        "top2": {
+          "n": 21,
+          "of": 49,
+          "value": 0.4286
+        },
+        "final": true
+      },
+      "test_버튼 5개 이상": {
+        "top1": {
+          "n": 172,
+          "of": 425,
+          "value": 0.4047
+        },
+        "top2": {
+          "n": 231,
+          "of": 425,
+          "value": 0.5435
+        },
+        "final": true
+      }
+    },
+    "final_guide": {
+      "final_guide": {
+        "top1": {
+          "n": 17,
+          "of": 31,
+          "value": 0.5484
+        },
+        "top2": {
+          "n": 20,
+          "of": 31,
+          "value": 0.6452
+        },
+        "final": true
+      },
+      "final_guide_trauma": {
+        "top1": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 2,
+          "of": 3,
+          "value": 0.6667
+        },
+        "final": true
+      }
+    }
+  },
+  "created_at": "2026-11-19T07:48:27+00:00",
+  "files": {
+    "weights.json": "c9bc617eddf9c072b683c310dc0c149099db6e956171c1707d53f63d116cdffd"
+  }
+}

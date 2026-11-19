@@ -6,6 +6,9 @@
 #   symptom_map.csv       Kaggle 증상 → 우리 BodyPart·Symptom(모델 A가 Kaggle 행을 버튼 입력으로 옮길 때 쓴다). 없으면 none
 # 만드는 표(build_tables.py가 쓴다. 손으로 고치지 않는다)
 #   disease_department.csv, button_department.csv  KCD 코드의 HIRA 환자 비율. 1% 미만은 버리고 다시 합을 1로 맞춘다
+#   button_department.csv의 외상 보정(backlog 13, 사용자 승인 2026-11-19): HIRA는 상병 기준이라 손상 있음 + 베임·출혈·화상 조합이
+#   정형외과·피부과·가정의학과로 쏠린다. 병원 안내 원칙(열린 상처·화상의 처치는 외과)에 따라 그 조합의 외과 비율을 0.5로 올리고
+#   나머지 0.5를 원래 비율대로 나눈다. 백엔드 명확 케이스 부위(눈·치아)는 규칙이 먼저라 두고, 바꾼 행은 source에 표시한다.
 # 질환명은 이 모듈과 모델 A 내부까지만 쓴다(06 이후 산출물에 내보내지 않는다).
 # DDXPlus 질환(backlog 16): KCD 3단 코드가 Kaggle 질환과 겹치면 그 Kaggle 라벨로 합치고, 아니면 `ddxplus:<KCD>` 라벨을 쓴다
 #   (KCD가 같은 DDXPlus 질환끼리도 한 라벨이 된다). 진료과 비율은 어느 쪽이든 그 KCD의 HIRA 분포다(사용자 결정, 2026-11-19).
@@ -187,14 +190,32 @@ def build_disease_department(disease_kcd: dict[str, list[str]], counts: dict[str
     return rows
 
 
+TRAUMA_RULE_SYMPTOMS = ("cut", "bleeding", "burn")
+TRAUMA_RULE_SURGERY = 0.5
+TRAUMA_RULE_SOURCE = "+trauma-rule(backlog 13)"
+
+
+def trauma_rule(body_part: str, symptom: str, injury: str, dist: Distribution) -> Distribution | None:
+    """손상 있음 + 베임·출혈·화상 조합이면 외과 비율을 TRAUMA_RULE_SURGERY로 올린 분포, 아니면(이미 그 이상이어도) None."""
+    if injury != "yes" or symptom not in TRAUMA_RULE_SYMPTOMS or clear_case(body_part, symptom) is not None:
+        return None
+    if dist.get("surgery", 0.0) >= TRAUMA_RULE_SURGERY:
+        return None
+    rest = {d: p for d, p in dist.items() if d != "surgery"}
+    total = sum(rest.values())
+    return trim({"surgery": TRAUMA_RULE_SURGERY} | {d: (1 - TRAUMA_RULE_SURGERY) * p / total for d, p in rest.items()})
+
+
 def build_button_department(button_kcd: list[dict[str, str]], counts: dict[str, Counter]) -> list[dict[str, str]]:
-    """조합마다 KCD 코드의 HIRA 비율(source=hira:2025) 또는 manual 분포(source=입력 표의 source)."""
+    """조합마다 KCD 코드의 HIRA 비율(source=hira:2025) 또는 manual 분포(source=입력 표의 source). 외상 보정한 행은 source 뒤에 표시."""
     rows = []
     for row in button_kcd:
         if row["kcd"]:
             dist, source = trim(department_ratio(counts, row["kcd"].split("|"))), HIRA_SOURCE
         else:
             dist, source = parse_manual(row["manual"]), row["source"]
+        if (ruled := trauma_rule(row["body_part"], row["symptom"], row["injury"], dist)) is not None:
+            dist, source = ruled, source + TRAUMA_RULE_SOURCE
         for department, prob in dist.items():
             rows.append(
                 {k: row[k] for k in ("body_part", "symptom", "injury")}

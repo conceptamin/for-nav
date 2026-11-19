@@ -1,0 +1,1471 @@
+{
+  "round": "v4",
+  "params": {
+    "weight_a": 0.5,
+    "weight_b": 0.5,
+    "fallback_threshold": 0.25,
+    "fallback": [
+      "family",
+      "internal"
+    ],
+    "components": {
+      "dept_a": "dept_a/v3",
+      "dept_b": "dept_b/v4"
+    }
+  },
+  "rule": "조정 셋(안내 조합 29 + Kaggle valid 18 + DDXPlus valid 375). 출처마다 Top-2 적중률을 같은 비중으로 더한 값 최대. 같으면 A 가중치가 0.5에 가까운 쪽, 그다음 폴백 기준값이 높은 쪽",
+  "grid": {
+    "weights": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "thresholds": [
+      0.0,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6
+    ],
+    "top2_hits_by_source": {
+      "0.0": {
+        "0.0": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 203
+        },
+        "0.15": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 203
+        },
+        "0.2": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 203
+        },
+        "0.25": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 204
+        },
+        "0.3": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 204
+        },
+        "0.35": {
+          "guide": 23,
+          "kaggle": 10,
+          "ddxplus": 205
+        },
+        "0.4": {
+          "guide": 21,
+          "kaggle": 10,
+          "ddxplus": 211
+        },
+        "0.45": {
+          "guide": 21,
+          "kaggle": 9,
+          "ddxplus": 225
+        },
+        "0.5": {
+          "guide": 20,
+          "kaggle": 9,
+          "ddxplus": 253
+        },
+        "0.55": {
+          "guide": 19,
+          "kaggle": 10,
+          "ddxplus": 268
+        },
+        "0.6": {
+          "guide": 18,
+          "kaggle": 10,
+          "ddxplus": 279
+        }
+      },
+      "0.1": {
+        "0.0": {
+          "guide": 22,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.15": {
+          "guide": 22,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.2": {
+          "guide": 22,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.25": {
+          "guide": 22,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.3": {
+          "guide": 21,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.35": {
+          "guide": 22,
+          "kaggle": 11,
+          "ddxplus": 237
+        },
+        "0.4": {
+          "guide": 20,
+          "kaggle": 10,
+          "ddxplus": 250
+        },
+        "0.45": {
+          "guide": 20,
+          "kaggle": 10,
+          "ddxplus": 273
+        },
+        "0.5": {
+          "guide": 19,
+          "kaggle": 11,
+          "ddxplus": 289
+        },
+        "0.55": {
+          "guide": 18,
+          "kaggle": 11,
+          "ddxplus": 302
+        },
+        "0.6": {
+          "guide": 16,
+          "kaggle": 13,
+          "ddxplus": 311
+        }
+      },
+      "0.2": {
+        "0.0": {
+          "guide": 22,
+          "kaggle": 12,
+          "ddxplus": 278
+        },
+        "0.15": {
+          "guide": 22,
+          "kaggle": 12,
+          "ddxplus": 278
+        },
+        "0.2": {
+          "guide": 22,
+          "kaggle": 12,
+          "ddxplus": 278
+        },
+        "0.25": {
+          "guide": 22,
+          "kaggle": 12,
+          "ddxplus": 276
+        },
+        "0.3": {
+          "guide": 21,
+          "kaggle": 12,
+          "ddxplus": 276
+        },
+        "0.35": {
+          "guide": 20,
+          "kaggle": 12,
+          "ddxplus": 279
+        },
+        "0.4": {
+          "guide": 20,
+          "kaggle": 12,
+          "ddxplus": 298
+        },
+        "0.45": {
+          "guide": 19,
+          "kaggle": 13,
+          "ddxplus": 313
+        },
+        "0.5": {
+          "guide": 18,
+          "kaggle": 13,
+          "ddxplus": 320
+        },
+        "0.55": {
+          "guide": 16,
+          "kaggle": 14,
+          "ddxplus": 328
+        },
+        "0.6": {
+          "guide": 16,
+          "kaggle": 14,
+          "ddxplus": 330
+        }
+      },
+      "0.3": {
+        "0.0": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 334
+        },
+        "0.15": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 334
+        },
+        "0.2": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 334
+        },
+        "0.25": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 334
+        },
+        "0.3": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 330
+        },
+        "0.35": {
+          "guide": 20,
+          "kaggle": 13,
+          "ddxplus": 331
+        },
+        "0.4": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 338
+        },
+        "0.45": {
+          "guide": 18,
+          "kaggle": 14,
+          "ddxplus": 337
+        },
+        "0.5": {
+          "guide": 17,
+          "kaggle": 14,
+          "ddxplus": 338
+        },
+        "0.55": {
+          "guide": 15,
+          "kaggle": 14,
+          "ddxplus": 334
+        },
+        "0.6": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 333
+        }
+      },
+      "0.4": {
+        "0.0": {
+          "guide": 21,
+          "kaggle": 13,
+          "ddxplus": 356
+        },
+        "0.15": {
+          "guide": 21,
+          "kaggle": 13,
+          "ddxplus": 356
+        },
+        "0.2": {
+          "guide": 21,
+          "kaggle": 13,
+          "ddxplus": 356
+        },
+        "0.25": {
+          "guide": 21,
+          "kaggle": 13,
+          "ddxplus": 355
+        },
+        "0.3": {
+          "guide": 21,
+          "kaggle": 13,
+          "ddxplus": 352
+        },
+        "0.35": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 341
+        },
+        "0.4": {
+          "guide": 19,
+          "kaggle": 14,
+          "ddxplus": 337
+        },
+        "0.45": {
+          "guide": 17,
+          "kaggle": 14,
+          "ddxplus": 339
+        },
+        "0.5": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 334
+        },
+        "0.55": {
+          "guide": 11,
+          "kaggle": 14,
+          "ddxplus": 334
+        },
+        "0.6": {
+          "guide": 7,
+          "kaggle": 14,
+          "ddxplus": 332
+        }
+      },
+      "0.5": {
+        "0.0": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.15": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.2": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.25": {
+          "guide": 24,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.3": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 362
+        },
+        "0.35": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 354
+        },
+        "0.4": {
+          "guide": 19,
+          "kaggle": 14,
+          "ddxplus": 339
+        },
+        "0.45": {
+          "guide": 14,
+          "kaggle": 14,
+          "ddxplus": 335
+        },
+        "0.5": {
+          "guide": 8,
+          "kaggle": 14,
+          "ddxplus": 333
+        },
+        "0.55": {
+          "guide": 7,
+          "kaggle": 14,
+          "ddxplus": 331
+        },
+        "0.6": {
+          "guide": 7,
+          "kaggle": 14,
+          "ddxplus": 327
+        }
+      },
+      "0.6": {
+        "0.0": {
+          "guide": 22,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.15": {
+          "guide": 22,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.2": {
+          "guide": 22,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.25": {
+          "guide": 22,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.3": {
+          "guide": 20,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.35": {
+          "guide": 18,
+          "kaggle": 14,
+          "ddxplus": 360
+        },
+        "0.4": {
+          "guide": 16,
+          "kaggle": 14,
+          "ddxplus": 350
+        },
+        "0.45": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 341
+        },
+        "0.5": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 331
+        },
+        "0.55": {
+          "guide": 8,
+          "kaggle": 14,
+          "ddxplus": 327
+        },
+        "0.6": {
+          "guide": 7,
+          "kaggle": 14,
+          "ddxplus": 327
+        }
+      },
+      "0.7": {
+        "0.0": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.15": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.2": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.25": {
+          "guide": 23,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.3": {
+          "guide": 22,
+          "kaggle": 14,
+          "ddxplus": 363
+        },
+        "0.35": {
+          "guide": 17,
+          "kaggle": 14,
+          "ddxplus": 363
+        },
+        "0.4": {
+          "guide": 15,
+          "kaggle": 14,
+          "ddxplus": 356
+        },
+        "0.45": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 345
+        },
+        "0.5": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 336
+        },
+        "0.55": {
+          "guide": 11,
+          "kaggle": 14,
+          "ddxplus": 328
+        },
+        "0.6": {
+          "guide": 9,
+          "kaggle": 14,
+          "ddxplus": 327
+        }
+      },
+      "0.8": {
+        "0.0": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.15": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.2": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.25": {
+          "guide": 21,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.3": {
+          "guide": 19,
+          "kaggle": 14,
+          "ddxplus": 366
+        },
+        "0.35": {
+          "guide": 19,
+          "kaggle": 14,
+          "ddxplus": 363
+        },
+        "0.4": {
+          "guide": 16,
+          "kaggle": 14,
+          "ddxplus": 360
+        },
+        "0.45": {
+          "guide": 15,
+          "kaggle": 14,
+          "ddxplus": 355
+        },
+        "0.5": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 351
+        },
+        "0.55": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 337
+        },
+        "0.6": {
+          "guide": 11,
+          "kaggle": 13,
+          "ddxplus": 333
+        }
+      },
+      "0.9": {
+        "0.0": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.15": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.2": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.25": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.3": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.35": {
+          "guide": 12,
+          "kaggle": 14,
+          "ddxplus": 367
+        },
+        "0.4": {
+          "guide": 13,
+          "kaggle": 14,
+          "ddxplus": 364
+        },
+        "0.45": {
+          "guide": 11,
+          "kaggle": 14,
+          "ddxplus": 358
+        },
+        "0.5": {
+          "guide": 11,
+          "kaggle": 14,
+          "ddxplus": 355
+        },
+        "0.55": {
+          "guide": 10,
+          "kaggle": 13,
+          "ddxplus": 351
+        },
+        "0.6": {
+          "guide": 9,
+          "kaggle": 13,
+          "ddxplus": 337
+        }
+      },
+      "1.0": {
+        "0.0": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.15": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.2": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.25": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.3": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.35": {
+          "guide": 9,
+          "kaggle": 14,
+          "ddxplus": 365
+        },
+        "0.4": {
+          "guide": 10,
+          "kaggle": 14,
+          "ddxplus": 362
+        },
+        "0.45": {
+          "guide": 11,
+          "kaggle": 14,
+          "ddxplus": 361
+        },
+        "0.5": {
+          "guide": 9,
+          "kaggle": 13,
+          "ddxplus": 356
+        },
+        "0.55": {
+          "guide": 9,
+          "kaggle": 13,
+          "ddxplus": 355
+        },
+        "0.6": {
+          "guide": 9,
+          "kaggle": 13,
+          "ddxplus": 351
+        }
+      }
+    },
+    "rows_by_source": {
+      "guide": 29,
+      "kaggle": 18,
+      "ddxplus": 375
+    }
+  },
+  "rows": {
+    "all": 422,
+    "guide": 29,
+    "kaggle_valid": 18,
+    "ddxplus_valid": 375,
+    "guide_reviewed_yes": 23,
+    "guide_trauma": 10,
+    "valid_버튼 2개": 9,
+    "valid_버튼 3~4개": 50,
+    "valid_버튼 5개 이상": 334
+  },
+  "results": {
+    "A 단독": {
+      "all": {
+        "top1": {
+          "n": 370,
+          "of": 422,
+          "value": 0.8768
+        },
+        "top2": {
+          "n": 389,
+          "of": 422,
+          "value": 0.9218
+        },
+        "fallback": {
+          "n": 0,
+          "of": 422,
+          "value": 0.0
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 3,
+          "of": 29,
+          "value": 0.1034
+        },
+        "top2": {
+          "n": 10,
+          "of": 29,
+          "value": 0.3448
+        },
+        "fallback": {
+          "n": 0,
+          "of": 29,
+          "value": 0.0
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 12,
+          "of": 18,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "ddxplus_valid": {
+        "top1": {
+          "n": 355,
+          "of": 375,
+          "value": 0.9467
+        },
+        "top2": {
+          "n": 365,
+          "of": 375,
+          "value": 0.9733
+        },
+        "fallback": {
+          "n": 0,
+          "of": 375,
+          "value": 0.0
+        }
+      },
+      "guide_reviewed_yes": {
+        "top1": {
+          "n": 3,
+          "of": 23,
+          "value": 0.1304
+        },
+        "top2": {
+          "n": 8,
+          "of": 23,
+          "value": 0.3478
+        },
+        "fallback": {
+          "n": 0,
+          "of": 23,
+          "value": 0.0
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        },
+        "top2": {
+          "n": 3,
+          "of": 10,
+          "value": 0.3
+        },
+        "fallback": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 2개": {
+        "top1": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 9,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 3~4개": {
+        "top1": {
+          "n": 35,
+          "of": 50,
+          "value": 0.7
+        },
+        "top2": {
+          "n": 43,
+          "of": 50,
+          "value": 0.86
+        },
+        "fallback": {
+          "n": 0,
+          "of": 50,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 5개 이상": {
+        "top1": {
+          "n": 326,
+          "of": 334,
+          "value": 0.976
+        },
+        "top2": {
+          "n": 330,
+          "of": 334,
+          "value": 0.988
+        },
+        "fallback": {
+          "n": 0,
+          "of": 334,
+          "value": 0.0
+        }
+      }
+    },
+    "B 단독": {
+      "all": {
+        "top1": {
+          "n": 182,
+          "of": 422,
+          "value": 0.4313
+        },
+        "top2": {
+          "n": 236,
+          "of": 422,
+          "value": 0.5592
+        },
+        "fallback": {
+          "n": 0,
+          "of": 422,
+          "value": 0.0
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 17,
+          "of": 29,
+          "value": 0.5862
+        },
+        "top2": {
+          "n": 23,
+          "of": 29,
+          "value": 0.7931
+        },
+        "fallback": {
+          "n": 0,
+          "of": 29,
+          "value": 0.0
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 7,
+          "of": 18,
+          "value": 0.3889
+        },
+        "top2": {
+          "n": 10,
+          "of": 18,
+          "value": 0.5556
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "ddxplus_valid": {
+        "top1": {
+          "n": 158,
+          "of": 375,
+          "value": 0.4213
+        },
+        "top2": {
+          "n": 203,
+          "of": 375,
+          "value": 0.5413
+        },
+        "fallback": {
+          "n": 0,
+          "of": 375,
+          "value": 0.0
+        }
+      },
+      "guide_reviewed_yes": {
+        "top1": {
+          "n": 16,
+          "of": 23,
+          "value": 0.6957
+        },
+        "top2": {
+          "n": 19,
+          "of": 23,
+          "value": 0.8261
+        },
+        "fallback": {
+          "n": 0,
+          "of": 23,
+          "value": 0.0
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 5,
+          "of": 10,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 8,
+          "of": 10,
+          "value": 0.8
+        },
+        "fallback": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 2개": {
+        "top1": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "top2": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "fallback": {
+          "n": 0,
+          "of": 9,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 3~4개": {
+        "top1": {
+          "n": 18,
+          "of": 50,
+          "value": 0.36
+        },
+        "top2": {
+          "n": 21,
+          "of": 50,
+          "value": 0.42
+        },
+        "fallback": {
+          "n": 0,
+          "of": 50,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 5개 이상": {
+        "top1": {
+          "n": 142,
+          "of": 334,
+          "value": 0.4251
+        },
+        "top2": {
+          "n": 187,
+          "of": 334,
+          "value": 0.5599
+        },
+        "fallback": {
+          "n": 0,
+          "of": 334,
+          "value": 0.0
+        }
+      }
+    },
+    "0.5 : 0.5, 폴백 없음": {
+      "all": {
+        "top1": {
+          "n": 328,
+          "of": 422,
+          "value": 0.7773
+        },
+        "top2": {
+          "n": 401,
+          "of": 422,
+          "value": 0.9502
+        },
+        "fallback": {
+          "n": 0,
+          "of": 422,
+          "value": 0.0
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 13,
+          "of": 29,
+          "value": 0.4483
+        },
+        "top2": {
+          "n": 23,
+          "of": 29,
+          "value": 0.7931
+        },
+        "fallback": {
+          "n": 0,
+          "of": 29,
+          "value": 0.0
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 12,
+          "of": 18,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "ddxplus_valid": {
+        "top1": {
+          "n": 303,
+          "of": 375,
+          "value": 0.808
+        },
+        "top2": {
+          "n": 364,
+          "of": 375,
+          "value": 0.9707
+        },
+        "fallback": {
+          "n": 0,
+          "of": 375,
+          "value": 0.0
+        }
+      },
+      "guide_reviewed_yes": {
+        "top1": {
+          "n": 12,
+          "of": 23,
+          "value": 0.5217
+        },
+        "top2": {
+          "n": 19,
+          "of": 23,
+          "value": 0.8261
+        },
+        "fallback": {
+          "n": 0,
+          "of": 23,
+          "value": 0.0
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 5,
+          "of": 10,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 8,
+          "of": 10,
+          "value": 0.8
+        },
+        "fallback": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 2개": {
+        "top1": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "top2": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 9,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 3~4개": {
+        "top1": {
+          "n": 33,
+          "of": 50,
+          "value": 0.66
+        },
+        "top2": {
+          "n": 43,
+          "of": 50,
+          "value": 0.86
+        },
+        "fallback": {
+          "n": 0,
+          "of": 50,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 5개 이상": {
+        "top1": {
+          "n": 277,
+          "of": 334,
+          "value": 0.8293
+        },
+        "top2": {
+          "n": 329,
+          "of": 334,
+          "value": 0.985
+        },
+        "fallback": {
+          "n": 0,
+          "of": 334,
+          "value": 0.0
+        }
+      }
+    },
+    "선택(A 0.5, 폴백 기준 0.25)": {
+      "all": {
+        "top1": {
+          "n": 329,
+          "of": 422,
+          "value": 0.7796
+        },
+        "top2": {
+          "n": 402,
+          "of": 422,
+          "value": 0.9526
+        },
+        "fallback": {
+          "n": 2,
+          "of": 422,
+          "value": 0.0047
+        }
+      },
+      "guide": {
+        "top1": {
+          "n": 14,
+          "of": 29,
+          "value": 0.4828
+        },
+        "top2": {
+          "n": 24,
+          "of": 29,
+          "value": 0.8276
+        },
+        "fallback": {
+          "n": 2,
+          "of": 29,
+          "value": 0.069
+        }
+      },
+      "kaggle_valid": {
+        "top1": {
+          "n": 12,
+          "of": 18,
+          "value": 0.6667
+        },
+        "top2": {
+          "n": 14,
+          "of": 18,
+          "value": 0.7778
+        },
+        "fallback": {
+          "n": 0,
+          "of": 18,
+          "value": 0.0
+        }
+      },
+      "ddxplus_valid": {
+        "top1": {
+          "n": 303,
+          "of": 375,
+          "value": 0.808
+        },
+        "top2": {
+          "n": 364,
+          "of": 375,
+          "value": 0.9707
+        },
+        "fallback": {
+          "n": 0,
+          "of": 375,
+          "value": 0.0
+        }
+      },
+      "guide_reviewed_yes": {
+        "top1": {
+          "n": 13,
+          "of": 23,
+          "value": 0.5652
+        },
+        "top2": {
+          "n": 20,
+          "of": 23,
+          "value": 0.8696
+        },
+        "fallback": {
+          "n": 2,
+          "of": 23,
+          "value": 0.087
+        }
+      },
+      "guide_trauma": {
+        "top1": {
+          "n": 5,
+          "of": 10,
+          "value": 0.5
+        },
+        "top2": {
+          "n": 8,
+          "of": 10,
+          "value": 0.8
+        },
+        "fallback": {
+          "n": 0,
+          "of": 10,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 2개": {
+        "top1": {
+          "n": 5,
+          "of": 9,
+          "value": 0.5556
+        },
+        "top2": {
+          "n": 6,
+          "of": 9,
+          "value": 0.6667
+        },
+        "fallback": {
+          "n": 0,
+          "of": 9,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 3~4개": {
+        "top1": {
+          "n": 33,
+          "of": 50,
+          "value": 0.66
+        },
+        "top2": {
+          "n": 43,
+          "of": 50,
+          "value": 0.86
+        },
+        "fallback": {
+          "n": 0,
+          "of": 50,
+          "value": 0.0
+        }
+      },
+      "valid_버튼 5개 이상": {
+        "top1": {
+          "n": 277,
+          "of": 334,
+          "value": 0.8293
+        },
+        "top2": {
+          "n": 329,
+          "of": 334,
+          "value": 0.985
+        },
+        "fallback": {
+          "n": 0,
+          "of": 334,
+          "value": 0.0
+        }
+      }
+    }
+  },
+  "leave_one_out": {
+    "all": {
+      "top1": {
+        "n": 328,
+        "of": 422,
+        "value": 0.7773
+      },
+      "top2": {
+        "n": 400,
+        "of": 422,
+        "value": 0.9479
+      },
+      "fallback": {
+        "n": 1,
+        "of": 422,
+        "value": 0.0024
+      }
+    },
+    "guide": {
+      "top1": {
+        "n": 13,
+        "of": 29,
+        "value": 0.4483
+      },
+      "top2": {
+        "n": 22,
+        "of": 29,
+        "value": 0.7586
+      },
+      "fallback": {
+        "n": 1,
+        "of": 29,
+        "value": 0.0345
+      }
+    },
+    "kaggle_valid": {
+      "top1": {
+        "n": 12,
+        "of": 18,
+        "value": 0.6667
+      },
+      "top2": {
+        "n": 14,
+        "of": 18,
+        "value": 0.7778
+      },
+      "fallback": {
+        "n": 0,
+        "of": 18,
+        "value": 0.0
+      }
+    },
+    "ddxplus_valid": {
+      "top1": {
+        "n": 303,
+        "of": 375,
+        "value": 0.808
+      },
+      "top2": {
+        "n": 364,
+        "of": 375,
+        "value": 0.9707
+      },
+      "fallback": {
+        "n": 0,
+        "of": 375,
+        "value": 0.0
+      }
+    },
+    "guide_reviewed_yes": {
+      "top1": {
+        "n": 12,
+        "of": 23,
+        "value": 0.5217
+      },
+      "top2": {
+        "n": 19,
+        "of": 23,
+        "value": 0.8261
+      },
+      "fallback": {
+        "n": 1,
+        "of": 23,
+        "value": 0.0435
+      }
+    },
+    "guide_trauma": {
+      "top1": {
+        "n": 5,
+        "of": 10,
+        "value": 0.5
+      },
+      "top2": {
+        "n": 7,
+        "of": 10,
+        "value": 0.7
+      },
+      "fallback": {
+        "n": 0,
+        "of": 10,
+        "value": 0.0
+      }
+    },
+    "valid_버튼 2개": {
+      "top1": {
+        "n": 5,
+        "of": 9,
+        "value": 0.5556
+      },
+      "top2": {
+        "n": 6,
+        "of": 9,
+        "value": 0.6667
+      },
+      "fallback": {
+        "n": 0,
+        "of": 9,
+        "value": 0.0
+      }
+    },
+    "valid_버튼 3~4개": {
+      "top1": {
+        "n": 33,
+        "of": 50,
+        "value": 0.66
+      },
+      "top2": {
+        "n": 43,
+        "of": 50,
+        "value": 0.86
+      },
+      "fallback": {
+        "n": 0,
+        "of": 50,
+        "value": 0.0
+      }
+    },
+    "valid_버튼 5개 이상": {
+      "top1": {
+        "n": 277,
+        "of": 334,
+        "value": 0.8293
+      },
+      "top2": {
+        "n": 329,
+        "of": 334,
+        "value": 0.985
+      },
+      "fallback": {
+        "n": 0,
+        "of": 334,
+        "value": 0.0
+      }
+    }
+  },
+  "guide_reviewed": {
+    "yes": 23,
+    "of": 29
+  }
+}
