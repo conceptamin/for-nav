@@ -1,13 +1,19 @@
 flowchart TD
     subgraph DEPT["🏥 진료과 추천 (서빙 중)"]
-        D6["✅ 06 Model A<br/>LightGBM<br/>test Top-1 56/59 · Top-2 58/59<br/>가이드셋 Top-2 10/29"]
-        D7["✅ 07 Model B<br/>표 기반 MLP<br/>test Top-1 27/59 · Top-2 45/59<br/>가이드셋 Top-2 23/29"]
-        D8["✅ 08 앙상블 v1<br/>0.5 · 0.5 · 임계 0.25<br/>test Top-1 52/59 · Top-2 58/59<br/>튜닝셋 Top-2 65/73"]
-        D13["⏳ 13 Model B 개선<br/>표 자체 상한 = 현재 B<br/>평가셋 확장 → v3 계획"]
+        D6["✅ 06 Model A<br/>LightGBM<br/>test Top-2 58/59 (벡터가 겹친 분할)<br/>가이드셋 Top-2 10/29"]
+        D7["✅ 07 Model B<br/>표 기반 MLP<br/>test Top-2 45/59 (벡터가 겹친 분할)<br/>가이드셋 Top-2 23/29"]
+        D8["✅ 08 앙상블 v1<br/>0.5 · 0.5 · 임계 0.25<br/>test Top-2 58/59 (벡터가 겹친 분할)<br/>튜닝셋 Top-2 65/73"]
+        D17["✅ 17 DDXPlus 수집<br/>2,372행 · 벡터 2,067"]
+        D18["✅ 18 최종 평가용 안내 조합<br/>31조합 고정 (사람 검토)"]
+        D16["✅ 16 벡터 단위 재분할 · v3<br/>A 0.4 · B 0.6 · 임계 0.25<br/>최종 평가 31조합 Top-2 23/31<br/>test Kaggle Top-2 19/22"]
+        D13["⏳ 13 Model B 개선<br/>B 재학습 (최종 조합 제외)<br/>외상 입력 내과 쏠림 → v4 계획"]
         D14["⏳ 14 센터 상담 데이터<br/>어휘 커버리지 점검만"]
         D6 --> D8
         D7 --> D8
-        D8 -.-> D13
+        D8 --> D16
+        D17 --> D16
+        D18 --> D16
+        D16 -.-> D13
         D13 -.-> D14
     end
 
@@ -27,7 +33,7 @@ flowchart TD
     classDef pending fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
     classDef removed fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
     classDef past fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
-    class D6,D7,D8 done
+    class D6,D7,D8,D16,D17,D18 done
     class D13,D14 pending
     class A4,A9,A10,A12 past
     class A15 removed
