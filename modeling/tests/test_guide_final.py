@@ -96,3 +96,39 @@ def test_only_freeze_and_evaluation_read_final_answers():
         if relative not in GUIDE_TEST_READERS and pattern.search(path.read_text()):
             offenders.append(relative)
     assert offenders == []
+
+
+# 모델 B 학습용 안내 조합(backlog 19) -------------------------------------------------
+
+
+def test_guide_train_rows_never_touch_evaluation_combos(tmp_path):
+    tables, splits = tmp_path / "tables", tmp_path / "splits"
+    tables.mkdir()
+    splits.mkdir()
+    (splits / dept.VALID_IDS).write_text("back-pain-no\n")
+    (splits / dept.TEST_IDS).write_text("hand-cut-yes\n")
+    header = ",".join(dept.GUIDE_TRAIN_COLUMNS) + "\n"
+
+    def train_row(bodies, symptoms, injury, department, alt="", n=0):
+        return f"{bodies},{symptoms},{injury},{department},{alt},https://example.org/{n},ex,제목,,test,no\n"
+
+    (tables / dept.GUIDE_TRAIN).write_text(
+        header
+        + train_row("back", "pain", "any", "ortho", n=1)  # back-pain-no와 같은 조합
+        + train_row("hand|arm", "cut", "yes", "surgery", n=2)  # 쌍 hand-cut-yes가 최종 평가 조합
+        + train_row("chest", "dizzy|nausea", "no", "internal", "family", n=3)
+        + train_row("chest", "nausea|dizzy", "no", "internal", n=4)
+    )
+    table = dept.guide_train_table(tables, splits)
+    assert list(table) == ["chest-dizzy|nausea-no"]
+    intake, dist = table["chest-dizzy|nausea-no"]
+    assert intake == {"body_parts": ["chest"], "symptoms": ["dizzy", "nausea"], "injury": False}
+    assert dist == {"internal": pytest.approx(0.85), "family": pytest.approx(0.15)}
+
+
+def test_committed_guide_train_table_is_valid_and_disjoint():
+    rows = dept.read_guide_train(TABLES)
+    eval_ids = (MODELING / "data" / "splits" / dept.VALID_IDS).read_text().split() + dept.held_test_ids(MODELING / "data" / "splits")
+    assert rows and not any(dept.overlaps_eval(r, eval_ids) for r in rows)
+    eval_urls = {g for name in (dept.GUIDE, dept.GUIDE_TEST) for g in re.findall(r"https://[^,\s\"]+", (TABLES / name).read_text())}
+    assert not eval_urls & {r.url for r in rows}  # 평가 정답에 쓴 페이지는 학습에 쓰지 않는다

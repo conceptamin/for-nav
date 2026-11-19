@@ -122,7 +122,8 @@ def test_department_proba_is_weighted_mean_of_saved_models():
     weights_b = json.loads((root / "dept_b" / P.VERSION / dept_b.WEIGHTS_FILE).read_text())
     for intake in EXAMPLES.values():
         X = featurize_many([intake])
-        expected = a["weight_a"] * model_a.predict_proba(X)[0] + (1 - a["weight_a"]) * dept_b.predict_from_weights(weights_b, X)[0]
+        w, _ = P.ensemble_rule(a["rules"], P.button_count(intake))
+        expected = w * model_a.predict_proba(X)[0] + (1 - w) * dept_b.predict_from_weights(weights_b, X)[0]
         assert np.allclose(list(P.predict(intake)["departmentProba"].values()), expected / expected.sum())
 
 
@@ -153,9 +154,7 @@ REQUIRED = {
     "ensemble": {
         "model_version",
         "components",
-        "weight_a",
-        "weight_b",
-        "fallback_threshold",
+        "by_buttons",
         "fallback",
         "labels",
         "metrics",
@@ -173,3 +172,39 @@ def test_serving_metadata_has_required_fields(name):
     final = [meta["metrics"][k] for k in meta["metrics"] if k.startswith("final")]
     # 최종 수치는 평가셋별로 나뉘어 있다({평가셋: {top1, top2, final}})
     assert final and all(m and all(v["final"] is True for v in m.values()) for m in final)
+
+
+def test_ensemble_rule_picks_by_button_count():
+    rules = P.ensemble_rules(
+        {
+            "by_buttons": [
+                {"max_buttons": 2, "weight_a": 0.2, "fallback_threshold": 0.2},
+                {"max_buttons": None, "weight_a": 0.7, "fallback_threshold": 0.3},
+            ]
+        }
+    )
+    assert P.ensemble_rule(rules, 0) == (0.2, 0.2) and P.ensemble_rule(rules, 2) == (0.2, 0.2) and P.ensemble_rule(rules, 5) == (0.7, 0.3)
+    assert P.ensemble_rules({"weight_a": 0.5, "fallback_threshold": 0.25}) == [(None, 0.5, 0.25)]  # v5까지의 형식
+    with pytest.raises(P.ArtifactError):
+        P.ensemble_rules(
+            {
+                "by_buttons": [
+                    {"max_buttons": None, "weight_a": 0.5, "fallback_threshold": 0.0},
+                    {"max_buttons": 2, "weight_a": 0.5, "fallback_threshold": 0.0},
+                ]
+            }
+        )
+
+
+def test_rule_outcomes_match_serving_per_button_count():
+    from fornav_modeling.models import ensemble
+
+    rng = np.random.default_rng(3)
+    p_a, p_b = rng.dirichlet(np.ones(10), 60), rng.dirichlet(np.ones(10), 60)
+    y, n = rng.integers(0, 10, 60), rng.integers(1, 8, 60)
+    rules = [(2, 0.2, 0.2), (4, 0.8, 0.3), (None, 0.7, 0.0)]
+    got = ensemble.rule_outcomes(p_a, p_b, y, n, rules)
+    for i in range(60):
+        w, t = P.ensemble_rule(rules, int(n[i]))
+        top, fell = P.top2(P.combine(p_a[i], p_b[i], w), t, ensemble.FALLBACK)
+        assert got["fallback"][i] == fell and got["top2"][i] == (DEPARTMENTS[y[i]] in top)

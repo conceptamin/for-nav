@@ -13,10 +13,11 @@ from fornav_modeling.models import ensemble  # noqa: E402
 
 parser = argparse.ArgumentParser(description="진료과 앙상블 가중치·폴백 기준값 조정")
 parser.add_argument("--round", default="v1", help="라운드 이름(모델 폴더·리포트 이름)")
+parser.add_argument("--by-buttons", action="store_true", help="버튼 수 묶음마다 가중치·기준값을 고른다(backlog 19, v6)")
 args = parser.parse_args()
 
 start = time.perf_counter()
 data = ROOT / "data"
-ensemble.tune_round(data / "processed", data / "splits", data / "tables", ROOT / "models", ROOT / "reports", args.round)
+ensemble.tune_round(data / "processed", data / "splits", data / "tables", ROOT / "models", ROOT / "reports", args.round, args.by_buttons)
 print((ROOT / "reports" / f"ensemble_{args.round}.md").read_text())
 print(f"{time.perf_counter() - start:.1f}초")

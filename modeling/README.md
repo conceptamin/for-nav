@@ -31,8 +31,8 @@
 ### 진료과 모델 세부
 
 - **모델 A**: 증상에서 질환 확률을 예측한 뒤, HIRA 통계의 질환별 진료과 비율로 합산해 진료과 확률로 변환. 질환명은 노출하지 않음. 내과 질환에 강함.
-- **모델 B**: 버튼 조합마다 HIRA 통계 기반 진료과 확률 분포를 라벨로 학습. 외상·산업재해 증상을 직접 포함할 수 있음.
-- **앙상블**: 두 모델의 확률 분포를 가중 평균(초기 0.5 : 0.5). 서로의 빈틈(내과 질환 / 외상·산재)을 보완.
+- **모델 B**: 버튼 조합마다 HIRA 통계 기반 진료과 확률 분포와 병원 질환백과의 진료과 안내(backlog 19)를 라벨로 학습. 외상·산업재해 증상을 직접 포함할 수 있음.
+- **앙상블**: 두 모델의 확률 분포를 가중 평균(초기 0.5 : 0.5). 서로의 빈틈(내과 질환 / 외상·산재)을 보완. v6부터 가중치는 누른 버튼 수(부위 + 증상)마다 따로 정한다(버튼이 적으면 모델 B, 많으면 모델 A 쪽).
 - **폴백**: 확신도가 낮으면 가정의학과 또는 내과로 안내.
 
 ### 리포트 생성
@@ -60,7 +60,7 @@
 |---|---|---|---|
 | Kaggle Disease Symptom Prediction | 진료과 모델 A 학습 | 바로 다운로드 | 영어권 데이터, 외상 증상 부족 |
 | HIRA 보건의료빅데이터개방시스템 질병별 진료과 통계 | 질환 → 진료과 매핑, 모델 B 라벨 | 공개 | 라벨 근거로 가장 탄탄함 |
-| 대학병원 증상별 진료과 안내, 국가건강정보포털 | 모델 B 테이블 구축·검증, 최종 평가용 안내 조합(backlog 18) | 공개 | 대량 수집 시 이용약관 확인 |
+| 대학병원 증상별 진료과 안내, 국가건강정보포털 | 모델 B 테이블 구축·검증, 최종 평가용 안내 조합(backlog 18), 모델 B 학습용 안내 조합(backlog 19) | 공개 | 대량 수집 시 이용약관 확인 |
 | DDXPlus(합성 환자, 질환 49종, mila-iqia) | 진료과 모델 A 학습 데이터 확대(backlog 17) | figshare 공개 | CC BY(17에서 버전 확인). 상용 지식베이스로 만든 합성 데이터, 급성기 질환 위주, 외상 부족 |
 | HIRA 병원정보서비스, 국립중앙의료원 병·의원 찾기 | 병원 연결 | 공공데이터포털 API 신청 | 진료시간·진료과목 조회 |
 
@@ -93,22 +93,23 @@ uv run python scripts/build_ddxplus.py                   # DDXPlus → 버튼 �
 uv run python scripts/build_tables.py                    # 진료과 표(Kaggle·DDXPlus 질환 라벨)·검증셋 id
 uv run python scripts/make_splits.py                     # Kaggle+DDXPlus를 합쳐 버튼 벡터 단위로 분할(진료과 모델 A, backlog 16)
 uv run python scripts/train_dept_a.py --round v3         # models/dept_a/v3
-uv run python scripts/cv_dept_b.py                       # 모델 B 설정 후보·비교 기준선 반복 교차검증, 설정 선택(backlog 13)
-uv run python scripts/train_dept_b.py --round v4 --setting <선택한 설정>   # models/dept_b/v4
-uv run python scripts/tune_ensemble.py --round v4        # models/ensemble/v4/ensemble.json
-uv run python scripts/evaluate.py --model ensemble --round v4   # test 1회, "최종". 18의 최종 평가용 안내 조합도. 모델 A의 test는 v3에서 쟀다
-uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v4/
+uv run python scripts/cv_dept_b.py                       # 모델 B 설정 후보·비교 기준선 반복 교차검증(backlog 13)
+uv run python scripts/compare_dept_b.py <후보 …>          # 모델 B 후보를 조정 셋 앙상블 leave-one-out으로 비교(backlog 19)
+uv run python scripts/train_dept_b.py --round v5 --setting wide_seeds5_pairs_mean_guide   # models/dept_b/v5(병원 안내 조합 포함)
+uv run python scripts/tune_ensemble.py --round v6 --by-buttons   # models/ensemble/v6/ensemble.json(버튼 수별 가중치)
+uv run python scripts/evaluate.py --model ensemble --round v6   # test 1회, "최종". 18의 최종 평가용 안내 조합도. 모델 A의 test는 v3에서 쟀다
+uv run python scripts/export_models.py                   # models/{dept_a,dept_b,ensemble}/v6/
 ```
 
 ## 아티팩트와 `predict`
 
-서빙은 `models/*/v4/`만 읽는다(08의 `v1`, 벡터가 겹친 옛 분할로 잰 `v2`, 모델 B를 다시 학습하기 전 `v3` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
+서빙은 `models/*/v6/`만 읽는다(08의 `v1`, 벡터가 겹친 옛 분할로 잰 `v2`, 모델 B를 다시 학습하기 전 `v3`, 안내 조합을 넣기 전 `v4` 묶음은 기록으로 남겨 둔다). 불러올 때 코드를 실행하는 형식(pickle·joblib)은 쓰지 않는다. 폴더마다 `metadata.json`이 있고, 그 `files`에 적힌 sha256과 파일이 다르면 `predict`가 `ArtifactError`로 멈춘다.
 
 | 폴더 | 파일 | 내용 |
 |---|---|---|
-| `dept_a/v4/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
-| `dept_b/v4/` | `weights.json` | seed별 MLP 가중치(`members`마다 `W1`, `b1`, `W2`, `b2`, 확률을 평균), 입력 피처·라벨 순서 |
-| `ensemble/v4/` | `ensemble.json` | 모델 A 가중치, 폴백 기준값, 폴백 진료과(가정의학과, 내과) |
+| `dept_a/v6/` | `model.txt`, `departments.json` | LightGBM 텍스트(질환 번호 예측) + 질환 번호별 진료과 비율 행렬. 질환명은 없다 |
+| `dept_b/v6/` | `weights.json` | seed별 MLP 가중치(`members`마다 `W1`, `b1`, `W2`, `b2`, 확률을 평균), 입력 피처·라벨 순서 |
+| `ensemble/v6/` | `ensemble.json` | 버튼 수(부위 + 증상) 묶음별 모델 A 가중치·폴백 기준값(`by_buttons`), 폴백 진료과(가정의학과, 내과) |
 
 `metadata.json`에는 모델 버전, 원본 라운드, 학습 데이터 sha256, seed, 가중치·폴백 기준, 피처·라벨 순서, 검증·최종(test) 측정값, 생성 시각이 있다.
 

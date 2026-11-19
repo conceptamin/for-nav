@@ -398,6 +398,87 @@ def load_guide_test(tables_dir: Path, splits_dir: Path) -> tuple[list[str], dict
     return ids, {cid: answers[cid] for cid in ids}
 
 
+# ---------------------------------------------------------------------------
+# 모델 B 학습용 안내 조합(backlog 19). 평가 조합과 겹치는 행은 학습에서 뺀다
+# ---------------------------------------------------------------------------
+GUIDE_TRAIN = "department_guide_train.csv"
+GUIDE_TRAIN_COLUMNS = ["body_parts", "symptoms", "injury", "department", "alt", "url", "site", "evidence", "note", "source", "reviewed"]
+GUIDE_TRAIN_FIRST = 0.7  # 2순위가 있으면 1순위 0.7, 2순위 0.3. 없으면 1순위 1.0
+GUIDE_TRAIN_MAX_BUTTONS = 2  # 부위·증상 각각 최대 2개
+
+
+class GuideTrainRow(NamedTuple):
+    body_parts: tuple[BodyPart, ...]
+    symptoms: tuple[Symptom, ...]
+    injury: str
+    department: Department
+    alt: Department | None
+    url: str
+
+    @property
+    def key(self) -> str:
+        return f"{'|'.join(self.body_parts)}-{'|'.join(self.symptoms)}-{self.injury}"
+
+    def pairs(self) -> list[str]:
+        """부위 × 증상 쌍마다의 combo_id. 평가 조합과 겹치는지 볼 때 쓴다."""
+        return [combo_id(b, s, self.injury) for b in self.body_parts for s in self.symptoms]
+
+    def distribution(self) -> Distribution:
+        if self.alt is None:
+            return {self.department: 1.0}
+        return {self.department: GUIDE_TRAIN_FIRST, self.alt: round(1 - GUIDE_TRAIN_FIRST, 4)}
+
+    def intake(self) -> dict:
+        return {"body_parts": list(self.body_parts), "symptoms": list(self.symptoms), "injury": INJURY_FLAGS[self.injury]}
+
+
+def read_guide_train(tables_dir: Path) -> list[GuideTrainRow]:
+    """학습용 안내 조합 표. 열거값·버튼 수·URL을 검사한다. 표가 없으면 빈 목록."""
+    if not (tables_dir / GUIDE_TRAIN).exists():
+        return []
+    rows, urls = [], set()
+    for row in _read(tables_dir, GUIDE_TRAIN):
+        bodies, symptoms = tuple(row["body_parts"].split("|")), tuple(row["symptoms"].split("|"))
+        alt = row["alt"] or None
+        where = f"{GUIDE_TRAIN}: {row['url']}"
+        if not (set(bodies) <= set(BODY_PARTS) and set(symptoms) <= set(SYMPTOMS) and row["injury"] in INJURIES):
+            raise TableError(f"{where}의 부위·증상·손상 여부가 열거값 밖")
+        if not (1 <= len(bodies) <= GUIDE_TRAIN_MAX_BUTTONS and 1 <= len(symptoms) <= GUIDE_TRAIN_MAX_BUTTONS):
+            raise TableError(f"{where}의 부위·증상 수가 1~{GUIDE_TRAIN_MAX_BUTTONS}개가 아니다")
+        if len(set(bodies)) != len(bodies) or len(set(symptoms)) != len(symptoms):
+            raise TableError(f"{where}에 같은 버튼이 두 번 있다")
+        if row["department"] not in DEPARTMENTS or (alt is not None and (alt not in DEPARTMENTS or alt == row["department"])):
+            raise TableError(f"{where}의 진료과가 열거값 밖이거나 1·2순위가 같다")
+        if not row["url"].startswith("https://") or row["url"] in urls:
+            raise TableError(f"{where}: url이 https가 아니거나 중복")
+        urls.add(row["url"])
+        rows.append(GuideTrainRow(tuple(sorted(bodies)), tuple(sorted(symptoms)), row["injury"], row["department"], alt, row["url"]))
+    return rows
+
+
+def overlaps_eval(row: GuideTrainRow, eval_ids: list[str]) -> bool:
+    """부위 × 증상의 어느 쌍이라도 평가 조합과 same_combo면 True."""
+    return any(same_combo(pair, e) for pair in row.pairs() for e in eval_ids)
+
+
+def guide_train_table(tables_dir: Path, splits_dir: Path) -> dict[str, tuple[dict, Distribution]]:
+    """학습에 쓸 안내 조합: {버튼 키: (입력 dict, 분포)}. 평가 조합(조정용·최종 평가용 id)과 겹치는 행은 빼고,
+    같은 버튼 키의 행(다른 질환 페이지)은 분포를 평균한다."""
+    eval_ids = (splits_dir / VALID_IDS).read_text().split() + held_test_ids(splits_dir)
+    grouped: dict[str, list[GuideTrainRow]] = {}
+    for row in read_guide_train(tables_dir):
+        if not overlaps_eval(row, eval_ids):
+            grouped.setdefault(row.key, []).append(row)
+    out = {}
+    for key, rows in sorted(grouped.items()):
+        total: dict[Department, float] = {}
+        for row in rows:
+            for d, p in row.distribution().items():
+                total[d] = total.get(d, 0.0) + p / len(rows)
+        out[key] = (rows[0].intake(), {d: total[d] for d in DEPARTMENTS if d in total})
+    return out
+
+
 def same_combo(a: str, b: str) -> bool:
     """부위·증상이 같고 손상 여부가 같거나 한쪽이 any. 검증셋 조합을 학습 표에서 뺄 때 쓴다."""
     *ab, ai = a.split("-")
