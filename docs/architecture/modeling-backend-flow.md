@@ -25,37 +25,42 @@ for nav의 진료과 추천 모델이 어떻게 만들어지고, 서버가 요�
 
 ### 1.1 학습 파이프라인
 
-공개 데이터 두 가지(Kaggle 증상-질환, HIRA 진료과 × 질환 집계)와 수기 매핑 표로 진료과 모델 두 개를 학습하고, 두 모델을 섞는 앙상블 값을 정한다. test 셋은 `evaluate.py`만 읽고, 라운드마다 한 번만 평가한다.
+공개 데이터 세 가지(Kaggle 증상-질환, DDXPlus 합성 환자, HIRA 진료과 × 질환 집계)와 수기 매핑 표로 진료과 모델 두 개를 학습하고, 두 모델을 섞는 앙상블 값을 정한다. 질환·증상 데이터는 같은 버튼 벡터가 한 셋에만 들어가게 나눈다(backlog 16). test 셋과 병원 안내 최종 평가용 31조합(backlog 18)은 `evaluate.py`만 읽고, 라운드마다 한 번만 평가한다.
 
 ```mermaid
 flowchart TD
     subgraph SRC["📥 데이터 출처"]
         K[("Kaggle 증상-질환<br/>4,920행 · 41질환")]
+        X[("DDXPlus 합성 환자<br/>1,292,579명 · 49질환")]
         H[("HIRA 2025<br/>진료과 × 질환 집계")]
-        G[("병원 안내 페이지<br/>SNUH 28 + 원주세브란스 1")]
-        M[/"수기 매핑 표<br/>symptom_map · disease_kcd<br/>button_kcd · department_guide"/]
+        G[("병원 안내 페이지<br/>조정용 29 (SNUH · 원주세브란스)<br/>최종 평가용 31 (세브란스 · 삼성)")]
+        M[/"수기 매핑 표<br/>symptom_map · disease_kcd · button_kcd<br/>department_guide · ddxplus 매핑(LLM 초안)"/]
     end
 
     DL["⚙️ download_data.py<br/>내려받기 + sha256 검증"]
-    SP["⚙️ make_splits.py<br/>중복 제거 → 292행 · 40질환<br/>층화 분할 seed 20261027"]
-    TB["⚙️ build_tables.py<br/>질환→진료과 168행<br/>버튼→진료과 566행"]
+    DX["⚙️ build_ddxplus.py<br/>환자 → 버튼 벡터<br/>2,372행 · 벡터 2,067"]
+    SP["⚙️ make_splits.py<br/>Kaggle 118 + DDXPlus 2,339행 · 80라벨<br/>버튼 벡터 그룹 분할 seed 20261027"]
+    TB["⚙️ build_tables.py<br/>질환→진료과 331행 · 80라벨<br/>버튼→진료과 566행"]
     FE["🧩 featurize()<br/>버튼 입력 → 34개 특성"]
 
-    A["🌲 train_dept_a.py<br/>LightGBM 40질환 분류<br/>3-fold CV → 954 rounds"]
+    A["🌲 train_dept_a.py<br/>LightGBM 80라벨 분류 · 출처 균형 가중<br/>벡터 그룹 3-fold CV → 156 rounds"]
     B["🧠 train_dept_b.py<br/>numpy MLP 29→32→10<br/>5-fold CV → L2 1e-3 · 125 epochs"]
-    EN["⚖️ tune_ensemble.py<br/>weight × threshold 격자 탐색<br/>튜닝셋 73건"]
+    EN["⚖️ tune_ensemble.py<br/>weight × threshold 격자 탐색<br/>튜닝셋 422건 · 출처별 같은 비중"]
     EV{{"🔒 evaluate.py<br/>test 해시 확인 · 라운드당 1회"}}
-    EX["📦 export_models.py<br/>v0/v1 → v2 복사 + sha256"]
-    OUT[("💾 modeling/models/*/v2<br/>서빙 번들")]
+    EX["📦 export_models.py<br/>A v3 · B v0 가중치 · 앙상블 v3<br/>→ v3 + sha256"]
+    OUT[("💾 modeling/models/*/v3<br/>서빙 번들")]
 
     K --> DL
+    X --> DL
     H --> DL
+    DL --> DX
+    DX --> SP
     DL --> SP
     M --> SP
     DL --> TB
     M --> TB
     G --> TB
-    SP -->|"train 189 · valid 44"| FE
+    SP -->|"train 1,572 · valid 393"| FE
     TB -->|"disease_department.csv"| A
     TB -->|"button_department.csv"| B
     FE --> A
@@ -63,7 +68,8 @@ flowchart TD
     A --> EN
     B --> EN
     TB -->|"가이드 29조합"| EN
-    SP -.->|"test 59 (봉인)"| EV
+    SP -.->|"test 492 (봉인)"| EV
+    G -.->|"최종 평가 31조합 (고정)"| EV
     EN --> EV
     EV --> EX
     EX --> OUT
@@ -73,8 +79,8 @@ flowchart TD
     classDef model fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
     classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
     classDef store fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
-    class K,H,G,M src
-    class DL,SP,TB,FE,EX step
+    class K,X,H,G,M src
+    class DL,DX,SP,TB,FE,EX step
     class A,B,EN model
     class EV gate
     class OUT store
@@ -84,18 +90,20 @@ flowchart TD
 
 | 단계 | 스크립트 | 산출물 |
 |---|---|---|
-| 내려받기 | `scripts/download_data.py` | `data/raw/{kaggle_symptom,hira}/` |
-| 분할 | `scripts/make_splits.py` | `data/processed/symptom.parquet`, `data/test/`, `data/splits/*.txt`, `reports/symptom_splits.json` |
+| 내려받기 | `scripts/download_data.py` | `data/raw/{kaggle_symptom,hira,ddxplus}/` |
+| DDXPlus 변환 | `scripts/build_ddxplus.py` | `data/processed/ddxplus/ddxplus.csv`, `reports/ddxplus_v0.{json,md}` |
 | 표 | `scripts/build_tables.py` | `data/tables/disease_department.csv`, `button_department.csv`, `data/splits/dept_valid.txt` |
-| Model A | `scripts/train_dept_a.py` | `models/dept_a/v0/` |
+| 분할 | `scripts/make_splits.py` | `data/processed/symptom.parquet`, `data/test/`, `data/splits/*.txt`, `reports/symptom_splits.json` |
+| 최종 평가용 조합 고정 | `scripts/freeze_guide_test.py` | `data/splits/dept_test.{txt,sha256}` (한 번만) |
+| Model A | `scripts/train_dept_a.py --round v3` | `models/dept_a/v3/` |
 | Model B | `scripts/train_dept_b.py` | `models/dept_b/v0/` |
-| 앙상블 | `scripts/tune_ensemble.py` | `models/ensemble/v1/` |
+| 앙상블 | `scripts/tune_ensemble.py --round v3` | `models/ensemble/v3/` |
 | 평가 | `scripts/evaluate.py --round` | `reports/*_test.{json,md}` |
-| 내보내기 | `scripts/export_models.py` | `models/*/v2/` (서빙 번들) |
+| 내보내기 | `scripts/export_models.py` | `models/*/v3/` (서빙 번들) |
 
-`train_dept_a.py`는 `build_tables.py`가 만든 `disease_department.csv`를 읽는다. 그래서 `build_tables.py`를 먼저 돌려야 한다.
+`make_splits.py`는 `build_ddxplus.py`가 만든 DDXPlus 표를 읽고, `train_dept_a.py`는 `build_tables.py`가 만든 `disease_department.csv`를 읽는다. 그래서 표의 순서대로 돌린다.
 
-**버전.** v2는 서빙 번들이다. 모델 파일은 v0·v1과 바이트 단위로 같다(A `model.txt` 8fa60486…, B `weights.json` fd6930ea…). v1은 지표를 넣은 내보내기본이고, v2는 응급도 모델 재학습 때 묶음 버전을 올린 것이다. 앙상블에는 v0가 없고, v1에서 튜닝한 값(0.5 · 0.5 · 임계 0.25)을 v2에 그대로 복사했다.
+**버전.** v3가 서빙 번들이다(backlog 16). Model A는 Kaggle + DDXPlus를 버튼 벡터 단위로 다시 나눈 train으로 새로 학습했고(`model.txt` 920b09c4…), Model B는 다시 학습하지 않아 v2와 같은 가중치다(`weights.json` fd6930ea…). 앙상블 값은 A 0.4 · B 0.6 · 임계 0.25다. v2(행 id로만 나눠 버튼 벡터가 train과 test에 함께 있던 분할)와 그 이전 묶음은 기록으로 남겨 둔다.
 
 ### 1.2 서빙 시 예측 흐름
 
@@ -104,11 +112,11 @@ flowchart TD
 ```mermaid
 flowchart TD
     IN(["📋 Intake<br/>body_parts · symptoms · onset · injury ..."])
-    LOAD["📦 v2 번들 로드<br/>sha256 확인 · lru_cache"]
+    LOAD["📦 v3 번들 로드<br/>sha256 확인 · lru_cache"]
     FE["🧩 featurize() → 34개 특성"]
 
     subgraph MA["Model A"]
-        A1["🌲 LightGBM<br/>40질환 확률"]
+        A1["🌲 LightGBM<br/>80개 질환 라벨 확률"]
         A2["✖️ 질환→진료과 행렬<br/>departments.json"]
         A1 --> A2
     end
@@ -121,7 +129,7 @@ flowchart TD
         B0 -->|"예"| B2
     end
 
-    MIX["⚖️ 0.5·A + 0.5·B<br/>10개 진료과 확률"]
+    MIX["⚖️ 0.4·A + 0.6·B<br/>10개 진료과 확률"]
     TH{"최대 확률 < 0.25?"}
     FB["🏥 family · internal<br/>departmentFallback = true"]
     TOP["🎯 상위 2개 진료과<br/>동점은 목록 앞쪽"]
@@ -165,14 +173,20 @@ flowchart TD
 ```mermaid
 flowchart TD
     subgraph DEPT["🏥 진료과 추천 (서빙 중)"]
-        D6["✅ 06 Model A<br/>LightGBM<br/>test Top-1 56/59 · Top-2 58/59<br/>가이드셋 Top-2 10/29"]
-        D7["✅ 07 Model B<br/>표 기반 MLP<br/>test Top-1 27/59 · Top-2 45/59<br/>가이드셋 Top-2 23/29"]
-        D8["✅ 08 앙상블 v1<br/>0.5 · 0.5 · 임계 0.25<br/>test Top-1 52/59 · Top-2 58/59<br/>튜닝셋 Top-2 65/73"]
-        D13["⏳ 13 Model B 개선<br/>표 자체 상한 = 현재 B<br/>평가셋 확장 → v3 계획"]
+        D6["✅ 06 Model A<br/>LightGBM<br/>test Top-2 58/59 (벡터가 겹친 분할)<br/>가이드셋 Top-2 10/29"]
+        D7["✅ 07 Model B<br/>표 기반 MLP<br/>test Top-2 45/59 (벡터가 겹친 분할)<br/>가이드셋 Top-2 23/29"]
+        D8["✅ 08 앙상블 v1<br/>0.5 · 0.5 · 임계 0.25<br/>test Top-2 58/59 (벡터가 겹친 분할)<br/>튜닝셋 Top-2 65/73"]
+        D17["✅ 17 DDXPlus 수집<br/>2,372행 · 벡터 2,067"]
+        D18["✅ 18 최종 평가용 안내 조합<br/>31조합 고정 (사람 검토)"]
+        D16["✅ 16 벡터 단위 재분할 · v3<br/>A 0.4 · B 0.6 · 임계 0.25<br/>최종 평가 31조합 Top-2 23/31<br/>test Kaggle Top-2 19/22"]
+        D13["⏳ 13 Model B 개선<br/>B 재학습 (최종 조합 제외)<br/>외상 입력 내과 쏠림 → v4 계획"]
         D14["⏳ 14 센터 상담 데이터<br/>어휘 커버리지 점검만"]
         D6 --> D8
         D7 --> D8
-        D8 -.-> D13
+        D8 --> D16
+        D17 --> D16
+        D18 --> D16
+        D16 -.-> D13
         D13 -.-> D14
     end
 
@@ -192,7 +206,7 @@ flowchart TD
     classDef pending fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
     classDef removed fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
     classDef past fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
-    class D6,D7,D8 done
+    class D6,D7,D8,D16,D17,D18 done
     class D13,D14 pending
     class A4,A9,A10,A12 past
     class A15 removed
@@ -202,13 +216,19 @@ flowchart TD
 
 ### 진료과 모델 결과
 
-| 모델 | test Top-1 (59건) | test Top-2 (59건) | 가이드셋 Top-2 (29조합) | 비고 |
-|---|---|---|---|---|
-| Model A (LightGBM) | 56 (94.9%) | 58 (98.3%) | 10 (34.5%) | 내과 질환에 강하다 |
-| Model B (MLP) | 27 (45.8%) | 45 (76.3%) | 23 (79.3%) | 외상 · 병원 안내 조합에 강하다 |
-| 앙상블 0.5 · 0.5 | 52 (88.1%) | 58 (98.3%) | 22 (75.9%) | 튜닝셋 Top-2 65/73, test 폴백 0/59 |
+v3(backlog 16). 모든 셋은 한 번만 평가했다. 칸은 Top-2 적중(분자/분모).
 
-- A는 Kaggle 질환 데이터에 강하고 B는 병원 안내 조합에 강하다. 그래서 앙상블은 두 평가셋에서 모두 Top-2를 높게 유지한다.
+| 모델 | 최종 평가용 안내 조합 (31조합) | test Kaggle (22건) | test DDXPlus (470건) | test 버튼 2개 (18건) |
+|---|---|---|---|---|
+| Model A (LightGBM) | 15 (48.4%) | 18 (81.8%) | 453 (96.4%) | 14 (77.8%) |
+| Model B (MLP) | 24 (77.4%) | 16 (72.7%) | 340 (72.3%) | 14 (77.8%) |
+| **앙상블 0.4 · 0.6, 임계 0.25** | **23 (74.2%)** | 19 (86.4%) | 454 (96.6%) | 12 (66.7%) |
+
+- 최종 평가용 안내 조합(backlog 18)은 조정에 쓰지 않은 다른 병원 안내 페이지에서 모아 사람이 검토한 31조합이다. 앱 입력(부위 하나, 증상 하나)에 가장 가깝다. 여기서 앙상블은 B 단독보다 1건 낮다.
+- **B 수치는 낙관적이다.** B는 31조합 중 26개와 같은 조합의 HIRA 표 행으로 학습했다(정답 출처는 다르다). B 재학습은 backlog 13에서 한다.
+- **DDXPlus 수치는 그대로 읽지 않는다.** 정답 진료과의 83%가 내과라, 입력을 보지 않고 늘 같은 분포를 내는 기준선도 valid Top-1 313/375다.
+- v2 이전의 test Top-2 58/59(98.3%)는 행 id로만 나눈 분할의 값이다. test 59행 중 42행이 train과 버튼 벡터가 같아 부풀려져 있었다.
+- 앙상블 값은 조정 셋(안내 조합 29 + Kaggle valid 18 + DDXPlus valid 375)에서 출처마다 Top-2 적중률을 같은 비중으로 더해 골랐다. 조정용 안내 조합 Top-2는 22/29, leave-one-out 20/29다.
 - Top-3는 재지 않는다. 화면에 진료과를 2개만 보여 주기 때문이다.
 
 ### 응급도 실험 (backlog 04 → 15)
@@ -223,7 +243,7 @@ flowchart TD
 
 ### 진행 전 (대기)
 
-- **13 Model B 개선**: B의 가이드셋 점수(18/29, 23/29)가 표 자체의 상한과 같다. 그래서 모델 구조만 바꿔서는 오르지 않는다. 계획은 평가셋 확장 → 반복 CV → 외상 라벨 보정 → 빈 조합 채우기 → 다중 선택 합성 → 기준선 → v3와 앙상블 재튜닝이다.
+- **13 Model B 개선**: B의 가이드셋 점수(18/29, 23/29)가 표 자체의 상한과 같다. 그래서 모델 구조만 바꿔서는 오르지 않는다. 평가셋 확장은 18에서 끝냈다. 남은 계획은 최종 평가용 조합을 뺀 B 재학습 → 반복 CV → 외상 라벨 보정 → 빈 조합 채우기 → 다중 선택 합성 → 기준선 → v4와 앙상블 재튜닝이다. 외상 입력에서 A가 내과로 쏠리는 문제(손 열상 → 정형외과 · 내과)도 여기서 본다.
 - **14 센터 상담 데이터**: 비공개 상담 329건으로 어휘 커버리지만 점검한다. 학습에는 쓰지 않는다.
 
 ## 3. 서버

@@ -1,31 +1,36 @@
 flowchart TD
     subgraph SRC["📥 데이터 출처"]
         K[("Kaggle 증상-질환<br/>4,920행 · 41질환")]
+        X[("DDXPlus 합성 환자<br/>1,292,579명 · 49질환")]
         H[("HIRA 2025<br/>진료과 × 질환 집계")]
-        G[("병원 안내 페이지<br/>SNUH 28 + 원주세브란스 1")]
-        M[/"수기 매핑 표<br/>symptom_map · disease_kcd<br/>button_kcd · department_guide"/]
+        G[("병원 안내 페이지<br/>조정용 29 (SNUH · 원주세브란스)<br/>최종 평가용 31 (세브란스 · 삼성)")]
+        M[/"수기 매핑 표<br/>symptom_map · disease_kcd · button_kcd<br/>department_guide · ddxplus 매핑(LLM 초안)"/]
     end
 
     DL["⚙️ download_data.py<br/>내려받기 + sha256 검증"]
-    SP["⚙️ make_splits.py<br/>중복 제거 → 292행 · 40질환<br/>층화 분할 seed 20261027"]
-    TB["⚙️ build_tables.py<br/>질환→진료과 168행<br/>버튼→진료과 566행"]
+    DX["⚙️ build_ddxplus.py<br/>환자 → 버튼 벡터<br/>2,372행 · 벡터 2,067"]
+    SP["⚙️ make_splits.py<br/>Kaggle 118 + DDXPlus 2,339행 · 80라벨<br/>버튼 벡터 그룹 분할 seed 20261027"]
+    TB["⚙️ build_tables.py<br/>질환→진료과 331행 · 80라벨<br/>버튼→진료과 566행"]
     FE["🧩 featurize()<br/>버튼 입력 → 34개 특성"]
 
-    A["🌲 train_dept_a.py<br/>LightGBM 40질환 분류<br/>3-fold CV → 954 rounds"]
+    A["🌲 train_dept_a.py<br/>LightGBM 80라벨 분류 · 출처 균형 가중<br/>벡터 그룹 3-fold CV → 156 rounds"]
     B["🧠 train_dept_b.py<br/>numpy MLP 29→32→10<br/>5-fold CV → L2 1e-3 · 125 epochs"]
-    EN["⚖️ tune_ensemble.py<br/>weight × threshold 격자 탐색<br/>튜닝셋 73건"]
+    EN["⚖️ tune_ensemble.py<br/>weight × threshold 격자 탐색<br/>튜닝셋 422건 · 출처별 같은 비중"]
     EV{{"🔒 evaluate.py<br/>test 해시 확인 · 라운드당 1회"}}
-    EX["📦 export_models.py<br/>v0/v1 → v2 복사 + sha256"]
-    OUT[("💾 modeling/models/*/v2<br/>서빙 번들")]
+    EX["📦 export_models.py<br/>A v3 · B v0 가중치 · 앙상블 v3<br/>→ v3 + sha256"]
+    OUT[("💾 modeling/models/*/v3<br/>서빙 번들")]
 
     K --> DL
+    X --> DL
     H --> DL
+    DL --> DX
+    DX --> SP
     DL --> SP
     M --> SP
     DL --> TB
     M --> TB
     G --> TB
-    SP -->|"train 189 · valid 44"| FE
+    SP -->|"train 1,572 · valid 393"| FE
     TB -->|"disease_department.csv"| A
     TB -->|"button_department.csv"| B
     FE --> A
@@ -33,7 +38,8 @@ flowchart TD
     A --> EN
     B --> EN
     TB -->|"가이드 29조합"| EN
-    SP -.->|"test 59 (봉인)"| EV
+    SP -.->|"test 492 (봉인)"| EV
+    G -.->|"최종 평가 31조합 (고정)"| EV
     EN --> EV
     EV --> EX
     EX --> OUT
@@ -43,8 +49,8 @@ flowchart TD
     classDef model fill:#90EE90,stroke:#333,stroke-width:2px,color:#0a3a0a
     classDef gate fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
     classDef store fill:#FFE4B5,stroke:#333,stroke-width:2px,color:#000
-    class K,H,G,M src
-    class DL,SP,TB,FE,EX step
+    class K,X,H,G,M src
+    class DL,DX,SP,TB,FE,EX step
     class A,B,EN model
     class EV gate
     class OUT store
