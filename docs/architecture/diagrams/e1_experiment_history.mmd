@@ -6,15 +6,17 @@ flowchart TD
         D17["✅ 17 DDXPlus 수집<br/>2,372행 · 벡터 2,067"]
         D18["✅ 18 최종 평가용 안내 조합<br/>31조합 고정 (사람 검토)"]
         D16["✅ 16 벡터 단위 재분할 · v3<br/>A 0.4 · B 0.6 · 임계 0.25<br/>최종 평가 31조합 Top-2 23/31<br/>test Kaggle Top-2 19/22"]
-        D13["⏳ 13 Model B 개선<br/>B 재학습 (최종 조합 제외)<br/>외상 입력 내과 쏠림 → v4 계획"]
+        D13["✅ 13 Model B 개선 · v4<br/>최종 평가 조합 빼고 B 재학습<br/>외상 규칙 보정 · 다중 선택 합성<br/>최종 평가 31조합 Top-2 22/31"]
+        D19["✅ 19 B 학습용 안내 446행 · v6<br/>앙상블 버튼 수별 가중치<br/>최종 평가 31조합 Top-2 26/31<br/>test Kaggle Top-2 18/22"]
         D14["⏳ 14 센터 상담 데이터<br/>어휘 커버리지 점검만"]
         D6 --> D8
         D7 --> D8
         D8 --> D16
         D17 --> D16
         D18 --> D16
-        D16 -.-> D13
-        D13 -.-> D14
+        D16 --> D13
+        D13 --> D19
+        D19 -.-> D14
     end
 
     subgraph ACU["🚑 응급도 예측 (삭제됨)"]
@@ -33,7 +35,7 @@ flowchart TD
     classDef pending fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
     classDef removed fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:#000
     classDef past fill:#D3D3D3,stroke:#333,stroke-width:2px,color:#000
-    class D6,D7,D8,D16,D17,D18 done
-    class D13,D14 pending
+    class D6,D7,D8,D13,D16,D17,D18,D19 done
+    class D14 pending
     class A4,A9,A10,A12 past
     class A15 removed
